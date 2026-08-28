@@ -1,4 +1,4 @@
-# OpenVerifiers
+# OpenVerifiers🚦
 
 **Verify AI agent claims, never trust blindly again.**
 

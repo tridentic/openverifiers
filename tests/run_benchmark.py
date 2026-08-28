@@ -57,7 +57,7 @@ def main() -> int:
     lines.append("- A `UNKNOWN` verdict counts as a fail here: benchmark demands a resolved number.")
 
     text = "\n".join(lines)
-    root = os.path.join(os.path.dirname(__file__), "..", "..")
+    root = os.path.join(os.path.dirname(__file__), "..")
     out = os.path.join(root, "RESULTS.md")
     with open(out, "w") as fh:
         fh.write(text)

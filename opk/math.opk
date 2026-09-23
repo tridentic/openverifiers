@@ -1,21 +1,44 @@
-# KDScript-Domain — arithmetic and deductive proof patterns.
-# Port of domains/math.py: arithmetic as relations (any direction solvable),
-# proof machinery via the core logical builtins.
+# KDScript-Domain — mathematics (HSC): arithmetic + algebra + sequences +
+# trigonometry + combinatorics + deductive proof machinery.
+# Relations are solvable in ANY direction by the engine.
 
 domain math
 
-# -- arithmetic (dimensionless quantities) ----------------------------------
-relation math.add: c = a + b  unit(a=dimless, b=dimless, c=dimless)  out(c)
-relation math.mul: c = a * b  unit(a=dimless, b=dimless, c=dimless)  out(c)
+# -- types --------------------------------------------------------------------
+type num extends quantity unit(dimless)
 
-# -- deductive proof machinery (cross-domain builtins) -----------------------
+# -- arithmetic ------------------------------------------------------------------
+relation math.add: c = a + b  unit(a=num, b=num, c=num)  out(c)
+relation math.mul: c = a * b  unit(a=num, b=num, c=num)  out(c)
+
+# -- algebra ---------------------------------------------------------------------
+relation alg.linear: a*x + b = c  unit(a=num, x=num, b=num, c=num)  out(x)
+relation alg.quadratic: x**2 - s*x + p = 0  unit(x=num, s=num, p=num)  out(x)
+relation alg.pyth: c = sqrt(a**2 + b**2)  unit(c=num, a=num, b=num)  out(c)
+
+# -- trigonometry (angles in degrees) --------------------------------------------
+relation trig.sine: x = h * sin(theta*pi/180)  unit(x=num, h=num, theta=num)  out(x)
+relation trig.cosine: x = h * cos(theta*pi/180)  unit(x=num, h=num, theta=num)  out(x)
+relation trig.tangent: x = h * tan(theta*pi/180)  unit(x=num, h=num, theta=num)  out(x)
+
+# -- sequences and series ----------------------------------------------------------
+relation seq.arith_nth: an = a1 + (n-1)*d  unit(an=num, a1=num, n=num, d=num)  out(an)
+relation seq.arith_sum: s = n/2 * (2*a1 + (n-1)*d)  unit(s=num, n=num, a1=num, d=num)  out(s)
+relation seq.geom_nth: an = a1 * r**(n-1)  unit(an=num, a1=num, n=num, r=num)  out(an)
+relation seq.geom_sum: s = a1 * (r**n - 1)/(r - 1)  unit(s=num, a1=num, n=num, r=num)  out(s)
+
+# -- combinatorics ------------------------------------------------------------------
+relation comb.perm: p = factorial(n)/factorial(n-k)  unit(p=num, n=num, k=num)  out(p)
+relation comb.comb: c = factorial(n)/(factorial(k)*factorial(n-k))  unit(c=num, n=num, k=num)  out(c)
+
+# -- deductive proof machinery (cross-domain builtins) ----------------------------
 transform math.proof_base: builtin(theorem_base)  param(n, expr)
 transform math.proof_step: builtin(theorem_step)  param(k, expr)  input(predecessor)
 transform math.logic.modus_ponens: builtin(logic.modus_ponens)  input(implication, antecedent)
 transform math.induction_combine: builtin(induction_combine)  param(variable, expr)  input(base, step)
 
-# -- trusted baseline facts ---------------------------------------------------
+# -- trusted baseline facts -----------------------------------------------------------
 fact math.pi: quantity(3.141592653589793, dimless)
 
-# -- declared conflict pairs (even cannot hold with odd on the same claim) -----
+# -- declared conflict pairs -----------------------------------------------------------
 exclusive(even, odd)

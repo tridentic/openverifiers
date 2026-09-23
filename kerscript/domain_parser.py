@@ -166,14 +166,21 @@ def _parse_line(doc: dict, scope: _Scope, line: str) -> None:
         if m and m.group(2) in _BASES:
             doc["types"][scope.qualify(m.group(1))] = {
                 "base": m.group(2), "unit": None, "kind": None,
-                "framed": False}
+                "framed": False, "parent": None}
             return
         m = _TYPE_EXT_RE.match(line)
         if not m:
             raise ValueError(f"cannot parse type line: {line!r}")
         tname, base = m.group(1), m.group(2)
-        if base not in _BASES:
-            raise ValueError(f"type {tname}: unknown base {base!r}")
+        parent = None
+        if base in _BASES:
+            eff_base = base
+        else:
+            parent = scope.resolve_type(base)
+            if parent is None:
+                raise ValueError(
+                    f"type {tname}: unknown base {base!r}")
+            eff_base = doc["types"][parent]["base"]
         rest = m.group(3).strip()
         unit = kind = None
         framed = False
@@ -184,15 +191,21 @@ def _parse_line(doc: dict, scope: _Scope, line: str) -> None:
                 kind = m2.group(2).strip()
             else:
                 framed = True
-        if _TYPE_BASE_FIELDS[base] == ("unit",) and unit is None:
+        if _TYPE_BASE_FIELDS[eff_base] == ("unit",) and unit is None:
             raise ValueError(f"type {tname}: quantity subtype needs unit(...)")
-        if _TYPE_BASE_FIELDS[base] == ("kind",) and kind is None:
+        if _TYPE_BASE_FIELDS[eff_base] == ("kind",) and kind is None:
             raise ValueError(f"type {tname}: action subtype needs kind(...)")
-        if base == "entity" and (unit or kind):
+        if eff_base == "entity" and (unit or kind):
             raise ValueError(f"type {tname}: entity subtype cannot carry "
                              f"unit()/kind()")
-        doc["types"][scope.qualify(tname)] = {
-            "base": base, "unit": unit, "kind": kind, "framed": framed}
+        rec = {"base": eff_base, "unit": unit, "kind": kind,
+               "framed": framed, "parent": parent}
+        if parent is not None:
+            rec["unit"] = rec["unit"] or doc["types"][parent].get("unit")
+            rec["kind"] = rec["kind"] or doc["types"][parent].get("kind")
+            rec["framed"] = (rec["framed"]
+                             or doc["types"][parent].get("framed", False))
+        doc["types"][scope.qualify(tname)] = rec
         return
 
     if line.startswith("unit "):

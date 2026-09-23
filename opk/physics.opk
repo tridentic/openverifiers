@@ -2,188 +2,230 @@
 
 domain physics   # One syllabus relation per transformation; composition is left to the agent-authored trace (see datasets/physics_syllabus_problems.csv).
 
-relation alg.solve: -val + x  unit(x=dimless, val=dimless)  out(x)
+unit A, C, F, Hz, J, K, N, N/m, Pa, T, V, W, Wb, area, dimless, diopter, el_field, g_newton, gas_r, heat_cap, k_coulomb, kg, kg m/s, kg/m, m, m/s, m/s^2, mol, ohm, per_kelvin, photon_h, rho_res, s, specific_heat, volume
+
+type PhysicalObject = entity
+type PointObject extends PhysicalObject
+type ReferenceFrame = entity
+
+type t_A extends quantity unit(A)
+type t_C extends quantity unit(C)
+type t_F extends quantity unit(F)
+type t_Hz extends quantity unit(Hz)
+type t_J extends quantity unit(J)
+type t_K extends quantity unit(K)
+type t_N extends quantity unit(N)
+type t_N_m extends quantity unit(N/m)
+type t_Pa extends quantity unit(Pa)
+type t_T extends quantity unit(T)
+type t_V extends quantity unit(V)
+type t_W extends quantity unit(W)
+type t_Wb extends quantity unit(Wb)
+type t_area extends quantity unit(area)
+type t_dimless extends quantity unit(dimless)
+type t_diopter extends quantity unit(diopter)
+type t_el_field extends quantity unit(el_field)
+type t_g_newton extends quantity unit(g_newton)
+type t_gas_r extends quantity unit(gas_r)
+type t_heat_cap extends quantity unit(heat_cap)
+type t_k_coulomb extends quantity unit(k_coulomb)
+type t_kg extends quantity unit(kg)
+type t_kg_m_s extends quantity unit(kg m/s)
+type t_kg_m extends quantity unit(kg/m)
+type t_m extends quantity unit(m)
+type t_m_s extends quantity unit(m/s)
+type t_m_s_2 extends quantity unit(m/s^2)
+type t_mol extends quantity unit(mol)
+type t_ohm extends quantity unit(ohm)
+type t_per_kelvin extends quantity unit(per_kelvin)
+type t_photon_h extends quantity unit(photon_h)
+type t_rho_res extends quantity unit(rho_res)
+type t_s extends quantity unit(s)
+type t_specific_heat extends quantity unit(specific_heat)
+type t_volume extends quantity unit(volume)
+
+relation alg.solve: -val + x  unit(x=t_dimless, val=t_dimless)  out(x)
     # x = val (bind val, leave x free or vice versa)
 
-relation ckt.current_charge_time: -Q/t + i  unit(i=A, Q=C, t=s)  out(i)
+relation ckt.current_charge_time: -Q/t + i  unit(i=t_A, Q=t_C, t=t_s)  out(i)
     # i = Q / t
 
-relation ckt.ohms: -i*r + v  unit(v=V, i=A, r=ohm)  out(v)
+relation ckt.ohms: -i*r + v  unit(v=t_V, i=t_A, r=t_ohm)  out(v)
     # Ohm v = i r
 
-relation ckt.parallel_res: -1/r2 - 1/r1 + 1/r  unit(r=ohm, r1=ohm, r2=ohm)  out(r)
+relation ckt.parallel_res: -1/r2 - 1/r1 + 1/r  unit(r=t_ohm, r1=t_ohm, r2=t_ohm)  out(r)
     # parallel resistance 1/r = 1/r1 + 1/r2
 
-relation ckt.power_i2r: -i**2*r + p  unit(p=W, i=A, r=ohm)  out(p)
+relation ckt.power_i2r: -i**2*r + p  unit(p=t_W, i=t_A, r=t_ohm)  out(p)
     # joule heating i^2 r
 
-relation ckt.resistivity: r - l*rho/A  unit(r=ohm, rho=rho_res, l=m, A=area)  out(r)
+relation ckt.resistivity: r - l*rho/A  unit(r=t_ohm, rho=t_rho_res, l=t_m, A=t_area)  out(r)
     # r = rho l / A
 
-relation ckt.series_res: r - r1 - r2  unit(r=ohm, r1=ohm, r2=ohm)  out(r)
+relation ckt.series_res: r - r1 - r2  unit(r=t_ohm, r1=t_ohm, r2=t_ohm)  out(r)
     # series resistance r = r1 + r2
 
-relation dyn.circular_centripetal_force: F - m*v**2/r  unit(F=N, m=kg, v=m/s, r=m)  out(F)
+relation dyn.circular_centripetal_force: F - m*v**2/r  unit(F=t_N, m=t_kg, v=t_m_s, r=t_m)  out(F)
     # centripetal force m v^2 / r
 
-relation dyn.circular_v_omega_r: -omega*r + v  unit(v=m/s, omega=Hz, r=m)  out(v)
+relation dyn.circular_v_omega_r: -omega*r + v  unit(v=t_m_s, omega=t_Hz, r=t_m)  out(v)
     # v = omega r
 
-relation dyn.fma: F - a*m  unit(F=N, m=kg, a=m/s^2)  out(F)
+relation dyn.fma: F - a*m  unit(F=t_N, m=t_kg, a=t_m_s_2)  out(F)
     # Newton II: F = m a
 
-relation dyn.friction_kinetic: -N*mu + f  unit(f=N, mu=dimless, N=N)  out(f)
+relation dyn.friction_kinetic: -N*mu + f  unit(f=t_N, mu=t_dimless, N=t_N)  out(f)
     # sliding friction f = mu N
 
-relation dyn.grav_force: F - G*m1*m2/r**2  unit(F=N, G=g_newton, m1=kg, m2=kg, r=m)  out(F)
+relation dyn.grav_force: F - G*m1*m2/r**2  unit(F=t_N, G=t_g_newton, m1=t_kg, m2=t_kg, r=t_m)  out(F)
     # Newton gravitation G m1 m2 / r^2
 
-relation dyn.hooke: F - k*x  unit(F=N, k=N/m, x=m)  out(F)
+relation dyn.hooke: F - k*x  unit(F=t_N, k=t_N_m, x=t_m)  out(F)
     # Hooke F = k x
 
-relation dyn.momentum: -m*v + p  unit(p=kg m/s, m=kg, v=m/s)  out(p)
+relation dyn.momentum: -m*v + p  unit(p=t_kg_m_s, m=t_kg, v=t_m_s)  out(p)
     # momentum p = m v
 
-relation dyn.normal_force: -F*cos(pi*theta/180) + N  unit(N=N, F=N, theta=dimless)  out(N)
+relation dyn.normal_force: -F*cos(pi*theta/180) + N  unit(N=t_N, F=t_N, theta=t_dimless)  out(N)
     # normal component F cos(theta)
 
-relation dyn.omega_2pi_T: omega - 2*pi/T  unit(omega=Hz, T=s)  out(omega)
+relation dyn.omega_2pi_T: omega - 2*pi/T  unit(omega=t_Hz, T=t_s)  out(omega)
     # angular speed 2 pi / T
 
-relation dyn.parallel_force: -F*sin(pi*theta/180) + p  unit(p=N, F=N, theta=dimless)  out(p)
+relation dyn.parallel_force: -F*sin(pi*theta/180) + p  unit(p=t_N, F=t_N, theta=t_dimless)  out(p)
     # component along incline F sin(theta)
 
-relation dyn.pendulum_period: T - 2*pi*sqrt(L/g)  unit(T=s, L=m, g=m/s^2)  out(T)
+relation dyn.pendulum_period: T - 2*pi*sqrt(L/g)  unit(T=t_s, L=t_m, g=t_m_s_2)  out(T)
     # pendulum period 2 pi sqrt(L/g)
 
-relation dyn.shm_omega_k_m: omega - sqrt(k/m)  unit(omega=Hz, k=N/m, m=kg)  out(omega)
+relation dyn.shm_omega_k_m: omega - sqrt(k/m)  unit(omega=t_Hz, k=t_N_m, m=t_kg)  out(omega)
     # angular frequency sqrt(k/m)
 
-relation dyn.shm_period_k_m: T - 2*pi*sqrt(m/k)  unit(T=s, k=N/m, m=kg)  out(T)
+relation dyn.shm_period_k_m: T - 2*pi*sqrt(m/k)  unit(T=t_s, k=t_N_m, m=t_kg)  out(T)
     # period 2 pi sqrt(m/k)
 
-relation dyn.shm_vmax: -A*omega + v  unit(v=m/s, omega=Hz, A=m)  out(v)
+relation dyn.shm_vmax: -A*omega + v  unit(v=t_m_s, omega=t_Hz, A=t_m)  out(v)
     # max SHM speed omega A
 
-relation dyn.weight: -g*m + w  unit(w=N, m=kg, g=m/s^2)  out(w)
+relation dyn.weight: -g*m + w  unit(w=t_N, m=t_kg, g=t_m_s_2)  out(w)
     # weight w = m g
 
-relation el.cap_energy: -C*V**2/2 + U  unit(U=J, C=F, V=V)  out(U)
+relation el.cap_energy: -C*V**2/2 + U  unit(U=t_J, C=t_F, V=t_V)  out(U)
     # capacitor energy 1/2 C V^2
 
-relation el.coulomb: F - k*q1*q2/r**2  unit(F=N, k=k_coulomb, q1=C, q2=C, r=m)  out(F)
+relation el.coulomb: F - k*q1*q2/r**2  unit(F=t_N, k=t_k_coulomb, q1=t_C, q2=t_C, r=t_m)  out(F)
     # Coulomb k q1 q2 / r^2
 
-relation el.field_point: E - Q*k/r**2  unit(E=el_field, k=k_coulomb, Q=C, r=m)  out(E)
+relation el.field_point: E - Q*k/r**2  unit(E=t_el_field, k=t_k_coulomb, Q=t_C, r=t_m)  out(E)
     # point-charge field k Q / r^2
 
-relation en.grav_pe: -g*h*m + pe  unit(pe=J, m=kg, g=m/s^2, h=m)  out(pe)
+relation en.grav_pe: -g*h*m + pe  unit(pe=t_J, m=t_kg, g=t_m_s_2, h=t_m)  out(pe)
     # gravitational potential m g h
 
-relation en.kinetic: ke - m*v**2/2  unit(ke=J, m=kg, v=m/s)  out(ke)
+relation en.kinetic: ke - m*v**2/2  unit(ke=t_J, m=t_kg, v=t_m_s)  out(ke)
     # kinetic energy 1/2 m v^2
 
-relation en.power_work_time: -P*t + w  unit(P=W, w=J, t=s)  out(w)
+relation en.power_work_time: -P*t + w  unit(P=t_W, w=t_J, t=t_s)  out(w)
     # energy w = P t
 
-relation en.wet_ke_ke0_work: -ke0 + ke_f - work  unit(ke_f=J, ke0=J, work=J)  out(ke_f)
+relation en.wet_ke_ke0_work: -ke0 + ke_f - work  unit(ke_f=t_J, ke0=t_J, work=t_J)  out(ke_f)
     # work-energy: KE = KE0 + net work
 
-relation en.work: -F*d*cos(pi*theta/180) + W  unit(W=J, F=N, d=m, theta=dimless)  out(W)
+relation en.work: -F*d*cos(pi*theta/180) + W  unit(W=t_J, F=t_N, d=t_m, theta=t_dimless)  out(W)
     # work F d cos(theta)
 
-relation kin.projectile_max_height: h - v**2*sin(pi*theta/180)**2/(2*g)  unit(h=m, v=m/s, theta=dimless, g=m/s^2)  out(h)
+relation kin.projectile_max_height: h - v**2*sin(pi*theta/180)**2/(2*g)  unit(h=t_m, v=t_m_s, theta=t_dimless, g=t_m_s_2)  out(h)
     # max height v^2 sin^2(theta)/(2g), theta degrees
 
-relation kin.projectile_range: R - v**2*sin(pi*theta/90)/g  unit(R=m, v=m/s, theta=dimless, g=m/s^2)  out(R)
+relation kin.projectile_range: R - v**2*sin(pi*theta/90)/g  unit(R=t_m, v=t_m_s, theta=t_dimless, g=t_m_s_2)  out(R)
     # range v^2 sin(2 theta)/g, theta in degrees
 
-relation kin.suvat_s_s0_vt: s - s0 - t*v  unit(s=m, s0=m, v=m/s, t=s)  out(s)
+relation kin.suvat_s_s0_vt: s - s0 - t*v  unit(s=t_m, s0=t_m, v=t_m_s, t=t_s)  out(s)
     # s = s0 + v t
 
-relation kin.suvat_s_ut_athalf: -a*t**2/2 + s - t*u  unit(s=m, u=m/s, a=m/s^2, t=s)  out(s)
+relation kin.suvat_s_ut_athalf: -a*t**2/2 + s - t*u  unit(s=t_m, u=t_m_s, a=t_m_s_2, t=t_s)  out(s)
     # s = u t + 1/2 a t^2
 
-relation kin.suvat_v_u_at: -a*t - u + v  unit(v=m/s, u=m/s, a=m/s^2, t=s)  out(v)
+relation kin.suvat_v_u_at: -a*t - u + v  unit(v=t_m_s, u=t_m_s, a=t_m_s_2, t=t_s)  out(v)
     # v = u + a t
 
-relation kin.v2_u2_2: -2*a*s - u**2 + v**2  unit(v=m/s, u=m/s, a=m/s^2, s=m)  out(v)
+relation kin.v2_u2_2: -2*a*s - u**2 + v**2  unit(v=t_m_s, u=t_m_s, a=t_m_s_2, s=t_m)  out(v)
     # v^2 = u^2 + 2 a s
 
-relation mag.emf_motion: -B*L*v + emf  unit(emf=V, B=T, L=m, v=m/s)  out(emf)
+relation mag.emf_motion: -B*L*v + emf  unit(emf=t_V, B=t_T, L=t_m, v=t_m_s)  out(emf)
     # motional EMF B L v
 
-relation mag.flux_change_emf: -N*dPhi/dt + emf  unit(emf=V, N=dimless, dPhi=Wb, dt=s)  out(emf)
+relation mag.flux_change_emf: -N*dPhi/dt + emf  unit(emf=t_V, N=t_dimless, dPhi=t_Wb, dt=t_s)  out(emf)
     # induced EMF N dPhi/dt
 
-relation mag.force_charge: -B*q*v + F  unit(F=N, q=C, v=m/s, B=T)  out(F)
+relation mag.force_charge: -B*q*v + F  unit(F=t_N, q=t_C, v=t_m_s, B=t_T)  out(F)
     # force on charge q v B (perpendicular)
 
-relation mag.force_wire: -B*L*i + F  unit(F=N, B=T, i=A, L=m)  out(F)
+relation mag.force_wire: -B*L*i + F  unit(F=t_N, B=t_T, i=t_A, L=t_m)  out(F)
     # force on wire B i L (perpendicular)
 
-relation mod.binding_energy: E - c**2*dm  unit(E=J, dm=kg, c=m/s)  out(E)
+relation mod.binding_energy: E - c**2*dm  unit(E=t_J, dm=t_kg, c=t_m_s)  out(E)
     # binding energy dm c^2
 
-relation mod.debroglie: -h/p + lam  unit(lam=m, h=photon_h, p=kg m/s)  out(lam)
+relation mod.debroglie: -h/p + lam  unit(lam=t_m, h=t_photon_h, p=t_kg_m_s)  out(lam)
     # de Broglie lambda = h / p
 
-relation mod.diode_current: -i*r + v  unit(v=V, i=A, r=ohm)  out(r)
+relation mod.diode_current: -i*r + v  unit(v=t_V, i=t_A, r=t_ohm)  out(r)
     # linear diode operating point v = i r
 
-relation mod.half_life: N - N0/2**(t/T)  unit(N=dimless, N0=dimless, t=s, T=s)  out(N)
+relation mod.half_life: N - N0/2**(t/T)  unit(N=t_dimless, N0=t_dimless, t=t_s, T=t_s)  out(N)
     # N = N0 2^(-t/T)
 
-relation mod.hydrogen_en: E + 13.6/n**2  unit(E=dimless, n=dimless)  out(E)
+relation mod.hydrogen_en: E + 13.6/n**2  unit(E=t_dimless, n=t_dimless)  out(E)
     # hydrogen level -13.6/n^2 (values in eV, kept numeric)
 
-relation mod.photoelectric: E - f*h + phi  unit(E=J, h=photon_h, f=Hz, phi=J)  out(E)
+relation mod.photoelectric: E - f*h + phi  unit(E=t_J, h=t_photon_h, f=t_Hz, phi=t_J)  out(E)
     # KE = h f - phi
 
-relation mod.photon_energy: E - f*h  unit(E=J, h=photon_h, f=Hz)  out(E)
+relation mod.photon_energy: E - f*h  unit(E=t_J, h=t_photon_h, f=t_Hz)  out(E)
     # photon E = h f
 
-relation opt.critical: sin(pi*tc/180) - n2/n1  unit(n1=dimless, n2=dimless, tc=dimless)  out(tc)
+relation opt.critical: sin(pi*tc/180) - n2/n1  unit(n1=t_dimless, n2=t_dimless, tc=t_dimless)  out(tc)
     # sin tc = n2/n1, tc in degrees
 
-relation opt.magnification: m - v/u  unit(m=dimless, v=m, u=m)  out(m)
+relation opt.magnification: m - v/u  unit(m=t_dimless, v=t_m, u=t_m)  out(m)
     # linear magnification v/u (signed by convention)
 
-relation opt.mirror_lens: -1/v - 1/u + 1/f  unit(f=m, v=m, u=m)  out(f)
+relation opt.mirror_lens: -1/v - 1/u + 1/f  unit(f=t_m, v=t_m, u=t_m)  out(f)
     # 1/f = 1/v + 1/u
 
-relation opt.power: P - 1/f  unit(P=diopter, f=m)  out(P)
+relation opt.power: P - 1/f  unit(P=t_diopter, f=t_m)  out(P)
     # lens power P = 1/f
 
-relation opt.snell: n1*sin(pi*t1/180) - n2*sin(pi*t2/180)  unit(n1=dimless, n2=dimless, t1=dimless, t2=dimless)  out(t2)
+relation opt.snell: n1*sin(pi*t1/180) - n2*sin(pi*t2/180)  unit(n1=t_dimless, n2=t_dimless, t1=t_dimless, t2=t_dimless)  out(t2)
     # Snell n1 sin t1 = n2 sin t2; angles in degrees
 
-relation th.expansion_len: -L0*alpha*dT + dl  unit(dl=m, alpha=per_kelvin, L0=m, dT=K)  out(dl)
+relation th.expansion_len: -L0*alpha*dT + dl  unit(dl=t_m, alpha=t_per_kelvin, L0=t_m, dT=t_K)  out(dl)
     # linear expansion alpha L0 dT
 
-relation th.first_law_delta_u: -Q + U + W  unit(U=J, Q=J, W=J)  out(U)
+relation th.first_law_delta_u: -Q + U + W  unit(U=t_J, Q=t_J, W=t_J)  out(U)
     # first law: dU = Q - W
 
-relation th.pv_nrt: P*V - R*T*n  unit(P=Pa, V=volume, n=mol, R=gas_r, T=K)  out(V)
+relation th.pv_nrt: P*V - R*T*n  unit(P=t_Pa, V=t_volume, n=t_mol, R=t_gas_r, T=t_K)  out(V)
     # ideal gas P V = n R T
 
-relation th.q_mc_dt: Q - c*dT*m  unit(Q=J, m=kg, c=specific_heat, dT=K)  out(Q)
+relation th.q_mc_dt: Q - c*dT*m  unit(Q=t_J, m=t_kg, c=t_specific_heat, dT=t_K)  out(Q)
     # sensible heat m c dT
 
-relation th.q_ml: -L*m + Q  unit(Q=J, m=kg, L=heat_cap)  out(Q)
+relation th.q_ml: -L*m + Q  unit(Q=t_J, m=t_kg, L=t_heat_cap)  out(Q)
     # latent heat m L
 
-relation vec.components: -F*cos(pi*theta/180) + vx  unit(F=N, theta=dimless, vx=N, vy=N)  out(vx)
+relation vec.components: -F*cos(pi*theta/180) + vx  unit(F=t_N, theta=t_dimless, vx=t_N, vy=t_N)  out(vx)
     # horizontal component F cos(theta), theta in degrees
 
-relation vec.resultant_pythagoras: F - sqrt(f1**2 + f2**2)  unit(f1=N, f2=N, F=N)  out(F)
+relation vec.resultant_pythagoras: F - sqrt(f1**2 + f2**2)  unit(f1=t_N, f2=t_N, F=t_N)  out(F)
     # perpendicular resultant |R| = sqrt(f1^2 + f2^2)
 
-relation w.fundamental_freq: f - v/(2*L)  unit(f=Hz, v=m/s, L=m)  out(f)
+relation w.fundamental_freq: f - v/(2*L)  unit(f=t_Hz, v=t_m_s, L=t_m)  out(f)
     # fundamental string f = v/(2L)
 
-relation w.speed_freq_len: -f*lam + v  unit(v=m/s, f=Hz, lam=m)  out(v)
+relation w.speed_freq_len: -f*lam + v  unit(v=t_m_s, f=t_Hz, lam=t_m)  out(v)
     # wave speed f lambda
 
-relation w.string_speed_tension: v - sqrt(T/mu)  unit(v=m/s, T=N, mu=kg/m)  out(v)
+relation w.string_speed_tension: v - sqrt(T/mu)  unit(v=t_m_s, T=t_N, mu=t_kg_m)  out(v)
     # string wave speed sqrt(T/mu)

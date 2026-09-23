@@ -157,7 +157,7 @@ class RelationPrimitive(ParamTransformation):
 
 
 _CONST_OR_FN = {"pi", "e", "sqrt", "sin", "cos", "tan", "exp", "log", "ln",
-                "Rational", "oo", "abs", "floor", "ceiling"}
+                "Rational", "oo", "abs", "floor", "ceiling", "factorial"}
 
 
 def _sympify(expr_text: str) -> sp.Expr:
@@ -242,7 +242,7 @@ def _compile_guards(guards: list[dict], resolver=None) -> callable:
                 role, token = args
                 f = inputs.get(role)
                 if f is None:
-                    return f"guard unit({role},{token}): missing input"
+                    continue            # free variable — solver's job
                 want = (resolver or resolve_token)(token)
                 if not isinstance(f, Quantity) or \
                         f.unit.dimension != want.dimension:
@@ -251,15 +251,14 @@ def _compile_guards(guards: list[dict], resolver=None) -> callable:
                 role = args[0]
                 f = inputs.get(role)
                 if f is None:
-                    return f"guard framed({role}): missing input"
+                    continue            # free variable — solver's job
                 if getattr(f, "frame", None) is None:
                     return f"guard framed({role}): carries no frame"
             elif op == "owner_of_type":
                 role, tname = args
                 f = inputs.get(role)
                 if f is None:
-                    return f"guard owner_of_type({role},{tname}): " \
-                           f"missing input"
+                    continue            # free variable — solver's job
                 owner = getattr(f, "owner", None)
                 cls = _ENTITY_CLASSES.get(tname, PhysicalObject)
                 if not isinstance(owner, cls):
@@ -268,8 +267,8 @@ def _compile_guards(guards: list[dict], resolver=None) -> callable:
             elif op == "positive":
                 role = args[0]
                 f = inputs.get(role)
-                if f is None:
-                    return f"guard positive({role}): missing input"
+                if f is None or f.value is None:
+                    continue            # free variable — solver's job
                 num = as_number(getattr(f, "value", None),
                                 getattr(f, "unit", None))
                 if num is None or num <= 0:
@@ -297,7 +296,7 @@ def compile_ir(doc: dict) -> Grammar:
     # entity classes (nominal OOP: PhysicalObject subclasses, lenient order)
     for tname, rec in sorted(types.items()):
         if rec["base"] == "entity":
-            entity_class(tname, "entity")
+            entity_class(tname, rec.get("parent") or "entity")
             rec["__name__"] = tname
 
     # object instances
@@ -317,10 +316,13 @@ def compile_ir(doc: dict) -> Grammar:
             params=tuple(rel.get("param") or ()),
             out_framed=bool(out_rec.get("framed")),
             doc=rel.get("doc", ""))
-        # input type guards -> precondition (quantity dimension / framed)
+        # input type guards -> precondition (quantity dimension / framed);
+        # the solve-for OUTPUT variable is never guarded (it is computed)
         var_types = rel.get("types") or {}
         guards = []
         for var, tname in var_types.items():
+            if var == rel["out"]:
+                continue
             rec = _resolve_type(types, tname)
             if rec and rec["base"] == "quantity":
                 guards.append({"op": "unit",

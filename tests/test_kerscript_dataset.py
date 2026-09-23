@@ -62,8 +62,8 @@ def _given_fact(bid: str, rec: dict):
 
 
 def _check(entry: dict) -> dict:
-    given = {bid: _given_fact(bid, rec)
-             for bid, rec in entry.get("given", {}).items()}
+    base = entry.get("context") or entry.get("given") or {}
+    given = {bid: _given_fact(bid, rec) for bid, rec in base.items()}
     r = run_trace(_REGISTRY, _REGISTRY.facts | given,
                   parse_dsl(entry["proof"]))
     return {"verdict": r.verdict, "reason": r.reason, "env": r.env}
@@ -118,7 +118,8 @@ def test_all_physics_givens_are_unit_typed():
     for e in ALL_ENTRIES:
         if e["domain"] != "physics":
             continue
-        for bid, rec in e.get("given", {}).items():
+        base = e.get("context") or e.get("given") or {}
+        for bid, rec in base.items():
             if rec["kind"] == "quantity":
                 assert rec.get("unit"), (
                     f"{e['id']}: given {bid} lacks a unit — the typed core "

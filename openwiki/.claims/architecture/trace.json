@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:15e9bb5e0f9410cd2292e55e1af836d519192e24843ab73482f18ae81cd50d7b",
+  "claims": [
+    {
+      "id": "claim_d475754605e744579cf5eaae2517c64d",
+      "statement": "OpenVerifiers' trace policy is one verbose store, three views: the engine appends every derive, reject, deadend, join, and unknown event at search time to a single list (Engine.trace) and throws nothing away; success-path, failure-trail, and full are render-time projections of that one store computed by build_views, never separate structures (ARCHITECTURE.md §4).",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L148-L174",
+          "version": "repo-lines-v1:sha256:70dcffa268f0719f6c4abd59b4d0230afb6c0d3b179d1bf0eefe130c143ebec7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5Yzg0NTRjMDQzMmMxYzQ2MDkyOTFmYmE5NTZlOTRmNTQyN2MwNDc3ODgxMDRmMWYwM2NkMTE1MGE1NDgwMzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYmE5Mzg2NTU5MjM2MjAxZjgwYzI2ZjczMTkwYzZmZWE5ZDNhN2Y4MGEzYjIwNTY5NGRjNzIyNGMyNzE2MjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        },
+        {
+          "resource": "repo://docs/design.md#L69-L72",
+          "version": "repo-lines-v1:sha256:9c2991b6184b9a96c286edc1e54d6e2d49973f5333ce887b8f50907fffdb0129:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGU5NzA0ODZmMmUyNjRjZTY1MmE3MGU4ZTI5MWRhNjc0ZmEzZDNkY2M2ODI5MjZhZDg1NzUwMmQ1MzlmYzAxYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjhhNzc1Y2YzNDljODk0MmZhNDIzYjU3MjU5YjY2YTM3ZDA0NDc0ODM5MGQwZTMzMjgzNDI4NzQ1MWVlYThhYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRkNzU3ZWM1MzE2YjM5MzRlMjQ1ODc0Y2Y3MTM1OWI4MWY3M2MzMTRjZDVhODc5YWY1ZTc0NmUxY2ZiYTE4MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjFmNDZhNzA5ZmViMDQzNjkxNmExNTIwNGQzZjAxZDk4YTYyNTZiYmYyZDA4MjNhZGNjNDIwOGM3NzUwZTFlNCJ9"
+        },
+        {
+          "resource": "repo://engine.py#L59-L63",
+          "version": "repo-lines-v1:sha256:6475219172834ef652734c2c673ce7439d1ec88036f71c2d0803b242dabcfced:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmRkYzRiMWZiZWI3MmVjOWRlMmQ3NjI2ZmRlNTYwZDY2ZTdhMzQyNTI4YmQ4Yzc2MDRiOTAxNjk2YjFjZjFjMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjY5OThhY2FiYWE5MDc4ODIyOTc2ZTM3OTE2ZDQ0MzUzZWE0MTZhODgzM2UxMTIzYjM5NjIxZmRlOGMxNzhkNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI5NGZjZThlMTliZDk0MzFjNGY3ZThkMDRhYTgxN2M2YTk4YTJlYzQxZDM5NmQzODVmMGFhNzU3OTRhYWNhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWQzNTU2MGUzODc1MzMyZTY2ODU0MzQzZTRlNzQ0NTNlYmExODkzM2Y4MTEyMTIxOWVhNDE0N2UxMGYwM2ViNSJ9"
+        },
+        {
+          "resource": "repo://trace.py#L1-L11",
+          "version": "repo-lines-v1:sha256:446e6d8146b6f25657e2d14f0bd61de77bc70bcc8bc505bb34d78b3cde87fc29:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1Mzc3NWRlN2RhYmM3ZWJlODkyZTNhYTdjZWEwNTQ3ZmFkOTIxMzgwOTA4MDRlMjEzOTViMTQxMjhlMzZlZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1YjZlODcwNmI0MzA0N2YyYTZkYjY3ZjEzMjYzODU5NTYwNGU2N2YzNjk2Njg3NmNlMDE1OGYwMDUzZTZiZDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_be5ae14bbecf4361aefe613e53a55e2b",
+      "statement": "engine.py emits exactly five trace event shapes via ev_derive, ev_reject, ev_deadend, ev_join, and ev_unknown: derive carries type/fact_id/fact_value(str)/rule/inputs(list of input fact ids); reject carries type/rule/inputs/reason; deadend carries type/fact_kind/reason; join carries type/fact_id/sources; unknown carries type/fact_id/reason/evidence. No other event type exists in the store.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L35-L53",
+          "version": "repo-lines-v1:sha256:5f07f610323eabea606ee4e0d658aedac786bc967a2278f36f21e0d238ae6789:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5MTljMGYzZjdhOTEzOTU2MWRhM2NmYzUzMzU0MTFlYzhiZTZkYjQ5NTJiZWVjYWI4MmFjZjQwZjY4YWVjNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2MjMxZTNlZjQwNmZjN2FmMTAxZmI0YzhiODUwNDE5MjdlN2Y0MTNkMjM2YjM2YzhmZTg3OWRmZDc0MGVmZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3YTMxZDY2MDQ5YWQ5ZjY3MTE1MmZiMjU3ODdhODhkN2U0Y2Y2MGEyMTU5ZDhmMjE5OTk1MzNiOTFjZTI2ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhYzM5ZDU1YjFjNDA5YWVlN2MzMThhZThmZWU0ZjEyOWVlODM1OWViMjczNjU3NWJlYmI4MDcxN2E1Mzk2OWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_63401ab2aaa9472c9f13bea2b8945587",
+      "statement": "Engine._record_derive appends the derive trace event and maintains the _parents/_children DAG edge sets in the same place, so the graph structure and the audit trail can never diverge.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L83-L87",
+          "version": "repo-lines-v1:sha256:b9f6a2574d5d028fd919c094e94486f939701d375ab0a5459edc62736a633172:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzc2NTNlNTUxNGEyYjlkMzZkZjVjMDg5MDJlMDlmNmEyODExNmNhZmQ0MmYwMzBlNTIxZDZlYjIyMTJlNjUxYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDFkMGVhMzdlODU4NzE5MjdiOTU4ZjFkNmYwYjI2ZGU0ZGVjMWQ1Yjc2ZDhjMTk5MjEyNTQzMjI2ODc5MjY4NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2NlYjE3YmI1OGIwYjNkYWNhMjJhODUyZGY0ZTE5NWE0YjIwNzZlMWZmMTgxYzBkYmVlY2ZmMDhhM2IxMmRhNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjExN2MwZDQ2YzBmNmVmYzZlMWQ1MTZlNDdmNDZmMmRiYzI4ZDM4OTg3ODBhZDJlZGRhNDhiOGE4ZDM2MDY5MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5bc9c93f152a47c7b0eb3dbb7b0d6426",
+      "statement": "build_views(trace, target_id, answer) is the only projection function; it is called once at result construction in Engine._result, and the returned (success, failure, full) lists are stored on VerificationResult as success_path, failure_trail, and full.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L252-L256",
+          "version": "repo-lines-v1:sha256:8fae8c717895c599cee95c390d2a3f842ba89fe6cf9a639a87a462c22b7a0c0c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWM4NjBlMzAzOTVlYmM0YmY2ZTlkMDVmZjlmMmRlZGM4ZTdiYTRhZGFhNjdkMTVjMjVhMzQ5ODEwYjJkZTVhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmMyNDY1NTUxOGE3OGE1YzUyN2Q5NzZjZjQyYTdkMjNiYTBkMGU3NTY3MGQ3NjBhMGYyNDZlYjI2NjliMGEzYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjBiMjQ5NWVhM2RmZGVmZmMzNTViYThkZjFlOTIyOWQxZmY2NmYxNjZhMTFhYjhlMjcyZDRhYzNkNDNmYjg3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://model.py#L127-L136",
+          "version": "repo-lines-v1:sha256:03457bd8f4d899fdb6bed980496fe4e5903f8ceb094d7403c62f8a0207aaa58e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ZmJhZTBiOTFkNDRmYzBkNDlmNWRlNjkxZGE2ZmM0MzFmMjYwMTM0YmY3MzFlMGUyMWY3NjQ4MDk0MzM0Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyZTUyZmZjZGU3NDU0NWUzYjcyNGJlMjg0ZjEzYTAxMTdmYjZjMDMwN2QzYTE0NDc1ZDZkMzRmMDRkN2M3ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3ZmEyZjRhZmZmMTQ5NGU5MzJiYjhlYjE5NjcyM2E3ODhlMDU2NTEwMjMwNzViYzZiYzQ3MTQ2ZmY0YWI3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiMTNkMmZkNmVlNWExMTY5OWZmMDU4NDkzNGNiYmY5ODk1NzEyYzEzNDc1MDA5MDJmMTBiOWRlMDMyNWFiNTEifQ"
+        },
+        {
+          "resource": "repo://trace.py#L21-L23",
+          "version": "repo-lines-v1:sha256:3cd65c69731c465b26bffe358f5e349082bda9c752ec4ae45226c3cc8d2c4309:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzEyODU4OTc0Yjg3MTVmNjEyODcwMmYwN2QwYTYwZTI2ZjkxZjdjOGE4ZjQyZjNjMWVlZDg4ZjljZWQ3MDQ2MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjZkNWY3NGVjMDdiYmY2OGZiMzg3MjEwMjI3ZTQ4MjVhNjVkMDYwOTdmMzg1YmE0Mjc0M2Y5MTc4MWM5ZTY3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTcwZmJhMjZkNGQ2YTU0YmNkM2QyZDQ1YmUyNjdlNDIzNjhhZTU0NDcxOGY1M2FmYzZkYWJmYWIyMGU0YmZkYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_642cbb4c6742474082833fb9e21826ec",
+      "statement": "The success-path view is an approximation reconstructed by build_views from the event store alone (not from the engine's DAG): it finds the derive event(s) that produced target_id, prefers rules other than TARGET-REACHED, builds a by_out index of derive events keyed by fact_id, walks backwards from the last producer through each event's inputs pushing every producer of each input, dedups by event object id, and reverses the result to derivation order.",
+      "evidence": [
+        {
+          "resource": "repo://trace.py#L26-L60",
+          "version": "repo-lines-v1:sha256:e8e1d4c554abdba440e25c7ec3d64aa4d90e5180937bd3a7b31c84bdf3793f3f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5NGY0MjQ3ZDIwNTE5OTljM2QwZTg0ZjU0NDdhNmNiZDNmODg2MjU4NzBjNDE1YzUzMzg3MTRiY2QwYWEzNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2MDU0YmQ1ODU3NGZlNTNhYWJlYTQ5ZmYzODFiMmEzZTUzMGM5M2RiODQ5MmNkMzk1OTZmOGQwNjVkZjUzNTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkMmI0OGY4Mjk2NTdiYjE5MzMxOTE3OWMyMTZjY2QzNGY1ODcyYWJmNTUwZjUyNWU0YWQ4OTQ2ODY2ZGU5ZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMTRjMzVlNTRiOTAzM2QyZTc0ZDFhMWQ5YjQ4ZGFkZmRiMDEwNTY0NTc4MDQzZmRmOWVjNzg1ZWMwMzVkZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1b9f75b17b524b81a60ba78b96e675ce",
+      "statement": "When the target has no derive producer at all (it is a given, or the run ended unknown), build_views does not fabricate a chain: the success path contains only terminal unknown or deadend events whose fact_id equals target_id, or whose fact_kind equals _find_target_kind(trace) — the fact_kind of the first deadend in the store.",
+      "evidence": [
+        {
+          "resource": "repo://trace.py#L37-L43",
+          "version": "repo-lines-v1:sha256:81211e9260edd8d7336743abcf5e5ad328771ffe367a5d2c18abb4e8425e9bf1:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTQ1MDdiMzdkNGQ3MmVlMzMyNWZkMTUyZDI4MTQ0MDE3YmExM2I0N2U5MzFjMzAzNzY0NzcxOWU3MDkzNThlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWU3YmNkMzZlZjUzYjQ0NTIzZTY1ZTk4ZDE5NDQ5OTNlMGZmMTc0NmY1NTM2YzFhNTExNzQ2ZjNlMDFlNzU2ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGJjNDZlZTJmYjhhNjBkNDVjODgyNDRmZjFjMmM2NGNkMGRiNTA0NTMxMTQyNDBlYjFjMjhjMjlkOTE4MDU4YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzc4NjIzMWI4YmIzZTkzMzdiMWFmYjEzY2FkMDVlODg4NzY3MjBiYWQyNWI1YjIzYTM1ZDA1ZDQyMzIyYTNiMSJ9"
+        },
+        {
+          "resource": "repo://trace.py#L76-L80",
+          "version": "repo-lines-v1:sha256:fea704fe32aaddbac052b60e2ea11d009c2f07bf49b83457215ec7a3c56ebc81:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMxZmMxMTdmMDM0NDdlMjhlNjcwMmFiOTg1Mzc2Zjk0MGJhYjRhMGI4NmM3ZTNjZDJmMGM3ZjE3NzVmNzI5NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTUxMjJkM2ViN2ZlMDQ0MzliMmZiYmRkNTYwZmZlNzU5YzU5MWJmY2RjOGFiZjZjM2Y5YWYxZWJhZTI5MzBmYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2EzYWM3OWNjZjc1YTJjZjFmNDczZjA1MmM3YmNlODdkMWZiMjZjNjgzNjgxYTgyMGQzY2I3MGUzZmE3YWZlNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FjMzlkNTViMWM0MDlhZWU3YzMxOGFlOGZlZTRmMTI5ZWU4MzU5ZWIyNzM2NTc1YmViYjgwNzE3YTUzOTY5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d2594ad7cb29490e8924ada46ff39a76",
+      "statement": "The failure-trail view is the success path plus every reject, deadend, and unknown event in trace order, deduplicated by object identity; join events are not included in the failure trail.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L167-L170",
+          "version": "repo-lines-v1:sha256:9afc81fcd9a769dcff0f18413233bb91cd0dad1fbb1e7759a5fd74c4c89063f9:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWNiMDY4MmJjNWVlYzZhZjdkMTMzMGM4ZDJiOWZkM2E0YTUwYTU4OTFiYzVhY2RjMzFmOGRhMDZlMjMwOGRlYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2YyOGYwNzRjNmRiMmRhMTE3OTE3ZTA0YjZkNmI5ZmE3YWZhODc5NWE2YjAyYzc3YjU5MDUwZWVmYWUwYjU3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjAxZTk0Mjk2ODY2YmRhOGE4ZGQ5ZmJjMmRjODVmMjJhYTI1ZDZiYTJlZmI0MDk5N2JjYzNmNTI3NThmZGNkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGVlZTA5OTA0MDBlYjg4ZTNmZTMyYTllZjYyMzc2MGViZThiOTc2OTVmNjNmMGM3MzE2MDQ4Y2E3ZDc3M2NkMyJ9"
+        },
+        {
+          "resource": "repo://trace.py#L64-L71",
+          "version": "repo-lines-v1:sha256:001e41614f95a47d26ff6555f5301fa9d61d0e91a46adc85ad9d2b960b917308:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTIwYWZlMzhmNWM3YzNkODdmZjg0OThkMDc1MDg4OTE5OTY2ZjEzNDRhYTI3YjQyYjkzMmViNjVkMzY3NzUyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODBiN2QwYjdkZTVmMmIxZmMwNDQyNDFhMTczNWNiOTdkN2QyNzFiNzAxMGM4YzY4OTlhOTQ0MzhhMjIxOTVmMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YxNGMzNWU1NGI5MDMzZDJlNzRkMWExZDliNDhkYWRmZGIwMTA1NjQ1NzgwNDNmZGY5ZWM3ODVlYzAzNWRkNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGU0ODQ1NWQxOWJlZmVmYmJiYmFiZTQ1MTQ1YjdjZGZkZjc0ZTc0ODYwOGQ4YmU2ZjdhMDIzYjZlOTJhOTZhYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2718f199a59f4ecfa100904546503d3c",
+      "statement": "The full view is a shallow copy of the verbose store preserving recorded order (full = list(trace)); it is the ground truth every other view is derived from.",
+      "evidence": [
+        {
+          "resource": "repo://trace.py#L24-L24",
+          "version": "repo-lines-v1:sha256:4506c525a75b0f36e53749d8952e86285d9a12dbf1cdf679b239f2bca261e1ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDUwNmM1MjVhNzViMGYzNmU1Mzc0OWQ4OTUyZTg2Mjg1ZDlhMTJkYmYxY2RmNjc5YjIzOWYyYmNhMjYxZTFlZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDUwNmM1MjVhNzViMGYzNmU1Mzc0OWQ4OTUyZTg2Mjg1ZDlhMTJkYmYxY2RmNjc5YjIzOWYyYmNhMjYxZTFlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2NkNjVjNjk3MzFjNDY1YjI2YmZmZTM1OGY1ZTM0OTA4MmJkYTljNzUyZWM0YWU0NTIyNmMzY2M4ZDJjNDMwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWMwMGU4MTA0ZjVjZmYwOGYzZDZhMjFjMWUxZWVkMWFhMmUzZWU2NGQ2N2RiM2JlY2E5ZTU0NjQ1ZDgwYTA0ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c6db8be7ae44f4ead1135e41c38abac",
+      "statement": "On deduction success, deduce appends a synthetic derive event with rule == 'TARGET-REACHED' whose inputs are the givens in the target's parent set; build_views special-cases it by preferring non-TARGET-REACHED producers and falling back to it only when no real derivation event matches the target.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L98-L100",
+          "version": "repo-lines-v1:sha256:6d15e57a10adbf1c3ed9e8f58366c4a6b89ca30e54d6705d2ecaddf0f717a0bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRkYTNhNjU3MDFiNzNjZWY1MTI4YmFiMDA5OTAwNjMxMzU1MjFiNzM4MTlmYmQyN2NiNzdjMTQxNWQwN2MwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmVjMDE1MjJmYTgxY2U2NDI3YTQzMmNlNjg0MGQyYTU2ZjUwMWE1YTE3YjhiMGFhOTc2MDViOTJjZmVkOGJkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTBmOGYxNTlhY2ViMjI1NGFjZDU0MjFjYzZmMTU3OTkwMDhiNDJlZTk4YmQzZmVhYmM2YWI0NWZhYTJmNzRiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmJmODAxMTJlMWNkOWZhYTMyNzU5MzAzNjNmNjdkYzcyNTc0ZjJiOGU1NmJhODYwZjQ5NDY3OTdmODI4MTRjNyJ9"
+        },
+        {
+          "resource": "repo://trace.py#L33-L36",
+          "version": "repo-lines-v1:sha256:d1ef52b89b56fc664547e999c37e9e4aee4117530ab15f0c37bf32a0377ad2fe:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU5M2EzZTFiYWJiYTdmNTg1MDVjZTVhNGFkZTI2ZWQzZWQ0Yjg2YWY1YjAwOGNjMzAwYmEwYzgxOWY1ODNmMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWM3ZTkwMDM1ZWY4ZmVlNjI2YWE5NDM4NTM1M2FkNjNjNTUwYTRjNDZlNmJlODM3NDJjZTA3OTZkMmI0OTk2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDg2NTg3NGFkMThiYWFlMjJjNGMxYjE5ZTgyMzc4N2RiMTAxNmY1MDYwOTQ2OTAzY2EyYTkxZGYyYmQwNGVhNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2VjZjM5YjExNGNmMzU1YjhmY2QwNmVjNjM3NGIwZTBiOGViMzM1YmZhZWRiNzlhM2M5ZDliYTkwNjljNmI3YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c6d4fc944a2543f3b45b1122618b045d",
+      "statement": "render_view is the single text render path: it maps the view name to one of result.success_path/failure_trail/full, raises ValueError('unknown view ...') for any other name, and emits a header line plus one deterministic line per event type (derive, REJECT with reason, deadend with kind and reason, join with sources, UNKNOWN with reason and optional evidence suffix). It is exported from the package, delegated to by VerificationResult.render(view), and used by the CLI.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L13-L17",
+          "version": "repo-lines-v1:sha256:a7dc91ffef749bab49ec09d82931b64e5ebc90383d36c298525faf82ba64a25a:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmQ4ZGM2Y2I1ZGNhMjJkNTJiMzI2MzhiMjlhNjI5ODBjM2ZjNzcwYzBiZDRmZGY4NmI0OTMyOGI0M2FlNTc1OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2Q2OTY0NDI1ZmNlOWJiMjE0OTM0OGJiZTVmNWVhY2JlYThjY2RmNzQ4YWMzY2E0MmQ4NmE0Njg3MjNiZWU3NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjMyMDQyNzE1NzBlYjY4ZjJlNTZlZTc0ZGQ1ZTcxMWFkNDQyZGRmYmY3ZWM1NmRmZTQxZDllYmEyNzFmNGU4OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmE4YzJhMDc4NWMxNjlmNjI4MWE4MTJiYjgxZTY2YmZjZDRiNWZiMDU5MjNkYTc5ZjVlOTgzNjQ2ZDNhMzE2OSJ9"
+        },
+        {
+          "resource": "repo://cli.py#L50-L50",
+          "version": "repo-lines-v1:sha256:31e53ac15fd64c5e7b0da870664d1e7f7e96bfe8db5184479ba60eaa6afd1c80:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFlNTNhYzE1ZmQ2NGM1ZTdiMGRhODcwNjY0ZDFlN2Y3ZTk2YmZlOGRiNTE4NDQ3OWJhNjBlYWE2YWZkMWM4MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFlNTNhYzE1ZmQ2NGM1ZTdiMGRhODcwNjY0ZDFlN2Y3ZTk2YmZlOGRiNTE4NDQ3OWJhNjBlYWE2YWZkMWM4MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGMwNWJhN2VmMmRjYmRiZjhkNzdhZGNhMzM0MWFlYTUyODI4YWQ0NDM3MDE1NGUxODQyYjRkMmNhZjBhNDE1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDU3MjJiOGM0ZjI4MzFhMDhhNmZmMTY4ZDE2NTExNGI2ZmRiYWNmOTg0MjE1MzY2Mjc3NjkzYmRjYjNiZDAyMCJ9"
+        },
+        {
+          "resource": "repo://model.py#L138-L140",
+          "version": "repo-lines-v1:sha256:f15e37fb21b85c6e9804fe43dc2bca2037420eb729b7985031cfd597ce432e87:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzcxN2YxY2YzZDI1YzEyZWE4ZWFhZDM3MjMzMjdmNzZkNzYzYTYxMGE4ODVjYWYyNmU2YWIyMmVmNzA1N2M1YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTJlZTYwNmY0OGZmMTYzZTE5OWNlYTcxZGQ4NTM2YWEzZTlkNjNjNGJmZWE2M2JmZTk2OWQyMDFiZWI5OWZjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2NmNzJmNjIyYjc4ZjcwYzMwMTViNTFlOTU1YjE4YWIyMDlhNDUwMDgzNzliY2E1MjA5OGIyOWIwODcyOTUxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjFiNDNjODY4ZTIxYTVjZmY2MGMxZWU0ZTk3ODVkMmQ5MGFkNGE1ODE4NzExYzYxZGU5MDU0ZWZmNmZhYTg0NyJ9"
+        },
+        {
+          "resource": "repo://trace.py#L86-L110",
+          "version": "repo-lines-v1:sha256:bb0e83fd42904659851fb0a751ddb00e18463820f8038a8cfc1ae315b13b509e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ODg0YzYzNmNjN2FjMzJkYTI4YmQ4OTk3ZTQ0MGYzZGQyNjI2ODM4NzBiODEyYTFiOTYyNDE1ZWE1YTA1MzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiMTA1ZmU3NGVkYjVhZTI4OWQzNDBkYTNhMGFhNDgwY2I5Nzg1Y2FhM2I4MmIwMTdmODk3OWVlMGFiZWNhMjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1Y2M5ZWY5ZTY4ZmU3OTMxOGZjODZiMDgwOWVmZGE0ZTllODg2ODNiMDI5NTcxNjk0NTRkNGYzMWE3NTgwZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1f90184f4b5e4b589537f26fcfd282bd",
+      "statement": "Reject events record the why: the deduction visiting-set circular guard ('circular: kind ... already on path'), the ancestor guard ('circular: ... in ancestors of inputs'), grammar precondition reasons (dimension mismatch, arity), and 'relation error: ...' when rule.apply raises; induction records precondition and relation-error rejects per candidate but skips a circular candidate silently rather than recording a rejection — the one asymmetry in the event stream.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L110-L112",
+          "version": "repo-lines-v1:sha256:4c15daaf1624b886e7f2f48ecc0138b3871580f1e6a12e2bcc3a57ebc5096b81:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWIzNTNjYmVjYjFmN2ZlZmRlYmNlMWIwN2Q5MTA4MmJkYzU1YjYwMWZmMmE0NzJhMmJkN2I1MTEwNDQ5Zjc3MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDIwNzgzOTJmZmU5MzUxM2E0Y2VjMDYyNDY4NmE5NzIzZjgzODFiMzhhM2M2MGZhZDQ2ZjNiMTBhNzY2NWU3ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzc4YzYxN2Y3N2EwNTNlMzRkZWVhYjA5ODU1OTU4ZDlkYjZkZjQzNTcxMjU5MTMzZjJhNWZiZjE1ZDkxZmY5ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTE1YmU2NDcwZGQxZWVmNDk2ZjMzZmYzNjdmMmMzMzY2ZDQzNTIyZDMzZmViMGU4YTQwM2Y4NjIzNDY1ZjY4NiJ9"
+        },
+        {
+          "resource": "repo://engine.py#L150-L165",
+          "version": "repo-lines-v1:sha256:41f3c4cdd6213cc5a4a86bf02044e2cc41e19b3af53d271d09f173c73ddf6f99:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5N2Q5MGRiODBhOTM1YzNiYmI5NWY3NmYyYjc5NTlhOWYyZWMxY2Y5YWFjZmEwMGZlYmQ1OTlhNzg5YzBiYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOGE5ZTljMzI1MjgyMGM2NWE4MTY1MjBiOGRiNDkzMjI4MDg0OWVjOGM3ZDJlYjYyNzJhZmRmZWJlMDU5YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmZTMxODRmYTE4ZGUzZGRjZTYwMzM0ZjJjMTQ1NGIxNjBlODI0ZjA2M2M5NDgwNWVlYTkzNjRiNDg3MDMzNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlMjY2MDk0M2NiNGU5M2YxMDdjNzU2Mjc5ZmNlNDZkMDJhOTY4NjUyYTk5YjRlZDk4MTlmN2RhNTg4ZTBkMjgifQ"
+        },
+        {
+          "resource": "repo://engine.py#L203-L212",
+          "version": "repo-lines-v1:sha256:b47ae5a0f028dde73593643e596bb5e5bfb57daf8ac487b84633e46a347efb2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMjdhZGQ3MGYyMDEyYzA0ZGM0N2ZhYzI3Yzg0Nzg4MjNiMzY1NDNiMTViYTU2OTc4MjY2ZDVjNzU3MTJiMjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4MzM3NTdjNmJiYzZjOWUyOTYzYjQwNDIwNjBiMDAyN2E0ZTI4YzgzZGZmZjhlZDJhMGIyNjA4NDZiZjIyYzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5MDBkNTQ2NDBjMTU2YmFkYjgzZDU5OTNkMjFlZmVkNzJiMDVkYWVlZDZhZmNkZWQyMjdjZmVlZmQ3MGQ1OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxOWVlY2JhOTEyYTBkZGJhMGFlYzJjMTkxNjA3Zjc3MWIxYTBhZjRkNjFlNjQ4MDNjMzk5OGJhNTY3MDhlYmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_08876e6c6a3c44eda3a34340cb2afe54",
+      "statement": "Deadend events fire for three reasons in deduction: 'max depth exceeded', an unresolvable input 'needed for rule ...', and rule exhaustion 'no rule or known fact'; they carry fact_kind rather than fact_id because a dead end is an unresolvable kind.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L113-L115",
+          "version": "repo-lines-v1:sha256:a15be6470dd1eef496f33ff367f2c3366d43522d33feb0e8a403f8623465f686:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODVmYTlmZGI0MmEwZTE1YjI0MjIyZjJhNWZkMjc0ZGYzMTdmZTEzNGRmMWRkZDM0N2Y3YjEyMmM3OTFiNWMxYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDIwNzgzOTJmZmU5MzUxM2E0Y2VjMDYyNDY4NmE5NzIzZjgzODFiMzhhM2M2MGZhZDQ2ZjNiMTBhNzY2NWU3ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGMxNWRhYWYxNjI0Yjg4NmU3ZjJmNDhlY2MwMTM4YjM4NzE1ODBmMWU2YTEyZTJiY2MzYTU3ZWJjNTA5NmI4MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTI5YzI4ZDZkYWIyMGI0M2ExOWIzZmZhYWY1OTUzM2QzNWFlYWY0MjJlNmYxZDVmN2FlM2I0NzEzNjhkNzAyNSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L142-L144",
+          "version": "repo-lines-v1:sha256:228853813602ab521ce13f5633dc6c38406a7d1171e095ad18cc1ecb3bdd274f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ0NzhlOTZkNDZmNTg0YzI3MDM4ZjQ5N2M3NGUyZDc2ZTU3MzVkNDRjZWQxNjc1MGI0NGZjYjFiYzAwNWE1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGM3NzA4ODEyOWU4ZjkyZDhkNWNiZmQ1YTRjODAwYTMzMWZiM2FkOGYwNjYwYTA0Mzk3MWZkODNlZDBmYTYxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2JlN2ZjN2I0OGQ0ODQ4N2FmNmJlMjBkZTA2MjAwMjg1ZDY3M2YwMTllNjllNzE2ODQ2YjZhNmFmNjIzZGEwOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzgyMzZmY2NjYjEwMzdjZmZlYWFmODZlZmRiMTg1NmQ3MjZiYzEzMTkxYTVjMzUyN2VhMTIyZjU0NzljNWU4OSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L172-L174",
+          "version": "repo-lines-v1:sha256:957041c295dec4144436009375b607091b996b515e3469d14e4a4c17a177c395:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTNmNTEwODE0ODQ2YzZmZGY5ODAwZmEyYjk3YjJmMWViYTk1NWY0YzU4MTA5NzQ5YTgwYTJkZmZiYjRkMWIxOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWU3Yzk1N2JjYjQ0ZmI2NzNjOThiMDA1MGE3NWQzODA4MmRiODFkOTE4ZGUzMTNhM2YwN2MxMjM1MzA2ZDdlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGViYzczYzg2NzFiZTlhNDhhNDg0MmJlMDgxMWIwZDEwNjc3ZDVjZWZmMTEzOTUxNWU4Y2RmMWM4YjdiMWI4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2VhMzJlNWJiNTcwMGQyOTA3NDAyYWRmOGIwNWU0NGRkNjM0ZmU2NDZlM2NkMTk5Y2JjZDE3YTFlMjVlMzdmZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4285e7cc71cd4b0dab0307892989e3e7",
+      "statement": "Join events mark dedup-collapse: in deduction, when several known facts of a kind exist, ev_join(kind, [ids...]) is recorded before memoizing the first candidate; in induction, when a rule fires but add_fact finds the output already known, ev_join is recorded instead of a duplicate derive.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L122-L130",
+          "version": "repo-lines-v1:sha256:c092ec94f70efacea7eeee3020db42947d9c5ce5f1ba6bda3480ec53042df0f8:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkzY2E4NjQ4ZDMxN2Q3OWNmMDkyMzM5MWU2ZTI1ZTc2ZWFlYzZmYTIxYzYxY2NhYzA5ZmIyOGIzM2JhZWNmYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2ZiY2ZhYzFhNmM2MzJmNzA3MDlmNjZjOTEwOTRlYTg4MWZhMjlhNWE4NzhiY2Y5YTMzMmMwM2ZmZDlhMjY1MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWVkNzc1M2FkZDRjOWZlMmEzMTA3ODAzYjBkYWI3YjlkOGZmYTQ0ZGYzMDRkMzYwYzE4NTJmYzQ3ZmFkMjc0MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2MwZTNkNmRkYTg1MjU2MWYwMDYyYjdiNTllZGU1Y2Q0Yjg4ZDM5ODhkZGU4YjAwMzgzZDZkMTczNWNmYzlhOSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L213-L220",
+          "version": "repo-lines-v1:sha256:b0aa5f494e2aa39f66f3702326ea15e338cc22df38fc00cb3a8a503f3aa7c2c2:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWM1YzU1NjNiMjZmYzhiZjI0YjNjMDljZWUzODI2MzA1MTYzZjZiOGIxZGVkMmUyNjU2YmU4ZWIzMmFkMzdmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWVjMjFlOGIyOGI2MDNjNzFjYzgyNGRhNTE3ZDQyM2EyYTg0MzM5YzNhZDgyNjdkMDIzYzI5Zjk5OTRlZmM1NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDQ0Y2E4ZGYxNDNlOTU1MmU5OGIzN2E2YWY1ZDk5M2MxOTA4ZTJhYzdkMDI3YThhZGJlYjJlNDFmMzY4NDY5OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWIzYmRmZjgwZmFiNTY1YjYwY2E5NzEzN2IwZjA1MTRmYTgwMmNiYTQ0Zjg1NDNkYzg5YjY3ZGFkNjgzZGY3YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a58bfcea63d94a7c8f76aab9935ff4e9",
+      "statement": "Unknown events are terminal: deduce appends ev_unknown('no rule could derive the target from available givens', evidence hint 'add a missing given or rule') when no rule can derive the target and returns an UNKNOWN result; induce closes with ev_unknown('no rule produced the target').",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L227-L231",
+          "version": "repo-lines-v1:sha256:4a70b3c147a463096157e503558564c1f6bccbc2089c452ada0c344f66bd1998:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjIwM2EwOWJkYzE2YjUzMmU5MDg0ZGNjMjkxNzM2ZmE1YjIxMDAxOGIyZmI0ZmZlNDZlZTI0ZmIxNGIyMWI1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDhkNmM4MzQ5OTU3YmIxNTk0Y2RlOTg0YTFhMmJiZjVkNDhiZmEzYTE5M2I3MTQzNzBlYzE1NjA4OTAwZDY2NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGNhNTVlN2UwZmY3ODBiYzlmN2E0YjAyMDFkNTE3MWYwNzI0NzExYmIzNzE3MGFkYjk1YjRmODBkNTc3NmVjMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjBmZjUxZjI1NzgyOWNlNWZhYTA4NTllYTEzYjJkYjk2NDM5NWY3MWQwZWQ2NDgwOTgxZmYxNjllY2ZhN2VlYSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L98-L104",
+          "version": "repo-lines-v1:sha256:7d365f0564e2aeb7c60739fc3ed5fc4860fb7af8b31e808ccf5b85968743f432:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRkYTNhNjU3MDFiNzNjZWY1MTI4YmFiMDA5OTAwNjMxMzU1MjFiNzM4MTlmYmQyN2NiNzdjMTQxNWQwN2MwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWEyOTVjNjkwY2E1OWIwNjZjYTIyNTljYjBhYjQwOTIwZjI2OWUyY2I3YmEwYmY3NjU1ZmEwMDE5ZjFlMzJhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTBmOGYxNTlhY2ViMjI1NGFjZDU0MjFjYzZmMTU3OTkwMDhiNDJlZTk4YmQzZmVhYmM2YWI0NWZhYTJmNzRiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzBkYzZkMDhlMmUwOTZmOTU2MzgwMWRjOGIxMjEyY2Q4OGE3ZDUyMDUzNTFiYTRhMjA4MjQ0MWJmYWIxNmUyZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_bef45ebf1222450ba4ee77810b9f3f62",
+      "statement": "The solver's returned note is discarded at the engine boundary in v1 — both modes unpack out_fact, _note = rule.apply(inputs) and never write the note into the trace; a solver failure returning (None, note) without raising produces a None-valued derived fact that can never satisfy the known-fact scan, so the outcome stays 'not a wrong number', and the note reaches the trace only as an exception path's reject reason.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L122-L126",
+          "version": "repo-lines-v1:sha256:17492589741d08edb699a96c1b441bdda0068b8a3c024a417ac90ed719f93ae6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkzY2E4NjQ4ZDMxN2Q3OWNmMDkyMzM5MWU2ZTI1ZTc2ZWFlYzZmYTIxYzYxY2NhYzA5ZmIyOGIzM2JhZWNmYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJjYmEyNDFlODE0OWZjNGQwNTA4OGM1NTQ1N2QyN2MyMjcxMDFkMDcwNTI0MTczNjRiMTk1YzViZjljOTAzYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWVkNzc1M2FkZDRjOWZlMmEzMTA3ODAzYjBkYWI3YjlkOGZmYTQ0ZGYzMDRkMzYwYzE4NTJmYzQ3ZmFkMjc0MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGM3ZjkyNjcxZDc4N2EwMDE3YjEzZDBhZjM0YmJmMDg4MTUyZWMzNjgyZDMzZTAyNWUzYzYxOGVjZTc3MjczYyJ9"
+        },
+        {
+          "resource": "repo://engine.py#L155-L159",
+          "version": "repo-lines-v1:sha256:3d7dbe7e802521502a9a8f8c0af99560dc2d3cb625a041ed23d3e3c0629e2220:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTU3ODA1YzNmZTdhYzYzMDc0ZjY5Y2RiMjViOWFjZDdhODY3OTJkZmU1NDA4MThhYzRmODc2NGI0OWU3ZDE0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWQ4YTllOWMzMjUyODIwYzY1YTgxNjUyMGI4ZGI0OTMyMjgwODQ5ZWM4YzdkMmViNjI3MmFmZGZlYmUwNTljMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGFkZDc3YzE5OWI5ODFjMWZlMDIxZjliOTk5ZDVlYmI2NmI2M2I0OTU4Y2NhOTBiNzI3MjI3MzY1MDJiMTM2ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWExOWNjMGE5YmIwZGViYzQ4ZWIzOTkyYWYzZmVmODlmZTQ0YTJiZmJjODMzZjE2MTNmMDgyZDk4ZGRkNjIwZCJ9"
+        },
+        {
+          "resource": "repo://engine.py#L208-L212",
+          "version": "repo-lines-v1:sha256:acf98262be0e545a53d4c80af90ad81a0be7b02670259753b15d02017b674e48:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDdkY2RkZmE5NDk1YTQ2M2ZjNWQ0ZDQ2M2Q5MDdjMjlmMWYzOGFlZjdmYWI4MWFmN2Q4YzY5ZjFmZWQwM2JhMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTgzMzc1N2M2YmJjNmM5ZTI5NjNiNDA0MjA2MGIwMDI3YTRlMjhjODNkZmZmOGVkMmEwYjI2MDg0NmJmMjJjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTIyYzFmYWEwMWRhNzRkYjY1Y2QxYmUxNDM3MjM4OWUzZDI5ZmY4ZjBhMzNhZGM5MGU1YmRjZDI4YWEzMDZiYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzE5ZWVjYmE5MTJhMGRkYmEwYWVjMmMxOTE2MDdmNzcxYjFhMGFmNGQ2MWU2NDgwM2MzOTk4YmE1NjcwOGViZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c096bf36d7b4c33bc7785765a67acf9",
+      "statement": "verify_physics is the one shipped path that builds views without build_views: when no target kind can be identified in the problem text it returns a synthetic UNKNOWN VerificationResult whose success_path is a hand-written list of a single unknown event ('no target kind identified in problem', evidence 'phrase your target as find the <quantity>') and whose failure_trail and full are empty.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L38-L52",
+          "version": "repo-lines-v1:sha256:1606f82e76dd934fb8b96a94dcd916f92a11ace43c6f9866d11e63b6b1225ca9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2Njk5ZjJjMzk2NGM1NzllYTI0MzUyZGExYTRkNDgxY2ViYjJiYmVkZDNhYmFmNDllZTBmMzMwYjEzM2RmZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMjZjNTZhODA3OTUxMzc5ODFiOTM0YTljYzhmODA2NmRhNjZjODJhZmU3ZjBmYTQ0ZjlmZjFkYzllZjEwMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllYTQzNmZmMjI2OTQ5OGI2MWRiYzQyZjgwZmY5NWI5NmNiYmNlMTdkMDkzY2Y2M2I5MjQ3ZTFlZDYwYTMxOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjZWU1ZjJmYzIxMjNiZWIyODgyYjMwMGUzZDg1MDIxOTliYzE4YWVjYjYyYjA5MDI1NzliNGJjNmFiMzZhOTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_62f5285d72104c70b2ea1105dface2b5",
+      "statement": "View selection is a render-time decision, not a pipeline-time one: the engine always computes all three views; the CLI restricts --view to success-path|failure-trail|full and applies it only at print time, JSON mode emits status/answer/target plus per-view event counts, and the verify_physics view kwarg is accepted but never consulted.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L32-L58",
+          "version": "repo-lines-v1:sha256:c2127bf6b88d2bec6415983782c83abdf5881ee5a1fb59ed5cb141544ff38e3a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NWRjMTZiNTgyYzUxZWRkODIzNWMxYmFlMjYyYTU5MTI5NjY3NDU5OTBhNDdmZjg4Yjg2YWNmNDc2ZTlmNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMTczZmVlNTI3ZmE2MjI1YjhiN2E2N2YwM2M0NDA4ZTc5ZjU3YzMzY2I0YmZhNjNiNTFhYjNjMjVhZWUzZDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiYzEyNjVkMzk4OTBhYzkzNTc0OGQ0NDU1MDgzNTU1OTM5N2JjYzA5MzRjMTE1ZTY3N2YzZjdjY2U4YTNmOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://cli.py#L23-L23",
+          "version": "repo-lines-v1:sha256:844f9db1fcff8b856524eccc4b1675c5266537690aa0fe776a33550d8232f63a:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODQ0ZjlkYjFmY2ZmOGI4NTY1MjRlY2NjNGIxNjc1YzUyNjY1Mzc2OTBhYTBmZTc3NmEzMzU1MGQ4MjMyZjYzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODQ0ZjlkYjFmY2ZmOGI4NTY1MjRlY2NjNGIxNjc1YzUyNjY1Mzc2OTBhYTBmZTc3NmEzMzU1MGQ4MjMyZjYzYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZlNzBiNzk3MTllZWM2MzhmNmYyMjAyNDEyZmRmZjMzMGJhZjEyMDkxMWE3ZDk3ZTgwNzAxOTQwMWVjMzAwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTg1NGE0YTRmNjU1NzYyYzg1ZjU2N2M5ZTU4ZGRlNjU4NzRhY2VkMDVjOWUwNTA0ODdiNjFhZWNmY2ViMGJiMiJ9"
+        },
+        {
+          "resource": "repo://cli.py#L41-L50",
+          "version": "repo-lines-v1:sha256:2fb853973aa1bac3de2ec846a4c49e04159bd076a6c88c16aafd42c5c29fa7c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiM2E1ZTE2OGIxNmZkZDE2ODVjZDY4MDg2NGI4Y2Y1YzI3YTViYWNmMjc4Y2E0MjcxMDdlYWE5ZDhmZDg1OTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxZTUzYWMxNWZkNjRjNWU3YjBkYTg3MDY2NGQxZTdmN2U5NmJmZThkYjUxODQ0NzliYTYwZWFhNmFmZDFjODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkMThjYjNmNmFhNzFkMzAyY2IxZTMwMDNmNGMxZGZjZGZmZTRlYzRkODFkNWQyMzEwNDc5NjBlOTQ2NzY5YjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA1NzIyYjhjNGYyODMxYTA4YTZmZjE2OGQxNjUxMTRiNmZkYmFjZjk4NDIxNTM2NjI3NzY5M2JkY2IzYmQwMjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e2bf2425dc1c4af1b8c3663a7c86f811",
+      "statement": "Trace-storage scaling is an [open] question: the full-verbosity store is unbounded on large search spaces, with when/how to rotate, summarize, or time-box verbose ingestion while preserving audit integrity deliberately unresolved; the current stance assumes problem-scale usage, no rotation or summarization is implemented in trace.py/engine.py/CLI, and any resolution would change trace.py and ARCHITECTURE.md §4.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L358-L361",
+          "version": "repo-lines-v1:sha256:92376a8a312e72fe362ce2cdc5cbdd53efbe0cdedd0e2608bad10caa7f73d4ad:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2Q2MjU5OWQyMGRmN2JkMzU4NjNjOTUwODkxMjcyZTFhYjMyYjNjOWRlNjVhMDBhZDRkZjkxOTgyYjYwMmQzMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmUzOGJmZGNhMjkwOTY1ODY4OTMxN2Q1ZDYxMGIzMTY2MmMyMDYyNGVjYTkwYTg2ZGEyZTg2YjFlNWEwZGVkNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzEwMmViOGM4MDlmMzAyODViMzZkYTI4ZGFkOTQ5MTRiNzhjOTBmZmJhMjE1YmU4YjhkMTg1ODY0MDUyMGRhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDkzZTNiM2UzN2NmYmZlNjE2YjRiMTYzNTY3MjNhNzYzMDRiMWZmZTA0ZmY1Yjc5NmM5Nzk2ZTgwZGEyMmZiMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ec09c7255afd48e8a10df4f2b63ed4b8",
+      "statement": "Grammar-level rejections are auditable through the trace views: the physics rule precondition returns a non-empty reason string for arity or dimension mismatch, the engine records any non-None reason as an ev_reject event, so dimensionally wrong firings appear in the failure-trail and full views.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L326-L328",
+          "version": "repo-lines-v1:sha256:ae7681bc93f993633202aef9798e150836d9a7388a941552d0c80b3c9005d0f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI2ZjEyZDZlZDYzMWY1MDg4ZDJkYjMzZTFhYjI0NjNlOTg4ODRkNTFmNjMwMDViNjg3MDE3YTJmNTFhOTJhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNhODJhMjIwMDUwMzcyNDA2ODYxYzI4ZjMxYWMwMDk5MGQzMWQzNzhiY2E3NGU2ZmYyZDhhZjI5OWMxYWI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDRmZjI0ZDNhZjQ5NzU3YjFlNzJiNGNkOGQ4OTA0MTBlZmM0MmUzOTNkN2E5MGY0YTdlN2IzZTc1MTQ2NzZiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmFiNjJlMDBhMDhhMGMyNDg2ODkwMGMzYTU3ZDAzZDgzNTZhYjNkMTVhZmJkZmY0MWMyOTBkMjA3Mzg3NTgzMyJ9"
+        },
+        {
+          "resource": "repo://engine.py#L150-L153",
+          "version": "repo-lines-v1:sha256:fec4d96dbdfb38b994ea78a370c1fee2f008005d4a1aa5b54513837500535a6c:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjk3ZDkwZGI4MGE5MzVjM2JiYjk1Zjc2ZjJiNzk1OWE5ZjJlYzFjZjlhYWNmYTAwZmViZDU5OWE3ODljMGJhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWQ4YTllOWMzMjUyODIwYzY1YTgxNjUyMGI4ZGI0OTMyMjgwODQ5ZWM4YzdkMmViNjI3MmFmZGZlYmUwNTljMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWZlMzE4NGZhMThkZTNkZGNlNjAzMzRmMmMxNDU0YjE2MGU4MjRmMDYzYzk0ODA1ZWVhOTM2NGI0ODcwMzM0MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzM4MjZkOGE5ZDQxOWI0YjQyMTQ0NDA5NTdjZWQxMjkwYzEzZTA5ZTAwODNmOTgzM2Y3ZTYwOWIyNmUwZjQ2NSJ9"
+        },
+        {
+          "resource": "repo://grammars/physics.py#L102-L111",
+          "version": "repo-lines-v1:sha256:dbca494a41e0ebc2bc93e4f7e04c3ef5beb01b10dc93119abdda8d40d4d057ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmMGJmNTc1M2Y5NjhhNTk3NWZlNGY4ODRkM2YyNTdhYzQyZGFhODI5MWQ0N2YxMTYyNDQzOTdlYzI2NzIwN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlN2M5NTdiY2I0NGZiNjczYzk4YjAwNTBhNzVkMzgwODJkYjgxZDkxOGRlMzEzYTNmMDdjMTIzNTMwNmQ3ZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFmMjlmZmJkYzA3NDY0ODExMTdhOGM4OTc0ZGZkMDdkNDdlZGU3OGYyMTM1MjE4MWE1NmYxZGUyYjNlMTg5OTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhMmUzYzA5MTBjZjU2MmE1MzIxMjkyMzMyMjhmN2U4MzI1ZWQ4M2FkZTQ0ZTQ3ZTk2YTc0YWVjM2QyNGFhZWQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-08-28T20:01:59.856Z"
+  }
+}

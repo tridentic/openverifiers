@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:423b49410e39558a7e8f9c7861b64b7830a337bc972388143db477cc54c7bdb5",
+  "claims": [
+    {
+      "id": "claim_a830a845f49a47f99897cd6fef449eeb",
+      "statement": "OpenVerifiers is packaged as three strict layers — SDK core, thin CLI, and a designed MCP server — with the boundary rule that domain adapters must not leak the core's internals through CLI or MCP; this packaging is a finalized v1 decision.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L255-L258",
+          "version": "repo-lines-v1:sha256:c81a8c1a84aafa3a2fc282d6b0cecc1d32973b344ff003aa5554104417a0a5d7:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmI1NmQ2MThkODg5ZDQwMmMyZTAyZmM5ZTE0ODJiMDNkN2NjYTYzYmE3NmY0MmNlZmNiZWUzYmY3ZTFkOTNiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDhjNTBjNGY5NWVhYjRkMzEwOWRlYjJlYTQwMzI0MjUxZmViZjBlN2U1NzhjZWQyZGMxNGI0YzNjOTA2MTJkOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzJmZWQ4NmVkNTI1MjQ2ZGZlNWEyNjg3MzlmMDZlZDZlY2YzYTlhZTMxZjEzYTMyMzQxZTI2NWQwYzgwM2I0YiJ9"
+        },
+        {
+          "resource": "repo://docs/design.md#L89-L94",
+          "version": "repo-lines-v1:sha256:a2b6a6175fab448dece63cb73b3bfc98a7e5d5775accf90041ca27db17c1faff:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmI1NmQ2MThkODg5ZDQwMmMyZTAyZmM5ZTE0ODJiMDNkN2NjYTYzYmE3NmY0MmNlZmNiZWUzYmY3ZTFkOTNiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWJhYjQxMjMxNmU4NjMwM2I4M2RmZTZiZDZkMWQ0OTQ4ZGZiNzk5NGZiYjZiOTM2MmEzMjA4MGM4YTQzN2RjNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjFhMGY0NWZiYWYxZmY2YTQ1MDAyOGQ1MzQyY2ZmMjRkODZmZTQxYWEzMjM5ZjEzYWEwZWJlNWFhMDM1ZDQ1YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzY4NjU1NjI4ODliZDY5ZmFiZGRiNTYwYjBiNGY2N2E2YWNiNThhMjZlZDIwNmJkNmJlZjA4NDUwOTM5ZGU4MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ec2e1c6711d46cfb98c5d8458b593d6",
+      "statement": "The SDK's public surface is exactly the __all__ list in __init__.py: Engine, Fact, Transformation, VerificationResult, Unknown, verify_physics, render_view, get_physics_rules, parse_problem; the fact store, DAG edge sets, and rule text are private to Engine and reachable through no public API.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L15-L19",
+          "version": "repo-lines-v1:sha256:9c68c0b471b3bfb640e7318ad418185bb6f51c0707c8fc846bb9e692b0150b6c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWQ0ZDc3YTBhNTQzNmJmMjJiMGQ4YzdmZjIwZjdmZjc3YzRmMWNiMzJjNmE4YzkxZDUwMmQ4MmNhNjY2NzZiNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk0MTZlMDlmNzhiYTMxNmMwMzI1NjgyMTNiODU1ZWU3NTZlNDE1NjVkOTE4ZjA5NTE5YzgxZmQ2MjBmNDA2MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjgwNmVhZDZkNjBiZDgzZDk2YzA3MWVjYzM0OTM5NDYxNDgyYmNhNWUyN2JjMzU5YzI5YjczYjlhYjkyYWQ5NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTNhYjIxZDFjM2NlMjc1NGQxODgxYjczYzQyMWViMDZmZjJlM2NmMTMzMDUxYTg3MDgyYjAzMDEzMGM4OTY5NCJ9"
+        },
+        {
+          "resource": "repo://engine.py#L59-L66",
+          "version": "repo-lines-v1:sha256:3225a59c2c759bb1f4cbd1de9de6e5cb0aafc75b659c40dd03306ad6691a1e32:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmRkYzRiMWZiZWI3MmVjOWRlMmQ3NjI2ZmRlNTYwZDY2ZTdhMzQyNTI4YmQ4Yzc2MDRiOTAxNjk2YjFjZjFjMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjMyNzRiNzlhM2IxNzJlMzIxOWI4YzUxMTc5ZjYwNWI5ZjE1MzczMDEzZDY5MjRlNTg3ODdkOTRjMmJmZDQ4ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI5NGZjZThlMTliZDk0MzFjNGY3ZThkMDRhYTgxN2M2YTk4YTJlYzQxZDM5NmQzODVmMGFhNzU3OTRhYWNhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjA0NTJjNDYzYmQ3OTVhODI5NDRhNTc3YjIxNDVkOWJlMmNjODFkMmQ0ZTlmNjY0M2FkYWMyYmZjYmFlYjIyNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b6cb85be174d41fda8e211b593edf9bc",
+      "statement": "ARCHITECTURE.md §7.1 spec names solve()/trace() as SDK exports, but the shipped engine surface is Engine.deduce(...) and Engine.induce(...) plus VerificationResult with its three trace views; the spec names are design shorthand, not shipped API.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L291-L296",
+          "version": "repo-lines-v1:sha256:695168a6b5e421e1508a8454365208cbc17fe671a9b4416858c6b8cf7cd55fb3:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWVkNmI4ZjFlZDVkMjI1NzgzMTFmMzJiZjdhZDJlODI0ODQxMWU1MTEzNTIwZjkwZjNiNmI5MTY1MDUzYzZhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODRjNTkzMmY0MDQwNDJhNjAzYjMxN2M3NmU4ODlkZjU2NjVjM2VjMzlhMjgwOTJlYWEwMDFiNWVmMTk2N2I5OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGFlZTgzNTEyMTEyNWFjMzU3ODJjZmY0MzFjZjU3MDI4ZDRlYzhkNjI3ODk3OTRmYzA1OWYxNTg4OTViYmFiNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjE2MTliNzdiODkxNTRiNzFkMTY5M2FjYTMwZDZiZGNkODViYTg3MWVjMGZjMmEwMGE1OTljNTMwYWE1MmU3MiJ9"
+        },
+        {
+          "resource": "repo://engine.py#L188-L188",
+          "version": "repo-lines-v1:sha256:bf8e51048e59ab73d3d3e4d19220041b3c8d574a22f26fcbf053c736388636b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmY4ZTUxMDQ4ZTU5YWI3M2QzZDNlNGQxOTIyMDA0MWIzYzhkNTc0YTIyZjI2ZmNiZjA1M2M3MzYzODg2MzZiMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmY4ZTUxMDQ4ZTU5YWI3M2QzZDNlNGQxOTIyMDA0MWIzYzhkNTc0YTIyZjI2ZmNiZjA1M2M3MzYzODg2MzZiMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjQ1YmNmMzcxMThhNWEyODM3NzRmZDE4ZjVkMjAxMjdiYzIyZjQyYTE4MDNjYmNhYjI2ZjdiMGRkZGVhYmFkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOThhYTYyN2FjN2MxNzEzYTUwYmYwNDhiN2FhMTkwOTVkZTI2MWIzNzg2YzFhY2NkYjkzNGQ0MTFjMzEwNjMyNiJ9"
+        },
+        {
+          "resource": "repo://engine.py#L90-L90",
+          "version": "repo-lines-v1:sha256:108de2b12dee1233706127de3ea56efa1ddf9e10c0735fbc9afc287f6b4caf91:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA4ZGUyYjEyZGVlMTIzMzcwNjEyN2RlM2VhNTZlZmExZGRmOWUxMGMwNzM1ZmJjOWFmYzI4N2Y2YjRjYWY5MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA4ZGUyYjEyZGVlMTIzMzcwNjEyN2RlM2VhNTZlZmExZGRmOWUxMGMwNzM1ZmJjOWFmYzI4N2Y2YjRjYWY5MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWI4OWE3YmUyZGRkMjQ0YmM5ZTExOGExZGI3OGI4YjRmZWMyODEyNTVhMTJlYzJhMjk4ZjY2Y2UzOTE0YjU1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmFjMGQ0YTI5MDEyZjZjOTUwZTkyMjE3MjIyMDlhNTc1Nzc2YmM5YTUyZmJhNGFiMmJmNmQ5ZDdiMjQ2NjVhMCJ9"
+        },
+        {
+          "resource": "repo://model.py#L127-L136",
+          "version": "repo-lines-v1:sha256:03457bd8f4d899fdb6bed980496fe4e5903f8ceb094d7403c62f8a0207aaa58e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ZmJhZTBiOTFkNDRmYzBkNDlmNWRlNjkxZGE2ZmM0MzFmMjYwMTM0YmY3MzFlMGUyMWY3NjQ4MDk0MzM0Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyZTUyZmZjZGU3NDU0NWUzYjcyNGJlMjg0ZjEzYTAxMTdmYjZjMDMwN2QzYTE0NDc1ZDZkMzRmMDRkN2M3ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3ZmEyZjRhZmZmMTQ5NGU5MzJiYjhlYjE5NjcyM2E3ODhlMDU2NTEwMjMwNzViYzZiYzQ3MTQ2ZmY0YWI3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiMTNkMmZkNmVlNWExMTY5OWZmMDU4NDkzNGNiYmY5ODk1NzEyYzEzNDc1MDA5MDJmMTBiOWRlMDMyNWFiNTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a212b8109b674f4c9dbd562fa9326455",
+      "statement": "verify_physics is the SDK domain driver that wires the full pipeline: parse_problem to extract unverified_truth givens plus target kind, then Engine(get_physics_rules()) with make_target_fact and engine.deduce(givens, target); engine construction and rule loading happen inside the driver, never in the CLI.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L32-L58",
+          "version": "repo-lines-v1:sha256:c2127bf6b88d2bec6415983782c83abdf5881ee5a1fb59ed5cb141544ff38e3a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NWRjMTZiNTgyYzUxZWRkODIzNWMxYmFlMjYyYTU5MTI5NjY3NDU5OTBhNDdmZjg4Yjg2YWNmNDc2ZTlmNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMTczZmVlNTI3ZmE2MjI1YjhiN2E2N2YwM2M0NDA4ZTc5ZjU3YzMzY2I0YmZhNjNiNTFhYjNjMjVhZWUzZDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiYzEyNjVkMzk4OTBhYzkzNTc0OGQ0NDU1MDgzNTU1OTM5N2JjYzA5MzRjMTE1ZTY3N2YzZjdjY2U4YTNmOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://cli.py#L38-L39",
+          "version": "repo-lines-v1:sha256:5f434cc5ce79b6294d2d92104a47f89f52399555417ca6da31d767d1497ad269:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjBiMjcxMGY2NjgyMzA0YzU4MTY3NzZjMWIxMDVhN2MwZjAwMmQyODkyZDUxNTFhM2Y5ZGJhZWYyMzUxM2MzNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjIzYTMwOGIyOGQwOTg2MGQ5MTMwMTM4NWZlYjVmMDcyZTZiNDdiNDdmMmQ4MmFhMzc2ZmVhZDZkMjJhMTZiOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDU1YjVmYjVmZDQ2ZDllN2JjMGNkMWNiMGVjNWU3YTU0Y2EyYTk3YmEzZGJiNWM1YjM0ZGVkYTkwYjBlMDc5OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTcyMWNkMmIwNTIxOGIwOGI0NTdjMjA2OGE0ZDlmOTY0YTYwOTEyYmIzNWYwYzEzZWY2ODdkMjZlOTMzZDQ1MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_10826b0abcdf41d89e2bfdb11fc2bf32",
+      "statement": "When parse_problem cannot identify a target kind, verify_physics short-circuits to a synthetic UNKNOWN VerificationResult whose evidence note instructs the user to 'phrase your target as find the <quantity>'.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L38-L52",
+          "version": "repo-lines-v1:sha256:1606f82e76dd934fb8b96a94dcd916f92a11ace43c6f9866d11e63b6b1225ca9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2Njk5ZjJjMzk2NGM1NzllYTI0MzUyZGExYTRkNDgxY2ViYjJiYmVkZDNhYmFmNDllZTBmMzMwYjEzM2RmZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMjZjNTZhODA3OTUxMzc5ODFiOTM0YTljYzhmODA2NmRhNjZjODJhZmU3ZjBmYTQ0ZjlmZjFkYzllZjEwMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllYTQzNmZmMjI2OTQ5OGI2MWRiYzQyZjgwZmY5NWI5NmNiYmNlMTdkMDkzY2Y2M2I5MjQ3ZTFlZDYwYTMxOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjZWU1ZjJmYzIxMjNiZWIyODgyYjMwMGUzZDg1MDIxOTliYzE4YWVjYjYyYjA5MDI1NzliNGJjNmFiMzZhOTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8955c20c725a40fcb2fa29866edff29a",
+      "statement": "get_physics_rules() and parse_problem() are lazy adapters in __init__.py that import the grammar code inside the function body and delegate, keeping domain knowledge in grammars/ and the SDK top level import-light.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L21-L29",
+          "version": "repo-lines-v1:sha256:428bbc2e8112272cfee691a8b72e82f460c251ac087e39b1362328e802ee9d8c:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2U3OWUzOWIxYjEwMDZmNGY2ZTgxZjYwNzk0NjhiZjI3ZjU0OWY2NGFjZDI4YjUzMDA2NGM2OTJiZjI3OWQyYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGQwODZlNjhmYWYyZjg5MjUwNTg4YTRjODM3ZmUzMzVkOTcwZWQ2MjZkMmQ3ZjEwNjQ1N2EwYzI0YjU0Y2M0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmE4YzJhMDc4NWMxNjlmNjI4MWE4MTJiYjgxZTY2YmZjZDRiNWZiMDU5MjNkYTc5ZjVlOTgzNjQ2ZDNhMzE2OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWQ1MzY2YjM3MDdhMmQ3NjVlNWIzMTg5Yzg1N2RlNmU3ZjFhMzM1YmU5ODllYmY4NmIwMGJhYjRhMTUwNWMxMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe18d7bd3a02462e94950f5d839633e6",
+      "statement": "View selection is a render-time decision, not a pipeline-time one: verify_physics accepts a view kwarg it never consults, and VerificationResult always carries all three views; the CLI applies --view at the print step via result.render(view), which delegates to the package-level render_view.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L13-L13",
+          "version": "repo-lines-v1:sha256:fd8dc6cb5dca22d52b32638b29a62980c3fc770c0bd4fdf86b49328b43ae5758:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmQ4ZGM2Y2I1ZGNhMjJkNTJiMzI2MzhiMjlhNjI5ODBjM2ZjNzcwYzBiZDRmZGY4NmI0OTMyOGI0M2FlNTc1OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmQ4ZGM2Y2I1ZGNhMjJkNTJiMzI2MzhiMjlhNjI5ODBjM2ZjNzcwYzBiZDRmZGY4NmI0OTMyOGI0M2FlNTc1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjMyMDQyNzE1NzBlYjY4ZjJlNTZlZTc0ZGQ1ZTcxMWFkNDQyZGRmYmY3ZWM1NmRmZTQxZDllYmEyNzFmNGU4OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMwMzJjODlkYWQwMmI3OWIwMWFhNTkwZDlmMWU3N2IzZTcxNWQ0YWJkYTBiNjVmYTcyMzZmNzk3YTZhOWQyNSJ9"
+        },
+        {
+          "resource": "repo://model.py#L138-L140",
+          "version": "repo-lines-v1:sha256:f15e37fb21b85c6e9804fe43dc2bca2037420eb729b7985031cfd597ce432e87:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzcxN2YxY2YzZDI1YzEyZWE4ZWFhZDM3MjMzMjdmNzZkNzYzYTYxMGE4ODVjYWYyNmU2YWIyMmVmNzA1N2M1YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTJlZTYwNmY0OGZmMTYzZTE5OWNlYTcxZGQ4NTM2YWEzZTlkNjNjNGJmZWE2M2JmZTk2OWQyMDFiZWI5OWZjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2NmNzJmNjIyYjc4ZjcwYzMwMTViNTFlOTU1YjE4YWIyMDlhNDUwMDgzNzliY2E1MjA5OGIyOWIwODcyOTUxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjFiNDNjODY4ZTIxYTVjZmY2MGMxZWU0ZTk3ODVkMmQ5MGFkNGE1ODE4NzExYzYxZGU5MDU0ZWZmNmZhYTg0NyJ9"
+        },
+        {
+          "resource": "repo://trace.py#L86-L93",
+          "version": "repo-lines-v1:sha256:153876ef2a3b79696a501b6d30baa72ed2df137a8ce52aabca6e832f2c6ced5f:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjU4ODRjNjM2Y2M3YWMzMmRhMjhiZDg5OTdlNDQwZjNkZDI2MjY4Mzg3MGI4MTJhMWI5NjI0MTVlYTVhMDUzNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzJmZTk4YjE4ZWJmMGQwZGUxMTUzNDI5NjI3MWQwMzlmMTEwYzk1ZjJmYjNkYTU1YTFhNmFlOWI1NDBlMTE4YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTVjYzllZjllNjhmZTc5MzE4ZmM4NmIwODA5ZWZkYTRlOWU4ODY4M2IwMjk1NzE2OTQ1NGQ0ZjMxYTc1ODBmNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmY2ZGVmZTAwYjc1ZmNmNDRlZTViMDdlYzlhMzAwZjgyMmM2ODU4ZTY1OTMwZWExY2U3ZjQ5NTJkMTZjZWUzNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_03a4f9897cf04646ada072e0a92f3d99",
+      "statement": "cli.py is a thin wrapper over the SDK: main() parses argv, splits --explicit into a dict, makes exactly one SDK call verify_physics(args.problem, explicit=..., explicit_target=...), then prints result.render(view) or a JSON summary of status/answer/target and the three view lengths; it imports only argparse, json, sys, and verify_physics, never engine/model/trace, so it cannot touch DAG internals or the rule store.",
+      "evidence": [
+        {
+          "resource": "repo://cli.py#L13-L17",
+          "version": "repo-lines-v1:sha256:a27ea52e0d417fc35de1e6ce660ff3539375ed4966a2142a00ae2a510c8843dd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjUzZTVhNTI4NjE3MmZiMGE0NzcyODQzYmEzZWQ2MjMzMTY4N2JjYjk5MzllYzljNDllOTA2NmQ0ZWU0MjcyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmQxZDE2ZGY2MmZhMDhmYjUzM2M1MjRmNjNmMzZlMzFmMDJkYjUxYzY3NDIwM2IzNzQxNDcyY2QwOWU3NWQ1NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTViNmU4NzA2YjQzMDQ3ZjJhNmRiNjdmMTMyNjM4NTk1NjA0ZTY3ZjM2OTY2ODc2Y2UwMTU4ZjAwNTNlNmJkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGQ2OTQ2Njk5ZDZmZWFhYmFhNWVkNGQ1ZDhlMDkzZmU0NGJiYmVkZTI3OWViM2E2OTM0NDIwYjQ4Y2FhNjQwYyJ9"
+        },
+        {
+          "resource": "repo://cli.py#L20-L51",
+          "version": "repo-lines-v1:sha256:a3b670a2af97bfa724d8ffdf508dcd5d230fe78407d53208ab8a1ade1b23b88d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2OWFkZTE1ZTc0NDY1ZDczODAyYjg2ZWI0MjViYTk4OTA4MzgzOTdhMjdjNTNiNDUyMmUzZTVkNDRmNmQxYjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2MjMzYjNmZmVhMzJhMjNkZjUzMDY1MzQzNDhmMmRlZTc3NmE1YTZmNzRmYjUzMzE3NWRkYzUzOWE4ZmU0NjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0YTVhZjVmZWU4NTlmM2Y5YzVjZGYwMTY0MDhhNmVlMWQwN2M4NzZiMWUxOWU0ZTg3Mjg1MTc4NDE2NzRmYmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNDEzNDBjYzIzOWExNTljZTliNjAyMmU5ZjYzMjI4MzJlMmVhZDc2Y2FlOWU0NzU0ZDIxMGViOGZiNmQ1ZTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5ef882a037a24278bcb53cd517cbe243",
+      "statement": "The CLI's --view flag is restricted by argparse to success-path|failure-trail|full, so an invalid view is rejected before the SDK runs, and the --explicit/--target flags map one-to-one onto verify_physics' explicit/explicit_target parameters, which are the escape hatch when the deterministic extractor's vocabulary misses a given.",
+      "evidence": [
+        {
+          "resource": "repo://cli.py#L23-L26",
+          "version": "repo-lines-v1:sha256:f3e13b97d57ca9e2ed4a8fcd87c2dc7a6c29169c60e905a7d157fa1adfa8ffe8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODQ0ZjlkYjFmY2ZmOGI4NTY1MjRlY2NjNGIxNjc1YzUyNjY1Mzc2OTBhYTBmZTc3NmEzMzU1MGQ4MjMyZjYzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTQwOWI5YWQwM2Y3YzgzNzMzOGFhYzVmYTE2NTFiMzg4NTBkMjhmZDAwZmViMDM4NzlhOGUzNWVjODVkYjlmMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZlNzBiNzk3MTllZWM2MzhmNmYyMjAyNDEyZmRmZjMzMGJhZjEyMDkxMWE3ZDk3ZTgwNzAxOTQwMWVjMzAwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjYyNjUxMTJlZjM4NWViZDM0ODhkNDE4ZDUyM2ZhZmExZWZmMGNjYWI4NTg2MTJmNmNlMmUyZjRmOGE1OWZlMiJ9"
+        },
+        {
+          "resource": "repo://grammars/input.py#L87-L99",
+          "version": "repo-lines-v1:sha256:a136a94e36b6e1735a477c28b1586790ee74abb17a1b91c18a3c398a205cae1f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjYzdjN2Q0YzE1Yjg2NjNhNzM0Y2QwOTM5NTRiNjgxOTA4ODlmMGJhYTQzZjlkZjE0OTI5YzAzYmMxYzZmMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5ODc2ODJlNTcwZmJkMTA4YzM2NDFlZmY4NzMzMjU4Yzc2ODEyMzJlOTA3YWIzMTVhNjA2YjliYmFlOTUxNmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzZDE3MWRlNzU0MzFhMDIxYTBkOTRmYTc2ZmFiZjBkNzEzOWM4OThjMWEwYjQ0YjQzY2E2MDkwM2ZhMWI4NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0ZDg2YzE3ZDRmYWIzMzA4ZTkxODVmOTBhZGM1ZDgxNDJhNTJjYTNkNjVhMzYxMTIxM2Q4NDAwZjQ3NmY2MmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f7379a505296401fa4f4b0c51a081568",
+      "statement": "The CLI has a defined exit contract: no problem argument prints help and returns 1; a successful run returns 0; if __name__ == __main__ makes sys.exit(main()) the process entry point.",
+      "evidence": [
+        {
+          "resource": "repo://cli.py#L29-L31",
+          "version": "repo-lines-v1:sha256:1c509ac0c8631d226df75649bf403e7a3cf6710d1027570bf1be0983262246d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDA0ZGMxYzU4NjNlN2M1MGY3ZTg0N2RhNDliZGExNjIyOWQ3ZjBhZjMyNjQyM2U1OTljM2YzNjVhYWVjYjIxMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjMwODY2ZTFiY2M1YWI3NmUzZWY1OTAxMmQwYWQzOWE2ODdhYmUwMDIzYjQzOGFjYjExMzBhMTg4MjVlODE5MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDMyOGIxYTAwZGRlMzhlODFjZGJmOTlhZmM1YWEwMjIxN2MzMDczZjVlOWZlOTAzZGI4YjkwOWM4MGM4OGYzMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2RmYjdhOWZkNWZlNGZjZTQyNmU5NTVjMTgzMjkzMDgxYTE1OWJmNGVhMmVlNTBlMjk0ZTZmM2JiMDc4MzUwZSJ9"
+        },
+        {
+          "resource": "repo://cli.py#L54-L55",
+          "version": "repo-lines-v1:sha256:85d88cdd4da2412dfa8cfeaedea8c2af5e280c7da58c315ec02ebec27389d2a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQ4NmZmNWNmOTM2M2I0NDI5MzM2ODAzYjJjOTYwZTczZGE4YzQ3ZmEwYzZmNjc2NThkMTRiMzIzY2QyMmQzNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmQ2YjcyMjk3ZTg0MTZmNGIxZDdkMTYyYTU4YmMwNWMyOWMxNDQ2NmNmNjY1YzJkMmYxZjQzZTg5YjU5ZmJlOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDU3MjJiOGM0ZjI4MzFhMDhhNmZmMTY4ZDE2NTExNGI2ZmRiYWNmOTg0MjE1MzY2Mjc3NjkzYmRjYjNiZDAyMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a47640ed0ef943119b57fae613b3a836",
+      "statement": "The MCP server is design direction, not shipped behavior: no mcp module exists anywhere in the code, cli.py has no serve subcommand, and the README's openverifiers serve --mcp plus its Verifier/Verifier.verify quickstart with SAT/UNSAT/UNCERTAIN statuses and result.confidence are aspirational, not shipped API.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L53-L74",
+          "version": "repo-lines-v1:sha256:a46d0dae7a2030315f6a14161e5b662f2b667f179b9e5f049ce0149a56f4cf81:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlM2I0ZDVhZjU0ZWUxZjA5ZWM5OWNhZTRmMzg5NWVhYjI4MTkwY2RjZTAxNzdlNTY1ZmEwNzU2NzhjNzA4ODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0MTI4MmE3ZWNmZGU3MzRmN2UwZTIyM2NjMDIxMjczZjE4ZTMzZmNkMDAwZDY2N2Q5NmVhNjUzMzRhZDhmZTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyMTA2ZGE4ZDU4NWJiYzY3MTZlYjFlMzE1NzVkY2Y3MDJjMWQ2MmRjYTI0ZTVkM2JlNmRiYTk3ZmU5N2Q3OTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE3YTc1Nzk5NzNmYjA2ZGRhM2Y3MGMyMjM4YzQyMWExZTAwZGYxNjIxMGRlMzI2N2RiYWE4MmQ0YWU2ZjYyZGEifQ"
+        },
+        {
+          "resource": "repo://cli.py#L23-L26",
+          "version": "repo-lines-v1:sha256:f3e13b97d57ca9e2ed4a8fcd87c2dc7a6c29169c60e905a7d157fa1adfa8ffe8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODQ0ZjlkYjFmY2ZmOGI4NTY1MjRlY2NjNGIxNjc1YzUyNjY1Mzc2OTBhYTBmZTc3NmEzMzU1MGQ4MjMyZjYzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTQwOWI5YWQwM2Y3YzgzNzMzOGFhYzVmYTE2NTFiMzg4NTBkMjhmZDAwZmViMDM4NzlhOGUzNWVjODVkYjlmMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZlNzBiNzk3MTllZWM2MzhmNmYyMjAyNDEyZmRmZjMzMGJhZjEyMDkxMWE3ZDk3ZTgwNzAxOTQwMWVjMzAwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjYyNjUxMTJlZjM4NWViZDM0ODhkNDE4ZDUyM2ZhZmExZWZmMGNjYWI4NTg2MTJmNmNlMmUyZjRmOGE1OWZlMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4cc821a1c9994ad08c38b9124e9f980b",
+      "statement": "The MCP boundary guarantee is specified but not implemented: an agent can call verify but never touch the fact store or rule text, because the server serializes only the SDK VerificationResult to JSON-RPC with no domain logic and no graph internals.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L304-L309",
+          "version": "repo-lines-v1:sha256:184983dd40c1204708145b79e2342fac511672dbb378430dde3c318586d1ca9d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTJiM2JmYjI4MTZiOWU4ZGY2MGMyNWU3MWEwYzBhNTI4OGFjY2ZlMGM3NWZhNTE0OWYwNmRiZjJkM2Y3ZDM4YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjM5YzkzZTc4ZTBlMjEzMzczYzUxMzlmZjdhM2JiOTlkYTcxOTM0OGFhZjA0M2YzNjA2YmYwYmE4YzFlZGY4ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzQ4MGFkMGU0OGQ5MGFmNWNjM2IxZjE1ZDA5ZWVkZmFiYTA0OTE1MzBiNGI4ZDA5ZmJmYzBjZDc3Yjg0YTY0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGYyNzI5MzEyZTE1MWIxNmRkODQxYjc0YWJmNjNlNTZkNzY3NTk0MTk5NDFkZThlNzJlNTk0OGI4MDQ4NmQ1YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_be0ae88911f6416296c1d11ebb931bc3",
+      "statement": "The statistical LLM-judge pipeline is not implemented in v1: the slice proves the deterministic core first, the judge is a stub until the symbolic core is validated, and this is a deliberate sequencing decision, not an abandonment of the README design.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L380-L389",
+          "version": "repo-lines-v1:sha256:d8eb691a6fb93c5e88d28a95cb96f98e1bd96b43a9c1af08c51f59470c234860:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZDM0ZDc3MTQ1ZTI2ZTIwNmNmZjljNTNhM2ZiYWM1YzA1NzBhMjU4NDJmMTNmNDZlMTA2NjQ5MjU1ZDkyZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2N2QxZmMyMWNiNjAxMGEzYjQ3YTQxZTdlNzA3Y2Y4MTMyZTZkZmYxMWUxYTU0MTA3MDY3Njc2ZTM5MWNkZGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_af1f5101e0504775aea29db3e3e3cada",
+      "statement": "The statistical pipeline's only retained artifact is its interface shape — a confidence-scored verdict distinct from the symbolic verdict — while VerificationResult carries no confidence field and no confidence symbol exists anywhere in the codebase or CLI JSON output.",
+      "evidence": [
+        {
+          "resource": "repo://cli.py#L41-L48",
+          "version": "repo-lines-v1:sha256:b59adf137c0fc723a326f7de7548bb0336578d726015071ce3ab9af79de73300:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGIzYTVlMTY4YjE2ZmRkMTY4NWNkNjgwODY0YjhjZjVjMjdhNWJhY2YyNzhjYTQyNzEwN2VhYTlkOGZkODU5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWExNjgwOWMwNzVkYjMwOWUwOWJiYzlhYjdlZmVlNjllZmI1ZjQxOWJkNGQ4OTMwZDAzODA2NjAyZGQwMmZkNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmQxOGNiM2Y2YWE3MWQzMDJjYjFlMzAwM2Y0YzFkZmNkZmZlNGVjNGQ4MWQ1ZDIzMTA0Nzk2MGU5NDY3NjliMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTVmZDViNjdkOWQ3M2FmYTlmMzE4NmY3OGEzZmNjYjZhOWUzMzU0NTk5Y2NhOWYxZDc1NjEwYzIxNWE4OTI1ZiJ9"
+        },
+        {
+          "resource": "repo://model.py#L127-L136",
+          "version": "repo-lines-v1:sha256:03457bd8f4d899fdb6bed980496fe4e5903f8ceb094d7403c62f8a0207aaa58e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ZmJhZTBiOTFkNDRmYzBkNDlmNWRlNjkxZGE2ZmM0MzFmMjYwMTM0YmY3MzFlMGUyMWY3NjQ4MDk0MzM0Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyZTUyZmZjZGU3NDU0NWUzYjcyNGJlMjg0ZjEzYTAxMTdmYjZjMDMwN2QzYTE0NDc1ZDZkMzRmMDRkN2M3ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3ZmEyZjRhZmZmMTQ5NGU5MzJiYjhlYjE5NjcyM2E3ODhlMDU2NTEwMjMwNzViYzZiYzQ3MTQ2ZmY0YWI3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiMTNkMmZkNmVlNWExMTY5OWZmMDU4NDkzNGNiYmY5ODk1NzEyYzEzNDc1MDA5MDJmMTBiOWRlMDMyNWFiNTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e2b2d4d2f0d4abe94f449b3aa7ff4e9",
+      "statement": "README's layer table naming openverifiers/symbolic/, openverifiers/statistical/, and openverifiers/mcp/ describes a layout the repository does not have; the shipped solver layer is solvers.py inside the SDK core with a SOLVERS registry holding exactly one backend, sympy.algebra.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L78-L83",
+          "version": "repo-lines-v1:sha256:8780a4f00dae59ddbf2771082d05d3a4cb19e0bb53126349a2901b8521ac1de4:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTVlODFkMzJjYTkzNDg1Y2IzYzdiZDZkZDdlMGUzNDQwYTE2ZTdiYWQ0M2Q4NzIzNzliOWM1ODA4ZDhmMDA0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTMzM2YxZWQ3ZTk1NTc0YmQ0Y2ExOGJmNGFkY2M5ZDhmMmNiN2E1OTYyYWJhZjNjN2Y2OTA2ODYyOTdiNzMyMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTdhNzU3OTk3M2ZiMDZkZGEzZjcwYzIyMzhjNDIxYTFlMDBkZjE2MjEwZGUzMjY3ZGJhYTgyZDRhZTZmNjJkYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTllMmU0ZWYxMzliYzVkOWM0NzZkZDgyMmFjMjM4Y2JjODc3YzAxMjM4MzlkNTdjYmQ0NDVhMzc5OWY4OWQzNCJ9"
+        },
+        {
+          "resource": "repo://solvers.py#L93-L101",
+          "version": "repo-lines-v1:sha256:1e85191497c0ffb648baadb0ea9ed75b5037be55acaf0cd2720e1c3728daa8d8:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU1ZmQ3ZjRiNGVhY2E0NWQ5NDc1ZmIyOTUyODljZmNhNmVhYzk1YjNhNjkwNTYwMGZkZGQ0YTZlYjBmYzBhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmVjZmVkNjdkNjc3YzhjYjZhMWYzZmJjYTMxOTRiY2RlMzEzMjcwZWM0NDE3MDNjYzNlMTQ2MGI2Yjc1ZDZmYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTJjYTMyNmRiMmZjOWNhZWQ4MGJjMTIzNjdkZWZlYjRiMjA5OGQxOTM3YWNkM2ZhOGJmZWE4Nzk3MTY1MzM4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmI4NGJiOWJjOTc5NzM5YTZjNjhiMzRkMWQ1ZmMwMWIxOTcxZmE0NzkwZmZiODZkNzg3NzJlMjkzNWM4MTI5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ff7ddd17c7a3443490b60093b4b4dcd0",
+      "statement": "Future domain adapters implement in grammars/ (SDK layer only), adding rule libraries and fact schemas but no CLI flags or MCP verbs for private internals, which keeps the core engine domain-agnostic and CLI/MCP stable across domains; the rule is honored by construction in the shipped slice.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L311-L314",
+          "version": "repo-lines-v1:sha256:ab8c9b1c3a1fe84ab4751b07d185394d6cae7fb566cc9962cf2659646dc1f8aa:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWFiZjAyMDliYzBhNGU5NTZlYWQ1NTU5MTFiM2RkNjg5YWE4NzI5NDM1YzRkZWVkMmUyZWUyNzk4ODcxNGUxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2UyM2RmNDg3YmVlMGJjMjIwMjljMDEzZTZhZDU5NTI2ZGQ5NjYzMGFmZTBkY2RlNDk3ZmE1YjE3N2E0OTRjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTA3NmRkYzk1MmUzMDU4MTg3MmM5YTkyZGJkYzMzYWQ5Mzc1OWMyNmI0YmIyZWIyODNiZTU4OTcwN2ZkZWNjZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L59-L71",
+          "version": "repo-lines-v1:sha256:649b6f62739edb0195c541b87bdd51322b44e8cce171ec2677106f7686869b43:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkZGM0YjFmYmViNzJlYzlkZTJkNzYyNmZkZTU2MGQ2NmU3YTM0MjUyOGJkOGM3NjA0YjkwMTY5NmIxY2YxYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjNmE2OWIzYmQyMDBiMzcyM2I3YzU4NDE5Yzg4YmRmYTUyNTUxMjJhNmY3ZjUxYjhjODljNzY0Mjk2YzJmYTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyOTRmY2U4ZTE5YmQ5NDMxYzRmN2U4ZDA0YWE4MTdjNmE5OGEyZWM0MWQzOTZkMzg1ZjBhYTc1Nzk0YWFjYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxZGYyOGEwOTg2YzIxNjIwZjgxYjI5Nzk3NjAwMGI1YmIwYmU2MjBhZTA1OGM2ZjA2NjZhZTdmYzk4MWZiMWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8a71ca029bc0410cae3e7960ae573041",
+      "statement": "The benchmark runner is a second consumer that proves the boundary: tests/run_benchmark.py imports only verify_physics from the package, drives it with explicit overrides and explicit_target, judges RESOLVED plus 1e-6 relative tolerance, and writes RESULTS.md.",
+      "evidence": [
+        {
+          "resource": "repo://tests/run_benchmark.py#L13-L38",
+          "version": "repo-lines-v1:sha256:9d038c7386d7d4c08e288bab47954396abc6870b2e8160d8c4c43d166636ba66:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1MTc1Nzc4NTFjNDg5ZTQ1YWJhZTI1OTEyNTZjNDA0MDRhMDVjNmQxOWNkNGQ1YWU3ZmQyMmIwMDg0Y2VjNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMDNlMzc5MzNiM2I4YTAyZmI4NTYxYjBiMWVhYmRlYTdiM2FlMmE3ZGU2MjNmNzY5YjI3ZjYxOGE2ODhkZDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkZTY4NDJkNWM1MjQ3ZmNiMThlYzJjNDM5ZTQ0NTFkY2Q2Y2U5Y2M2ZDYxMjk0NWJlOGE4ZGM2ZDE1MzUxZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE2YmRmMGI1N2I5ZWEyNjY2NTUwMDFjMmFhMDIyN2Y5OGRmZTMxMzNhMDNjYTgzZWMzYTU4ZTQxNzgyOWQ1Y2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b21104eeddcd45c9a5c2b1cbf7d73ff1",
+      "statement": "The repository contains no distribution manifest — no setup.py, pyproject.toml, or setup.cfg — so README's pip install openverifiers is aspirational; today the tool runs from a checkout via python -m openverifiers.cli.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L46-L49",
+          "version": "repo-lines-v1:sha256:e1dfa0ddb3918039f908d17a7ceb790412be52d69bef11cd5c59e21d1bfb9215:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzMxYjdlZjk3Y2VjZWE0OWRhYzAzOWUzMTg5ZmIwYTRiYTZiMDc5YjE1OGJjMWEwNmE5MDY1NTBjNzNmYjc2ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzIxMDZkYThkNTg1YmJjNjcxNmViMWUzMTU3NWRjZjcwMmMxZDYyZGNhMjRlNWQzYmU2ZGJhOTdmZTk3ZDc5NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c8d3db8e4f814547848abb5517930147",
+      "statement": "The status vocabulary (truth, unverified_truth, derived, target, unknown) is enforced at the model boundary: ALL_STATUSES in model.py gates Fact.__post_init__, so external callers cannot fabricate facts with unlisted statuses even though Fact is a public export.",
+      "evidence": [
+        {
+          "resource": "repo://model.py#L12-L24",
+          "version": "repo-lines-v1:sha256:c9c3ed6a69ee46574d200e7d94c9d85f8b86b7022153fd9d3ebf11a5418ce0d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwMDQ0OTYwMWI1ZGU1OGUxNzMwOTJmYTUwMTJhNGNiYjgwMjMyN2Q1MWMyZjQ3Zjg1ZWExYjY3YjhmN2Q2YWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlZjEyOTQyYWZhMDUyYzU0ZDQzYWJmZmZjZDNjMWM1Mjc5ODU1N2ZiYTVlYTkyNWZmYjg0NmM0YTliYWY2OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhYzM5ZDU1YjFjNDA5YWVlN2MzMThhZThmZWU0ZjEyOWVlODM1OWViMjczNjU3NWJlYmI4MDcxN2E1Mzk2OWQifQ"
+        },
+        {
+          "resource": "repo://model.py#L46-L48",
+          "version": "repo-lines-v1:sha256:19058a367989eca3fa763d8f7c6f540b4615537a729a8c6ed2d626b5e73508dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmZlNDc3MzAxN2NlMjMzMjliZWZmYWNjY2YwZjlkYWNlYTU2YTZiZjA2ZjE2YjI3N2Y0YmRmMTU3M2I4YzFiNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTZlNDdhMjRhZjM0NzE1Y2M2MWQyZTQwNDIxMGFiYjA2NjllN2RmYTljZjFiN2QwZWZjZmYzMjAzZDJhYzc1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzFlNmRmOWYwZTgzMWUyOTQyOTkwMmMyODNjYWVkZWFiOWU4YzQxZjJiNTg0OTkzNWI5MmNjNmI5OWJmYjYxNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FjMzlkNTViMWM0MDlhZWU3YzMxOGFlOGZlZTRmMTI5ZWU4MzU5ZWIyNzM2NTc1YmViYjgwNzE3YTUzOTY5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_83df73f016ac48b3a16f86e1c751f7c7",
+      "statement": "The benchmark runner makes the boundary check operational: it writes RESULTS.md at the repository root, returns exit code 0 only when every problem passes, and the current recorded run shows 20/20 passing at 1e-6 relative tolerance.",
+      "evidence": [
+        {
+          "resource": "repo://RESULTS.md#L3-L7",
+          "version": "repo-lines-v1:sha256:b4401944b4a2d53bde18663acce599a6c56ef0514dee2cf18675fcfb01287cd5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWU5OTZhM2IxMjE5YWUwMDEwMTg5MDQ5NDI0Mzc3NTVmYWZiMzBhY2RlZDZjMTgwZTcxZDMyZGQxZThlMjE0MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDJiMDk3MjkyMzc3YWE5YTliMzAyYmYyZjA0YTYxMDViYWQ2MWM3ZTY5N2NmMTQyNTcyNmE3MDRjMWNkZTFiMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmEyZDA5ZjAxOTk4NjE2ODM3Y2IxMWViM2JjY2I5M2ZmMWU2ZGFiZjQ1Y2Y1OGY1ODhhYTUyMDAyNzQ1NWJiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2I3ZGEwMzczZjQ0NjhkMmZhNjk4MDQzNDRkOTVhYTkyYjkxZTQwM2FjM2QzYjgwZTA5ZTVkMzE2OWU0NmIxNCJ9"
+        },
+        {
+          "resource": "repo://tests/run_benchmark.py#L60-L66",
+          "version": "repo-lines-v1:sha256:765d3960af3592cff49e593628b862554dc2b346c64209aecd2ab3f4e49f40fa:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTdjMjNiMzVkYWY5ZDViNjUwNWIwZmE1ODMzODEwMjdjNjMwM2Y3YTBiMWRjMjE3MzFmYTU3MzA2MWZlMjRlMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA2YzVkMDgzODUyNzhmZTFlZTA1MDljZGZlNWYxZDVjMDU1YTc0ODBhMGY3NTcwN2VmNWI1YzQ5NWNhNjgwOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDY2ZTZhNGJiMWE2OTVlZDRjOGE4OTVkNWMzZjg5Yjc3MjM1OTBkZmEyNjNiMDAzYmNmNGFhMTRjMDE2ZWEwOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2Q0MTM0MGNjMjM5YTE1OWNlOWI2MDIyZTlmNjMyMjgzMmUyZWFkNzZjYWU5ZTQ3NTRkMjEwZWI4ZmI2ZDVlOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_69f3860c153b484384560f1016fd2867",
+      "statement": "The explicit/explicit_target input contract of verify_physics is the shared, stable boundary surface: the CLI and the benchmark runner both reach domain givens only through it rather than through engine or grammar internals, and it is the same contract a future MCP verify() tool would take.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L32-L33",
+          "version": "repo-lines-v1:sha256:270f5253b9ad802844411ad247d27cf9ec18ba420358da80df70b3813b4e397c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzc1ZGMxNmI1ODJjNTFlZGQ4MjM1YzFiYWUyNjJhNTkxMjk2Njc0NTk5MGE0N2ZmODhiODZhY2Y0NzZlOWY2ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmM2MmNkNGE1N2M4ODM3MDdmN2YxYmYzNzY1MDU1MjM1MGVhNWM1MGNkNTdiNTdmZGJiOWE2YTNmMDQ4ODA2OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmJjMTI2NWQzOTg5MGFjOTM1NzQ4ZDQ0NTUwODM1NTU5Mzk3YmNjMDkzNGMxMTVlNjc3ZjNmN2NjZThhM2Y5NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWU5ZGM0MzZiNWJmMTU0NDY4MDkwMjMwNTdmZTg4MDhmZmRmYzlkOWYzZDdiZTFmNTljNDY3ODYwZDUxZWM1NSJ9"
+        },
+        {
+          "resource": "repo://cli.py#L38-L39",
+          "version": "repo-lines-v1:sha256:5f434cc5ce79b6294d2d92104a47f89f52399555417ca6da31d767d1497ad269:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjBiMjcxMGY2NjgyMzA0YzU4MTY3NzZjMWIxMDVhN2MwZjAwMmQyODkyZDUxNTFhM2Y5ZGJhZWYyMzUxM2MzNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjIzYTMwOGIyOGQwOTg2MGQ5MTMwMTM4NWZlYjVmMDcyZTZiNDdiNDdmMmQ4MmFhMzc2ZmVhZDZkMjJhMTZiOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDU1YjVmYjVmZDQ2ZDllN2JjMGNkMWNiMGVjNWU3YTU0Y2EyYTk3YmEzZGJiNWM1YjM0ZGVkYTkwYjBlMDc5OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTcyMWNkMmIwNTIxOGIwOGI0NTdjMjA2OGE0ZDlmOTY0YTYwOTEyYmIzNWYwYzEzZWY2ODdkMjZlOTMzZDQ1MCJ9"
+        },
+        {
+          "resource": "repo://tests/run_benchmark.py#L31-L34",
+          "version": "repo-lines-v1:sha256:c95c6b4498a19c8ad07c3e6221dd8894d371b1ff12c73f95032c72099f5b37f8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzljM2U1ODQ3NjQ2ZjU4NmM3ZWU5Y2Q2YmIyZDg3MDlhMmFjZWFlYWRjZjViZjY4OWVhMThhZmUxOWZmYWYxOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2YxMjI1M2RlODFhYmQwNjFhOWI4MDU0MGQyNDFjMzZkOTQ4YzVhZWM1MWZlNDgzNDYwZDE3ZDFlYTI5MmZhNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTQ4ZDc0ODNkMDYwZjE3MjJlMjQ1MzY4ODgzMzQyNTZiNTQ5MGU4YmJlODY5ODIwNjc2Y2E5ZWFmMzUwOWNjOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2M2MWZlYTFlNjY4Mzc2YTBjNGQzYTk5YTVmNjhmN2IwNzViZDRmY2MxZDE3YjMxMzMyNTJmMTdlZjVmOTZiYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_657bbec3dfbf4eb9baaab39b56d51b32",
+      "statement": "docs/newer-additions.md adds finalized-v1 direction without changing the shipped three-layer boundary: a first-class uncertainty/confidence fact status, PROOF/PATH test-case objects, and a standalone PATH viewer marked as a build target rather than built.",
+      "evidence": [
+        {
+          "resource": "repo://docs/newer-additions.md#L77-L115",
+          "version": "repo-lines-v1:sha256:81eba1bd655a9c5ae1b015df240c1763757a9ac2854c1e2707cccad93cdfdb3f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkNDMzMWJkN2IyZDY3ZGY4MjM1NDhkYzgyM2M5OTY3YWRiZTJlMWU1YTMzN2E5NGE4MmEzMWM3YTgyZTM3ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyZmU2Zjg3ZWVkYTc2Y2M0ZTUzOGM0MmE3MDY2ZGI0ZWU5MjRjNTFlYzRmNmE1Mjc3ZDhiZDNjM2U1Y2VjNmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1Y2JhZTcwYmUwMDExYjBhZDZkN2NmNTQxNjRiNGJlZDZkNGJkNmIzNGRiYTI1OTE3MjMyZjQxYzJmYTQ1MzMifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-08-28T20:01:59.856Z"
+  }
+}

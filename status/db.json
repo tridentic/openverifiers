@@ -1,0 +1,122 @@
+{
+  "db_version": "0.1.0",
+  "project": "OpenVerifiers",
+  "org": "Snayu",
+  "updated": "2026-09-03",
+  "target": {
+    "statement": "Deterministic proof layer for AI agent claims — a typed-grammar, trace-backed, solver-verified system that proves what follows from given facts and hardcoded rules, and rejects any claim that does not. Agents never author rules; rules are compiled grammar. Proof only, never branch.",
+    "non_negotiable": [
+      "Rules are hardcoded in the grammar; the agent cannot inject or judge them.",
+      "No if/else branching in the agent-facing surface — proof shows X therefore Y, never if A then B else C.",
+      "Every result is trace-backed to a truth/root fact through valid transformations.",
+      "Missing satisfiability conditions on a transformation raise — compiler semantics, not soft-unknown."
+    ],
+    "what_is_verified": "Agent claims across domains: whether a stated plan/result/value follows from given facts and the domain grammar, via induction/deduction with solver checkable preconditions.",
+    "what_is_beyond_control": [
+      "Statistical semantics (tone, style) — LLM-judge, not proof.",
+      "External non-verifiable claims with no formalizable ground model.",
+      "Full autonomous action-gating enforcement in production infrastructure.",
+      "Auto-generated grammars (future, benchmark-gated).",
+      "MCP/plugin distribution, playground UI."
+    ]
+  },
+  "reasoning_modes": {
+    "shipped": ["deduction", "induction"],
+    "direction_detail": "One transformation definition supports both — forward (output=f(inputs)) and backward (inputs>=needed(output)). Precondition checks identical in both. See ARCHITECTURE.md section 2."
+  },
+  "families": {
+    "physics": {
+      "title": "Physics (kinematics + mechanics)",
+      "status": "shipped",
+      "file": "status/physics.json",
+      "scenario_count": 20,
+      "benchmark": {"passed": 20, "total": 20}
+    },
+    "operations": {
+      "title": "Operations (logistics, finance, planning)",
+      "status": "stub",
+      "file": "status/operations.json",
+      "scenario_count": 0,
+      "benchmark": null,
+      "note": "Highest-value next family; needs Z3 backend for discrete satisfiability."
+    },
+    "normative": {
+      "title": "Normative (law, code-contracts, decision)",
+      "status": "stub",
+      "file": "status/normative.json",
+      "scenario_count": 0,
+      "benchmark": null
+    }
+  },
+  "cross_cutting_status": {
+    "core_engine": {
+      "module": "engine.py",
+      "status": "shipped",
+      "evidence": "deduce + induce implemented; DAG dedup + ancestor-loop guard enforced; 20/20 benchmark. See openwiki/architecture/engine.md."
+    },
+    "sympy_algebra_backend": {
+      "module": "solvers.py",
+      "status": "shipped",
+      "hook": "sympy.algebra"
+    },
+    "z3_backend": {
+      "status": "designed",
+      "why": "Required for operations family (discrete constraints) and for conflicts() unsat-core extraction.",
+      "contract": "Register 'z3.sat' hook in SOLVERS; derive minimal violated rule subset -> 'why not'."
+    },
+    "statistical_llm_judge": {
+      "status": "out-of-scope",
+      "why": "Interface shape retained only; judge not built. Distinct confidence-scored verdict from symbolic verdict."
+    },
+    "mcp_server": {
+      "status": "not-built",
+      "why": "ARCHITECTURE.md 7.3 spec only; no mcp module, no serve subcommand. Agent boundary: expose verify() only, never fact store or rule text."
+    },
+    "playground_web": {
+      "status": "not-built",
+      "why": "Future. Will ingest status/*.json directly. Rigorous public demo per grammar, shows scalability."
+    }
+  },
+  "decisions": [
+    {
+      "id": "dec-001",
+      "date": "2026-09-03",
+      "title": "Grammar source is Python code, not .ovpl files",
+      "decision": "Grammar fact-kinds and rules live in grammars/<domain>.py modules. spec/ovpl/proof.ovpl is superseded sketch, not source of truth.",
+      "rationale": "No lifted spec layer to drift from code; the Python module is the executable grammar. AVOIDS dual source-of-truth.",
+      "status": "final"
+    },
+    {
+      "id": "dec-002",
+      "date": "2026-09-03",
+      "title": "No satisfy()/verify() boolean in agent surface",
+      "decision": "Agent-facing surface exposes only facts (autovar) and transformations. Runtime engine alone fires rules; decisions are derivations in the trace, never agent code branches.",
+      "rationale": "A bool hands the agent a fork and a fabrication path. Proof shows X therefore Y only.",
+      "status": "final"
+    },
+    {
+      "id": "dec-003",
+      "date": "2026-09-03",
+      "title": "Missing satisfiability conditions throw, not soft-unknown",
+      "decision": "Attempting a transformation without required precondition inputs raises at runtime (compiler semantics). Preserve UNKNOWN only for 'target not derivable with everything provided'.",
+      "rationale": "Missing operand is a compile error, not a runtime warning. Distinguishes agent error from genuine undecidability.",
+      "status": "final"
+    },
+    {
+      "id": "dec-004",
+      "date": "2026-09-03",
+      "title": "Operation taxonomy is reality-gated",
+      "decision": "An operation enters designed/ only with a concrete input/output contract in SCHEMA.md section 3. Vague labels ('derive', 'entails', 'frontier') are rejected until shown by example.",
+      "rationale": "Protects main design decisions from contamination by aspirational bluff op types.",
+      "status": "final"
+    },
+    {
+      "id": "dec-005",
+      "date": "2026-09-03",
+      "title": "Decision-making is first-class in the database",
+      "decision": "Every domain carries a chronological decisions log; cross-cut decisions live in this file. A decision without recorded rationale is not a decision.",
+      "rationale": "AOs and future contributors must see why choices were made, not just what was built.",
+      "status": "final"
+    }
+  ]
+}

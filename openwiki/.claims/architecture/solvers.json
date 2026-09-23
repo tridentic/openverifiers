@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f56b6b234c3e4b7c207319869339e943f9b9309d23b07f934e867f2e4992c4b9",
+  "claims": [
+    {
+      "id": "claim_12f83f51e6d94e299b63836ac35e102c",
+      "statement": "The solver layer (solvers.py) owns the dimension algebra and the solver registry/backends, and its design contract is to stay backend-agnostic: the core engine never imports sympy directly.",
+      "evidence": [
+        {
+          "resource": "repo://solvers.py#L1-L10",
+          "version": "repo-lines-v1:sha256:b4e7b40c1d39dd7e4ed11a568cb0337f65f36976558c19be2c704bf91b3e2765:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2NTBmMDQ0ZDE2MThhOTUyMWE3MmEzYzdmMjMyZmJhMGUzMmUwM2E3MzA4YzQ1NzI2MGMyMTAwYjQ1YzI3N2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1YjZlODcwNmI0MzA0N2YyYTZkYjY3ZjEzMjYzODU5NTYwNGU2N2YzNjk2Njg3NmNlMDE1OGYwMDUzZTZiZDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7c08ee6534a34b5eb643ee488ee89bea",
+      "statement": "A dimension is an ADT: a dict of {L, M, T} basis-symbol exponents, with the shipped constants DIM, D_LENGTH, D_TIME, D_VELOCITY, D_ACCEL, D_FORCE, D_MASS, D_ENERGY.",
+      "evidence": [
+        {
+          "resource": "repo://solvers.py#L17-L29",
+          "version": "repo-lines-v1:sha256:7a0c889de3f81ea65812d4e93acaa701dfb37b77c47e1980aa4ff1201d261fac:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhMGMyMWFlYzI4ZTY2MjBmZWMyMjQ1ODllOWEwMjQ2OTllZjNiZThlZmNhZGRhYTE2YjQzNTNiZWFiMmU1NWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhYjVkZTQ2YjFlM2EwYWQzZGE3ZDc3MWZhYTcyMTI3NjViODE0ZTQyNGE0Mjg2ZWI2NmRmMzU5ZDczYzEwZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3ZmZkNDJiYjI1MDI0ZTdjZDAwY2RlMzYxNDE2ZDg4MmQyYWYxMDMzYWU0YWU4OTRjM2UxZjVmNmYzMGI1ZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmZGZkYWEyYjczODIxODYwOThkZjM0YTc2NzU5MTZkNGYxMDVmOTA2Mjk2MjRlNTM0YWY2NTgyMzEwYTIwYWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9ece69e432194af8898b81d30d5e0e14",
+      "statement": "dim_add sums exponents pointwise and drops basis symbols whose resulting exponent is zero; dim_sub is dim_add against the negated dict; dim_eq compares dicts after dropping zero exponents, so missing keys equal exponent 0 and dicts compare order-insensitively.",
+      "evidence": [
+        {
+          "resource": "repo://solvers.py#L32-L44",
+          "version": "repo-lines-v1:sha256:99e5b2b157160b0e0c47ff1a88b3cc8b0bbcc23800686c8944fc4a13e20b5dfe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3YzA5YTIwMDg3OTM4NzAzNmFiYTkwZTNhZjE4ZjlkOGU1ZTkzOTM2ZWI4MDVkNGFmOGUwN2U4M2I0OTVmZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3MTBjMmQ2NWM2ZjdkZDgxZGUwMGE2ZmQ0MTU5OGUyODI2ZmYwMWQ4ODQyYTc4MTE1YjIxN2ZkZTFlZmVkNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkNWZhYzJkNWMwOWNmNzFiMDcwMGZmMDRkZGY1MzJiYjBhMjIwM2UxNThlYjAxZWU0ZGRiOGQ3Yzg0YmI3YjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhYzM5ZDU1YjFjNDA5YWVlN2MzMThhZThmZWU0ZjEyOWVlODM1OWViMjczNjU3NWJlYmI4MDcxN2E1Mzk2OWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7aba43ef4c974337ae97b579fe26b17b",
+      "statement": "The physics grammar stamps a dimension constant into every fact's attributes['dimension'] and make_rule's generated precondition rejects a firing with a reason string when dim_eq fails against the expected kind's dimension, matching ARCHITECTURE.md §8's requirement that dimension checking is enforced on every rule with recorded rejection reasons.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L326-L328",
+          "version": "repo-lines-v1:sha256:ae7681bc93f993633202aef9798e150836d9a7388a941552d0c80b3c9005d0f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI2ZjEyZDZlZDYzMWY1MDg4ZDJkYjMzZTFhYjI0NjNlOTg4ODRkNTFmNjMwMDViNjg3MDE3YTJmNTFhOTJhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNhODJhMjIwMDUwMzcyNDA2ODYxYzI4ZjMxYWMwMDk5MGQzMWQzNzhiY2E3NGU2ZmYyZDhhZjI5OWMxYWI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDRmZjI0ZDNhZjQ5NzU3YjFlNzJiNGNkOGQ4OTA0MTBlZmM0MmUzOTNkN2E5MGY0YTdlN2IzZTc1MTQ2NzZiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmFiNjJlMDBhMDhhMGMyNDg2ODkwMGMzYTU3ZDAzZDgzNTZhYjNkMTVhZmJkZmY0MWMyOTBkMjA3Mzg3NTgzMyJ9"
+        },
+        {
+          "resource": "repo://grammars/physics.py#L102-L111",
+          "version": "repo-lines-v1:sha256:dbca494a41e0ebc2bc93e4f7e04c3ef5beb01b10dc93119abdda8d40d4d057ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmMGJmNTc1M2Y5NjhhNTk3NWZlNGY4ODRkM2YyNTdhYzQyZGFhODI5MWQ0N2YxMTYyNDQzOTdlYzI2NzIwN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlN2M5NTdiY2I0NGZiNjczYzk4YjAwNTBhNzVkMzgwODJkYjgxZDkxOGRlMzEzYTNmMDdjMTIzNTMwNmQ3ZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFmMjlmZmJkYzA3NDY0ODExMTdhOGM4OTc0ZGZkMDdkNDdlZGU3OGYyMTM1MjE4MWE1NmYxZGUyYjNlMTg5OTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJhMmUzYzA5MTBjZjU2MmE1MzIxMjkyMzMyMjhmN2U4MzI1ZWQ4M2FkZTQ0ZTQ3ZTk2YTc0YWVjM2QyNGFhZWQifQ"
+        },
+        {
+          "resource": "repo://grammars/physics.py#L44-L54",
+          "version": "repo-lines-v1:sha256:7242185c4ada477041fc336cddcdb2123954b4f418421fafca734d57afe6a73e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0ZDE1NTRiZDU2MjA2NDdmNTA2ZGY1MWExYzA1MmFjMTdmNDE1MTE2MmM2MjgwYTJjNDQxMjA0MGFkY2E1ODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4MjY2OTU0NjRkOTkwMmRmMjM1YmM1OTMzZjE5ZTI4ZTZkYjg2MDM1YzgzYTY5Y2RmYTZiYTIwZmZhMjY2MTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0MzVjYmY2NTI3ZWMzOTFiYTk5ODFmN2YxZThiZDg5OGYzMzhjZjNkOTNmNjY0NDRjOWY4YTViZWM2ODUxOTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_12c990119ac64b72804445dee75a521d",
+      "statement": "solve_symbolic(relation, given, target, tolerance) solves relation == 0 for the target symbol by sympifying the relation, substituting sympified givens, and calling sp.solve inside try/except; it returns (value, note) where value is a float/int/str when numeric (via float(evalf()), optionally tolerance-rounded) or a simplified sympy expression when symbolic.",
+      "evidence": [
+        {
+          "resource": "repo://solvers.py#L50-L90",
+          "version": "repo-lines-v1:sha256:639e3ddddf08de31d0af401f42eb58af459252ff32947464028a0091be7f25f7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxMzk3ODZmMThiOThmZjE0OTI4Nzc4NGYwMzlmNjE3MTc1ZmM1MDZjMjY0ZDdkNTU2OTJiMmQ2YjkxMzdjZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjNzI2NjAwNWViODI1ZWJiNjJiZDkzN2IwMTM1YWVhNzE4NTRjNTVkNDFjOWVjNzc2YmI2YTk1MjBiZDQzMGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlODE1YzM3MjE5MzU1Zjg2YWFhNmY2YmI0YmI2MGYwOGRlYTEzOGZkZDRlNWVhNjFiYzU4MDY5YjY1NzkyZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlM2Q1YTFiZWVlNDQyNGE4Njk5NjZlM2VjYTU3ZjJlODA1M2U0ZmRkZTlhZTBlYTQyM2E2ZTRlMTRiM2E5NDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64856b076b2346ffb5ff33302923b83d",
+      "statement": "The physics magnitude convention [v1]: when a relation has multiple roots, solve_symbolic filters to real roots, selects the positive ones, takes the minimum positive value, falls back to the first real root, then to the first solution; ARCHITECTURE.md §8 frames this as applying to velocity-like targets (textbook problems expect the magnitude), and the benchmark's square-root problems (e.g. kin-13, kin-14) pass only because negative roots are discarded.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L328-L331",
+          "version": "repo-lines-v1:sha256:42188fe2fdf405cab018870ff5cc283a1a9b86a84c1c703450f930bac19a3664:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNhODJhMjIwMDUwMzcyNDA2ODYxYzI4ZjMxYWMwMDk5MGQzMWQzNzhiY2E3NGU2ZmYyZDhhZjI5OWMxYWI5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjhlMWViZjZjZTQ3OTZhMmE1MGUzMTZjM2RiZWI5NTA1OTlkZGY3ODQ2NTljNDc1ZTU3Y2ZmYTExZDIwODZkZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGRmNDY2MTNlM2NiNDA1MWQ3MDlhODhlMTc0NjI0MGYyNjk2MWQ0ZTg4M2E0ODY5OTBjYmExNjVmMDRiNWI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzNiN2ExMTIzZjIzYjU5ZWVmOTUwNjI4MjgzY2EzNjk0NmRkNTY0N2E2ODljNzcxZDFkNjg0Y2ViZTM5NTlhYSJ9"
+        },
+        {
+          "resource": "repo://solvers.py#L71-L81",
+          "version": "repo-lines-v1:sha256:eb2a787789c4c4570c23afb5d3c84d3ed09bfac6fcead2766b049479ff7f645f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxYTZiN2Y4YzAxMzM5ZTUzNmY4ZDZlNzg4MTAyNjY5MTlkY2MwZDJjMDViZDZmMzI0MWNjMzJmYzZjNzUxOGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkMGY5OTFkODBlN2U2MjkwOWIwMWZhNzc5ZDA1NzA3YjMzZDg2YWRiOTg0MTk3MjlmNGYxMGY1MGEyMGVlNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlYjBhOTcyNGM0ZjFiNTQ5YzM2YzI4NTdmYTBlMmM4MDk2NWI1Mzg1YjY3MDUzZmExODg1NDg0YTU4YmY5N2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwYjUyZjFlMTU2YWI5ZDAzMDY4NTc5OWQxOTVlNmRmYWI3NGYwN2M5Yzk3YzU2MGFkMDVhYWJhMWZkYWRkNmQifQ"
+        },
+        {
+          "resource": "repo://tests/problems.py#L40-L47",
+          "version": "repo-lines-v1:sha256:dd77ecea0e7f3c9fd60b11df630a665d907e6d768924da0eff92ebaf8c3b010d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzdhYjY2ZmJjYzZkNWU5ZjgzMTc5MjcyZTNkN2VjMzQ5MzEzOWYyMTk5ZTcyOWJiMWQyNmQxYmFkNzExZjZhOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmMxMWZiOGI0ZDRmYTFlNzI5MDAzZWQxNzViYjFkZDQxNmEwZmIxNGE0MWY2MDcyMWFhMmM5MGE1NWNjMGUyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTFjMTBkOWZhZmFmMjIyYTViNjBkMWI1M2ExMDMxOGFkNmJiZDZlMWE5ZGFlNjJmN2YyZTEwOTUwZTI1YjE0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTJiNTMyMDMzZDA5YjgzN2UyZThjZjlmNTg0NTYzMDg1YzU4MGFkODE5NWUzNjQzNjZiMWE5YWM1MWIyMjhlYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8369bdef8e0a4a3eb85587ea3c01ebbb",
+      "statement": "Failure contract: sp.solve raising returns (None, 'solver error: ...') and an empty solution set returns (None, 'no solution: relation unsatisfiable or inconsistent with givens').",
+      "evidence": [
+        {
+          "resource": "repo://solvers.py#L65-L70",
+          "version": "repo-lines-v1:sha256:950aa75352dbc5c7d44f139975bc528d92f269cbecabedf1f1da7cf3772d98f8:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRhNWM2NmUxN2IxNDUzOTc4MzRiOGM4NTRkYzQxOTNlMjEyNTE4MGE4OTk2YTE0YzMxODgzMzI2YjJlZmJjZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjkzY2Y0Yzg5NzFiMWRiNmFmZWJhODhjMzhmNTkxMTFlY2UxY2M0YjI4MmMxMTEzNzUxYWYwMzM0YzQ5MGI5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzFjYzM3YWJlNDVlYzY1M2RlYWMwODU1NmYwNGJhYjE4YTA3YzM2YjZiOGU3M2UyNzY4MWExNDRhYjI4ZWMzNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2NjZmRmNTM5Mzg1NTY1OTg5YzIxNmQ3ZjMwOGRmZTM2MDMzMTc4YmFmOGU5MDY5NjZiZDZhNmY5OWFjNjhlMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_49952a4605264db5a807b3d3e7eedd2f",
+      "statement": "In the v1 wiring the engine wraps rule.apply in try/except and records an ev_reject trace event with reason 'relation error: ...' when the relation raises, but the scripted (None, note) branch does not raise and the note is discarded by the engine's _note unpacking, so a None-valued derived fact can never satisfy the deduction known-fact scan or resolve a numeric answer; the solver's structured note is not threaded into the trace as a rejection reason.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L122-L126",
+          "version": "repo-lines-v1:sha256:17492589741d08edb699a96c1b441bdda0068b8a3c024a417ac90ed719f93ae6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkzY2E4NjQ4ZDMxN2Q3OWNmMDkyMzM5MWU2ZTI1ZTc2ZWFlYzZmYTIxYzYxY2NhYzA5ZmIyOGIzM2JhZWNmYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJjYmEyNDFlODE0OWZjNGQwNTA4OGM1NTQ1N2QyN2MyMjcxMDFkMDcwNTI0MTczNjRiMTk1YzViZjljOTAzYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWVkNzc1M2FkZDRjOWZlMmEzMTA3ODAzYjBkYWI3YjlkOGZmYTQ0ZGYzMDRkMzYwYzE4NTJmYzQ3ZmFkMjc0MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGM3ZjkyNjcxZDc4N2EwMDE3YjEzZDBhZjM0YmJmMDg4MTUyZWMzNjgyZDMzZTAyNWUzYzYxOGVjZTc3MjczYyJ9"
+        },
+        {
+          "resource": "repo://engine.py#L150-L159",
+          "version": "repo-lines-v1:sha256:37ce59cea014aef1b4aed52a8cd41fe64bdf57e6981618abc9aefbf452cd96fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5N2Q5MGRiODBhOTM1YzNiYmI5NWY3NmYyYjc5NTlhOWYyZWMxY2Y5YWFjZmEwMGZlYmQ1OTlhNzg5YzBiYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOGE5ZTljMzI1MjgyMGM2NWE4MTY1MjBiOGRiNDkzMjI4MDg0OWVjOGM3ZDJlYjYyNzJhZmRmZWJlMDU5YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmZTMxODRmYTE4ZGUzZGRjZTYwMzM0ZjJjMTQ1NGIxNjBlODI0ZjA2M2M5NDgwNWVlYTkzNjRiNDg3MDMzNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhMTljYzBhOWJiMGRlYmM0OGViMzk5MmFmM2ZlZjg5ZmU0NGEyYmZiYzgzM2YxNjEzZjA4MmQ5OGRkZDYyMGQifQ"
+        },
+        {
+          "resource": "repo://engine.py#L208-L212",
+          "version": "repo-lines-v1:sha256:acf98262be0e545a53d4c80af90ad81a0be7b02670259753b15d02017b674e48:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDdkY2RkZmE5NDk1YTQ2M2ZjNWQ0ZDQ2M2Q5MDdjMjlmMWYzOGFlZjdmYWI4MWFmN2Q4YzY5ZjFmZWQwM2JhMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTgzMzc1N2M2YmJjNmM5ZTI5NjNiNDA0MjA2MGIwMDI3YTRlMjhjODNkZmZmOGVkMmEwYjI2MDg0NmJmMjJjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTIyYzFmYWEwMWRhNzRkYjY1Y2QxYmUxNDM3MjM4OWUzZDI5ZmY4ZjBhMzNhZGM5MGU1YmRjZDI4YWEzMDZiYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzE5ZWVjYmE5MTJhMGRkYmEwYWVjMmMxOTE2MDdmNzcxYjFhMGFmNGQ2MWU2NDgwM2MzOTk4YmE1NjcwOGViZiJ9"
+        },
+        {
+          "resource": "repo://grammars/physics.py#L120-L123",
+          "version": "repo-lines-v1:sha256:e948c967a7f55dd687f51bd7bdf867241a0398fc33b572d27db8b25dc0c22646:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDc3YjBlODNlNDQxMDc0N2ZhZTY1OTUzNWY1MzFjYTViYmNjOWE1OTk5Y2Q5MTY1OTM5MTQ0YzM1OTkyMTJlZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2M5N2VjNTFjNDIxN2JiYmM0ODYxMzYxYThkMDIzYTk5MmY4NmU3YTNkZDdlYzJmNWE1NTVmNDA1MTU5YTFiZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDM5MGE0OWM5MzRkY2Y4YzEwYWYwODRjYmU4NzU4ODk2ZWRiYjNlMzdmMmRkZmM5OGQwOWU1MjU4ZDU4Mjc5NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzlhOTJjMWE2OWJiNWQzOTYxNGVkYmQ4ZTQwMjJmNmRmMzI4ZjhlODYzYjFkYjAwMWNkNmUzOGM4ZjQ3ZDRlYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d40d210e6c234be194420a29141724fd",
+      "statement": "The SOLVERS registry maps hook tokens to callables of shape (relation, given, target) -> (value, note); exactly one backend is registered in v1, 'sympy.algebra' -> solve_symbolic, and z3.sat or custom hooks exist only as ARCHITECTURE conceptual possibilities, not shipped code.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L52-L53",
+          "version": "repo-lines-v1:sha256:8803c8000234bb97f2e28f3f870e5ae960559cb0eab4205b812ae9a1d3d11281:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTk2MWI2ZDMyMGVlYzNjZTZiZDI0MmIzNTg1ODgyYzU4YWQxY2MxMGJjZjY4ZTgwMDI1ZTk3ZDVkODJlMjc1OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2UyYjljNTdjYzgzOGU5ODdlYWZjYjdjY2FiMjMwNGQyNGUxMjU4MzBjYzVlOWI1NjIxNDdjZWM1MWQ2YTA1YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTMwZjM5ZmFmYWYyZGM1N2JmZGY5ZjI5OWVhZTJlNzFjYzdlNzg4ZmNiZDkzYzdiZmJkZTI1N2MwZmI3NzdmNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGE3NDU5ZTJhZGZlNGMwMDQ2NDE2NzI4OGMzNDgxNGNiYTY2MzM0YjI5MzQ1MjY5Yjc0MjM5NmE3ZjVmMDJiMiJ9"
+        },
+        {
+          "resource": "repo://solvers.py#L93-L96",
+          "version": "repo-lines-v1:sha256:2488393f5180bb9742b511af1d4a740758994b6dba285311f43360bd025fdc7c:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU1ZmQ3ZjRiNGVhY2E0NWQ5NDc1ZmIyOTUyODljZmNhNmVhYzk1YjNhNjkwNTYwMGZkZGQ0YTZlYjBmYzBhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTJjYTMyNmRiMmZjOWNhZWQ4MGJjMTIzNjdkZWZlYjRiMjA5OGQxOTM3YWNkM2ZhOGJmZWE4Nzk3MTY1MzM4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDU0NjMwNzI1N2Q2OTQ0NjQwYzY5M2NhYTVlNzllZWIyMjgyNTkzY2ZkZGI1MjJmMmNiNDUxMTM1ZWYyZGZiOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4c393d646fb440c5a36731964e8a9d27",
+      "statement": "get_solver(hook) returns the registered callable or raises ValueError('unknown solver hook ...; known: [...]') listing the registered tokens; since every physics rule declares solver_hook='sympy.algebra' and the relation closure resolves the token at rule-firing time, an unregistered hook fails loudly with no silent fallback.",
+      "evidence": [
+        {
+          "resource": "repo://grammars/physics.py#L118-L120",
+          "version": "repo-lines-v1:sha256:9559fe8066c0a466c266f31a2f98f557549802b678e101d5a902515480f5639e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDM2YWQwZTljYzlmYWQ1N2RiNjkxYWEyZTAzNmI1NDI2NTNkZWUzOWIwNTk1OWQ2NmFlOThkMTIzMjRkM2ZjZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDc3YjBlODNlNDQxMDc0N2ZhZTY1OTUzNWY1MzFjYTViYmNjOWE1OTk5Y2Q5MTY1OTM5MTQ0YzM1OTkyMTJlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTM2ZjlmYjlkMDFlMjI5MDdlM2YzZTBiMDRlNDU0NDIwYjJiNmJkNDQ0YmZlMGUwZDJjOTg0MmE5NTI5NTBlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWFhMjYyZmNhYWFkNGE2ZDA4ODMxOWZlOGY1M2E0MzVmZTc5OTY3MDdjYzk2MjA3ZTAyYmZhZTI4ZDAwNjliZCJ9"
+        },
+        {
+          "resource": "repo://grammars/physics.py#L125-L127",
+          "version": "repo-lines-v1:sha256:c5968815fcc3d87e9bcf1318dae6c3a7e8e6839d60327509ed0cd863e3758db1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjExNTA3NGQ3Y2NhN2Q2MzVmNTIwNDBiMmRkMTIyMDRhMTFlOTkwZTVlMWNiZjdkNGNjOGNkN2ZiNTllYzdmOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjllNDEyZDBhMDYzY2UwZTc0YjY3ZDU0Y2Q3ODMxZWZiOGM3MzU1YTA2M2I5ODU0NWQ0ZDRhZmM4OTBlODMyYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzU5YjAxMjhkYTkwMjcwOGExMDQzMjMzNmQ2YmFlNzc5YmUwNGUwZGU0Y2E4YWI4YzRlZWIxOTQ1OTcxYTVhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWE0MTU2N2JhYWRiNjYwMTViOTkxYTBiNzEzZDEwZTg5Y2I0NTYyM2Y2NjNmYjNmYjhhNTFhOTFjNTRlYzIwMCJ9"
+        },
+        {
+          "resource": "repo://solvers.py#L99-L102",
+          "version": "repo-lines-v1:sha256:539b992ee818fe44fca32a03a893f83da4f97c3e14ea6e4c016e63e62910d582:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWFhODljZTU2YjJmMTA2MDVmNmQ4ZjIzMTZiYzE0YzQ2MzNiNTFjMGRlZGFkM2Y5NTQ5MGVlMTkyNzdhNGNkYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmI4NGJiOWJjOTc5NzM5YTZjNjhiMzRkMWQ1ZmMwMWIxOTcxZmE0NzkwZmZiODZkNzg3NzJlMjkzNWM4MTI5ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDlmOTMwODNjMTk3MTIxYjk4MjcwMGJhOGFmYWJkMTcyMmNmMWQzZTc0MDQ1MDllODBlZmEyNzI0N2Y2MmYwNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6e94f5e2899b4473b02c8bb9dca99237",
+      "statement": "Solver dispatch in v1 happens in the grammar, not the engine: make_rule's relation closure calls get_solver('sympy.algebra') and invokes it with (relation_expr, given, target_sym), while the engine imports get_solver but only consumes (output_fact, trace_note) from rule.apply with no direct sympy dependency.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L29-L29",
+          "version": "repo-lines-v1:sha256:616b69c10ff11756bccb376c45abbfdd6264b3feefe1d4cb4e0691714576178b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjE2YjY5YzEwZmYxMTc1NmJjY2IzNzZjNDVhYmJmZGQ2MjY0YjNmZWVmZTFkNGNiNGUwNjkxNzE0NTc2MTc4YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjE2YjY5YzEwZmYxMTc1NmJjY2IzNzZjNDVhYmJmZGQ2MjY0YjNmZWVmZTFkNGNiNGUwNjkxNzE0NTc2MTc4YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2Y2ZGI2YWRhYTE4ODY1ZWQyMDE1NjFjOTA3ZTE4YmNlZTgzNzBlNDkyNGRkZTJhOTRiYTZlZDBlYzRkMTgzZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FjMzlkNTViMWM0MDlhZWU3YzMxOGFlOGZlZTRmMTI5ZWU4MzU5ZWIyNzM2NTc1YmViYjgwNzE3YTUzOTY5ZCJ9"
+        },
+        {
+          "resource": "repo://grammars/physics.py#L113-L123",
+          "version": "repo-lines-v1:sha256:4f2f193b80433fdd3a66e610ac63ba5bd6ae42e4f474df871f31b9e3b91776a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2ZWY3OGUzYmMyNTBjZWY1MWQzNzI4ZWJkMTQ2ZWQ5OTc4ZjZiNDU3Yjg1MjcwNmY5NGJmYTRiNzI2ZWIxNjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjOTdlYzUxYzQyMTdiYmJjNDg2MTM2MWE4ZDAyM2E5OTJmODZlN2EzZGQ3ZWMyZjVhNTU1ZjQwNTE1OWExYmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ZTE2Y2VhYzIxZTkwOTEzMTZhZmFmNjNkODM2NDNjYTI0YzEwMmRiZDc3NTU3MzA2MGM5NmI1MmFiNWI0MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM5YTkyYzFhNjliYjVkMzk2MTRlZGJkOGU0MDIyZjZkZjMyOGY4ZTg2M2IxZGIwMDFjZDZlMzhjOGY0N2Q0ZWEifQ"
+        },
+        {
+          "resource": "repo://model.py#L85-L92",
+          "version": "repo-lines-v1:sha256:c682d3d7ec731f169cd530a06cf0274d65728c5b492cde4980af47cf77693c4e:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDE4ODkzNzE4YmVhM2FmYzI3NmU2YzEyMTFhMDZkMDU1ZGJmYWY1OWQ4NjZlYmVjMzRlMzk0MWJlYTM3YjE1OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDI1NTYyMGVlOTQyNzJkMjY2MDU5ODEzMDU2YzQyYzZhMThmMjc1MGIzMzFkYjgyMGU4NThjNmRmYmNlNTkxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGFhMjU2MTU1NmVhMWFjZmEzOWI3NzNjN2FiYjcwOWQ3ZTA1ZDU5NThlOTQwZTcwNzY0YWUwMzlhNjdjMmNkMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmFhZjMyNDY2Mjk0NWM3OTI0MmU0NWFmZGJkNDEzMmEzOTI5OGNiYWUwMDhmZmU3ZmYxMDhiMzg0N2IxNzQzYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_25665d1b9e734114b20061badc2877e1",
+      "statement": "The tolerance parameter exists in solve_symbolic's signature (rounding a numeric result to int(abs(log10(tolerance))) decimal places) but is dormant in v1: the physics relation closure calls the solver with exactly three arguments and never passes it, so shipped answers arrive as unrounded floats.",
+      "evidence": [
+        {
+          "resource": "repo://grammars/physics.py#L118-L120",
+          "version": "repo-lines-v1:sha256:9559fe8066c0a466c266f31a2f98f557549802b678e101d5a902515480f5639e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDM2YWQwZTljYzlmYWQ1N2RiNjkxYWEyZTAzNmI1NDI2NTNkZWUzOWIwNTk1OWQ2NmFlOThkMTIzMjRkM2ZjZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDc3YjBlODNlNDQxMDc0N2ZhZTY1OTUzNWY1MzFjYTViYmNjOWE1OTk5Y2Q5MTY1OTM5MTQ0YzM1OTkyMTJlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTM2ZjlmYjlkMDFlMjI5MDdlM2YzZTBiMDRlNDU0NDIwYjJiNmJkNDQ0YmZlMGUwZDJjOTg0MmE5NTI5NTBlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWFhMjYyZmNhYWFkNGE2ZDA4ODMxOWZlOGY1M2E0MzVmZTc5OTY3MDdjYzk2MjA3ZTAyYmZhZTI4ZDAwNjliZCJ9"
+        },
+        {
+          "resource": "repo://solvers.py#L82-L88",
+          "version": "repo-lines-v1:sha256:e70351293b11e1152e759119cdce4d5ce2a65c84ec188f0a53a2794531de4a0d:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWI4MzBkOTE4NTU3NDczMjQ1NTk1YzMzNDhkZjU3MjJlMjkyYTA4NGNlZjgxMmJmMzc1MDE1MjJkZWQ3Zjg3NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzgzZmFmZjI1NGVmMDAwYTZjMTY2MGQ4MDJmN2Y5MjVjNmFkYzI1MzQ1MTliOWMxOTFjNzJlYjRhYTY1ZWVhYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWNjYTUxOGZhNjljNGMxNTVjN2ZiNjQ0NGQwNGI3MmI5N2Q0NjgwODJiYTM3NWMzZjc4ZDUzNTcwYmY1OTcxYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2IzNTJiYjJhYTZkZjQ1MmYwMzM3OTZhMzg5YWNiMDE4OWExMDhiZDZiMWIyNjJmMmViMjdiYWE3Njg5NzJiYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_cd049e06fa47438e82c02c4bb6a29cea",
+      "statement": "The physics relation expressions are sympy expressions set equal to zero (LHS minus RHS) built at rule-library time from symbols v, u, a, t, s, m, F, K, W, e.g. v - (u + a*t) for v = u + a t, v**2 - (u**2 + 2*a*s) for the square law, and gives are keyed by the grammar's symbol names.",
+      "evidence": [
+        {
+          "resource": "repo://grammars/physics.py#L136-L169",
+          "version": "repo-lines-v1:sha256:29df416c39e1dde164a5d75990683aeed21fd252a94a713e381b25e5afb3d9e0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1ODgwZWM2MDU4NTQ4YjY3NTU3N2M0ZGRhODJlMTZmM2JmZDkzZTI3ZjMwNmVhODYzODYwY2RhZTU2MDVmMTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4MjY3NmM4ODhjMWE0ZDlmYTc3MmZjZGMzMDJmNzczYmM3MjkwZWViZmY5ZGEzNmEzOWY0NGMzMjExOTgzODUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4NDk1YjI1NjM0Njc1Yjc5NDI1ODMyZjQ3MDIyNzhhNzZkNjMwMTE4N2I3OGZkY2Y3Y2I5ZWZjZTViMDY1MDMifQ"
+        },
+        {
+          "resource": "repo://solvers.py#L57-L63",
+          "version": "repo-lines-v1:sha256:55f1f2f5f694cb51e1901dc8f93615cfb14cb476f338156a0de0af462b266a37:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzM1OGJlZjk2NjUwNTUyYTc4NmFhMWY0YTY0OTgyZTRiYWJkZTI1Y2JlNWU0MzUyZmYwYjJiMWY5MzVjMTM1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQzZTg1Zjc1NTI5ZWQyNDJjN2RiMjNhNmVjZjY1OWYwNmVkNWUxMTU5MzcwOGZmNzBiNjNjNTlkMjg3MmFmMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmNlOGI5OThjYWIzZmYyN2JlODc2NzYzYjgwODczYzgzZmYwNzU0ZmNkY2Y5MmI0NTZlYTE3MTczNzQ3OTY1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjYyZWRjOGE3OWJiMjMwN2ZiNWNkMmMyMzMxODY3ZWI1YzZkYjZjMDYzNjVkNjBhMTI3NjRlN2Q4ODgxZjgwOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_999ab4673c404130beb200c2b1518665",
+      "statement": "The 20-problem benchmark validates the entire solve path end to end (verify_physics -> deduction -> rule relations -> solve_symbolic) and passes only status RESOLVED answers within 1e-6 relative tolerance; the current record is 20/20 passing with all answers arriving as floats.",
+      "evidence": [
+        {
+          "resource": "repo://RESULTS.md#L5-L7",
+          "version": "repo-lines-v1:sha256:b50b558a57ee70d4fb0e4df627c543c39ec507d2a4d7de428f179e9d7c835a68:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmY2MmJhOGJiMmYyZWZlMGQ3MTk3ZTMwMjc2NGUxNTBjYWIxNDBkOWYwNmRiZmZlMDFiNjAwODM1OWM1ZmNhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDJiMDk3MjkyMzc3YWE5YTliMzAyYmYyZjA0YTYxMDViYWQ2MWM3ZTY5N2NmMTQyNTcyNmE3MDRjMWNkZTFiMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjhhOWFiODI4NTIyMjdmN2ZjYmM1YmU2YzIwNjg5Njk5MDc4MDEyNGUwMDdlODMxMWUxNDllYjUwYzMwN2ZkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2I3ZGEwMzczZjQ0NjhkMmZhNjk4MDQzNDRkOTVhYTkyYjkxZTQwM2FjM2QzYjgwZTA5ZTVkMzE2OWU0NmIxNCJ9"
+        },
+        {
+          "resource": "repo://__init__.py#L32-L58",
+          "version": "repo-lines-v1:sha256:c2127bf6b88d2bec6415983782c83abdf5881ee5a1fb59ed5cb141544ff38e3a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NWRjMTZiNTgyYzUxZWRkODIzNWMxYmFlMjYyYTU5MTI5NjY3NDU5OTBhNDdmZjg4Yjg2YWNmNDc2ZTlmNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMTczZmVlNTI3ZmE2MjI1YjhiN2E2N2YwM2M0NDA4ZTc5ZjU3YzMzY2I0YmZhNjNiNTFhYjNjMjVhZWUzZDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiYzEyNjVkMzk4OTBhYzkzNTc0OGQ0NDU1MDgzNTU1OTM5N2JjYzA5MzRjMTE1ZTY3N2YzZjdjY2U4YTNmOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://tests/run_benchmark.py#L21-L27",
+          "version": "repo-lines-v1:sha256:4b25cf7507f9c0f29e9d6b22c4daed99cce6dd0e1c8da0918a7fb14fe558f32a:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBiY2Y5MWQ4MTc4MDYyZjBkOGM3NzU0MzM0NzI2MzI5N2MzNzY5Nzc2N2M1NDRmNGQ4NWM4MDY1YzhkYzEyZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2E5NjNkNmRmNjI4MDUyYTJiNmU2NTdmZWFmZTBjMTI2NjliZmYzNzgxM2VlNTQ1ZmQxYWQxZGNjYjZhMGZmNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYwMzk5NTA5YjViZjU4N2JiYmE0ZThkOTRjODcyNDdmNjA5MDIwNGFmZjEzNzcwNmMxNWVhMWEzNTM4NjJiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTQ4ZDc0ODNkMDYwZjE3MjJlMjQ1MzY4ODgzMzQyNTZiNTQ5MGU4YmJlODY5ODIwNjc2Y2E5ZWFmMzUwOWNjOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_dbe46947364949cc9e8461a0915229b1",
+      "statement": "Whether/when to ground derived facts with numerical solvers instead of the symbolic sympy slice is an explicitly open v1 choice, not a committed decision.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L373-L376",
+          "version": "repo-lines-v1:sha256:e5abe31f783ea59d68f3065cf8bbf85264d2f06ef7c90eb5bed70fcc135e580e:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDU0NTQxZjg3MWJhYWNjOTFhNzcxMDMzZDY2MDc4YWE5MTE3ODZhMDc5Yjk5MjBhMjZhZTA5MjExMWY4NDM2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODlmMmQ1MWRlZDYzYTQyMjQzMWY0NDUwNGNmNWIyMDMyY2MxNmY2MDY2YzBjYjY0MTBhYTdmZjcwNDVjYmFmYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDlmYWQyZTgzMDBmYWI0NjAyMDcyMjhkYTBjMmFkN2NlZjEzY2E0NDM5ZjVlYWI1MjUzNTQ3ODBhNGNmMDhmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-08-28T20:01:59.856Z"
+  }
+}

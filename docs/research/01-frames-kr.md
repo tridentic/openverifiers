@@ -1,6 +1,6 @@
 # Frames and frame-based knowledge representation — research brief
 
-Status: **Research brief — feeds design addition #1** (node inheritance + recursive composition). Open research → feeds `docs/research/synthesis.md`. Companion briefs: `02-rdf-owl-reification.md`, `03-dl-abox-tbox.md`, `06-property-graphs.md`. Non-transitive-slot flag (takeaway 9) also touches additions #4/#5: see `04-path-analysis-sem.md`, `05-bayesian-networks.md`.
+Status: **Research brief [open] — feeds design addition #1** (node inheritance + recursive composition). Open research → feeds `docs/research/synthesis.md`. Companion briefs: `02-rdf-owl-reification.md`, `03-dl-abox-tbox.md`, `06-property-graphs.md`. Non-transitive-slot flag (takeaway 9) also touches additions #4/#5: see `04-path-analysis-sem.md`, `05-bayesian-networks.md`.
 
 ## What it is
 

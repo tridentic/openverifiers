@@ -1,150 +1,135 @@
-"""OpenVerifiers — core model: facts, transformations, unknowns."""
+"""OpenVerifiers — core model: the Transformation seam and VerificationResult.
+
+The typed facts live in `facts.py` (Fact / Quantity / ActionFact) and are
+re-exported here. `Transformation` is the one seam both controller kinds
+produce and the engine consumes — the engine never needs to know which kind
+produced a given Transformation, which is what keeps adding a new domain a
+zero-core-change operation.
+
+`Transformation` supports two construction modes, explicitly:
+
+  1. SUBCLASS MODE (preferred) — a real type hierarchy. A class overrides
+     `apply(self, inputs)` (and optionally `apply_step(self, inputs,
+     params)` on the ParamTransformation branch), carries its declared
+     `inputs` spec, and can hold state. Polymorphism is exercised: the
+     runner calls `.apply` through the base interface, exactly like
+     Quantity/owner/frame dispatch in the typed core.
+  2. FUNCTIONAL MODE — a small adapter for trivial grammars
+     (Transformation(name, apply=fn, precondition=fn)). Kept for simple
+     cases, but a Transformation is never *just* closure pointers: the
+     declared input spec and the apply contract live on the class.
+"""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any, Callable, Optional
+from dataclasses import dataclass
+
+from .facts import Fact  # noqa: F401  (re-exported)
 
 
-# ---------------------------------------------------------------------------
-# Status vocabulary
-# ---------------------------------------------------------------------------
-TRUTH = "truth"
-UNVERIFIED_TRUTH = "unverified_truth"
-DERIVED = "derived"
-TARGET = "target"
-UNKNOWN = "unknown"
-
-ALL_STATUSES = (
-    TRUTH,
-    UNVERIFIED_TRUTH,
-    DERIVED,
-    TARGET,
-    UNKNOWN,
-)
-
-
-# ---------------------------------------------------------------------------
-# Fact
-# ---------------------------------------------------------------------------
 @dataclass(frozen=True)
-class Fact:
-    """A single atomic piece of information.
+class InputSpec:
+    """One declared input of a Transformation.
 
-    Identity is `id`. Two facts with the same id are the same fact — this is the
-    DAG deduplication key (see engine). Facts are frozen; derivation creates new
-    facts rather than mutating.
+    `name` is the role the DSL/trace must supply; `type` is the required
+    Fact kind (default: any Fact). `required=False` marks a variable that
+    may be LEFT FREE — needed for primitives that solve for an unbound
+    variable, or emit a symbolic expression when two variables stay free
+    (later composed by algebra.equate).
     """
 
-    id: str
-    value: Any
-    status: str
-    attributes: dict[str, Any] = field(default_factory=dict)
-    source: str = ""
-    derivation: Optional[str] = None  # transformation name that produced this
-
-    def __post_init__(self) -> None:
-        if self.status not in ALL_STATUSES:
-            raise ValueError(f"invalid status {self.status!r}; expected one of {ALL_STATUSES}")
+    name: str
+    type: type = Fact
+    required: bool = True
 
 
-# ---------------------------------------------------------------------------
-# Transformation / rule
-# ---------------------------------------------------------------------------
 class Transformation:
-    """A known rule: input facts -> output fact, gated by a precondition.
+    """A runnable verification step.
 
-    - precondition(inputs) -> str | None
-        Return None if the rule may fire, else a non-empty reason string why not
-        (dimension mismatch, missing fact kind, ...). The reason is recorded in
-        the trace — rejected applications are auditable.
-    - relation(inputs) -> (output_fact, trace_note)
-        Compute the output fact from the inputs (or delegate to a solver hook).
-    - solver_hook: backend token ('sympy.algebra', ...). Kept as metadata; the
-        engine dispatches to the solver layer.
+    produced by EquationController, ConditionController, or anything else:
+
+        inputs  -> tuple[InputSpec, ...]      (declared signature)
+        apply(inputs)        -> Fact
+        precond(inputs)      -> None | reason-string
+
+    `inputs` is a dict[str, Fact] keyed by role. Subclass mode overrides
+    `apply`; functional mode supplies it as `apply=` at construction.
     """
 
-    def __init__(self, name, *, output_kind: str, input_kinds: list=None, precondition=None,
-                 relation=None, solver_hook: str = "", doc: str = ""):
-        self.name = name
-        self.output_kind = output_kind
-        self.input_kinds: list[str] = input_kinds if input_kinds is not None else []
-        self.precondition = precondition if precondition is not None else self._default_precondition
-        self.relation = relation
-        self.solver_hook = solver_hook
+    def __init__(self, name: Optional[str] = None, *,
+                 apply: Optional[Callable[[dict], Fact]] = None,
+                 precondition: Optional[Callable[[dict], Optional[str]]] = None,
+                 doc: str = "",
+                 inputs: tuple[InputSpec, ...] = ()):
+        self.name = name or type(self).__name__
         self.doc = doc
+        self.inputs = inputs
+        self._apply_fn = apply
+        self._pre = precondition
 
-    @staticmethod
-    def _default_precondition(_inputs):
-        return None
+    def apply(self, inputs: dict) -> Fact:
+        """Execute the step. Subclasses override this; the functional adapter
+        delegates to its closure. `inputs` has been signature-validated and
+        resolved by the runner before this is reached."""
+        if self._apply_fn is None:
+            raise NotImplementedError(
+                f"{type(self).__name__} must implement apply() — a "
+                f"Transformation is not a bare struct of closures")
+        return self._apply_fn(inputs)
 
-    def precond(self, inputs: list[Fact]) -> Optional[str]:
-        """Return None = allowed; non-None = rejection reason (recorded)."""
-        return self.precondition(inputs)
+    def precond(self, inputs: dict) -> Optional[str]:
+        return self._pre(inputs) if self._pre else None
 
-    def apply(self, inputs: list[Fact]) -> tuple[Fact, str]:
-        """Run relation + solver to produce the output fact.
-
-        Returns (fact, note). Expects precondition already passed."""
-        if self.relation is None:
-            raise RuntimeError(f"transformation {self.name} has no relation")
-        fact, note = self.relation(inputs)
-        return fact, note
+    def required_inputs(self) -> tuple[str, ...]:
+        return tuple(s.name for s in self.inputs)
 
     def describe(self) -> str:
-        return f"{self.name} ({self.output_kind})"
+        return self.name
 
 
-# ---------------------------------------------------------------------------
-# Unknown
-# ---------------------------------------------------------------------------
-@dataclass(frozen=True)
-class Unknown:
-    """A first-class 'cannot determine' fact — not a failure state.
+class ParamTransformation(Transformation):
+    """Transformation whose apply additionally receives validated step params.
+    Subclasses override `apply_step(inputs, params)`; functional mode supplies
+    `apply=` accepting (inputs, params)."""
 
-    reason: why it is unknown (missing given, out of coverage, ...).
-    evidence_needed: what would resolve it (an input fact, a rule, ...).
-    """
+    def __init__(self, name: Optional[str] = None, *,
+                 apply: Optional[Callable[[dict, dict], Fact]] = None,
+                 precondition: Optional[Callable[[dict], Optional[str]]] = None,
+                 param_names: tuple[str, ...] = (),
+                 doc: str = "",
+                 inputs: tuple[InputSpec, ...] = ()):
+        super().__init__(name, apply=None, precondition=precondition,
+                         doc=doc, inputs=inputs)
+        self._apply_p = apply
+        self._param_names = param_names
 
-    id: str
-    reason: str
-    evidence_needed: str = ""
+    def apply(self, inputs: dict, params: Optional[dict] = None) -> Fact:  # type: ignore[override]
+        if self._apply_p is not None:
+            return self._apply_p(inputs, params or {})
+        raise NotImplementedError(
+            f"{type(self).__name__} must implement apply(inputs, params)")
 
-    def to_fact(self) -> Fact:
-        return Fact(
-            id=self.id,
-            value=None,
-            status=UNKNOWN,
-            attributes={},
-            source="unknown",
-            derivation=None,
-        )
+    def apply_step(self, inputs: dict, params: dict) -> Fact:
+        return self.apply(inputs, params)
+
+    def validate_params(self, params: dict) -> Optional[str]:
+        for k in params:
+            if self._param_names and k not in self._param_names:
+                return f"unexpected param {k!r} (allowed: {self._param_names})"
+        return None
 
 
-# ---------------------------------------------------------------------------
-# Result
-# ---------------------------------------------------------------------------
-@dataclass
 class VerificationResult:
-    """Outcome of a verify() run: verdict + trace views."""
+    """Outcome of an Engine.run: verdict + JSON-auditable trace."""
 
-    target: str
-    status: str  # 'RESOLVED' | 'UNRESOLVED' | 'UNKNOWN'
-    answer: Any
-    success_path: list  # list of trace events (see trace.py)
-    failure_trail: list
-    full: list
-
-    def render(self, view: str = "success-path") -> str:
-        from .trace import render_view
-        return render_view(view, self)
+    def __init__(self, target: str, status: str, answer: Any, trace: list[dict]):
+        self.target = target
+        self.status = status          # "RESOLVED" | "UNRESOLVED"
+        self.answer = answer          # Fact | None
+        self.trace = trace            # list of trace events (JSON-serializable)
 
     def summary(self) -> dict:
-        return {
-            "target": self.target,
-            "status": self.status,
-            "answer": str(self.answer),
-            "success_path_len": len(self.success_path),
-            "failure_trail_len": len(self.failure_trail),
-            "full_len": len(self.full),
-        }
+        return {"target": self.target, "status": self.status,
+                "answer": None if self.answer is None else str(self.answer),
+                "trace_len": len(self.trace)}

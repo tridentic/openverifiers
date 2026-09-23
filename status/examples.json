@@ -1,0 +1,90 @@
+{
+  "db_version": "0.5.0",
+  "updated": "2026-09-03",
+  "what": "Real end-to-end engine output for 10 domains. Every verdict produced by the running engine (sympy.algebra + z3.sat). NOT hardcoded.",
+  "examples": {
+    "physics": {
+      "domain": "physics.kinematics",
+      "status": "RESOLVED",
+      "answer": 200.0,
+      "trace": [
+        {
+          "type": "derive",
+          "fact_id": "v",
+          "fact_value": "40.0",
+          "rule": "kinematics.v_u_at",
+          "inputs": [
+            "initial_velocity",
+            "acceleration",
+            "time"
+          ]
+        },
+        {
+          "type": "derive",
+          "fact_id": "s",
+          "fact_value": "200.0",
+          "rule": "kinematics.s_avg_v_t",
+          "inputs": [
+            "initial_velocity",
+            "v",
+            "time"
+          ]
+        }
+      ]
+    },
+    "logistics": {
+      "status": "SAT",
+      "model": {
+        "carrier": "B",
+        "warehouse": "WH1"
+      },
+      "which_rules": [
+        "carrier_in_service",
+        "deadline_satisfied",
+        "hazmat_compat",
+        "within_budget",
+        "warehouse_serves"
+      ]
+    },
+    "budget": {
+      "domain": "finance.budget",
+      "status": "SAT",
+      "unsat_core": null
+    },
+    "invoice": {
+      "domain": "finance.invoice",
+      "status": "SAT",
+      "computed_total": 165.0
+    },
+    "dosage": {
+      "domain": "health.dosage",
+      "status": "SAT",
+      "correct_mg": 8.0
+    },
+    "study": {
+      "domain": "study.deadline",
+      "status": "SAT",
+      "unsat_core": null
+    },
+    "travel": {
+      "domain": "travel.buffers",
+      "status": "SAT",
+      "unsat_core": null
+    },
+    "irr": {
+      "domain": "finance.irr",
+      "status": "UNSAT",
+      "implied_irr": 0.0926470444034655
+    },
+    "dependencies": {
+      "domain": "code.dependencies",
+      "status": "SAT",
+      "unsat_core": null
+    },
+    "circuit": {
+      "domain": "circuit.kvl",
+      "status": "SAT",
+      "loop_sum": 12.0
+    }
+  }
+}

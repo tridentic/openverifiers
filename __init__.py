@@ -1,58 +1,51 @@
-"""OpenVerifiers — SDK entry points.
+"""OpenVerifiers — SDK surface.
 
-Public surface (ARCHITECTURE.md §7.1):
-    Engine, Fact, Transformation, VerificationResult
-    verify_physics(problem) -> VerificationResult   (domain driver)
-    get_physics_rules(), parse_problem()
+Typed core (Task 0): Dimension/Unit/PhysicalObject/Quantity/ActionFact.
+Controllers: EquationController (one equation, every solve direction) and
+ConditionController (named predicates, pass/fail/inapplicable).
+Engine: runs Transformations; writes the .ovpv audit trace.
+
+No search anywhere: controllers only ever solve/check what was directly asked.
 """
 
-from __future__ import annotations
-
-from .model import Fact, Transformation, VerificationResult, Unknown
+from .units import (Dimension, Unit, Vector3, UnitSystem, to_canonical)
+from .objects import PhysicalObject
+from .facts import (Fact, Quantity, ActionFact, DerivationRecord,
+                    NumericValue, BooleanValue, EnumValue, tag_value,
+                    as_number, ForAllFact, ExistsFact, ExpressionFact)
+from .errors import (VerifyError, DimensionMismatchError, OwnerMismatchError,
+                     SolveError, ConditionFailed, FrameMismatchError,
+                     RoleMismatchError)
+from .model import Transformation, VerificationResult
+from .controllers import (Controller, EquationController, ConditionController,
+                          CompositionController, equality_solve)
 from .engine import Engine
-from .trace import render_view
+from .formats import build_audit, save_audit
+from .queries import (Premise, Query, FactQuery, ThresholdQuery,
+                      ExistenceQuery, ConditionQuery, AggregateQuery,
+                      Specifier, Verdict)
+from .context import VerifierContext
 
 __all__ = [
-    "Engine", "Fact", "Transformation", "VerificationResult", "Unknown",
-    "verify_physics", "render_view",
-    "get_physics_rules", "parse_problem",
+    # typed core
+    "Dimension", "Unit", "Vector3",
+    "UnitSystem", "to_canonical",
+    "PhysicalObject",
+    "Fact", "Quantity", "ActionFact", "DerivationRecord",
+    "NumericValue", "BooleanValue", "EnumValue", "tag_value", "as_number",
+    "ForAllFact", "ExistsFact", "ExpressionFact",
+    # errors
+    "VerifyError", "DimensionMismatchError", "OwnerMismatchError",
+    "SolveError", "ConditionFailed", "FrameMismatchError",
+    "RoleMismatchError",
+    # model / engine / formats
+    "Transformation", "VerificationResult", "Engine",
+    "build_audit", "save_audit",
+    # controllers
+    "Controller", "EquationController", "ConditionController",
+    "CompositionController", "equality_solve",
+    # queries
+    "Premise", "Query", "FactQuery", "ThresholdQuery", "ExistenceQuery",
+    "ConditionQuery", "AggregateQuery", "Specifier", "Verdict",
+    "VerifierContext",
 ]
-
-# --- domain driver --------------------------------------------------------
-def get_physics_rules():
-    from .grammars.physics import build_physics_rules
-    return build_physics_rules()
-
-
-def parse_problem(text: str, explicit=None, explicit_target=None):
-    from .grammars.input import parse_problem as _p
-    return _p(text, explicit=explicit, explicit_target=explicit_target)
-
-
-def verify_physics(problem: str, *, explicit=None, explicit_target: str | None = None,
-                   view: str = "success-path") -> VerificationResult:
-    """Full pipeline: extract -> deduce -> trace views.
-
-    Returns a VerificationResult (status, answer, success_path, failure_trail, full).
-    """
-    givens, target_kind = parse_problem(problem, explicit=explicit, explicit_target=explicit_target)
-    if target_kind is None:
-        # no target identifiable — treat as unresolved-unknown
-        from .model import TARGET
-        from .grammars.physics import KIND_META
-        fake = Fact(id="?target", value=None, status=TARGET,
-                    attributes={"fact_kind": ""}, source="?")
-        from .trace import build_views
-        from .model import VerificationResult
-        return VerificationResult(target="?", status="UNKNOWN", answer=None,
-                                  success_path=[{"type": "unknown", "fact_id": "target",
-                                                 "reason": "no target kind identified in problem",
-                                                 "evidence": "phrase your target as 'find the "
-                                                             "<quantity>"}],
-                                  failure_trail=[], full=[])
-
-    engine = Engine(get_physics_rules())
-    from .grammars.input import make_target_fact
-    target = make_target_fact(target_kind)
-    result = engine.deduce(givens, target)
-    return result

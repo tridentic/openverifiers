@@ -1,0 +1,5 @@
+{
+  "name": "openverifiers-gate",
+  "description": "PreToolUse gate: intercept tool calls, verify them as OpenVerifiers v2 trace steps through submit(), and block calls the frozen grammar/target rejects.",
+  "permissions": []
+}

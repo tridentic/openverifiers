@@ -1,6 +1,6 @@
 # Path Analysis and Structural Equation Modeling
 
-**Research brief — feeds design addition #4, the flagged mathematical risk** (chained proportionality/correlation claims silently treated as exact proportionality: correlation coefficients multiplied as if they composed like constants). Grounding math: Sewall Wright's path analysis (1918–1934) and Structural Equation Modeling (SEM, Jöreskog 1970 onward). Written 2026-08-29. All claims source-verified; see Sources.
+**Research brief [open] — feeds design addition #4, the flagged mathematical risk** (chained proportionality/correlation claims silently treated as exact proportionality: correlation coefficients multiplied as if they composed like constants). Grounding math: Sewall Wright's path analysis (1918–1934) and Structural Equation Modeling (SEM, Jöreskog 1970 onward). Written 2026-08-29. All claims source-verified; see Sources.
 
 ## What it is
 

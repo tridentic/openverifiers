@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:5ab2fcc2b0fa2221ac50d43c067cca8c5482950f135f8d4dadd36f199130f2c2",
+  "claims": [
+    {
+      "id": "claim_4f5125b02d11490db0d13ac3bf272902",
+      "statement": "The core ontology consists of exactly three node kinds — Fact, Transformation, and Unknown — and every domain model is built from them; this trio is a finalized v1 decision.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L16-L19",
+          "version": "repo-lines-v1:sha256:ecfcf55a21844273e16e93235751f3a3e26c363767b0ae8d08fa1e6b6ba6a225:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDBiNjg5NTg5ODEzZGFkNjY2OWM3ODljNWI4N2Y4NjJjY2I5MGUyMjE5YWE2NjZhYjlmOWQzOWE1NmFkMzM2NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTA2ZWVmMjU0ZjFlOWI4MmEzZjczNjNjYTI1Y2Y4MTM2NzIxMmU5MmFiZThlZDdhMjA0ZmY3YmJjNGMwMjBjNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDNmMDEzOWE5NzY1OGM3MDBjYWQ2NjU5MDFkZmM0ZDgyZDk3Y2NiZTc4MTIyMmFhYTBjZDE1NDkyOGFiNGUwZCJ9"
+        },
+        {
+          "resource": "repo://docs/design.md#L43-L54",
+          "version": "repo-lines-v1:sha256:d46f6a70a983516e805bfeaf639ad705ab1c00dbf54cb8a04776a6748e2a8e33:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4ZjI0ZTk3OTBiMzMzMjBlNGFlMDJlM2U4NTAyZDQ5MThiNGRkMzU0MDI3YjI3ODQ4MDllMTA4NGI3NWZjOWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMmQ3MDhhNmIzYTg5ZTBmMzQwMzk5N2FiMjI3YjRmMzhiMTI4ZDM5NmE0MWEwYWFhODFiZWU2Nzg2M2U3M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhNGNkMmVjZjk5NzRmNjQ4ZDUxOGY4YjA2MmI2MzY2NmMzMWEyZGYxY2Q1Y2RkYTI4NmRkYjYyODQ2MTJlZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5ZjQ3NDg3YWI5Y2ZiNGYwMWM0YmU2MzE3YjkzMGUyYjJhY2RmNzkwZmViZDEwNjE0ZThkOWVhM2JkMGQ3NWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b62e013a60484487bd58f7e0526a7a81",
+      "statement": "Fact is a frozen dataclass: derivation creates new facts rather than mutating existing ones, which lets one fact serve as a premise for many rules and subproblems.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L142-L144",
+          "version": "repo-lines-v1:sha256:2e3bf8978e35b4bd9e5ea23c9a5a33a90e0d872c27a94ecc1f3dc879d6ba8aaf:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODVmYTcwNTI0MDRkYjMwMjhhYTRjZjVlODZiNzRkMzdlOWU2OTcyYWE3NzRlNDA0OWJmZWNlZTNmMmJkM2IzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzA2ODY0YWVkNDA1MDc5MjAyZWU3YzFmZTNjYWU3MDQ0ZTAwYmVhNjc3ZTAzM2M1MGI4Yzc1YTY2ZTM5MDkzMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDU5ZjE2ZjJkYjFmYmM1ZTdlZmEwODY4MGM0NDIwMjU0YmFhMWJjYTdmYzEzOTBiZjRkYzEzNGI5MDBkYTE5YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        },
+        {
+          "resource": "repo://model.py#L30-L37",
+          "version": "repo-lines-v1:sha256:099585295383bcb0449bf0322e2c9f604feddfaea66a2ac75d7fc70a2e703f0f:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjY5YTEzOTc1YzI1NmVjODMyMGUyMDE2MDgzYzk2ZGY2MzdjYTNkMzViZWJkZTIzMTRiZWUzYTQ3MTFiNTZjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTZhNzE1MjU3MmVlODRmMTA5MDZjNzRiOWYyYTkyNDM0ZGRhYjBlM2M0MjgxM2IwNGU1OTdlZmNlYzk1MWIyNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDc4MTc1NWExMjg5MmRlZTQwZGFlNjY5MDlhZjg1NDY2NzI3NWJkM2IwMzBjYzc5MWM3N2FkNDU2NDY4NGZiOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTMyNThiOTVlYWI5ZTZkOTk1Y2Y3M2MyNzAxOTE0MGUxOTc3Y2E5Y2Y0Zjg3NjliMTc3YWRlOWU4YmE3MzVkYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_88c6012820cb4d7487317d1748eadcd8",
+      "statement": "Fact identity is the id field: two facts with the same id are the same fact, and id is the DAG deduplication key.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L28-L28",
+          "version": "repo-lines-v1:sha256:adc4438f0ffcea27b7ac5594059a711c7982880af39097aabd26fac5e3fd9f7c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRjNDQzOGYwZmZjZWEyN2I3YWM1NTk0MDU5YTcxMWM3OTgyODgwYWYzOTA5N2FhYmQyNmZhYzVlM2ZkOWY3YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRjNDQzOGYwZmZjZWEyN2I3YWM1NTk0MDU5YTcxMWM3OTgyODgwYWYzOTA5N2FhYmQyNmZhYzVlM2ZkOWY3YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWE5MmY4ZDQ0NDc4ZjM3ZDg1M2NhMzhjZmMwMGM2Y2E4MzVkYmI2MzgyOWIxNjEwNWM3MDk3YjRjMDhiMTJhYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDNlYjUxZTRkMDBhYzllYjk5MGU5NDVkNjk4MjZhOTM2MTJjMzFkOGZjOWY0OWI2YTFhYjg1NmQwNTU1NjA4OSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L74-L81",
+          "version": "repo-lines-v1:sha256:7a6cc30385252590d11d7e6358dd3c079155a0ae1c887b6589a9d43e775b7929:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzVmYWYwMGE4MDllZmY5Mzk3MjRjNzMyZWJhNzE2YzFkYjU3Y2I0YTljYjFmYWRjYjJkYWI1MjFiZDA1NDQ3MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWJhOTY5OGFhMTJlODcwZDUwNzNkOTk1YWYwM2Q5NmNjYWE4ZDY2ODM4MTY1NDNkYTQ2NThhNDc1MDQxOWZiMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzE2Nzk5M2EzMDI3OGM1YjcwN2YyN2M2NTFkYmUwMDcyZDVkMjEzZDViMzM4ZTAxZmEzMDcyM2E3YTM0ZDQ4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTI4MzkzNGMyNTY2MTA2MzBhMzA4YzU3MmVlMzU4MTM4YWY2ODc3ZDFkMmY1NzZlMGVjZmY2NTczOTUzZGUzMSJ9"
+        },
+        {
+          "resource": "repo://model.py#L34-L36",
+          "version": "repo-lines-v1:sha256:ad3d954d15b692ea93a88845a5fa91c1d5405a36f095233f6b96cb7bc42b654b:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTc0YzQ2ZTlkMTliN2RmNmNlZGIwYThlMDQ3M2U5NzY2YzAwYzNhNGQxMzU0MGQ3NDFkOGNiMmJlMjQyYTMyOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzBhMGVjMTAzZDM0MjQyYTI1Y2U0YjFmNmQ5MDMyOWI1YmVhM2E1YmZlYzJhZGE1MzhlMDM5OGE3MWMyOWEyNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjA0OWIyNWM4ZjY5MzYzZjc5YmQyZjc4MDg2YzRlYjM4NWUwNzA3NTUxN2RmYWFjMWUxYTU2NDg5MTBjMDQ1NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODRmZGZmYzMwYjk1YzE4YTlhNmQzMTYwYjNlMGM1ZTYxZDhlMDdiNDBhNDgwYjJjNDUwNmFjNWM4YWNjODE5ZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a8820ec602304a50a798726e3ba8ca06",
+      "statement": "The engine deduplicates on fact identity: add_fact returns the existing fact on an id collision, and induction records an ev_join event instead of a duplicate derive when a rule re-produces a known fact.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L213-L220",
+          "version": "repo-lines-v1:sha256:b0aa5f494e2aa39f66f3702326ea15e338cc22df38fc00cb3a8a503f3aa7c2c2:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWM1YzU1NjNiMjZmYzhiZjI0YjNjMDljZWUzODI2MzA1MTYzZjZiOGIxZGVkMmUyNjU2YmU4ZWIzMmFkMzdmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWVjMjFlOGIyOGI2MDNjNzFjYzgyNGRhNTE3ZDQyM2EyYTg0MzM5YzNhZDgyNjdkMDIzYzI5Zjk5OTRlZmM1NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDQ0Y2E4ZGYxNDNlOTU1MmU5OGIzN2E2YWY1ZDk5M2MxOTA4ZTJhYzdkMDI3YThhZGJlYjJlNDFmMzY4NDY5OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWIzYmRmZjgwZmFiNTY1YjYwY2E5NzEzN2IwZjA1MTRmYTgwMmNiYTQ0Zjg1NDNkYzg5YjY3ZGFkNjgzZGY3YiJ9"
+        },
+        {
+          "resource": "repo://engine.py#L74-L81",
+          "version": "repo-lines-v1:sha256:7a6cc30385252590d11d7e6358dd3c079155a0ae1c887b6589a9d43e775b7929:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzVmYWYwMGE4MDllZmY5Mzk3MjRjNzMyZWJhNzE2YzFkYjU3Y2I0YTljYjFmYWRjYjJkYWI1MjFiZDA1NDQ3MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWJhOTY5OGFhMTJlODcwZDUwNzNkOTk1YWYwM2Q5NmNjYWE4ZDY2ODM4MTY1NDNkYTQ2NThhNDc1MDQxOWZiMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzE2Nzk5M2EzMDI3OGM1YjcwN2YyN2M2NTFkYmUwMDcyZDVkMjEzZDViMzM4ZTAxZmEzMDcyM2E3YTM0ZDQ4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTI4MzkzNGMyNTY2MTA2MzBhMzA4YzU3MmVlMzU4MTM4YWY2ODc3ZDFkMmY1NzZlMGVjZmY2NTczOTUzZGUzMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2b7e08adf40742cca38d6db8bf76c22d",
+      "statement": "A Fact carries id, value, attributes, status, source, and derivation (transformation name or None for root facts); value may be a literal, a symbolic expression, or absent for a target/unknown placeholder.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L26-L33",
+          "version": "repo-lines-v1:sha256:940b428955191ef9f1ec4d55744f18d6ade166be2e52bbf2bdf7f50378bb0065:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWRhOWMwMjA4ZGQ4MGIxMmJhYzZhODU5NTcwYmUzN2NmZDEwMmI5M2YyMWIwMGUxNDMzOWRlODlmNDM5MTAyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGI5MjNiZDI2NTI2YWFkNDZiOWNkMWRlNWJmZTk2ODViNGE2ZGY4N2JmZGU5Zjk1OTc3MWRhYmYzMDVmN2MwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjFkYjA5OTA1MWMxNWQ5NTgyMjE0MmE3MDVmMDg2ZjIxYjI0ZGEyNzI5Njc4M2NiM2RkNGEzM2RjMmJlNDQxZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWI4MTk3YmFiMTUxNGJjNjM4Njg4ZDg2ZDgzZTk3ZTViNmZjNjI2YzcwODM1ZmQwMjhlMWNjYWJjMGRmZTRkMSJ9"
+        },
+        {
+          "resource": "repo://grammars/input.py#L125-L135",
+          "version": "repo-lines-v1:sha256:2e09102e4996006794b6a7a3605ee0d5faafd9d5eb57c6f552c89176b7372855:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjYTNjMTM3NjViMWY2Njc1NmUwZDA0MjMyMTVmYzc4NTQ1MDg1YjcwODk2YjYzOTAyNTdkZGZhM2EyZDZkNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmMTk0NDY3NTJjMzNjMTgxZWE5MjMyYTc5NWJlZmYxNWJjM2ZlZWRkMmE1ODA4N2IzZjVjMzNlZWI2MmU5OTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUxYzcwMTI0NjY5ZTA0MmQ3N2M5OGIwMjc0YjUwNmJiMWFjOGQzZjFlZTBhMGZiMjJmMmI1MDViN2U2MjMxY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://model.py#L39-L44",
+          "version": "repo-lines-v1:sha256:9725d0a92ebcb60c527bbaf7fbe440342e230636a28d5f9a9eafc59c82e39da4:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTYyOWJmNjdhYmNjYTYwZTBhYTUxZmQxOGYwZTE5MDQxMmJhMzI5YTE0Y2U4ODQ0Y2Y5ODljZDRkMmEwZWE1YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWNmOWQwOTcyNmY0ZDI1YTY0OWRjZDViZGNkMGY0NjIxNDhiZGRhYTQwZmYwZTk3NGI5ZTc3NWJmYTg2MDYyMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWRjNWRkYTkxYjJmNzZkODNiYWNkN2VjMjkxMjM5MjJhMzI4NjhiNGJhYTI2MzRmNzU2NzY5MTlhNDdjMzQ0NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODZlMTY4ODBjNzY4ZGNhZjllYTM5ZDgwZjY1NzlhZjFhZGYyODI3ZjBkNGMzMGY0ZTM0NDE4OWM5NDFlMTE5ZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd39068ed3bc4345a9c8206d4f70c874",
+      "statement": "The shipped status vocabulary is exactly truth, unverified_truth, derived, target, unknown; Fact.__post_init__ raises ValueError for any other status, so no sixth status exists in v1.",
+      "evidence": [
+        {
+          "resource": "repo://model.py#L12-L24",
+          "version": "repo-lines-v1:sha256:c9c3ed6a69ee46574d200e7d94c9d85f8b86b7022153fd9d3ebf11a5418ce0d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwMDQ0OTYwMWI1ZGU1OGUxNzMwOTJmYTUwMTJhNGNiYjgwMjMyN2Q1MWMyZjQ3Zjg1ZWExYjY3YjhmN2Q2YWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlZjEyOTQyYWZhMDUyYzU0ZDQzYWJmZmZjZDNjMWM1Mjc5ODU1N2ZiYTVlYTkyNWZmYjg0NmM0YTliYWY2OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhYzM5ZDU1YjFjNDA5YWVlN2MzMThhZThmZWU0ZjEyOWVlODM1OWViMjczNjU3NWJlYmI4MDcxN2E1Mzk2OWQifQ"
+        },
+        {
+          "resource": "repo://model.py#L46-L48",
+          "version": "repo-lines-v1:sha256:19058a367989eca3fa763d8f7c6f540b4615537a729a8c6ed2d626b5e73508dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmZlNDc3MzAxN2NlMjMzMjliZWZmYWNjY2YwZjlkYWNlYTU2YTZiZjA2ZjE2YjI3N2Y0YmRmMTU3M2I4YzFiNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTZlNDdhMjRhZjM0NzE1Y2M2MWQyZTQwNDIxMGFiYjA2NjllN2RmYTljZjFiN2QwZWZjZmYzMjAzZDJhYzc1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzFlNmRmOWYwZTgzMWUyOTQyOTkwMmMyODNjYWVkZWFiOWU4YzQxZjJiNTg0OTkzNWI5MmNjNmI5OWJmYjYxNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FjMzlkNTViMWM0MDlhZWU3YzMxOGFlOGZlZTRmMTI5ZWU4MzU5ZWIyNzM2NTc1YmViYjgwNzE3YTUzOTY5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9d85c48511d448b3a8797106cf10e522",
+      "statement": "Status meanings are fixed: truth = accepted axiom/root needing no derivation, unverified_truth = problem given believed but unchecked, derived = produced by a transformation with a derivation reference, target = what we are asked to find, unknown = explicitly impossible to determine, first-class and not an error.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L35-L41",
+          "version": "repo-lines-v1:sha256:882f44d20bb85c325b34921e8e7a71e111318d1454f75b5d34896d445e6c388c:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDE3ZWRiYzc4ODQ4NjgwOGZmOTBjNGQxMTg2MzZhOGI4OGYyMzc1ODhiM2E1YWZkMjk0OWMxZWNlYzFlNzUzNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWUzNzM2ZmQxNzA5MGQ2YzgzMDAwN2M0Y2U0ODM2Nzk1YzE0Y2MzMGM2OTFmODkxYzAyM2Q5ZjI4MWI5ZWU3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWFiMWZlZDZhNmEyY2M3NmI5MDRjNjRkMjFhZmRhOTg5YzIxNjBiODU5Y2JhMWY1NDk3ZjkyMjQzZWI4NDc0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDFjZDRmOTY1YmJkY2QxODA2YzdmZGUzOTViYTVhYTAxZDZlNzMzNmQ4MjY0N2MwY2E1OWJiN2IwMmZiYjY1ZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4737d37cae9147ea900e3029e63cd998",
+      "statement": "A Transformation maps a set of input facts to an output fact and carries name, output_kind, input_kinds, precondition, relation, solver_hook, and doc; the engine is rule-agnostic and only calls precondition then relation via the solver_hook.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L43-L57",
+          "version": "repo-lines-v1:sha256:aafc86513922fa774d89bce451d21158e375f236738063dac01e58ca8a69b68b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhMWU0OWRkNmM5NDFkMGQ3NmE5MjMyMTE3ODM2MzdiMDkwY2IxYmIyNTRiM2U1YmEyYzhhYWU4NWM5NjhlYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljM2IxNzhiMjM1YTVkMzgyOWFlZmMxYWExODVhN2NjZDk4NzA4NzllNjhkZjc0NTFiZWNlODVlODdhMTY3MDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1NjQ1NzNlNWNkZmVhYThjNWIwZTM1MzY3ODE4YmQ2Yzk4ZTJiNjBlY2E4Y2RlNzVjYWQwYTM1MjNkMDA3ZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3N2QwNTRkMDU5NDllMmY1YjIyNjhmZmUzY2M4OWViOWUxMmQwMmM2NWRjNjMzNjA2ZTM2N2VkM2I1MWY2YjEifQ"
+        },
+        {
+          "resource": "repo://model.py#L54-L75",
+          "version": "repo-lines-v1:sha256:abd077067009dc730fb121ce06e4edb6aa98429b0d35818b9f1196307548b55b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwNWE0YTVhZjdkMzQ0OTdjYmI4NWU2ZGYzOWNjNjcyNTgwZjJmOGU0OGRmN2Q3ZmFhMzRiOTAwNGYzNmE5ODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjZmE4ZWY4YjM4NDk5ZDQ4MzNkZWM2MTc5OGFkNWNiMjE0NzYyY2IwNzQ4OGI3OTU3ZWFmNmM5NTgxMDZkZTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkZjI4MGU4MDNiY2Q0ODM4MzAwNjkzODc0OWEyMTI1MmY2NGM5ZWUyY2MxZDg3M2RlODg2NzU4MmI0Y2I5ODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxZWU0ZTc5NTVkZmYwMTkyNDNkNjE5YzdhODFlMjcwNTJkZjU3ZTI1YzcwYjUwZmE1NGI3OTliMTBlNjU2ZjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_633b4709cb46459999ac5820d89f673c",
+      "statement": "The precondition contract is: precondition(inputs) returns None to allow firing or a non-empty reason string; every rejection is recorded as an ev_reject trace event with rule name, input ids, and reason, making rejected applications auditable rather than silent.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L150-L153",
+          "version": "repo-lines-v1:sha256:fec4d96dbdfb38b994ea78a370c1fee2f008005d4a1aa5b54513837500535a6c:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjk3ZDkwZGI4MGE5MzVjM2JiYjk1Zjc2ZjJiNzk1OWE5ZjJlYzFjZjlhYWNmYTAwZmViZDU5OWE3ODljMGJhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWQ4YTllOWMzMjUyODIwYzY1YTgxNjUyMGI4ZGI0OTMyMjgwODQ5ZWM4YzdkMmViNjI3MmFmZGZlYmUwNTljMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWZlMzE4NGZhMThkZTNkZGNlNjAzMzRmMmMxNDU0YjE2MGU4MjRmMDYzYzk0ODA1ZWVhOTM2NGI0ODcwMzM0MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzM4MjZkOGE5ZDQxOWI0YjQyMTQ0NDA5NTdjZWQxMjkwYzEzZTA5ZTAwODNmOTgzM2Y3ZTYwOWIyNmUwZjQ2NSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L203-L205",
+          "version": "repo-lines-v1:sha256:aec79cbaec64bf20e068b6e5d7517e4cb81295100838b1f3c8707762d3b6c03d:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjAyN2FkZDcwZjIwMTJjMDRkYzQ3ZmFjMjdjODQ3ODgyM2IzNjU0M2IxNWJhNTY5NzgyNjZkNWM3NTcxMmIyOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNmMzU5M2MzMTdmYThkNThlNmE0ZWE5ZTdiNzJkMWJjODk2NjVjOGE3NzhjYzljNTk5M2I4ZjIyM2JkZWJlOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODkwMGQ1NDY0MGMxNTZiYWRiODNkNTk5M2QyMWVmZWQ3MmIwNWRhZWVkNmFmY2RlZDIyN2NmZWVmZDcwZDU4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTkwYTVkMDJjOGJmN2UxZmM2OGQyYzdhNTc0OGVjZTg1MzdiZmUzMzRjM2M2NGI2YTI1NzhhZmJhYjNkNDQzMyJ9"
+        },
+        {
+          "resource": "repo://engine.py#L40-L41",
+          "version": "repo-lines-v1:sha256:ef3b10be8d4b4da0881097b5535f55f5844763946d23862d505f11570f2186e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGZkNGZiMzJhOGVhNzkyMzBhNDMxNTg0OGQyZWUzNzg2OGJlYTEzNTM2ZjhiMTIwN2UyN2IyNDk0NGNlOWRmNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWJhMWY0MGVlYWUwNTgwZTc1ZjllOTUyOWIxMzE0M2U4ODdlZTE4YzViZDhiYmNlNzc5MmJmMmU5NzE1MDE1OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWNkMTJhOGE5YjAzNGQ5YTBlNGVlZDg3MGQyMjA2ODQ2YjBmZjQ5NjgzNmZjZGU0MzZlZTU2MWVjOWIyNGE1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTZjOTI0Njg1NTYzM2VjZDJhOGIyZjQ2NGUzMmY2YTRlNzcyOGY3YTkwNGQ0ZWYxOTc0MzRlNjI1MWJlYTE0MCJ9"
+        },
+        {
+          "resource": "repo://model.py#L57-L60",
+          "version": "repo-lines-v1:sha256:bf2444ed3fd1a03c91f7893b6b4a1cb831b386e7aa067d67c2abfdee89c55a39:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTQ4Njg4ZGFjYjIxMDgxOGM5MTMwYWNhMjM5NjM0ODgxODM2YmRlYmRmYzU1OWRhOWQ5YmMwYzJmNjYxZDcxOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmZiYWM2YTJmNzY4MzcxNjFiZWI2ZDMwZmJlOWJmNjMyMTkyYmNjZjVmYWVmMjZlY2Y2MjU1MDhhOGZlZmI2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTcyNTY3NTFmOTIzMjNjYjNmYTgwOWI4YTBiZWNkMGYwYTFjMmRjYjhkODI2YzkyNWVmYTNkZjg0MjA1YzcxZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWNkYTFjNjU0ZjYzZTBjMDM1YTRhMTVhOGRiNTZhMGZkNTUzMDQ5MjdkNzRhNjUwZmRlM2EwZWViNGY2NzBiNSJ9"
+        },
+        {
+          "resource": "repo://model.py#L81-L83",
+          "version": "repo-lines-v1:sha256:97040340ebd6d4f63c3fe020d010c098fe52f3d13076c87f82e82cc9bb1ecf69:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjY2ZDRjZDMwMTNlMzBmODk3ZGIyNTNmYTUxMDU5MjMyODgwNTJmYTY2NWYyYThiNTBhN2ZlMTNlNTE3NDNkNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDBlMmZkZmE0MDhjODE1MDk2M2I3ZGQ4M2ZmZjMxNGE2Y2M1NjIxYjk0NWU0NGZkYzY4ODMwYzE3ZjYyZmJjMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2ExNDQ3ZGE0OTdiYjQ3N2ZhNjZkNTY3MTdjYzAxYWJmY2ZmZjQzODg3OTEyM2Y1YmIyZTE3MDdiZGU4MTE1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTJiMWYzNzA2OGFjNjBhZDlkOTAxMzM2YmQ3ZTJjYTQzYzkyMmJkNDMyZDg3NDEzZTMyODg0MWMwMGRkNDllMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e194f0af425544a293650448f73405d7",
+      "statement": "A Transformation constructed without a precondition uses a default precondition that always returns None, so rules with no gate never reject.",
+      "evidence": [
+        {
+          "resource": "repo://model.py#L77-L79",
+          "version": "repo-lines-v1:sha256:0d14c956f491c1502a9e65e2a5f49fe682efaba1186d862cb05a620c0228bbb8:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDFhYmNkMGNjNjkxM2Q0ZjUxZWIyMWU0ZjVhZmMyZTkwZjg2ZDM2YTQ1MGJiNDJjYjA1YzZmM2UwZDcwNmY4YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWU3Yzk1N2JjYjQ0ZmI2NzNjOThiMDA1MGE3NWQzODA4MmRiODFkOTE4ZGUzMTNhM2YwN2MxMjM1MzA2ZDdlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWFhMzI3OTE4MjEzZjgzZDYwYjhkMWJjMGZlNDVmODE0NTljMWM2YWVjYTJmZThlODBiYmU1YWVhNGE2MjBhNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDI2NWEwYzFjZDhkNGNjMDRhMmViYjBiZmQ2MWYyZjNkZjU3NDZkZjA4NGJlNDdlZjcxYTYxNWI4ZDg5ZDIyMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1599ea92895948b2b3ac7ce10903f7fd",
+      "statement": "A transformation's relation returns (output_fact, trace_note) and apply() raises RuntimeError if the relation is None; the solver_hook is a backend token such as sympy.algebra resolved through the SOLVERS registry, keeping the engine free of direct sympy imports.",
+      "evidence": [
+        {
+          "resource": "repo://model.py#L85-L92",
+          "version": "repo-lines-v1:sha256:c682d3d7ec731f169cd530a06cf0274d65728c5b492cde4980af47cf77693c4e:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDE4ODkzNzE4YmVhM2FmYzI3NmU2YzEyMTFhMDZkMDU1ZGJmYWY1OWQ4NjZlYmVjMzRlMzk0MWJlYTM3YjE1OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDI1NTYyMGVlOTQyNzJkMjY2MDU5ODEzMDU2YzQyYzZhMThmMjc1MGIzMzFkYjgyMGU4NThjNmRmYmNlNTkxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGFhMjU2MTU1NmVhMWFjZmEzOWI3NzNjN2FiYjcwOWQ3ZTA1ZDU5NThlOTQwZTcwNzY0YWUwMzlhNjdjMmNkMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmFhZjMyNDY2Mjk0NWM3OTI0MmU0NWFmZGJkNDEzMmEzOTI5OGNiYWUwMDhmZmU3ZmYxMDhiMzg0N2IxNzQzYyJ9"
+        },
+        {
+          "resource": "repo://solvers.py#L93-L101",
+          "version": "repo-lines-v1:sha256:1e85191497c0ffb648baadb0ea9ed75b5037be55acaf0cd2720e1c3728daa8d8:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU1ZmQ3ZjRiNGVhY2E0NWQ5NDc1ZmIyOTUyODljZmNhNmVhYzk1YjNhNjkwNTYwMGZkZGQ0YTZlYjBmYzBhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmVjZmVkNjdkNjc3YzhjYjZhMWYzZmJjYTMxOTRiY2RlMzEzMjcwZWM0NDE3MDNjYzNlMTQ2MGI2Yjc1ZDZmYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTJjYTMyNmRiMmZjOWNhZWQ4MGJjMTIzNjdkZWZlYjRiMjA5OGQxOTM3YWNkM2ZhOGJmZWE4Nzk3MTY1MzM4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmI4NGJiOWJjOTc5NzM5YTZjNjhiMzRkMWQ1ZmMwMWIxOTcxZmE0NzkwZmZiODZkNzg3NzJlMjkzNWM4MTI5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_435a029be3974cac887e6ca07a652235",
+      "statement": "A transformation is reversible by search direction, not by a parallel definition: induction applies it forward as output = f(inputs), deduction queries it backward as inputs superset of needed(output), with identical preconditions and dimension checks in both directions.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L107-L114",
+          "version": "repo-lines-v1:sha256:d9031430b0c15ed63499d8c0623013bc5f1c91869f3dfd0054bf4d5156ceb62a:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTA2OWVkY2JjNTZhYWUxYzkyYjM5Y2Q2OTdhMDEzNzdhNDhmNzJkNDU0MmExMmIwM2FkMGUzM2Q1YWRiMzE1NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmRlMTkxN2U5NWU0MGVhN2UwOGNiN2E3ZWU1MGU1YjVlNzZhYzI0NDMxMGE1NDgyZWVlMjNhNjg3OTIzYjMyYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGJhNTRhNmVmNjIxMDhiYjU2YmI4OGUwNDc3N2U5Y2M3MmQzZDVjYTA5Zjk4YjA4OGQxMjRlZWU2M2IzYzhiMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        },
+        {
+          "resource": "repo://ARCHITECTURE.md#L82-L85",
+          "version": "repo-lines-v1:sha256:dda49031c6bc363ca0e986833b9c8ab90543588bed67d13d732845e53914d8d8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2OTg2YjY1NWE0NDA1NjQyZjg2YTgyMWQ2ZWFmZjM4Zjg0ZGExOWVjMTFlOTYzNWJlZWY0Y2RkMDdjOGI2MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjVlNWEyYzVmY2ZkMDIwMGNjZWQ0ZWYyYzZlYzIxNzZhZWIzYjdjZTBjODRmOTdhOWY5MWZlZTBmMDdkYTBkMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDQ5MDU5OWZjZTkyMGRhNDFjMGZiZjJhODdkNWE5ZGE3YzhkNzM5ZmI5MzhmOTg2OWNiNjkzZGE3NjA4ODMxOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjc1ZjBlY2EwOWVhZDY4NWIyZjI0Mjg4NDQ0MjRiNDYyOTY5YWJmNGExNGU0MjdlNjY2NzBlOGUwOGJlMGM3NiJ9"
+        },
+        {
+          "resource": "repo://engine.py#L132-L170",
+          "version": "repo-lines-v1:sha256:d03b58c4d799d2c5d00945816119e32e1fd73d95142099161698fa309c76df59:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3YjlkY2RkODE2NGM3NmJlODg2YjIxMGE2NTAxMTUxMDk0YTA5ODYzNDQ0ZWNjNmQ4Y2ZlOTVmZDY4ODgyOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhOWNhMjlkZTc0YjZmZTAzZDM4MjgxZWIzNTk3M2E5NDVkNzNlNTVhOTk5ZmRjMzk1M2NlODExMmQ4MzcxMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhMGUyNWE1ZDQ2NzNiMjAwYmUxZGM5ZjM5ZDQxYTg3OWUzMzlmMDI4YmVkYjI5YzExOWFiNGMwMzFlZTdiYzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiNzcxZjA4ZDQxMTViOTAwYjVmZTdhM2E5OGU4MjcwOWJjODcwNjMzZjk5ZDdjYWJjYjUzNjc4NTk3NDBiNTYifQ"
+        },
+        {
+          "resource": "repo://engine.py#L188-L231",
+          "version": "repo-lines-v1:sha256:22655fd4d5d6e0abd7fc4e72b28f9cd0fe0830cf74d1190b56e9c4ddbc67fd93:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmOGU1MTA0OGU1OWFiNzNkM2QzZTRkMTkyMjAwNDFiM2M4ZDU3NGEyMmYyNmZjYmYwNTNjNzM2Mzg4NjM2YjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4ZDZjODM0OTk1N2JiMTU5NGNkZTk4NGExYTJiYmY1ZDQ4YmZhM2ExOTNiNzE0MzcwZWMxNTYwODkwMGQ2NjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI0NWJjZjM3MTE4YTVhMjgzNzc0ZmQxOGY1ZDIwMTI3YmMyMmY0MmExODAzY2JjYWIyNmY3YjBkZGRlYWJhZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYwZmY1MWYyNTc4MjljZTVmYWEwODU5ZWExM2IyZGI5NjQzOTVmNzFkMGVkNjQ4MDk4MWZmMTY5ZWNmYTdlZWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3d1c6d97aa864af88a8b9af0f69ff474",
+      "statement": "An Unknown node carries exactly reason (why it is unknown) and evidence_needed (what evidence or rule would resolve it); Unknown.to_fact() maps it to a Fact with value=None, status=unknown, source='unknown'; an unknown verdict is a legitimate auditable outcome, not a failure state.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L62-L76",
+          "version": "repo-lines-v1:sha256:c6c717b3f0a1c2b851538ab9cf012811956acfc49a2db20669557b314b9030ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNGI0OTM4ZjUzNjlhNzA3NTEzOTcxNWUyOTlkN2JjMDljNjNlODYzYmRkM2I3MTNhMzdhMDQzNDc5NjIzNzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzYWRjZjA2NDA3ZjgzNDE4OWE3YjQxM2NjZDk5ZGE4ODdlNjMwZmRjMzg3NmYwYzRhNTUyODJmYzJmYzFhMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        },
+        {
+          "resource": "repo://model.py#L101-L121",
+          "version": "repo-lines-v1:sha256:224a798eb8742bfcfb50848eea53263ff72b8acc095d81045e63c101b4182438:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OWExMzk3NWMyNTZlYzgzMjBlMjAxNjA4M2M5NmRmNjM3Y2EzZDM1YmViZGUyMzE0YmVlM2E0NzExYjU2Y2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjYTU2YWVjNmViY2JiNTFjYTJlYzkxMDUzZTQyYTQzOGFlNjI0ZTQ4NWMzODg0NTAzYzk1MjU4NGJkODMwOTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhYzM5ZDU1YjFjNDA5YWVlN2MzMThhZThmZWU0ZjEyOWVlODM1OWViMjczNjU3NWJlYmI4MDcxN2E1Mzk2OWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_254647a69e1a4a1fb2dec4481a7f7f9f",
+      "statement": "When no rule can derive the target from available givens, the engine appends an ev_unknown event with reason and evidence and returns an UNKNOWN verdict, so downstream consumers can distinguish 'cannot yet be proven' from 'proven wrong'.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L227-L231",
+          "version": "repo-lines-v1:sha256:4a70b3c147a463096157e503558564c1f6bccbc2089c452ada0c344f66bd1998:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjIwM2EwOWJkYzE2YjUzMmU5MDg0ZGNjMjkxNzM2ZmE1YjIxMDAxOGIyZmI0ZmZlNDZlZTI0ZmIxNGIyMWI1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDhkNmM4MzQ5OTU3YmIxNTk0Y2RlOTg0YTFhMmJiZjVkNDhiZmEzYTE5M2I3MTQzNzBlYzE1NjA4OTAwZDY2NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGNhNTVlN2UwZmY3ODBiYzlmN2E0YjAyMDFkNTE3MWYwNzI0NzExYmIzNzE3MGFkYjk1YjRmODBkNTc3NmVjMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjBmZjUxZjI1NzgyOWNlNWZhYTA4NTllYTEzYjJkYjk2NDM5NWY3MWQwZWQ2NDgwOTgxZmYxNjllY2ZhN2VlYSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L52-L53",
+          "version": "repo-lines-v1:sha256:c02da5f492f8062e3f710a43b3b014764e587eeb7abbcca72ca008db9df33ffc:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2UxNzlkOWZhOGU1NmZlYjJkZTUwYTNhODc5YWRjNDlkZGNjYTllOTgwODIyNzhhYmI3ZDNkMWEzMzE4OGEyYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDYyMzFlM2VmNDA2ZmM3YWYxMDFmYjRjOGI4NTA0MTkyN2U3ZjQxM2QyMzZiMzZjOGZlODc5ZGZkNzQwZWZlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODc0ZjkxZjcwYjUxZjU1M2E5MzFmMGNlYzk1OTI2Y2QwYmYwMjJiZmRiMWFiYjE1YzZiZThlNjI0NzllNjdhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FjMzlkNTViMWM0MDlhZWU3YzMxOGFlOGZlZTRmMTI5ZWU4MzU5ZWIyNzM2NTc1YmViYjgwNzE3YTUzOTY5ZCJ9"
+        },
+        {
+          "resource": "repo://engine.py#L98-L104",
+          "version": "repo-lines-v1:sha256:7d365f0564e2aeb7c60739fc3ed5fc4860fb7af8b31e808ccf5b85968743f432:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRkYTNhNjU3MDFiNzNjZWY1MTI4YmFiMDA5OTAwNjMxMzU1MjFiNzM4MTlmYmQyN2NiNzdjMTQxNWQwN2MwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWEyOTVjNjkwY2E1OWIwNjZjYTIyNTljYjBhYjQwOTIwZjI2OWUyY2I3YmEwYmY3NjU1ZmEwMDE5ZjFlMzJhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTBmOGYxNTlhY2ViMjI1NGFjZDU0MjFjYzZmMTU3OTkwMDhiNDJlZTk4YmQzZmVhYmM2YWI0NWZhYTJmNzRiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzBkYzZkMDhlMmUwOTZmOTU2MzgwMWRjOGIxMjEyY2Q4OGE3ZDUyMDUzNTFiYTRhMjA4MjQ0MWJmYWIxNmUyZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_814e0e8ce59e4170a2ad9bb0abfa52f4",
+      "statement": "VerificationResult carries target, status restricted to RESOLVED/UNRESOLVED/UNKNOWN, answer, and the three trace views success_path, failure_trail, and full.",
+      "evidence": [
+        {
+          "resource": "repo://model.py#L127-L136",
+          "version": "repo-lines-v1:sha256:03457bd8f4d899fdb6bed980496fe4e5903f8ceb094d7403c62f8a0207aaa58e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ZmJhZTBiOTFkNDRmYzBkNDlmNWRlNjkxZGE2ZmM0MzFmMjYwMTM0YmY3MzFlMGUyMWY3NjQ4MDk0MzM0Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyZTUyZmZjZGU3NDU0NWUzYjcyNGJlMjg0ZjEzYTAxMTdmYjZjMDMwN2QzYTE0NDc1ZDZkMzRmMDRkN2M3ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3ZmEyZjRhZmZmMTQ5NGU5MzJiYjhlYjE5NjcyM2E3ODhlMDU2NTEwMjMwNzViYzZiYzQ3MTQ2ZmY0YWI3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiMTNkMmZkNmVlNWExMTY5OWZmMDU4NDkzNGNiYmY5ODk1NzEyYzEzNDc1MDA5MDJmMTBiOWRlMDMyNWFiNTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_86601a5b81914f1d89a091f67ca3f790",
+      "statement": "The verified core follows open-world semantics: absence of a fact is unknown, never false, with the recommended verdict vocabulary verified / contradicted / unverified-unknown.",
+      "evidence": [
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L111-L111",
+          "version": "repo-lines-v1:sha256:dc3524495e61965ca2e9017b278800d3c79665a02d1ddd32cbc82d235af749b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGMzNTI0NDk1ZTYxOTY1Y2EyZTkwMTdiMjc4ODAwZDNjNzk2NjVhMDJkMWRkZDMyY2JjODJkMjM1YWY3NDliMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGMzNTI0NDk1ZTYxOTY1Y2EyZTkwMTdiMjc4ODAwZDNjNzk2NjVhMDJkMWRkZDMyY2JjODJkMjM1YWY3NDliMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDcyNWEwZjRhYmIyN2Y3ZThlNWFjYTFhNGIyY2Q1YTQ5MmNmYzZlMDk1OWNlOGNlYjYyODVhYWFkYTliOTFkYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWM1MzVlMTJhODdiYjYxZmY0MjhjZDYzZjFlNWQyNWQ5MzBlNDAzYTAyZjI0ZjU1NTc0NWFhMDE2N2NiMmExNSJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L22-L30",
+          "version": "repo-lines-v1:sha256:e9c9c419d74a7501812abaf8c72737291c05ccce318128cd4634c9ae432940e2:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg5ZDNhYTU1ODZjMTE4NjE3NmE3ZTA4MzNhYjlmZjIzYmVhMDM1MmQ5OGVkNDcwMDNjNzU3ZWMyOWYwNGVlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM1NjMzOTQ4YzJhNGUwMjQ3NDllMGUxNGI1YTFkZGE5YThiMjYwZTAwMmM0NzRiNzYxNGJiZDQzMTFmMDZkZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjQ2YmYxM2YxMWE2N2JkNDM5NmQ0NGQ2YzVhZDdlNDBkZTg5ZWM0MTFjNTczZWM5MDEzMzcwMDhiMDFiN2ExOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2ExNmNhMGI2M2M3MzkwMDE2MjQ4ZWNmMTBiNmRmODE3MWE5Mjc2OWVmNTY4NTVlZWY3MWViYzEzOTZjZmM0MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_00cf101e248f4f88b5851d8e2dc67aed",
+      "statement": "The derivation graph is a DAG enforced by construction: deduplication on fact identity collapses same facts, a transformation may not derive a fact that is an ancestor of any of its inputs, and circular derivations are rejected with a recorded reason.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L120-L140",
+          "version": "repo-lines-v1:sha256:7647260d22486066c927cefa6e88c56bf7c73118e7ac1e04d1ad838f3ed509b7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiOWNmZjVlOGI3NTdlMzNkNGE2NThlOTU0ODNjMzUyZDhlOGUwNGVjZjU5YmNhNzM0MzVlYjU2MWI1ZTk1ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1OWYxYTk4ZDNlMmQzYTFiMGZhYTg3ZDEzODk4ZTZlYTgxY2NiYjBjMGI5NzlhM2IxMmU4OWMwOGMxZjRkZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViNGQ5ZmRkY2M3OTNmYjZjYjhiZjc0ZGVmZGNmZTVhMTUxZTdmNjlkZWQ0MmRmYWQ0MjdkN2JlNzlhMGUyZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzMTY1YjhjMmVhNTNhOWQwZDgxNGRlNmRjNDM5YjU4ZTRhMTRmMWJlOWRkMDJkMjJkZTFjNGMyYjk4YWVlZTkifQ"
+        },
+        {
+          "resource": "repo://engine.py#L161-L165",
+          "version": "repo-lines-v1:sha256:02bf84deaffce17b84f7bbed435cb424abf6f328b9414abf7e4c21c7945263bb:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2Q0NDk0ODgyMGYwOThmMDBjMTY5ZmE2MDc3OTBjOTE1ZWE2YmI1OWUzNDFhMWE2ZjVhMjliYmNhNjZlOTdiNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWQ4YTllOWMzMjUyODIwYzY1YTgxNjUyMGI4ZGI0OTMyMjgwODQ5ZWM4YzdkMmViNjI3MmFmZGZlYmUwNTljMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGM1NGEwZmY5NTc3NDNmMWFlOGUzMTk1MmViNmU4OWQ2N2M3NjJiMjE3MzUzYzg0ZjllZTQzODVjMDQ4NTZlNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmUyNjYwOTQzY2I0ZTkzZjEwN2M3NTYyNzlmY2U0NmQwMmE5Njg2NTJhOTliNGVkOTgxOWY3ZGE1ODhlMGQyOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3c65af30d0824982947d3a3afb084ace",
+      "statement": "A grammar may declare domain roots — facts with no parent transformation treated as truth and scoped to the declaring grammar; whether a minimal universal root-logic set exists is explicitly out of scope for v1 and a research thread only.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L228-L251",
+          "version": "repo-lines-v1:sha256:b24d9cbedf3f899241f28f1225dfc58ef699036e618ef1ba06bc0d4e0f7bd3d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2MDIyZWMwNGY5YzJjYzZhNzdiMDBjNzY3NjE3ODQxODZiYWEwNjE0OThlY2EyNTRhNmNlNGJhYzczMzQ0NzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjNTg5ZGRjY2FlMmNlODQyNGQ4YTBhNTk2ZmJkOTBmYjQyNjI1MjlhOGIyMzNkYzZhNzA1NmYzYzAzZGZhMTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1YzdjMjIyODJhZTQzNzUwYjcwZWIyZGU5NTdmODVmYzgwNTEzMWFkYmZkZDhiMDAxNTQwMjY1Y2ZjZmJlMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        },
+        {
+          "resource": "repo://docs/design.md#L82-L87",
+          "version": "repo-lines-v1:sha256:44511a089ba630a90a286ea21ceb50d447b93127fcba76ec1e539dbe3f0cfe9d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYThiMWNjMjNkY2Y3YzRmMjdlNGYzZTNiYmU3MDNlYmFlYTE2NDQ3NjEyMTM1MWE4OWJmNzU3NDg0YTQ5OTU2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWU4ZmVlMjA1NzRhMzdjYjIxZDA0Nzk2MjVjMTJiMTRlYTI3OTkxZjZiZjZhNjZmOTY3MGM4NjE0NjQ2NGJkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGE5MGIwMjIwYTJkMzc0ZjgzNjFhZDQxNWE5YjMxMjlmYmVmMDRlZGNkYjlhNzY5YjMyMGRhNzI2YTY3MjQ5MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2E0YjgyNTMxZWZiMDk2MGUwYmJmNjljNDU1ZjIyMmRlMjhmYmRhMzdkZWJkYWZlZWM5Nzc0ODcxNzU3OGY4MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a8e5ffc24c564688a17bf4b212dee9fe",
+      "statement": "The ontology is the domain extension boundary: a new domain supplies a fact-type schema and a rule library living in grammars/ only, keeping the core model and engine domain-agnostic, and domain adapters must not leak core internals through CLI or MCP.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L180-L184",
+          "version": "repo-lines-v1:sha256:97c92dbdf0cedb8f25b4d4f71058677787a846e0de38561b43253f9571ef2acb:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmZkMGM4NzIwNTI1ZTQ4ODM0MGE3Nzg0OTM0Y2M5N2FlZWQ1NzM4MTRkOWM0ZTMyOTc1OWJhMTBkNGIwZDU1YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjFmNDZhNzA5ZmViMDQzNjkxNmExNTIwNGQzZjAxZDk4YTYyNTZiYmYyZDA4MjNhZGNjNDIwOGM3NzUwZTFlNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWM4YTMwYjgwM2FjODcwNzI5MDQzZDgzZWVkNjBiNGQ0MDE3OTc4YmVlYTYyY2IxZjk3N2UwYmNjYWU4ZTg1YiJ9"
+        },
+        {
+          "resource": "repo://ARCHITECTURE.md#L253-L258",
+          "version": "repo-lines-v1:sha256:844d200ddfbfcc49fa2b279252da819ab074272111421d04d62a1108c622f5d4:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjUyZDcxMTEwM2Q1MGE0Mzc4MzBjNmZiY2QwNGZiNGJhYjQ5YTBmODJmNmQyNmQxYzc5MWM2ZTg0ODhkZDA5MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDhjNTBjNGY5NWVhYjRkMzEwOWRlYjJlYTQwMzI0MjUxZmViZjBlN2U1NzhjZWQyZGMxNGI0YzNjOTA2MTJkOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWZmOWI3OWU3NGYwN2UwOWRlMWQ3NmYyMmM3MjVjMjAyMDU4NWI1NzVhNGVjZjY0N2M0ZTJlMGI2ZDIzMWZiMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzJmZWQ4NmVkNTI1MjQ2ZGZlNWEyNjg3MzlmMDZlZDZlY2YzYTlhZTMxZjEzYTMyMzQxZTI2NWQwYzgwM2I0YiJ9"
+        },
+        {
+          "resource": "repo://ARCHITECTURE.md#L307-L314",
+          "version": "repo-lines-v1:sha256:60b2647f3ed1bd6104de78c84705e4bcee854dfc19c69549f870e8ce92d308eb:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTk5MDhiOTRjYjEwYWQ1YWU1N2I5ZTJkOTVmMWVkYTgwNDBiZjNjYTk0OTc1M2VjNTAyYmU4Y2IzNzdjOTg2ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2UyM2RmNDg3YmVlMGJjMjIwMjljMDEzZTZhZDU5NTI2ZGQ5NjYzMGFmZTBkY2RlNDk3ZmE1YjE3N2E0OTRjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTc0NjcyOWI5YzQ5MWI2NDZkZWE2MTc2MzJkOWU2ZWVlMTQzOTdlNDcyMTg0ZTUzYzkxYTg2Y2FjZGZmMjliMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2876fec8cdf647dfa9a977bc8071e512",
+      "statement": "Open questions touching the ontology: rule arity and whether multi-step composition should be first-class, unknown-vs-wrong disambiguation metrics, and the sameAs/differentFrom identity policy required before DL consistency checking is trustworthy.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L368-L375",
+          "version": "repo-lines-v1:sha256:2de1bf1f5f702581775f322c33be75db41ca75d31fc56c023b629f2e22dea434:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFlOWRiNGFhYjU2ZTUyNmQxZjFjOWZkNmNjNTk0MDc0N2U5YWQ5YjE3YTJjMjRjYjY5ZTYwMzhjYWJiOTZmMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhmNzNiM2Y2ZWI3MmVmZTUxMDdkNzRiN2QyY2UxMmFkODU2NDUzZGQzZGI3ODU3NGNmYzdkNDI5MzcyOGQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzdjZTBkNmRjMGE5OTIwN2E1ODI0MjBjZTgzYTNkMmFlMGNhMWIxODRhZDUzOGI4ZmNmYjNiMTMzZjkzZDFhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTc5NmEyZTJiMDc2MGIwM2JmNGIwNTVkYTRkMjVhM2M2ZDhhN2UwNWRhNmI2MWU1YmM1MWUwZWRlNDA3ODFlMCJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L135-L137",
+          "version": "repo-lines-v1:sha256:bd908a8ba7fab4a9e2df96233ded14cd1ed4d460b890bc396320f32f3d9d83b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmIwMDM1NmM3OTcwYmFlMjM3ZmQ1ZGI1MjcwNzU5YWExNTJiZGJmMDllODA0OGFkMjc0YzYwNmFiNGEzMTNiNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzUyMzRiZGJhYWY4NDg5NzJjY2NiYjdjNWE2NmUwNTkyNzFkMDE1YmY4NmNjMjZkZjVlODg4MWQyMTk5NWM3MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzJmMDI2ZDAxMjAzNmE4YThjNzEyZTM4MjQ0NjdkODY4OTYxODdkNTAwYzU2ZjVjZWIyNGVmYTY4ODgyNGVmYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWYyNTIzMTYwN2VkZDU5OTY1MGUyYTRkYzI4ZmM0NjMxYjQ2OWI2MzFmNmJhNDUzNDQyZmVkMmU3M2M5MWM5NiJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L194-L201",
+          "version": "repo-lines-v1:sha256:ecc804a501df278dcbd78a66c6bd14a63c74e40b3c10b1d7a7275369a4aef0b2:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDcwYzI3MjkwMjJhZDQyMjFkN2U3MmM3OTVjYTViZmNhYjcwMjI4OTE4NmI2MmNiOGM1Yjg0NzU2YWEzYWFiOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTYzNTM0MWRjZTkyODYzODM0NjdkMjBhMGQ2YmRhYjQ3NTA3MDA5ZjNiMzFlYTczOGQ5YjIyNjQ5ZmI2ZTM1MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmZiYTI3MzI3MWQ0NzBlODdjZGMwYWEwYzliZjVkZGI0MDA0MzI0MmViYjgyN2MyOGYxODYwYmJlOTMxMzFhOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8d030edbd0cf4b43854ee977d5f952a7",
+      "statement": "An estimated/uncertainty status with confidence or interval is a finalized v1 design direction from the research additions but is not shipped: model.py validates exactly the five statuses, so any sixth status is future work, not current behavior.",
+      "evidence": [
+        {
+          "resource": "repo://docs/newer-additions.md#L77-L88",
+          "version": "repo-lines-v1:sha256:d4834352d6fb204c528011a222f72ca8d2ebe5b3b686bb375b8ffb5acad6309b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkNDMzMWJkN2IyZDY3ZGY4MjM1NDhkYzgyM2M5OTY3YWRiZTJlMWU1YTMzN2E5NGE4MmEzMWM3YTgyZTM3ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViZmMyZTljOGZmNjk4N2Q5MTI0MDFiZTgxMmNmNzdkNDM4MTM0YTVmYzE2ZTc4NzQ3MzZiMGYxZTQyYzA0MDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyZmU2Zjg3ZWVkYTc2Y2M0ZTUzOGM0MmE3MDY2ZGI0ZWU5MjRjNTFlYzRmNmE1Mjc3ZDhiZDNjM2U1Y2VjNmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0NDU3MmRkNzI3YWViZmMyNzk0MWZjYTg3Mzc2YjhiMTg4NTBlZDdmMDMzZmM2ODExZTI0NDJlZThiMmVhNGQifQ"
+        },
+        {
+          "resource": "repo://model.py#L46-L48",
+          "version": "repo-lines-v1:sha256:19058a367989eca3fa763d8f7c6f540b4615537a729a8c6ed2d626b5e73508dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmZlNDc3MzAxN2NlMjMzMjliZWZmYWNjY2YwZjlkYWNlYTU2YTZiZjA2ZjE2YjI3N2Y0YmRmMTU3M2I4YzFiNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTZlNDdhMjRhZjM0NzE1Y2M2MWQyZTQwNDIxMGFiYjA2NjllN2RmYTljZjFiN2QwZWZjZmYzMjAzZDJhYzc1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzFlNmRmOWYwZTgzMWUyOTQyOTkwMmMyODNjYWVkZWFiOWU4YzQxZjJiNTg0OTkzNWI5MmNjNmI5OWJmYjYxNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FjMzlkNTViMWM0MDlhZWU3YzMxOGFlOGZlZTRmMTI5ZWU4MzU5ZWIyNzM2NTc1YmViYjgwNzE3YTUzOTY5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3b42d341374f4493b974304ac6e73b57",
+      "statement": "The physics slice builds facts with kind metadata as attributes (fact_kind, symbol, dimension, unit) and singleton default ids per kind (u, v, t, a, s, m, F, K, W), so within that grammar a fact is identified by its quantity symbol.",
+      "evidence": [
+        {
+          "resource": "repo://grammars/physics.py#L56-L60",
+          "version": "repo-lines-v1:sha256:6efb8df9eeac23bbcdcc5f4bdfd7a4f996c322237ce358f5817d3e353104a2a2:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjQ4NjE1NDc2ZDU0ZWQwNTNkNWZiNTQ1NThiYjI5ZmQyMmM2ZmRiMzUzZTk4YmZhNmI4MWYyMjA0NTY4OWNhNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmJlNGZmNzQ5ODZlNzAwNjA5NWE5OWE4YmI1ZjVlOTVjZThjYTllZGU4MjliNTM1ZjJhNTk2YjkyZmZiZmJiNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGY5ZGFjMzE1NDYxY2YxZDJlMWVlNGEyNGUxMzZmNTRjNGQ4Y2QwNmYyYjZiZmE1ZjE3NDY0YzNhMjExM2RjZCJ9"
+        },
+        {
+          "resource": "repo://grammars/physics.py#L74-L88",
+          "version": "repo-lines-v1:sha256:22792ad49d18a34e665f0b513fbbaaf76f62df9f5f62a53c8981119c5f4e99ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxNTQwMzQ5YTQ5ODg0NDcyMjYzMTc5YTZjZTNmODBiYTgzMmZkMjllMjMzYTRlODM1NjA3ODc1ZjZlOGI4NzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiMmViMDkzZmVkNTViYmMwOWFkY2E2ZmFmMTcyMWExNWVjOWU4MDkxZjZlNWU1MGMwZmE3N2Q2ZDg0M2QyNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkODJkNjJjZjM0NjljYmYwYjJmMmVkZTJiMDFjYTc0M2QwYjYxMzUxMTE2YzNmYjI2YzY2MmFjMTcyMWYxMzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd7afe92f4794288867adefe3bf15471",
+      "statement": "Problem givens enter as unverified_truth facts and the target enters as a target fact with no value; when no target kind is identified verify_physics short-circuits to an UNKNOWN result with an evidence note instructing the user to phrase the target as 'find the quantity'.",
+      "evidence": [
+        {
+          "resource": "repo://__init__.py#L38-L52",
+          "version": "repo-lines-v1:sha256:1606f82e76dd934fb8b96a94dcd916f92a11ace43c6f9866d11e63b6b1225ca9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2Njk5ZjJjMzk2NGM1NzllYTI0MzUyZGExYTRkNDgxY2ViYjJiYmVkZDNhYmFmNDllZTBmMzMwYjEzM2RmZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMjZjNTZhODA3OTUxMzc5ODFiOTM0YTljYzhmODA2NmRhNjZjODJhZmU3ZjBmYTQ0ZjlmZjFkYzllZjEwMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllYTQzNmZmMjI2OTQ5OGI2MWRiYzQyZjgwZmY5NWI5NmNiYmNlMTdkMDkzY2Y2M2I5MjQ3ZTFlZDYwYTMxOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjZWU1ZjJmYzIxMjNiZWIyODgyYjMwMGUzZDg1MDIxOTliYzE4YWVjYjYyYjA5MDI1NzliNGJjNmFiMzZhOTEifQ"
+        },
+        {
+          "resource": "repo://grammars/input.py#L120-L135",
+          "version": "repo-lines-v1:sha256:46dfb60f4d8df9200780a417e40ab881eb1692c299ce8d2e7e2e77f57a0203f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0M2I1ZTBkY2U0Njg2Zjc3NDg1MjY2YTE1M2ExZTI4MTE1NzU3NmFhY2Q4Mzg2OWY4OTM1ZjE1MjAwZTU1NzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmMTk0NDY3NTJjMzNjMTgxZWE5MjMyYTc5NWJlZmYxNWJjM2ZlZWRkMmE1ODA4N2IzZjVjMzNlZWI2MmU5OTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiZmE5ZWI0MTc5YjJiYTA1NDVkNDU0MjVlNDI0YzYzNWFmYjc1NzdiYzY3YjdhOWZhMDI5NDk3OTAxMmIwOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-08-28T20:01:59.856Z"
+  }
+}

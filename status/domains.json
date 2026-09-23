@@ -1,0 +1,699 @@
+{
+  "db_version": "0.4.0",
+  "updated": "2026-09-03",
+  "what_this_is": "Catalog of domain case studies. Each entry: problem → why it needs verification → how handled today → what makes it formally verifiable → a concrete scenario. Physics is full-depth with real grammar + real engine traces; it is the template every other domain expands against. No title-only cards.",
+  "status_vocab": [
+    "shipped",
+    "designed",
+    "next_up",
+    "near_term",
+    "exploratory",
+    "flagship"
+  ],
+  "count": 51,
+  "families": {
+    "shipped": {
+      "title": "Shipped — reference-depth case study",
+      "status": "shipped",
+      "domains": [
+        {
+          "id": "physics",
+          "category": "shipped",
+          "title": "Kinematics & Mechanics",
+          "status": "shipped",
+          "artifact": "status/physics.json",
+          "problem": "An agent solving a physics word problem produces a confident number. Scoring 'looks plausible' proves nothing: a chain can be internally consistent yet algebraically unsound, drop a stated quantity, or use m where the unit is s. Verifying an answer is not judging an answer.",
+          "why_verify": "Physics answers reduce to typed constraints over quantified facts. Each quantity carries a dimension (L·M·T basis) and a unit. A rule fires only if every input's dimension equals its role. So 'is this derivation correct' is a deterministic, checkable question — a wrong dimension, wrong unit, or missing quantity each becomes a recorded rejection in the trace.",
+          "today": "Students/agents self-check; LLM-judges score plausibility and unit-plausibility heuristics. Neither catches an internally-consistent but invalid sub-derivation, and neither explains WHY a specific step failed.",
+          "verifiable_because": "Equations over real quantities compile to a fact/transformation DAG. Induction derives forward from knowns; deduction decomposes the target back to knowns. Every derived fact carries a derivation reference; every rejected rule records the reason. RESOLVED only when a legal chain of fired transformations reaches the target.",
+          "grammar_code": "# grammars/physics.py — the executable grammar (rules hardcoded; agent cannot inject)\nKIND_META = {\n  \"initial_velocity\": {\"symbol\": \"u\", \"dim\": D_VELOCITY, \"unit\": \"m/s\"},\n  \"final_velocity\":   {\"symbol\": \"v\", \"dim\": D_VELOCITY, \"unit\": \"m/s\"},\n  \"acceleration\":     {\"symbol\": \"a\", \"dim\": D_ACCEL,    \"unit\": \"m/s^2\"},\n  \"time\":             {\"symbol\": \"t\", \"dim\": D_TIME,     \"unit\": \"s\"},\n  \"displacement\":     {\"symbol\": \"s\", \"dim\": D_LENGTH,   \"unit\": \"m\"},\n  \"mass\":             {\"symbol\": \"m\", \"dim\": D_MASS,     \"unit\": \"kg\"},\n  \"force\":            {\"symbol\": \"F\", \"dim\": D_FORCE,    \"unit\": \"N\"},\n  \"kinetic_energy\":   {\"symbol\": \"K\", \"dim\": D_ENERGY,   \"unit\": \"J\"},\n  \"work\":             {\"symbol\": \"W\", \"dim\": D_ENERGY,   \"unit\": \"J\"},\n}\n# rules (build_physics_rules): v=u+at, s=ut+.5at^2, v^2=u^2+2as,\n#   t=(v-u)/a, s=(u+v)/2*t, F=ma, K=.5mv^2, W=Fs.\n# make_rule() wraps each with a dimension-enforcing precondition.",
+          "case_study": {
+            "scenario_plain": "A car starts from rest and accelerates at 4 m/s² for 10 s. Find the displacement.",
+            "solution_pythonic": "import openverifiers as ov\nimport openverifiers.physics as phy\n\n# Environment: declare objects with ownership + typed variables\nframe = phy.SimpleFrame()\ncar = phy.SimpleObject(mass=phy.autovar('10 kg'))\n\nwith car as owner:\n    u = phy.autovar('0 m/s')    # velocity, dim [L T^-1]\n    a = phy.autovar('4 m/s^2')  # acceleration, dim [L T^-2]\n\nwith frame as owner:\n    t = phy.autovar('10 s')     # time, dim [T]\n\n# Apply the transformation template — Newton's second kinematic relation\nkin1 = phy.kinematics.newton.1().plug(u=u, a=a, t=t)\ns = kin1.separate('s').evaluate()\n\n# The validator query reads back the proof trace like SQL\nresult = ov.find(1).where(owner=car, value=300, unit=phy.autounit('m'))",
+            "target": "displacement (s)",
+            "trace_success": "[OpenVerifiers] target=s status=RESOLVED answer=200.0\n  derive v = 40.0  via kinematics.v_u_at  from ['u', 'a', 't']\n  derive s = 200.0 via kinematics.s_avg_v_t from ['u', 'v', 't']",
+            "verdict": "RESOLVED — s = 200.0 m. Two-step composed derivation: rule v=u+at fires on [u,a,t], then rule s=(u+v)/2·t fires on [u,v,t].",
+            "composition_lesson": "Composition is first-class in the DAG: the output of one rule (v) becomes the input of the next. This proves multi-step problems — exactly the 'mountain ascent': each step is a legal rule-fire reachable from prior steps.",
+            "failure_scenario": "Ask for force but give only displacement 50 m.",
+            "failure_given_pythonic": "# claiming F needs a route to mass; given only displacement,\n# deduction cannot derive it -> UNKNOWN with an evidence note\nwith frame as owner:\n    s = phy.autovar('50 m')",
+            "failure_target": "force (F)",
+            "trace_unknown": "[OpenVerifiers] target=F status=unknown answer=None\n  deadend force: no rule or known fact\n  REJECT (recursion): circular — kind force already on path\n  deadend mass: no rule or known fact\n  UNKNOWN F: no rule could derive the target — evidence needed: add a missing given or rule",
+            "failure_verdict": "UNKNOWN is a verdict, not an error. The engine names the gap (mass reachable by no rule/given) and emits an evidence-needed note; it does NOT fabricate a false pass. Downstream distinguishes 'proven wrong' from 'not yet provable'.",
+            "framework_lesson": "Proof vs. prediction: the engine never returns a bool. It returns a derivable answer, an explained UNKNOWN, or a trace of which preconditions blocked which rules. That three-way verdict is the model every future domain inherits."
+          },
+          "gaps": [
+            "Z3 backend absent — no discrete/threshold constraints; fully symbolic today",
+            "20-fixture benchmark thin — must-reject adversarial suite not formalized",
+            "multi-valued roots resolve to positive real (textbook) — regime boundary not modeled"
+          ],
+          "out_of_scope": [
+            "qualitative judgement of reasoning style / tone (statistical)",
+            "proof that all physics reduces to a universal root set (research thread)"
+          ]
+        }
+      ]
+    },
+    "designed": {
+      "title": "Designed — class-DX + persistence, not yet engine-backed",
+      "status": "designed",
+      "domains": [
+        {
+          "id": "physics-sandbox",
+          "category": "designed",
+          "title": "Physics sandbox (rod + cube)",
+          "status": "designed",
+          "problem": "A physics sandbox (attach a rod to a cube corner, apply loads, read joint reactions) is a messy text+visual world. An agent reasoning over it produces plausible joint reactions, moments, and stress states that are unverified — a wrong attachment or load balance silently propagates.",
+          "why_verify": "A sandbox is logic-ready the moment it implements this system: every component (rod, cube, joint) is a typed class-fact, every interaction (attach, rotate, load) is a transformation with typed preconditions, and every derived quantity (reaction, moment) carries a proof footprint back to the components that produced it. KVL/KCL-style derivations (mechanics equilibrium, energy) are the same engine as physics word problems.",
+          "today": "Physics engines simulate the state but do not PROVE a claimed conclusion about it. Verification is manual and separate from the sim.",
+          "verifiable_because": "Same fact/transformation DAG as physics, now over class-typed component facts with nested sub-facts (cube → faces → corners; joint → members). U-Net framing: messy sandbox state boils down to a formal typed setting, proofs run over it, conclusions render as proof — losslessly.",
+          "grammar_code": "# class-DX physics sandbox grammar\n@dataclass(frozen=True)\nclass Quantity(Physical):  kind: str; value: float; unit: str; dimension: Dim\n@dataclass(frozen=True)\nclass Body(Physical):      name: str; mass: Quantity; parts: tuple[Body, ...]\n@dataclass(frozen=True)\nclass Cube(Body):          edge: Quantity; corners: tuple[float,float,float, ...]\n@dataclass(frozen=True)\nclass Rod(Body):           length: Quantity; section: Quantity   # polymorphism: Rod is a Body\n@dataclass(frozen=True)\nclass Joint(Physical):     at: tuple[float,float,float]; members: tuple[Body, ...]\n# interaction is a Transformation with typed preconditions + proof footprint\nclass attach(Transformation[ tuple[Rod, Cube, Joint], Joint ]): ...\nclass joint_reaction(Transformation[ Joint, Quantity ]): ...\nclass KVL_like_equilibrium(Transformation[ tuple[Quantity, Quantity], Quantity ]): ...",
+          "case_study": {
+            "scenario_plain": "Attach a 2 m, 3 kg rod to one corner of a 0.5 m cube. Compute the reaction at the joint.",
+            "assemble_pythonic": "# class-DX sandbox assembly — objects, nesting, polymorphism\nrod = Rod(length=Quantity(2.0, \"m\"), mass=Quantity(3.0, \"kg\"))\ncube = Cube(edge=Quantity(0.5, \"m\"), corners=8)\n\n# attach rod to cube.corners[0] -> a Transformation firing\njoint = ctx.attach(rod, to=cube.corners[0])\n\n# joint reaction derives from rod/cube facts via equilibrium rules\nreaction = joint_reaction(joint).evaluate()",
+            "target": "joint reaction (moment at joint)",
+            "verdict": "Composition + nested facts: joint reaction derives from rod.length, rod.mass, cube.edge via equilibrium rules — a multi-step derivation over class-typed, nested component facts.",
+            "persistence_lesson": "PERSISTS. The reaction fact is linked back to the rod/cube source facts + the attach transformation. Edit the rod length → the reaction fact is stale → re-derived → every downstream conclusion recomputes. The sandbox is logic-ready from the first attach."
+          },
+          "framework_lesson": "The U-Net + persistence flagship. Messy sandbox state → formal typed setting (class-facts) → prove (transformations) → conclude (proof trace). Source-linked persistence (rod edit → revalidation) is exactly the OpenWiki move applied to physical systems.",
+          "persistent": true,
+          "gaps": [
+            "Z3 absent — geometry/threshold constraints unproven in sandbox scale effects",
+            "no persistence store yet — revalidation is designed, not shipped"
+          ],
+          "out_of_scope": [
+            "simulating the physics (a sim state is a given, not a proof)",
+            "visual/3D rendering"
+          ]
+        }
+      ]
+    },
+    "next_up": {
+      "title": "Next up — post-physics, highest feasibility",
+      "status": "next_up",
+      "domains": [
+        {
+          "id": "math-proof",
+          "title": "Math proof checking",
+          "status": "next_up",
+          "problem": "An agent 'proves' an inequality or identity with plausible-looking steps. A wrong lemma or an induction hole embeds in a dense chain and looks valid.",
+          "why_verify": "Proof steps reduce to axiom/lemma gates — each step must be a legal inference from prior steps and the domain axioms. Contradiction and induction detection are mechanical when the step relation is typed.",
+          "today": "Step-by-step checking is manual; LLM-judges score plausibility per step, missing a locally-plausible but globally-invalid chain.",
+          "verifiable_because": "Each lemma is a transformation (inputs → derived line); an induction step is a rule-fire with a base-case gate. A 'proof accepted' verdict requires every step to fire — the trace is the proof.",
+          "scenario": "Prove (a+b)² ≥ 4ab. Givens: a,b real; binomial expansion rule; AM-GM lemma. Engine must derive the inequality, or reject at the first non-firing step with the reason.",
+          "framework_lesson": "New grammar kind: free variables with domain constraints (reals, naturals) rather than dimensioned quantities."
+        },
+        {
+          "id": "code-refactor",
+          "title": "Code & refactor verification",
+          "status": "next_up",
+          "problem": "An agent proposes a refactor claiming 'no circular imports, API contract preserved'. A hidden call the agent didn't see breaks on merge; CI runs after the fact.",
+          "why_verify": "Dependency-graph consistency, import-acyclicity, and API-contract adhesion are graph problems over typed nodes — checkable before the change lands, in the same trace that explains a rejected step.",
+          "today": "Linters and CI catch the break after the fact; no proof the planned change preserves every contract.",
+          "verifiable_because": "A planned edit is a set of facts (nodes, edges, contracts being changed); the 'refactor is safe' claim is a target derived from invariant rules (acyclicity, contract-equality). A violating edit rejects a rule with the reason.",
+          "scenario": "Plan: extract module B from A. Claim: A→B edge list forms a DAG and all imports resolve. Engine must derive 'safe' or return the circular-dependency set.",
+          "framework_lesson": "Grammar over graph facts; the same DAG engine that proves physics chains now proves dependency legality."
+        },
+        {
+          "id": "personal-goal-roadmaps",
+          "title": "Personal goal roadmaps",
+          "status": "next_up",
+          "flagship": true,
+          "problem": "An agent plans a 12-month goal roadmap. Milestones with dropped constraints or infeasible scheduling silently pass human and LLM review.",
+          "why_verify": "Roadmap feasibility is contradiction + dropped-constraint + scheduling-feasibility checking over facts (milestones, deadlines, dependencies, capacities).",
+          "today": "Agent tracks milestones in a tool; nothing checks the plan's internal consistency before it becomes action.",
+          "verifiable_because": "Each milestone is a fact with dependencies and a deadline; a 'roadmap is feasible' claim requires every dependency-satisfaction and deadline rule to fire. Contradictory milestones reject with the conflict.",
+          "scenario": "Three milestones: M1 needs prep (2 wk) before M2, M3 deadline coincides with M2 completion. Engine must flag the clash as an explained UNSAT, or verify a re-sequenced plan.",
+          "framework_lesson": "Origin domain for Snayu; state facts carry owner scoping (which plan owns this milestone) — the owner-precondition pattern."
+        }
+      ]
+    },
+    "near_term": {
+      "title": "Near-term — solid fits, sequencing not committed",
+      "status": "near_term",
+      "domains": [
+        {
+          "id": "study-prep-roadmaps",
+          "title": "Study-prep roadmaps",
+          "status": "near_term",
+          "problem": "Agent builds a study plan pacing topics to an exam. Pacing vs. deadline and prerequisite ordering are arithmetic+ordering constraints an agent can silently violate.",
+          "why_verify": "pacing sums vs. remaining time, prerequisite ordering, resource arithmetic — all checkable constraints.",
+          "today": "Spreadsheet/manual planning; no proof the plan fits the deadline.",
+          "verifiable_because": "Topics with durations and prerequisites compile like physics: 'fits deadline' derived, else explained which topic/order breaks it.",
+          "scenario": "Topics A,B,C with 3,5,2 wk, B requires A, 8 wk deadline. Must reject ordering B before A; verify A→B→C at 10 wk.",
+          "framework_lesson": "Ordering + sum invariants; deadline as a special time fact."
+        },
+        {
+          "id": "travel-itineraries",
+          "title": "Travel itineraries",
+          "status": "near_term",
+          "problem": "Agent plans flights→hotel→activities. A buffer violation or schedule clash is invisible until the traveller is stranded.",
+          "why_verify": "Schedule-clash and buffer-time arithmetic over dated facts is checkable.",
+          "today": "Manual calendar check; agents rarely validate transit buffers.",
+          "verifiable_because": "Each leg has start/end facts and a required buffer; 'no clash' derived via per-leg buffer rules, else the clashing pair is named.",
+          "scenario": "Flight lands 18:00, dinner reservations 18:30, no check-in/luggage buffer — flag hotel-arrival infeasibility.",
+          "framework_lesson": "Temporal ordering + buffer constraints; time facts typed with durations."
+        },
+        {
+          "id": "legal-contract-review",
+          "title": "Legal & contract review",
+          "status": "near_term",
+          "problem": "Agent reviews a contract claiming two obligations are compatible. Buried contradictory clauses and missing preconditions pass review.",
+          "why_verify": "Obligations, conditions, and dates compile to typed constraints; contradictory obligations and missing preconditions are satisfiability failures, not taste.",
+          "today": "Attorneys (slow, costly) or grounding-checks (is the clause present — not: do clauses conflict).",
+          "verifiable_because": "Each clause is a fact with obligations as rules; 'contract is coherent' requires no rule set to be unsatisfiable. A violated precondition names the clause and why.",
+          "scenario": "Clause A obligates delivery by 01-01; Clause B allows vendor extension up to 90 days if notice given; no notice fact. Detect the hidden conflict or missing precondition.",
+          "framework_lesson": "Satisfiability over obligations; where conflicts()/unsat-core pulls real value."
+        },
+        {
+          "id": "financial-plan-checking",
+          "title": "Financial-plan checking",
+          "status": "near_term",
+          "problem": "Agent composes a save→invest→retire plan. Compound interest and dependency consistency are numeric chains an agent can get wrong.",
+          "why_verify": "Compound interest, tax logic, and dependency consistency are arithmetic invariants — exactly what the equation engine proves.",
+          "today": "Financial calculators check one formula; no agent proof links the whole plan.",
+          "verifiable_because": "Cash-flow facts + compounding rules make 'plan reaches retirement target' a derived verdict, or explain the shortfall branch.",
+          "scenario": "Save 500/mo, 6% APR, need 100k in 20y. Verify plan reaches target, or reject with the missing-funds step.",
+          "framework_lesson": "Compound chains re-use the multi-step composition pattern of physics."
+        }
+      ]
+    },
+    "stem": {
+      "title": "STEM",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "chem-stoichiometry",
+          "title": "Chemistry stoichiometry",
+          "status": "exploratory",
+          "problem": "Agent balances a reaction or computes yields from a mole chain; a coefficient or ratio error propagates silently.",
+          "why_verify": "Balanced-equation and mole-ratio arithmetic over substance facts is checkable.",
+          "today": "Manual balancing; LLM-judges catch gross errors only.",
+          "verifiable_because": "Substance quantity facts + balance/mole-ratio rules form an equation chain.",
+          "scenario": "Given 2H2+O2→2H2O and 4 mol H2, verify H2O yield = 4 mol, or reject a wrong ratio.",
+          "framework_lesson": "Extension: dimensional analysis over moles/grams as a quantity class."
+        },
+        {
+          "id": "engineering-design",
+          "title": "Engineering design calculations",
+          "status": "exploratory",
+          "problem": "Agent yields a design parameter from a calculation chain; a unit or margin error is buried.",
+          "why_verify": "Same dimension/unit-gated equation engine as physics, with an added safety-margin constraint.",
+          "today": "Engineers hand-check; agent output trusted if numbers look sane.",
+          "verifiable_because": "All quantity rules dimension-gated; design margin is a threshold constraint (Z3).",
+          "scenario": "Beam stress calc with a 1.5 safety factor; verify chosen section satisfies, else reject.",
+          "framework_lesson": "Adds threshold constraints → Z3 becomes necessary."
+        },
+        {
+          "id": "stats-data-claims",
+          "title": "Statistics & data-claim checks",
+          "status": "exploratory",
+          "problem": "Agent cites a p-value or correlation claiming significance; the claim may not follow from the stated data.",
+          "why_verify": "Statistical derivations are distributions of arithmetic; claims must follow from stated evidence.",
+          "today": "Researchers hand-verify; agents restate statistical results as ground truth.",
+          "verifiable_because": "Data facts + derived-statistic rules make 'claim follows from data' a derivable verdict.",
+          "scenario": "Given n, mean, sd, verify a stated p-value equals the computed value, else reject.",
+          "framework_lesson": "Numerical-statistic chains; ties into the correlation-chain research thread."
+        },
+        {
+          "id": "algorithm-complexity",
+          "title": "Algorithm complexity claims",
+          "status": "exploratory",
+          "problem": "Agent claims a function is O(n) or a loop nest O(n²); the claim rarely comes with a proof.",
+          "why_verify": "Complexity claims reduce to recurrence/growth-rate arguments over the code structure.",
+          "today": "Human big-O reasoning; agents assert bounds without proof.",
+          "verifiable_because": "Loop/recursion facts + growth rules make 'T(n) ∈ O(f)' a checkable derivation.",
+          "scenario": "Nested loops of n and n/2; derive O(n²) or reject an O(n) claim.",
+          "framework_lesson": "Symbolic asymptotics as transformations."
+        },
+        {
+          "id": "database-migrations",
+          "title": "Database migration plans",
+          "status": "exploratory",
+          "problem": "Agent authors a migration; a dependency or hard-cutover breaks the schema.",
+          "why_verify": "Migration ordering (ACID sequence) and reference integrity are graph constraints.",
+          "today": "Migrations reviewed manually; breakage surfaces in staging.",
+          "verifiable_because": "Column/table facts + ordering and integrity rules make 'migration is safe' derived.",
+          "scenario": "Add FK before referenced table exists — reject; reorder — verify.",
+          "framework_lesson": "Ordered-constraint grammar; same as travel/code ordering family."
+        },
+        {
+          "id": "circuit-design",
+          "title": "Circuit design verification",
+          "status": "exploratory",
+          "problem": "Agent's circuit satisfies KCL/KVL on paper but a loop or excitation is inconsistent.",
+          "why_verify": "KCL/KVL are exactly typed rule chains over node/branch facts.",
+          "today": "SPICE simulates — proves a modeled behavior, but doesn't explain a specific claimed inconsistency.",
+          "verifiable_because": "Node/branch quantity facts + KCL/KVL rules; dimension-checked (V, A, Ω).",
+          "scenario": "Verify two-loop KVL sums to zero, or name the conflicting branch.",
+          "framework_lesson": "Direct reuse of physics rule+DAG shape; discrete branch types add ohm's-law gating."
+        },
+        {
+          "id": "unit-conversion",
+          "title": "Unit conversion & dimensional analysis",
+          "status": "exploratory",
+          "problem": "Agent converts units or checks dimensional homogeneity; a factor-of-ten error is common and silent.",
+          "why_verify": "Unit algebra IS dimensional analysis — the engine's native strength.",
+          "today": "Heuristic parsers; agents trust the number without checking units.",
+          "verifiable_because": "Every quantity is dimension-tracked; a conversion is a rule-fire; mismatched units reject with the mismatch.",
+          "scenario": "40 km/h to m/s — verify 11.11..., reject if the agent claims a wrong conversion factor.",
+          "framework_lesson": "Pushes the unit algebra the physics slice already ships."
+        }
+      ]
+    },
+    "legal_compliance": {
+      "title": "Legal & compliance",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "regulatory-checklists",
+          "title": "Regulatory compliance checklists",
+          "status": "exploratory",
+          "problem": "Agent asserts a filing meets a checklist; a missing precondition passes review.",
+          "why_verify": "Checklist items are boolean preconditions over document facts — each must hold.",
+          "today": "Compliance officers hand-check; grounding-checks confirm presence not satisfaction.",
+          "verifiable_because": "Each checklist item is a rule over facts; 'compliant' requires all to fire, else the missing item is named.",
+          "scenario": "Filing must cite §x and provide form y; verify both present as facts, or reject naming the gap.",
+          "framework_lesson": "Rule registry is the requirements — no agent-authored exceptions."
+        },
+        {
+          "id": "tos-privacy",
+          "title": "ToS / privacy-policy consistency",
+          "status": "exploratory",
+          "problem": "Agent claims sections are consistent; two clauses contradict.",
+          "why_verify": "Clause obligations compile to constraints; contradiction is UNSAT.",
+          "today": "Legal review; no automated conflict detection across long docs.",
+          "verifiable_because": "Section facts + obligation rules; contradictory sections make the document UNSAT with the conflict core.",
+          "scenario": "§3 permits data sale, §8 forbids any transfer — detect the core conflict.",
+          "framework_lesson": "UNSAT/conflicts() is the headline: minimal conflicting clause set."
+        },
+        {
+          "id": "legal-argument-structure",
+          "title": "Legal argument structure",
+          "status": "exploratory",
+          "problem": "Agent drafts an argument claiming it follows a precedent; the inference chain is broken.",
+          "why_verify": "Argument steps as legal inferences over established facts and cited precedent.",
+          "today": "Attorney review; no mechanical proof the argument's steps are all admissible.",
+          "verifiable_because": "Each step is a transformation from premises + a cited rule; a missing premise rejects.",
+          "scenario": "Major-premise → minor-premise → conclusion chain; verify every link admits, else name the unsupported link.",
+          "framework_lesson": "Deduction = the engine's core; argument = a DAG of admissible steps."
+        },
+        {
+          "id": "due-diligence",
+          "title": "Due-diligence document review",
+          "status": "exploratory",
+          "problem": "Agent claims a doc set has no gaps/contradictions; a missing exhibit is missed.",
+          "why_verify": "Required-document and consistency rules over the doc inventory.",
+          "today": "Manual DD checklists.",
+          "verifiable_because": "Item rules over doc facts; 'DD complete' requires every required rule to fire.",
+          "scenario": "Deal requires audited financials + stock cert; verify both present, else name missing.",
+          "framework_lesson": "Required-inventory grammar; absence is UNKNOWN (open-world), not FALSE."
+        }
+      ]
+    },
+    "finance_business": {
+      "title": "Finance & business",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "startup-model-audit",
+          "title": "Startup financial-model auditing",
+          "status": "exploratory",
+          "problem": "Agent's model ties out on the surface but an input feeds two places inconsistently.",
+          "why_verify": "As-sold equations over the model's own cell-facts.",
+          "today": "Spreadsheet review; tie-out checks catch pastes, not logical inconsistency.",
+          "verifiable_because": "Assumption facts + dependency rules make 'model is internally consistent' derived.",
+          "scenario": "Revenue = price×units and cost = unit input; detect an inconsistency in how a shared input feeds both.",
+          "framework_lesson": "The DAG already tracks which-inputs-feed-which-output; audit = walk it."
+        },
+        {
+          "id": "budget-consistency",
+          "title": "Budget plan consistency",
+          "status": "exploratory",
+          "problem": "Agent's budget sums don't reconcile across categories or periods.",
+          "why_verify": "Sum reconciliations and cap constraints are arithmetic invariants.",
+          "today": "Spreadsheet sum-checks; no agent proof across periods.",
+          "verifiable_because": "Category amount facts + sum/cap rules.",
+          "scenario": "Departments sum to allocated total and each under cap — verify, or name the over-cap department.",
+          "framework_lesson": "Sum invariants + cap thresholds (Z3)."
+        },
+        {
+          "id": "invoice-billing",
+          "title": "Invoice & billing reconciliation",
+          "status": "exploratory",
+          "problem": "Agent's invoice totals don't reconcile to line items or taxes.",
+          "why_verify": "Line-item → subtotal → tax → total is an arithmetic chain.",
+          "today": "Accounting software checks totals; no proof over the agent's generated invoice.",
+          "verifiable_because": "Line facts + tax/total rules.",
+          "scenario": "Lines 100+50, tax 10%: verify 165.00, reject a wrong total.",
+          "framework_lesson": "Pure arithmetic chain, reuses physics composition."
+        },
+        {
+          "id": "investment-thesis",
+          "title": "Investment thesis consistency",
+          "status": "exploratory",
+          "problem": "Agent's thesis claims a valuation or return its own assumptions contradict.",
+          "why_verify": "Thesis assertion must follow from stated financial facts and rules.",
+          "today": "Analyst review.",
+          "verifiable_because": "Assumption facts + valuation rules; a claim not derived is UNKNOWN/contradicted.",
+          "scenario": "Claim IRR>15% but cash-flow facts imply <10% — reject with the contradiction.",
+          "framework_lesson": "Claim vs. derived mismatch is the core 'don't trust the agent' move."
+        }
+      ]
+    },
+    "health_medical": {
+      "title": "Health & medical",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "medication-checks",
+          "title": "Medication dosage & interaction checks",
+          "status": "exploratory",
+          "problem": "Agent suggests a dosage or flags an interaction; a weight-based dose or interaction rule is violated.",
+          "why_verify": "kg-based dosing and interaction tables are typed rules over patient + drug facts.",
+          "today": "Clinical decision-support APIs; agents often bypass them.",
+          "verifiable_because": "Patient weight + drug dose facts, dosing + interaction rules; violation rejects with the rule.",
+          "scenario": "Weight 80kg, drug at 0.1mg/kg — verify 8mg; known-interaction rule must also be satisfied.",
+          "framework_lesson": "Safety-critical preconditions — high weight on correctness; tool must be right or say UNKNOWN."
+        },
+        {
+          "id": "fitness-plan",
+          "title": "Fitness plan validation",
+          "status": "exploratory",
+          "problem": "Agent's progressive overload plan exceeds safe weekly volume or breaks recovery ordering.",
+          "why_verify": "Volume caps and recovery ordering are constraints.",
+          "today": "Hand-built plans; no checking.",
+          "verifiable_because": "Session facts + volume/rest rules.",
+          "scenario": "Weekly volume cap 15 sets/group; plan schedules 20 — reject the violation.",
+          "framework_lesson": "Cap constraints (Z3)."
+        },
+        {
+          "id": "clinical-trial",
+          "title": "Clinical trial protocol consistency",
+          "status": "exploratory",
+          "problem": "Agent's protocol has an exclusion criterion contradicting an inclusion criterion.",
+          "why_verify": "Criteria compile to constraints; contradiction is UNSAT.",
+          "today": "Manual protocol review.",
+          "verifiable_because": "Criterion facts + mutual-consistency rules.",
+          "scenario": "Inclusion 'age≥18' and exclusion 'age<21' — detect overlap contradiction in the recruit set.",
+          "framework_lesson": "Contradiction detection over eligibility rules."
+        },
+        {
+          "id": "insurance-claims",
+          "title": "Insurance claim consistency",
+          "status": "exploratory",
+          "problem": "Agent's claim assessment conflicts with a policy rule or duplicate/covers-gap logic.",
+          "why_verify": "Coverage + duplicate rules over claim facts.",
+          "today": "Claims adjusters.",
+          "verifiable_because": "Policy rule facts make 'claim valid & not double-paid' derived.",
+          "scenario": "Two claims for same service — reject duplicate with the rule.",
+          "framework_lesson": "Uniqueness/duplicate constraints."
+        }
+      ]
+    },
+    "personal_life": {
+      "title": "Personal & life",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "habit-schedules",
+          "title": "Habit & recurring-schedule checks",
+          "status": "exploratory",
+          "problem": "Agent's habit schedule double-books a recurring slot.",
+          "why_verify": "Recurrence-period clash is a constraint over dated habit facts.",
+          "today": "Calendar apps detect single clashes, not recurring overlap.",
+          "verifiable_because": "Habit facts with recurrence + clash rules.",
+          "scenario": "Gym Mon/Wed/Fri and class every other Mon — verify no double-book, else name it.",
+          "framework_lesson": "Recurrence arithmetic."
+        },
+        {
+          "id": "career-transition",
+          "title": "Career transition planning",
+          "status": "exploratory",
+          "problem": "Agent's transition plan chains prerequisites that don't actually connect.",
+          "why_verify": "Skill-prerequisite + time-sequencing constraints.",
+          "today": "Career coaches; no formal feasibility check.",
+          "verifiable_because": "Skill facts + prerequisite/sequence rules.",
+          "scenario": "'Become ML engineer requires linear algebra → calculus → ML' — verify sequence, or reject a shortcut.",
+          "framework_lesson": "Prerequisite chain = deduction chain."
+        },
+        {
+          "id": "event-planning",
+          "title": "Event planning logistics",
+          "status": "exploratory",
+          "problem": "Agent's event plan over-commits a resource or double-books a venue.",
+          "why_verify": "Venue/resource capacity + scheduling constraints.",
+          "today": "Manual spreadsheets.",
+          "verifiable_because": "Booking facts + capacity rules.",
+          "scenario": "Venue cap 100, two bookings totaling 120 same slot — reject the over-cap.",
+          "framework_lesson": "Capacity constraints (Z3)."
+        }
+      ]
+    },
+    "research_knowledge": {
+      "title": "Research & knowledge",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "research-claims",
+          "title": "Research-claim verification",
+          "status": "exploratory",
+          "problem": "Agent restates a study conclusion; the claim over-reaches the study's actual evidence.",
+          "why_verify": "Claim vs. evidence: does the stated result follow from the study's statistical facts?",
+          "today": "Replication crisis; LLMs amplify unsupported conclusions.",
+          "verifiable_because": "Study facts + derived-statistic rules; a claim not derivable is rejected/UNKNOWN.",
+          "scenario": "Study reports r=0.3, agent claims 'strong causal effect' — reject as not following from evidence.",
+          "framework_lesson": "Open-world: absence of evidence is UNKNOWN, never FALSE claims."
+        },
+        {
+          "id": "literature-review",
+          "title": "Literature review consistency",
+          "status": "exploratory",
+          "problem": "Agent's lit review asserts two papers agree; they actually conflict.",
+          "why_verify": "Cited-claim consistency across paper facts.",
+          "today": "Manual reading; agents hallucinate agreement.",
+          "verifiable_because": "Paper+claim facts + consistency rules.",
+          "scenario": "Two cited abstracts state opposing effects — flag the un-backed agreement claim.",
+          "framework_lesson": "Cross-document constraint checking."
+        },
+        {
+          "id": "citation-chain",
+          "title": "Citation chain verification",
+          "status": "exploratory",
+          "problem": "Agent cites a paper for a claim the paper doesn't support.",
+          "why_verify": "Citation→claim support is a typed edge; an unsupported edge is a violation.",
+          "today": "Manual citation checking; no automated support verification.",
+          "verifiable_because": "Citation facts + support rules.",
+          "scenario": "Claim X cited to paper P; P states not-X — reject the citation.",
+          "framework_lesson": "Typed edges: an edge must satisfy a support precondition or be rejected."
+        },
+        {
+          "id": "grant-budget",
+          "title": "Grant budget-to-scope consistency",
+          "status": "exploratory",
+          "problem": "Agent's grant budget line items don't reconcile to the scope/effort.",
+          "why_verify": "Budget-sum and effort-allocation rules.",
+          "today": "Grant managers hand-check.",
+          "verifiable_because": "Item facts + budget/effort rules.",
+          "scenario": "Salaries sum under total and effort ≤100% per investigator — verify or reject.",
+          "framework_lesson": "Sum + capacity constraints."
+        },
+        {
+          "id": "peer-review",
+          "title": "Peer-review assistance",
+          "status": "exploratory",
+          "problem": "Agent flags an issue in a manuscript; the flag must follow from the text.",
+          "why_verify": "Review claim must be derivable from manuscript facts.",
+          "today": "Reviewers; AI flags can be hallucinated.",
+          "verifiable_because": "Manuscript + review-claim rules; an unsupported flag rejects.",
+          "scenario": "Flag 'Figure 3 unlabeled' only if the figure-caption fact is missing/contradictory.",
+          "framework_lesson": "Review as claim: same verify machinery."
+        }
+      ]
+    },
+    "software_ai": {
+      "title": "Software & AI",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "agent-delegation",
+          "title": "Agent task-delegation checks",
+          "status": "exploratory",
+          "problem": "Agent delegates a subtask to another agent that can't do it; the delegation is unsafe/ineffective.",
+          "why_verify": "Capability + authorization preconditions on the delegation edge.",
+          "today": "Multi-agent frameworks route blindly.",
+          "verifiable_because": "Agent-capability facts + delegation rules; a mismatched delegation rejects.",
+          "scenario": "Delegate 'prove a theorem' to a retrieval-only agent — reject on capability mismatch.",
+          "framework_lesson": "The action-space gating core — a delegation is an action with preconditions."
+        },
+        {
+          "id": "prompt-workflow",
+          "title": "Prompt / workflow chain consistency",
+          "status": "exploratory",
+          "problem": "Agent's multi-step prompt chain loses a requirement between steps.",
+          "why_verify": "Ordering + required-variable handoff constraints across steps.",
+          "today": "Prompt engineers hand-tune; no automated hop-by-hop invariant.",
+          "verifiable_because": "Step facts carry required-input/output roles; a step missing a required input rejects.",
+          "scenario": "Step1 emits X, Step2 requires X — verify handoff, or reject a broken chain.",
+          "framework_lesson": "Handoff invariants = the DAG itself."
+        },
+        {
+          "id": "infra-as-code",
+          "title": "Infrastructure-as-code verification",
+          "status": "exploratory",
+          "problem": "Agent's IaC references a resource that is not declared or violates IAM.",
+          "why_verify": "Reference-resolution + IAM-permission rules over declared resource facts.",
+          "today": "tfplan/terraform validate catches some; not every invariant before plan.",
+          "verifiable_because": "Resource facts + reference/IAM rules; an unresolved ref rejects.",
+          "scenario": "ECS task references a security group not in the plan — reject.",
+          "framework_lesson": "Resource-graph + permission policy as grammar."
+        },
+        {
+          "id": "api-contract",
+          "title": "API contract verification",
+          "status": "exploratory",
+          "problem": "Agent's API change breaks a documented contract a consumer depends on.",
+          "why_verify": "Contract (shape, semantics) preservation is a typed fact-equality check.",
+          "today": "OpenAPI diffing catches shape; not semantic contract breaks.",
+          "verifiable_because": "Consumer + contract facts, contract-equality rules.",
+          "scenario": "Changing a field type breaks a consumer's expected type — reject the change.",
+          "framework_lesson": "Contract = a fact that equals across versions."
+        },
+        {
+          "id": "data-pipeline",
+          "title": "Data pipeline invariants",
+          "status": "exploratory",
+          "problem": "Agent's pipeline change breaks a row-count or schema invariant downstream.",
+          "why_verify": "Schema + cardinality invariants are checkable post-step.",
+          "today": "dbt tests catch after run; no pre-run proof.",
+          "verifiable_because": "Step fact + invariant rules; a broken invariant rejects at the step.",
+          "scenario": "Join step must preserve key uniqueness — verify, or name the cardinality blowup.",
+          "framework_lesson": "Invariant = postcondition; the post-LLM guardrail shape."
+        }
+      ]
+    },
+    "government_public": {
+      "title": "Government & public",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "policy-proposal",
+          "title": "Policy proposal consistency",
+          "status": "exploratory",
+          "problem": "Agent/assistant drafts a policy whose clauses contradict or miss a mandated requirement.",
+          "why_verify": "Obligation + contradiction constraints over policy clauses.",
+          "today": "Policy analysts; no mechanical consistency check.",
+          "verifiable_because": "Clause facts + obligation rules; contradiction or missing mandate = UNSAT/UNKNOWN.",
+          "scenario": "Policy mandates X and forbids all X — detect the contradiction.",
+          "framework_lesson": "Satisfiability over normative clauses."
+        },
+        {
+          "id": "ai-tutor-supervision",
+          "title": "AI-tutor supervision",
+          "status": "flagship",
+          "flagship": true,
+          "problem": "A government deploys an AI teaching assistant to students. Its explanations must match a fixed curriculum — every output verifiable against the syllabus grammar, with an audit trail. The clearest concrete governance instance, easiest to explain to non-technical and institutional audiences.",
+          "why_verify": "The tutor's 'solution' must derive from the curriculum's rules and the student's given facts. A wrong or off-curriculum explanation is an institutional liability — students taught wrong, trust lost, accountability absent.",
+          "today": "LLM tutors stream plausible answers; no per-answer audit, no proof the answer matches the curriculum, no accountability after the fact.",
+          "verifiable_because": "The curriculum compiles to a grammar (the same physics/math shape). Every explanation is a claimed derivation; the engine verifies each step against curriculum rules AND the student's actual givens, emitting an audit-trail trace.",
+          "scenario": "Student: 'A car moving at 10 m/s accelerates at 2 m/s² for 4 s. How fast is it going?' Tutor: '20 m/s.' Engine: v = u + a·t = 10 + 2·4 = 18 m/s. Tutor's 20 is WRONG — reject with the trace: v_u_at fired on [10 m/s, 2 m/s², 4 s] → 18 m/s ≠ 20 m/s.",
+          "framework_lesson": "The flagship proves the framework's real purpose: not just verifying agents, but making AI accountable in public institutions. Every student-visible answer is a trace back to curriculum rules + given facts."
+        },
+        {
+          "id": "public-budget",
+          "title": "Public budget allocation",
+          "status": "exploratory",
+          "problem": "Agent-assisted budget allocation must satisfy categorical caps and sum to the total.",
+          "why_verify": "Sum-total and cap constraints over allocation facts.",
+          "today": "Public finance manual review.",
+          "verifiable_because": "Allocation facts + sum/cap rules.",
+          "scenario": "Education+safety ≤60% and total =100% — verify allocation, or reject an over-cap.",
+          "framework_lesson": "Sum + cap constraints."
+        },
+        {
+          "id": "environmental-impact",
+          "title": "Environmental impact assessments",
+          "status": "exploratory",
+          "problem": "Agent's EIA has contradictory thresholds or missing required measurements.",
+          "why_verify": "Threshold-compliance and required-measurement rules.",
+          "today": "Regulatory review.",
+          "verifiable_because": "Measurement facts + threshold rules; missing required datum = UNKNOWN.",
+          "scenario": "PM2.5 must be measured; assessor omitted it — reject with the missing measurement.",
+          "framework_lesson": "Required-inventory + threshold grammar."
+        }
+      ]
+    },
+    "creative_misc": {
+      "title": "Creative & misc",
+      "status": "exploratory",
+      "domains": [
+        {
+          "id": "recipe-chemical",
+          "title": "Recipe / chemical-process planning",
+          "status": "exploratory",
+          "problem": "Agent scales a recipe/process and a ratio breaks (units, yield).",
+          "why_verify": "Ratio and unit-consistency over ingredient/amount facts.",
+          "today": "Manual proportioning.",
+          "verifiable_because": "Ingredient facts + ratio rules (same as stoichiometry).",
+          "scenario": "Double a recipe but keep a leavening ratio — verify, or reject a broken proportion.",
+          "framework_lesson": "Unit + ratio arithmetic."
+        },
+        {
+          "id": "game-design",
+          "title": "Game design balance",
+          "status": "exploratory",
+          "problem": "Agent's balance numbers make a strategy dominant or a stat loop unbroken.",
+          "why_verify": "Balance invariants (DPS, cost curves, counter-loops) over numeric design facts.",
+          "today": "Manual playtesting.",
+          "verifiable_because": "Design-number facts + balance-invariant rules.",
+          "scenario": "Two strategies must be within x% of each other in expected output — verify or flag a dominant one.",
+          "framework_lesson": "Threshold/numeric invariants."
+        },
+        {
+          "id": "architectural-plans",
+          "title": "Architectural plan checks",
+          "status": "exploratory",
+          "problem": "Agent's plan has a dimension or clearance violation a reviewer must catch.",
+          "why_verify": "Dimension + clearance constraints over plan facts.",
+          "today": "Code reviewers / BIM tools after the fact.",
+          "verifiable_because": "Dimension facts + clearance rules.",
+          "scenario": "Door swing must clear a wall — verify geometry or name the collision.",
+          "framework_lesson": "Geometry constraints (discrete + numeric)."
+        },
+        {
+          "id": "supply-chain",
+          "title": "Supply-chain logistics",
+          "status": "exploratory",
+          "problem": "Agent picks a carrier/route that violates a deadline, budget, or compatibility rule.",
+          "why_verify": "Discrete satisfiability: route must satisfy every hardcoded logistics rule.",
+          "today": "TMS systems; agents pick without proof of full compliance.",
+          "verifiable_because": "Order/carrier facts + deadline/budget/hazmat/warehouse rules; unsatisfiable route rejects with the violated set.",
+          "scenario": "BLR→DUB, hazmat, cap 8200, deadline 09-04; carrier B violates hazmat+deadline → conflicts(), not a bool.",
+          "grammar_code": "# logistics grammar in class-DX (pythonic polymorphic)\n@dataclass(frozen=True)\nclass Money:          amount: Decimal;  currency: str\n@dataclass(frozen=True)\nclass Deadline:       date: date;       priority: int\n@dataclass(frozen=True)\nclass Carrier(Physical):  domain: frozenset[str]; in_service: bool; hazmat_compat: bool; quote: Money\n@dataclass(frozen=True)\nclass Warehouse:      region: str;      serves: frozenset[str]\n@dataclass(frozen=True)\nclass Order(Physical):    origin: str;  destination: str; hazmat: bool; budget_cap: Money\n# one rule, typed and precondition gated\nclass delivers_by(Transformation[ tuple[Carrier, Deadline], Satisfaction ]):\n    def precondition(self, f):\n        c, d = f\n        if not c.in_service: return f\"{c} not in_service\"\n        if c.quote.currency != \"USD\": return \"quote not USD\"\n        return None   # may fire; else reason string recorded\n# carries a proof footprint back to the Order/Carrier/Deadline facts",
+          "framework_lesson": "The action-space case study — see the designed shipping grammar in operations.json (Z3-gated). Persistent: revalidates when Order/Carrier facts change."
+        },
+        {
+          "id": "insurance-underwriting",
+          "title": "Insurance underwriting logic",
+          "status": "exploratory",
+          "problem": "Agent's underwriting decision contradicts a rating rule or quote table.",
+          "why_verify": "Rating-rule satisfaction over applicant facts.",
+          "today": "Rating engines; agents may bypass for common cases.",
+          "verifiable_because": "Applicant facts + rating rules; a decision not derived rejects.",
+          "scenario": "Underwrite only if risk-score rule fires; agent approves without it — reject.",
+          "framework_lesson": "Rule-gated decisions; same as regulatory checklist."
+        },
+        {
+          "id": "personal-finance-advice",
+          "title": "Personal-finance advice generation",
+          "status": "exploratory",
+          "problem": "Agent's advice violates a safety/precondition rule (e.g. high-risk without an emergency fund).",
+          "why_verify": "Advisory preconditions over user financial facts.",
+          "today": "Robo-advisors with fixed rules; LLM advice un-checked.",
+          "verifiable_because": "User facts + advisory rules; advice not satisfying a precondition rejects.",
+          "scenario": "Advise high-risk without 3-mo emergency fund — reject, require the fund first.",
+          "framework_lesson": "Safeguard preconditions; action-space gating."
+        }
+      ]
+    }
+  }
+}

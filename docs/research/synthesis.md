@@ -181,7 +181,79 @@ semantics would leak out of the verifier core.
 | #8 PATH viewer | finalized v1 direction | standalone web app; LPG-style rendering from trace store |
 | #9 two content sources | finalized v1 (deepened) | TBox/ABox naming; DL reasoner optional oracle; OWA verdict vocabulary verified/contradicted/unverified-unknown |
 
-## 9. Out of scope for v1 (unchanged from the dispatch, now source-referenced)
+## 9. Resolution map and prioritized actions
+
+Per-item research disposition for the nine additions, then the three-bucket
+action list. Tags use the wiki convention from `openwiki/INSTRUCTIONS.md`
+(`[v1]` finalized v1 scope, `[out-v1]` out of scope, `[open]` open research
+feeding a not-yet-finalized decision).
+
+| Addition | Research disposition | Bucket |
+|---|---|---|
+| #1 inheritance/recursive composition | **resolved** → slot descriptors + is-a/part-of axes | act now |
+| #2 open/loose relationships | **resolved** → two-variant typed edges | act now |
+| #3 OWNER/context | **resolved** → value-object/context-node pattern | act now |
+| #4 proportionality chains | **resolved** → guardrail specified; implementation pending | act now |
+| #5 first-class uncertainty | **resolved** → `estimated` status + trace markers | act now |
+| #6 PROOF/PATH object | **informed** (ambiguous-match precedent in property graphs); design unchanged | tag only |
+| #7 test case structure | **unaffected** by this research | tag only |
+| #8 PATH viewer | **partially informed** (trace views = LPG path queries); build target unchanged | tag only |
+| #9 two content sources | **resolved/deepened** → TBox/ABox + DL consistency oracle | act now |
+| minimal universal root logic | **unaffected** — explicit separate thread | open research |
+
+### Act now — change `ARCHITECTURE.md` or the SDK
+
+1. **Chain-composition guardrail** (addition #4) — highest priority: fixes a
+   real correctness hole. Correlation chains are never point-multiplied; the
+   `chain-composition` rule from [04](04-path-analysis-sem.md) becomes a
+   verifier capability with five gates (declared functional/causal edges,
+   acyclicity, defined error terms with orthogonality, no flagged unmodeled
+   confounder, trace-sum over multiple open paths). Default behavior: refusal
+   with a diagnostic Unknown, never a computed number.
+2. **First-class `estimated` status + trace markers** (addition #5) — the
+   status vocabulary gains `estimated` carrying confidence/interval; every
+   derivation crossing a non-exact link renders as an edge annotation; path
+   products propagate uncertainty via the delta rule with covariance terms
+   ([04](04-path-analysis-sem.md), [05](05-bayesian-networks.md)).
+3. **Typed slot descriptors + orthogonal is-a/part-of axes** (addition #1) —
+   Fact attributes become `SlotDescriptor` (`name`, `type`, `cardinality`,
+   `optional`, `owner/context`, `default_candidate`, `hook_ref`); is-a
+   inherits by restriction only, part-of is transitive/irreflexive with a
+   grammar depth cap; `default_candidate` is never truth
+   ([01](01-frames-kr.md)).
+4. **OWNER/context via the value-object pattern** (additions #2/#3) —
+   contextualized relationships promote to context nodes carrying
+   owner/frame/time/uncertainty as typed edges; loose relationships keep the
+   typed-edge-with-attribute-map variant; context renders in every trace view
+   ([02](02-rdf-owl-reification.md), [06](06-property-graphs.md)).
+5. **TBox/ABox naming + OWA verdict vocabulary** (addition #9) — naming
+   already adopted; codify the verdict triad verified / contradicted /
+   unverified-unknown and render UNKNOWN distinctly from FALSE
+   ([03](03-dl-abox-tbox.md)).
+
+### Tag updates only — `docs/newer-additions.md`
+
+- #1, #2, #3: change status from "open research" to **finalized v1 direction
+  (research-informed)** — the act-now items above define the concrete shape.
+- #4: keep "must inform design"; sharpen the pointer to the specified
+  guardrail in [04](04-path-analysis-sem.md).
+- #6: unchanged; optionally note the ambiguous-match requirement now has
+  property-graph uniqueness/constraint precedent ([06](06-property-graphs.md)).
+- #5, #7, #8, #9: already correctly tagged; no change.
+
+### Genuinely open research — record, do not act
+
+- DL profile selection against the physics TBox (EL vs RL vs QL) — product
+  decision deferred until the grammar/TBox exists ([03](03-dl-abox-tbox.md)).
+- sameAs/differentFrom identity policy — prerequisite before DL consistency
+  checking is trustworthy ([03](03-dl-abox-tbox.md)).
+- BN structure learning from trace history — deferred, benchmark-gated if ever
+  adopted ([05](05-bayesian-networks.md)).
+- Trace-storage scaling — unchanged [open] ARCHITECTURE.md §9 question.
+- Auto-extraction benchmark-gate curation — unchanged [open].
+- Minimal universal root logic — [out-v1], separate thread.
+
+## 10. Out of scope for v1 (unchanged from the dispatch, now source-referenced)
 
 - Minimal universal root-logic discovery — open research thread only.
 - Auto grammar extraction — benchmark-gated future work.
@@ -191,7 +263,7 @@ semantics would leak out of the verifier core.
   database. The v1 implementable core is unchanged: exact symbolic derivation
   + the new guardrail + uncertainty status on the model.
 
-## 10. Open research threads (not blocking v1)
+## 11. Open research threads (not blocking v1)
 
 - Root-logic minimal set.
 - BN structure learning from trace history (Chickering's GES,

@@ -1,6 +1,6 @@
 # DL ABox/TBox formalism and consistency checking
 
-**Status:** research brief (open). Feeds `docs/design.md` (TBox naming already adopted) and `docs/newer-additions.md` (two-source separation, Unknown node, attribute ownership, hybrid symbolic/statistical core). Companion briefs: `research/02-rdf-owl-reification.md` (attribute/reference-frame context), plus the path-analysis and Bayesian-net briefs (statistical pipeline). All sources live; see Sources.
+**Status:** research brief [open]. Feeds `docs/design.md` (TBox naming already adopted) and `docs/newer-additions.md` (two-source separation, Unknown node, attribute ownership, hybrid symbolic/statistical core). Companion briefs: `research/02-rdf-owl-reification.md` (attribute/reference-frame context), plus the path-analysis and Bayesian-net briefs (statistical pipeline). All sources live; see Sources.
 
 ## What it is
 

@@ -1,6 +1,6 @@
 # Property Graphs (LPG / Neo4j / Cypher) as a Pragmatic Implementation Reference
 
-**Status:** Research brief — feeds design additions **#1** (recursive node composition), **#2** (open/loose typed relationships), **#3** (OWNER/context attributes). Sibling briefs: `05-*.md` (RDF/OWL), `07-*.md` (frames), `08-*.md` (path analysis/SEM), `09-*.md` (DL + ABox), `10-*.md` (Bayesian nets).
+**Status:** Research brief [open] — feeds design additions **#1** (recursive node composition), **#2** (open/loose typed relationships), **#3** (OWNER/context attributes). Sibling briefs: `05-*.md` (RDF/OWL), `07-*.md` (frames), `08-*.md` (path analysis/SEM), `09-*.md` (DL + ABox), `10-*.md` (Bayesian nets).
 
 ## What it is
 

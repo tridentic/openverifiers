@@ -1,6 +1,6 @@
 # Bayesian Networks for Correlated Fact Graphs
 
-Status: **research input** — feeds additions #4 ("astronomical growth") and #5
+Status: **research input** [open] — feeds additions #4 ("astronomical growth") and #5
 (first-class uncertainty); siblings: `04-path-analysis-sem.md`, `03-dl-abox-tbox.md`.
 Recommendation: full BN engine deferred past v1; the v1 obligation is
 *negative* (never point-multiply correlations) plus a first-class

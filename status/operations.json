@@ -1,0 +1,98 @@
+{
+  "id": "operations",
+  "family": "operations",
+  "title": "Operations (logistics, finance, planning)",
+  "status": "stub",
+  "updated": "2026-09-03",
+  "grammar": {
+    "module": null,
+    "note": "No grammar module yet. This family is the designed target; requires Z3 backend first."
+  },
+  "why_verify": "Enterprise decisions (ship via X, approve budget Y, schedule Z) are discrete satisfiability problems: the agent must pick an assignment satisfying every hardcoded rule (deadline, budget cap, hazmat compatibility, warehouse serves destination). A wrong pick is a real loss, and agents cannot be trusted to self-report compliance.",
+  "how_handled_now": "Business-rule engines, manual review, and post-hoc auditor checks. All verify a human's or agent's claim after the fact, or enforce a policy in isolation — none proves across a conjunction of typed preconditions with an auditable trace, and none explains *which* rule was violated when one fails.",
+  "needs_before_ship": [
+    "Z3 backend hook 'z3.sat' in solvers.py (discrete domains: enum, money, date-as-ordered-int).",
+    "conflicts() operation — minimal violated rule subset (unsat-core 'why not').",
+    "Typed autovar over domains rather than only real-valued quantities with units."
+  ],
+  "logic": {
+    "fact_kinds": [
+      {"name": "Order", "fields": ["origin", "destination", "hazmat", "budget_cap"]},
+      {"name": "Deadline", "fields": ["date", "priority"]},
+      {"name": "Carrier", "fields": ["domain", "in_service", "hazmat_compat", "quote"]},
+      {"name": "Warehouse", "fields": ["region", "serves"]},
+      {"name": "ProofOfDelivery", "fields": ["timestamp", "location"]}
+    ],
+    "transformations": [
+      {"name": "delivers_by(carrier, deadline)", "inputs": ["carrier","deadline"], "output": "delivery_satisfaction", "solver": "z3.sat (designed)"},
+      {"name": "within_budget(carrier, cap)", "inputs": ["carrier","cap"], "output": "budget_satisfaction", "solver": "z3.sat (designed)"},
+      {"name": "hazmat_compat(order, carrier)", "inputs": ["order","carrier"], "output": "hazmat_satisfaction", "solver": "z3.sat (designed)"},
+      {"name": "warehouse_serves(wh, destination)", "inputs": ["wh","destination"], "output": "service_satisfaction", "solver": "z3.sat (designed)"}
+    ],
+    "precondition_checks": [
+      "arity",
+      "typed domain membership (carrier in {A,B,C})",
+      "owner scoping (fact belongs to Order/Deadline)",
+      "conditional rules (if LCL vs FCL, customs window differs) as disjunctions"
+    ],
+    "roots": ["carrier.in_service", "quote is given not quoted", "order.hazmat is ABox truth"]
+  },
+  "operations": {
+    "shipped": [],
+    "designed": ["conflicts", "precond_throw", "frontier"],
+    "out_of_scope": [
+      "fully autonomous production action-gating enforcement (infra beyond proof layer)"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "op-log-01",
+      "plain": "Ship from BLR to DUB, hazmat true, budget cap 8200 USD, deadline 2026-09-04. Agent claims route carrier B to warehouse WH-DUB-2. Prove every rule holds, or name the violated ones.",
+      "status": "planned",
+      "note": "Plain-text scenario is committed as the design contract. When the logistics grammar ships, this becomes a runnable operation. The verification surface is: derive(route) over conjunction of hardcoded rules; unsatisfiable -> conflicts() returns minimal violated set, never a bool.",
+      "given": [
+        {"kind": "Order", "fields": {"origin": "BLR", "destination": "DUB", "hazmat": true, "budget_cap": "8200 USD"}},
+        {"kind": "Deadline", "fields": {"date": "2026-09-04"}},
+        {"kind": "Carrier", "fields": {"domain": ["A","B","C"]}},
+        {"kind": "Warehouse", "fields": {"region": "DUB", "serves": ["WH-DUB-1","WH-DUB-2"]}}
+      ],
+      "agent_claim": {"kind": "route", "fields": {"carrier": "B", "warehouse": "WH-DUB-2"}}
+    },
+    {
+      "id": "op-fin-01",
+      "plain": "Does projected net gain over a horizon satisfy an accounting invariant (sum of monthly flows balances, no negative balance without authorized credit)?",
+      "status": "planned",
+      "note": "Finance wants numeric+ledger invariants. Same conjunction engine; extensions: money arithmetic exactness, audit-trail lineage. Not started."
+    }
+  ],
+  "evidence": {
+    "benchmark": null
+  },
+  "decisions": [
+    {
+      "id": "dec-o-001",
+      "date": "2026-09-03",
+      "title": "Operations is the next family, Z3-gated",
+      "decision": "logistics/finance grammars are stubs until Z3 backend lands.",
+      "rationale": "Discrete satisfiability (the entire value here) is not expressible with the current sympy/algebra backend. Z3 is a hard prerequisite, not a nice-to-have.",
+      "status": "final"
+    },
+    {
+      "id": "dec-o-002",
+      "date": "2026-09-03",
+      "title": "Agent cannot write rules in this family either",
+      "decision": "Rules (delivers_by, within_budget, hazmat_compat, warehouse_serves) are hardcoded grammar. Agent supplies only facts (givens/claims).",
+      "rationale": "Rule fabrication by the agent would void the proof. Same invariant as dec-002.",
+      "status": "final"
+    }
+  ],
+  "known_gaps": [
+    "No Z3 backend (blocks everything in this family).",
+    "Typed-domain autovar (enum/money/date) not implemented in model.py.",
+    "conflicts() operation has no shipped contract example yet — SCHEMA.md section 3 lists it, but a worked trace is pending Z3."
+  ],
+  "out_of_scope": [
+    {"claim": "statistical risk scoring replacing deterministic rule satisfaction", "why": "risk as a number is judgment; rule satisfaction is proof. Both can exist, statistical is not v1."},
+    {"claim": "acting on the verdict (blocking an agent's action in prod)", "why": "the proof layer delivers the verdict; enforcement is downstream infra."}
+  ]
+}

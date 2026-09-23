@@ -1,0 +1,391 @@
+{
+  "schemaVersion": 1,
+  "runId": "c5a11c0c-9214-4312-8ea8-4c0504e1984e",
+  "mode": "init",
+  "phase": "generating",
+  "startedAt": "2026-08-28T20:01:59.856Z",
+  "language": "en",
+  "languageChanged": false,
+  "requiredRewritePages": [],
+  "initialPages": [],
+  "sourceFingerprint": "sha256:29584a79b18fae900b3aaeb8c0c583e54a4a751aed064efea79dfe50ba39a722",
+  "actor": {
+    "producerActor": "openwiki/0.4.3",
+    "metadataModel": "deepseek/deepseek-v4-flash-0731"
+  },
+  "previousLastUpdate": null,
+  "wikiGoal": "A knowledge wiki for the OpenVerifiers repository: the design history, the\nreasoning-engine architecture, and the research that informs open design\nquestions.\n\nThis wiki is a project wiki, not a pure code wiki: it documents intent,\ndecisions, and open questions. Sources of truth:\n\n- `docs/design.md` — canonical design history (finalized v1 decisions).\n- `docs/newer-additions.md` — newer design additions, each marked\n  finalized-v1 / out-of-scope-v1 / open-research.\n- `docs/research/` — research briefs (01–06) + `synthesis.md` (decision\n  recommendations and conflict flags).\n- `ARCHITECTURE.md` — implementation spec of the built engine.\n- The Python SDK under `openverifiers/` (package) and `tests/`.\n- `RESULTS.md` — physics benchmark record.\n\nPage conventions: every page that states a decision or an open question must\nmark it with one of: `[v1]` finalized v1 scope, `[out-v1]` explicitly out of\nscope for v1, `[open]` open research feeding a not-yet-finalized decision.\nGround claims in the sources above with repo:// or docs:// references. Never\ninvent numbers, systems, or citations. Where research findings conflict with a\nprior decision, say so explicitly on the page and link the conflict to\n`docs/research/synthesis.md`.",
+  "beforeContentSnapshot": "c3b1e5c279ec07a3a31611d9947c6826b0e13eda022c0a836cd1628871293569",
+  "preparedWiki": {
+    "generatedProvenance": []
+  },
+  "plan": {
+    "pages": [
+      {
+        "id": "6dc1f82a-9af4-4354-a5b7-5afea3963b94",
+        "path": "/openwiki/architecture/core-ontology.md",
+        "title": "Core Ontology — Facts, Transformations, Unknowns",
+        "purpose": "Documents the three node kinds (Fact, Transformation, Unknown) as implemented in model.py and specified in ARCHITECTURE.md §1: fact identity/dedup, statuses, transformation precondition/relation/solver_hook, and first-class Unknown.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "docs/design.md",
+          "model.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/engine.md",
+          "/openwiki/architecture/trace.md",
+          "/openwiki/concepts/unknown-open-world.md"
+        ],
+        "instructions": [
+          "Cross-link to engine.md (how the ontology is searched) and unknown-open-world.md (the Unknown semantics).",
+          "Existing page; keep the [v1] decision markers and repo:// references to model.py and ARCHITECTURE.md §1."
+        ],
+        "status": "complete"
+      },
+      {
+        "id": "9e96dac2-807f-475a-8e31-94ce199458f5",
+        "path": "/openwiki/architecture/engine.md",
+        "title": "Reasoning Engine — Deduction and Induction",
+        "purpose": "Documents engine.py: backward deduction as goal refinement with a visiting-set loop guard and per-kind memoization (deduce), forward induction as fixed-point closure with ancestor-guard and id-dedup (induce), the DAG-by-construction invariants, trace events recorded, and RESOLVED vs UNKNOWN verdict paths.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "engine.py",
+          "model.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/core-ontology.md",
+          "/openwiki/architecture/solvers.md",
+          "/openwiki/architecture/trace.md",
+          "/openwiki/concepts/unknown-open-world.md"
+        ],
+        "instructions": [
+          "Emphasize the DAG/no-loops invariant as a correctness and explainability guarantee, not a performance shortcut.",
+          "Existing page; keep repo:// references to engine.py and ARCHITECTURE.md §2-§3."
+        ],
+        "status": "skipped"
+      },
+      {
+        "id": "45ce852a-1a59-44bf-bb1c-22e8d9172152",
+        "path": "/openwiki/architecture/layers.md",
+        "title": "Packaging Layers — SDK, CLI, MCP",
+        "purpose": "Documents the strict three-layer boundary: SDK core (public surface in __init__.py, verify_physics domain driver), thin CLI (cli.py calls only the SDK), and the designed-but-not-built MCP server and statistical pipeline; plus the future domain-adapter rule that domain code lives in grammars/ only.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "README.md",
+          "__init__.py",
+          "cli.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/physics-slice.md",
+          "/openwiki/concepts/verification-pipelines.md",
+          "/openwiki/operations/run-and-serve.md"
+        ],
+        "instructions": [
+          "Distinguish implemented behavior from spec-only MCP/statistical layers explicitly.",
+          "Existing page; keep repo:// references to __init__.py, cli.py and ARCHITECTURE.md §7."
+        ],
+        "status": "complete"
+      },
+      {
+        "id": "c4f88aba-0803-488e-8111-0c6181fa8837",
+        "path": "/openwiki/architecture/physics-slice.md",
+        "title": "Physics Vertical Slice — Grammar and Extraction",
+        "purpose": "Documents the physics domain implementation: KIND_META fact kinds with dimensions/units, the rule library in grammars/physics.py (kinematics, dynamics, energy transformations), the dimension-enforcing rule precondition, and the deterministic regex schema-forced extraction in grammars/input.py with explicit overrides and target detection.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "__init__.py",
+          "grammars/input.py",
+          "grammars/physics.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/layers.md",
+          "/openwiki/architecture/solvers.md",
+          "/openwiki/operations/benchmark.md",
+          "/openwiki/workflows/verify-claim.md"
+        ],
+        "instructions": [
+          "Document the deterministic (non-LLM) extraction scope and the explicit-override mechanism for register the regexes miss.",
+          "Mark the physics grammar as the [v1] manual-grammar slice and note auto-extraction is [out-v1]/benchmark-gated."
+        ],
+        "status": "complete"
+      },
+      {
+        "id": "c9acbd48-fb85-47cd-ad9f-c0114448cccb",
+        "path": "/openwiki/architecture/solvers.md",
+        "title": "Solver Hooks and Dimension Checking",
+        "purpose": "Documents solvers.py: dimensions as {L,M,T} exponent dicts with dim_add/dim_sub/dim_eq checked by rule preconditions, the SOLVERS registry with get_solver dispatch, and the sympy.algebra backend (solve_symbolic) with its failure contract and positive-root magnitude convention for velocity-like targets.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "grammars/physics.py",
+          "solvers.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/engine.md",
+          "/openwiki/architecture/physics-slice.md"
+        ],
+        "instructions": [
+          "Existing page; keep repo:// references to solvers.py and note the 'core never imports sympy directly' boundary."
+        ],
+        "status": "complete"
+      },
+      {
+        "id": "7c5228a5-291e-457f-b9b1-d468364e9eaa",
+        "path": "/openwiki/architecture/trace.md",
+        "title": "Trace Store and Render Views",
+        "purpose": "Documents the one-verbose-store trace policy: the engine appends every derive/reject/deadend/join/unknown event to a single store, and trace.py's build_views projects success-path, failure-trail, and full views from it; render_view formats them.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "docs/design.md",
+          "engine.py",
+          "trace.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/core-ontology.md",
+          "/openwiki/architecture/engine.md",
+          "/openwiki/workflows/verify-claim.md"
+        ],
+        "instructions": [
+          "Existing page; keep repo:// references to trace.py and ARCHITECTURE.md §4.",
+          "Note the open question on trace-storage scaling (ARCHITECTURE.md §9 item 1) as [open]."
+        ],
+        "status": "complete"
+      },
+      {
+        "id": "a7514cf9-7ff5-4323-a5df-effdf192dc2d",
+        "path": "/openwiki/concepts/unknown-open-world.md",
+        "title": "First-Class Unknown and Open-World Semantics",
+        "purpose": "Documents the Unknown node as a legitimate auditable outcome (not a failure), its Open-World-Assumption semantics grounded in DL research, the verified/contradicted/unverified-unknown verdict vocabulary, and the CONFLICT between this and users' closed-world intuition.",
+        "seedPaths": [
+          "docs/design.md",
+          "docs/newer-additions.md",
+          "docs/research/03-dl-abox-tbox.md",
+          "docs/research/synthesis.md",
+          "model.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/core-ontology.md",
+          "/openwiki/architecture/engine.md",
+          "/openwiki/research/decision-synthesis.md"
+        ],
+        "instructions": [
+          "Distinguish RESOLVED-UNKNOWN ('cannot yet be proven') from a hard fail ('proven wrong') as [v1].",
+          "Mark the first-class Unknown as [v1] and flag the open-world-vs-closed-world intuition CONFLICT, linking to docs/research/synthesis.md."
+        ],
+        "status": "complete"
+      },
+      {
+        "id": "c8f827ef-3c7e-448b-83c4-c035ef7d3631",
+        "path": "/openwiki/concepts/verification-pipelines.md",
+        "title": "Dual Pipeline — Symbolic and Statistical",
+        "purpose": "Captures the README/design dual-pipeline concept: deterministic solver-backed symbolic verification plus LLM-as-judge statistical verification for non-formalizable claims; documents the decision that only the symbolic core is implemented in v1 and the statistical/LLM-judge layer is a spec-shaped stub.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "README.md",
+          "docs/design.md",
+          "docs/research/synthesis.md"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/layers.md",
+          "/openwiki/quickstart.md",
+          "/openwiki/research/correlation-chains-guardrail.md"
+        ],
+        "instructions": [
+          "Ground the confidence-scored verdict shape (retained in CLI output) in README/ARCHITECTURE §10.",
+          "Mark the statistical pipeline as [out-v1]/not-built and the sequencing decision (prove the deterministic core first) as [v1]."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "eac37fde-9305-4a4e-b264-193f5cbabed7",
+        "path": "/openwiki/operations/benchmark.md",
+        "title": "Physics Benchmark — Problem Set and Runner",
+        "purpose": "Documents the physics benchmark: tests/problems.py (20 JEE/CBSE/HSC problems with expected answers and explicit overrides), tests/run_benchmark.py (pass criteria, RESULTS.md generation), and the current 20/20 results.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "RESULTS.md",
+          "tests/problems.py",
+          "tests/run_benchmark.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/physics-slice.md",
+          "/openwiki/quickstart.md",
+          "/openwiki/workflows/verify-claim.md"
+        ],
+        "instructions": [
+          "Document the pass criterion (status RESOLVED within 1e-6 relative tolerance) and that a UNKNOWN verdict counts as a fail in this benchmark.",
+          "Ground the 20/20 result exactly in RESULTS.md; do not invent other numbers."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "49fba225-5a0f-4884-9b61-dec23f558121",
+        "path": "/openwiki/operations/run-and-serve.md",
+        "title": "Running OpenVerifiers — CLI, MCP, and CI",
+        "purpose": "Documents operational usage: invoking the CLI with --view/--explicit/--target/--json, the benchmark runner command, the spec-shaped MCP serve entrypoint, and the scheduled OpenWiki GitHub Actions update workflow (openwiki-update.yml).",
+        "seedPaths": [
+          ".github/workflows/openwiki-update.yml",
+          "AGENTS.md",
+          "README.md",
+          "cli.py",
+          "tests/run_benchmark.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/layers.md",
+          "/openwiki/operations/benchmark.md",
+          "/openwiki/workflows/verify-claim.md"
+        ],
+        "instructions": [
+          "Document the OpenWiki CI workflow that regenerates openwiki/ pages; generated pages are not hand-edited.",
+          "Ground CLI flags in cli.py and note the MCP serve path is a spec/designed entrypoint [out-v1], with the boundary rule that domain logic stays out of the CLI/MCP layer."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "5a182a93-2d31-4263-93ee-4fd6b86a1f9f",
+        "path": "/openwiki/research/composition-and-context.md",
+        "title": "Composition, Loose Relationships, and OWNER Context",
+        "purpose": "Documents design additions #1/#2/#3: typed node composition via slot descriptors (frames), open/loose typed relationships, and the OWNER/reference-frame context problem solved by the value-object (n-ary) pattern importing shapes from RDF-star, with the requirement that context renders in the trace.",
+        "seedPaths": [
+          "docs/newer-additions.md",
+          "docs/research/01-frames-kr.md",
+          "docs/research/02-rdf-owl-reification.md",
+          "docs/research/06-property-graphs.md",
+          "docs/research/synthesis.md"
+        ],
+        "relatedPages": [
+          "/openwiki/concepts/unknown-open-world.md",
+          "/openwiki/research/decision-synthesis.md"
+        ],
+        "instructions": [
+          "Link the default_candidate-never-truth and refusal-on-inheritance-conflict resolutions to docs/research/synthesis.md.",
+          "Mark typed composition, loose relationships, and OWNER as [v1] directions; note property graphs are a storage substrate, not semantic authority."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "cad1a0ef-da56-4923-8397-4849bfbe633f",
+        "path": "/openwiki/research/correlation-chains-guardrail.md",
+        "title": "Correlation Chains, Path Analysis, and the Guardrail",
+        "purpose": "Documents design addition #4/#5: the flagged risk of silently multiplying correlation coefficients as exact proportionalities, the path-analysis/SEM and Bayesian-network formalisms that correct it, and the recommended chain-composition guardrail that refuses with a diagnostic Unknown unless edges are causal with error terms.",
+        "seedPaths": [
+          "docs/newer-additions.md",
+          "docs/research/04-path-analysis-sem.md",
+          "docs/research/05-bayesian-networks.md",
+          "docs/research/synthesis.md"
+        ],
+        "relatedPages": [
+          "/openwiki/concepts/unknown-open-world.md",
+          "/openwiki/research/decision-synthesis.md"
+        ],
+        "instructions": [
+          "Mark the guardrail as [open]→recommended (not yet implemented) and the first-class uncertainty direction as [v1].",
+          "State the CONFLICT that correlation is not transitive and link to docs/research/synthesis.md; the default is refusal-with-Unknown, never a silently computed number."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "608fcfdb-7cf2-4642-b42e-bd694a2099bf",
+        "path": "/openwiki/research/decision-synthesis.md",
+        "title": "Research Synthesis and Conflict Flags",
+        "purpose": "Routes the six research briefs and records the decision bridge: what prior art validates (TBox/ABox, OWA, DAG, transformation-as-relation), the flagged correlation-chain risk, and the decision-record table with updated statuses and each CONFLICT flagged to docs/research/synthesis.md.",
+        "seedPaths": [
+          "docs/newer-additions.md",
+          "docs/research/01-frames-kr.md",
+          "docs/research/02-rdf-owl-reification.md",
+          "docs/research/03-dl-abox-tbox.md",
+          "docs/research/04-path-analysis-sem.md",
+          "docs/research/05-bayesian-networks.md",
+          "docs/research/06-property-graphs.md",
+          "docs/research/synthesis.md"
+        ],
+        "relatedPages": [
+          "/openwiki/concepts/unknown-open-world.md",
+          "/openwiki/research/composition-and-context.md",
+          "/openwiki/research/correlation-chains-guardrail.md",
+          "/openwiki/research/structural-dl-layer.md"
+        ],
+        "instructions": [
+          "Mark each research addition's status as finalized-v1 / out-of-scope-v1 / open-research per the synthesis decision record.",
+          "Preserve every CONFLICT flag and cite docs/research/synthesis.md for resolutions."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "cf5e0406-3f97-4dcc-9242-e84de26cee14",
+        "path": "/openwiki/research/structural-dl-layer.md",
+        "title": "Structural Layer — DL ABox/TBox Discipline",
+        "purpose": "Documents design addition #9 and its deepening: the two content sources map to the DL TBox/ABox split, a DL reasoner as an optional oracle for global consistency, the profile-choice-and-expressivity tradeoff, and the sameAs/differentFrom identity policy needed before DL checking is trustworthy.",
+        "seedPaths": [
+          "docs/newer-additions.md",
+          "docs/research/03-dl-abox-tbox.md",
+          "docs/research/synthesis.md"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/core-ontology.md",
+          "/openwiki/concepts/unknown-open-world.md",
+          "/openwiki/research/decision-synthesis.md"
+        ],
+        "instructions": [
+          "Flag the DL+arithmetic undecidability conflict and the profile-choice product decision from docs/research/synthesis.md.",
+          "Mark the TBox/ABox naming and two-content-source separation as [v1], and the DL-reasoner oracle as [open]/optional, out-of-scope for the v1 code path."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "e8111bc1-5033-4167-a53d-e53865d962b4",
+        "path": "/openwiki/workflows/verify-claim.md",
+        "title": "End-to-End Verify Workflow",
+        "purpose": "Traces the runtime control and data flow of a verify() run across system boundaries — CLI/SDK entry, schema-forced extraction to unverified_truth facts, engine.deduce backward chaining, dimension-checked rule firing via the sympy solver, trace recording, and view projection to a VerificationResult — with a mermaid runtime diagram.",
+        "seedPaths": [
+          "__init__.py",
+          "cli.py",
+          "engine.py",
+          "grammars/input.py",
+          "grammars/physics.py",
+          "solvers.py",
+          "trace.py"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/engine.md",
+          "/openwiki/architecture/layers.md",
+          "/openwiki/architecture/physics-slice.md",
+          "/openwiki/architecture/trace.md",
+          "/openwiki/operations/run-and-serve.md"
+        ],
+        "instructions": [
+          "Include the no-target UNKNOWN short-circuit and the RESOLVED vs UNKNOWN verdict paths as [v1] behavior.",
+          "Use a mermaid diagram (see /skills/mermaid-diagrams/SKILL.md) to show the call sequence and data flow."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "c08d1e36-9e29-4477-a49e-d7b14a58ab16",
+        "path": "/openwiki/quickstart.md",
+        "title": "OpenVerifiers Wiki — Quickstart and Routing Map",
+        "purpose": "Entry point that routes readers through the whole wiki hierarchy: the architecture (built engine), the design concepts, the research decisions, the end-to-end verify workflow, and the benchmark/operations. Explains the page convention markers [v1]/[out-v1]/[open], the sources of truth, and the hierarchy index.",
+        "seedPaths": [
+          "ARCHITECTURE.md",
+          "README.md",
+          "docs/design.md",
+          "docs/newer-additions.md",
+          "docs/research/synthesis.md",
+          "openwiki/INSTRUCTIONS.md"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture/core-ontology.md",
+          "/openwiki/architecture/engine.md",
+          "/openwiki/architecture/layers.md",
+          "/openwiki/concepts/unknown-open-world.md",
+          "/openwiki/concepts/verification-pipelines.md",
+          "/openwiki/quickstart.md"
+        ],
+        "instructions": [
+          "Mark every decision or open question with [v1], [out-v1], or [open] and ground claims with repo:// or docs:// references.",
+          "Route readers through the hierarchy (architecture, concepts, research, workflows, operations) rather than flattening them into a page list."
+        ],
+        "status": "pending"
+      }
+    ],
+    "deletePages": []
+  }
+}

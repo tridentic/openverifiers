@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:a23f1d7725f0f653e64014853078ba1e38dadf858bef0ac3c5d0623746b0c1ab",
+  "claims": [
+    {
+      "id": "claim_77a0d69394ad44018e879fa1a410a1af",
+      "statement": "OpenVerifiers models 'cannot currently determine' as a first-class Unknown node that is a legitimate, auditable outcome rather than a failure state, carrying `reason` (why it is unknown) and `evidence_needed` (what would resolve it).",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L62-L72",
+          "version": "repo-lines-v1:sha256:62e04ff5d61cd4e4ba808a6f28c8894082cfeb539f2eb67af02e980b0f22c56c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzYWRjZjA2NDA3ZjgzNDE4OWE3YjQxM2NjZDk5ZGE4ODdlNjMwZmRjMzg3NmYwYzRhNTUyODJmYzJmYzFhMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkNDRmZmJiNGE3N2YyNDUxOWZhNWE0ODA5N2JlNDhkZmNkN2ZhZWI1ZmU2ZWQ1MjNiM2RjNjIwNDZjYzJiMzUifQ"
+        },
+        {
+          "resource": "repo://docs/design.md#L52-L54",
+          "version": "repo-lines-v1:sha256:23a7143b3c8a48582b5a6a769fdd50183b84dedd001df0e7501d0c4e4bd20763:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWJkYTY3YTk1N2MwNDhhNDE4YzY5YTEwMjRlN2ZjMTZkYjgwODY1OWI4Zjk1ZTY3YTBjMzMwMGM3ZTc5ZDZiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzIyZDcwOGE2YjNhODllMGYzNDAzOTk3YWIyMjdiNGYzOGIxMjhkMzk2YTQxYTBhYWE4MWJlZTY3ODYzZTczYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTI4ODA0ODNjMWQ1ZmZiNTFiOTQyMmQyMjQ0ODEyOTczNDkwMTM3Njk5YzFmZGNjZjMzZWU0MmQ4MDg3YjMwZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTlmNDc0ODdhYjljZmI0ZjAxYzRiZTYzMTdiOTMwZTJiMmFjZGY3OTBmZWJkMTA2MTRlOGQ5ZWEzYmQwZDc1ZCJ9"
+        },
+        {
+          "resource": "repo://model.py#L101-L107",
+          "version": "repo-lines-v1:sha256:b23965f30316a17067068d429b1c94348d04feb88104cd021db9c0fa4d5befc6:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjY5YTEzOTc1YzI1NmVjODMyMGUyMDE2MDgzYzk2ZGY2MzdjYTNkMzViZWJkZTIzMTRiZWUzYTQ3MTFiNTZjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTZhNzE1MjU3MmVlODRmMTA5MDZjNzRiOWYyYTkyNDM0ZGRhYjBlM2M0MjgxM2IwNGU1OTdlZmNlYzk1MWIyNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWNhNTZhZWM2ZWJjYmI1MWNhMmVjOTEwNTNlNDJhNDM4YWU2MjRlNDg1YzM4ODQ1MDNjOTUyNTg0YmQ4MzA5OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTEwM2I4ZGE1MjhlOGVjMDU3MjBkOTM5ZjMyZTdjMjg0ZDQ1N2EzYjYxMmUxMWMzNTQxZjgzOWQ0OGEwMTkxZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3a52c1a99b8c4bebbfbc4be8d05ae434",
+      "statement": "The design fixes the first-class Unknown as finalized v1 scope, modeled 'like dark energy: acknowledged as unexplained rather than silently erroring'.",
+      "evidence": [
+        {
+          "resource": "repo://docs/design.md#L52-L54",
+          "version": "repo-lines-v1:sha256:23a7143b3c8a48582b5a6a769fdd50183b84dedd001df0e7501d0c4e4bd20763:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWJkYTY3YTk1N2MwNDhhNDE4YzY5YTEwMjRlN2ZjMTZkYjgwODY1OWI4Zjk1ZTY3YTBjMzMwMGM3ZTc5ZDZiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzIyZDcwOGE2YjNhODllMGYzNDAzOTk3YWIyMjdiNGYzOGIxMjhkMzk2YTQxYTBhYWE4MWJlZTY3ODYzZTczYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTI4ODA0ODNjMWQ1ZmZiNTFiOTQyMmQyMjQ0ODEyOTczNDkwMTM3Njk5YzFmZGNjZjMzZWU0MmQ4MDg3YjMwZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTlmNDc0ODdhYjljZmI0ZjAxYzRiZTYzMTdiOTMwZTJiMmFjZGY3OTBmZWJkMTA2MTRlOGQ5ZWEzYmQwZDc1ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1e7c61fe2855466abd08e504a91bb6d6",
+      "statement": "Unknown.to_fact() projects an Unknown into fact space as a Fact with value=None, status=unknown, source='unknown', derivation=None.",
+      "evidence": [
+        {
+          "resource": "repo://model.py#L113-L121",
+          "version": "repo-lines-v1:sha256:d19daa0da31bfc2c1cfce750d0f195da56a1a1e579bcc332b357212f455e4934:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWMzNTA4YzEwNzNjYjE3YTM3YTcwMTlmYmYwNGE5OGZjODhmOThjZmQzNTUwNDA5ZGQ1YThjNjAyNjE4MmMxNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkwOWE1M2E2MThkMDI4ZTFkMzAwMGMwYTdhYmNlZWNiZTVmYjM3ZjRlNTExZWZlNDY2NDNmYWQ2ZTY2ODcyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2YwN2QxZTk1NTAxYTQ1OWVmN2U3ZTQ3MDQ0NThmMzcwOWY4NmU0NjE3YzYwYmQyZDBkODg5MjQ2M2Y0ZmZjNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FjMzlkNTViMWM0MDlhZWU3YzMxOGFlOGZlZTRmMTI5ZWU4MzU5ZWIyNzM2NTc1YmViYjgwNzE3YTUzOTY5ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c3c7e15cf94b40a08f99600c43cf2f13",
+      "statement": "When no rule can derive a target, the engine records an ev_unknown trace event with reason and evidence hint and returns a VerificationResult with status UNKNOWN and no answer; the pipeline still emits an explainable trace but flags the target as resolved-unknown rather than a hard fail.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L73-L76",
+          "version": "repo-lines-v1:sha256:9d7ff00c5ddec434fe74a9deeb024d650b706ee4720aa4b70e7f97b22c1f500c:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGZiOWY0MGRkYTAxZWI3ZWViY2RmNTlhZDNjYjIwOGMyNWVmMmQwY2RjYmI1Mjk3MjRiOWExMzU4NzhmYWMxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0YjQ5MzhmNTM2OWE3MDc1MTM5NzE1ZTI5OWQ3YmMwOWM2M2U4NjNiZGQzYjcxM2EzN2EwNDM0Nzk2MjM3NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmMxNWZiNTkwNjQ5N2IzOWMyYWJjNTg0YTZiOTQwYjRiODk2MzBlNjIxYjg2MzhmYzAwM2QxNTYwZGFjYWJkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L227-L231",
+          "version": "repo-lines-v1:sha256:4a70b3c147a463096157e503558564c1f6bccbc2089c452ada0c344f66bd1998:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjIwM2EwOWJkYzE2YjUzMmU5MDg0ZGNjMjkxNzM2ZmE1YjIxMDAxOGIyZmI0ZmZlNDZlZTI0ZmIxNGIyMWI1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDhkNmM4MzQ5OTU3YmIxNTk0Y2RlOTg0YTFhMmJiZjVkNDhiZmEzYTE5M2I3MTQzNzBlYzE1NjA4OTAwZDY2NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGNhNTVlN2UwZmY3ODBiYzlmN2E0YjAyMDFkNTE3MWYwNzI0NzExYmIzNzE3MGFkYjk1YjRmODBkNTc3NmVjMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjBmZjUxZjI1NzgyOWNlNWZhYTA4NTllYTEzYjJkYjk2NDM5NWY3MWQwZWQ2NDgwOTgxZmYxNjllY2ZhN2VlYSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L52-L53",
+          "version": "repo-lines-v1:sha256:c02da5f492f8062e3f710a43b3b014764e587eeb7abbcca72ca008db9df33ffc:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2UxNzlkOWZhOGU1NmZlYjJkZTUwYTNhODc5YWRjNDlkZGNjYTllOTgwODIyNzhhYmI3ZDNkMWEzMzE4OGEyYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDYyMzFlM2VmNDA2ZmM3YWYxMDFmYjRjOGI4NTA0MTkyN2U3ZjQxM2QyMzZiMzZjOGZlODc5ZGZkNzQwZWZlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODc0ZjkxZjcwYjUxZjU1M2E5MzFmMGNlYzk1OTI2Y2QwYmYwMjJiZmRiMWFiYjE1YzZiZThlNjI0NzllNjdhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FjMzlkNTViMWM0MDlhZWU3YzMxOGFlOGZlZTRmMTI5ZWU4MzU5ZWIyNzM2NTc1YmViYjgwNzE3YTUzOTY5ZCJ9"
+        },
+        {
+          "resource": "repo://engine.py#L98-L104",
+          "version": "repo-lines-v1:sha256:7d365f0564e2aeb7c60739fc3ed5fc4860fb7af8b31e808ccf5b85968743f432:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRkYTNhNjU3MDFiNzNjZWY1MTI4YmFiMDA5OTAwNjMxMzU1MjFiNzM4MTlmYmQyN2NiNzdjMTQxNWQwN2MwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWEyOTVjNjkwY2E1OWIwNjZjYTIyNTljYjBhYjQwOTIwZjI2OWUyY2I3YmEwYmY3NjU1ZmEwMDE5ZjFlMzJhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTBmOGYxNTlhY2ViMjI1NGFjZDU0MjFjYzZmMTU3OTkwMDhiNDJlZTk4YmQzZmVhYmM2YWI0NWZhYTJmNzRiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzBkYzZkMDhlMmUwOTZmOTU2MzgwMWRjOGIxMjEyY2Q4OGE3ZDUyMDUzNTFiYTRhMjA4MjQ0MWJmYWIxNmUyZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7dc317d16b4b42a7a1c1713a3f2a8fd4",
+      "statement": "The purpose of the first-class Unknown is to keep RESOLVED-UNKNOWN ('cannot yet be proven', verdict UNKNOWN) distinct from a hard fail ('proven wrong', the contradicted case), so downstream consumers can distinguish the two rather than overclaiming failures.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L73-L76",
+          "version": "repo-lines-v1:sha256:9d7ff00c5ddec434fe74a9deeb024d650b706ee4720aa4b70e7f97b22c1f500c:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGZiOWY0MGRkYTAxZWI3ZWViY2RmNTlhZDNjYjIwOGMyNWVmMmQwY2RjYmI1Mjk3MjRiOWExMzU4NzhmYWMxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0YjQ5MzhmNTM2OWE3MDc1MTM5NzE1ZTI5OWQ3YmMwOWM2M2U4NjNiZGQzYjcxM2EzN2EwNDM0Nzk2MjM3NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmMxNWZiNTkwNjQ5N2IzOWMyYWJjNTg0YTZiOTQwYjRiODk2MzBlNjIxYjg2MzhmYzAwM2QxNTYwZGFjYWJkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        },
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L111-L111",
+          "version": "repo-lines-v1:sha256:dc3524495e61965ca2e9017b278800d3c79665a02d1ddd32cbc82d235af749b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGMzNTI0NDk1ZTYxOTY1Y2EyZTkwMTdiMjc4ODAwZDNjNzk2NjVhMDJkMWRkZDMyY2JjODJkMjM1YWY3NDliMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGMzNTI0NDk1ZTYxOTY1Y2EyZTkwMTdiMjc4ODAwZDNjNzk2NjVhMDJkMWRkZDMyY2JjODJkMjM1YWY3NDliMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDcyNWEwZjRhYmIyN2Y3ZThlNWFjYTFhNGIyY2Q1YTQ5MmNmYzZlMDk1OWNlOGNlYjYyODVhYWFkYTliOTFkYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWM1MzVlMTJhODdiYjYxZmY0MjhjZDYzZjFlNWQyNWQ5MzBlNDAzYTAyZjI0ZjU1NTc0NWFhMDE2N2NiMmExNSJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L29-L30",
+          "version": "repo-lines-v1:sha256:76769d618158cdb57da9dd56d36c23005f74ce1f1298564c3e04970504d8a48a:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTVlMWE0NzkwZmM0MmEyMTY1NzI5NjI5NWJhZWQwNWVmN2RjYjVhOTIzODliNTYwZGViYzJhZjgwNTlkMWI4ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM1NjMzOTQ4YzJhNGUwMjQ3NDllMGUxNGI1YTFkZGE5YThiMjYwZTAwMmM0NzRiNzYxNGJiZDQzMTFmMDZkZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2NmNWEzMGIzZDM0OGM3MWQxODg5MzI0ZWZjMWJjMDRhMWUwNDAzYWQyMTE0YWY0ZjZmMzg3MjIxZDY1MThlNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2ExNmNhMGI2M2M3MzkwMDE2MjQ4ZWNmMTBiNmRmODE3MWE5Mjc2OWVmNTY4NTVlZWY3MWViYzEzOTZjZmM0MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8984e5de8f39464fbaff01ee65d61130",
+      "statement": "The Unknown node's semantics are grounded in the Description Logic Open-World Assumption (OWA): a formula is true only if entailed, everything not entailed is unknown, and absence of a fact in the ABox never licenses 'false'. This is the semantics of an incomplete information source, right for verifying AI claims.",
+      "evidence": [
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L57-L60",
+          "version": "repo-lines-v1:sha256:94c8645e9604025d2e9a6cfb8fbc4ee3625e74f31b394d64f60607a0d950d949:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ4MDgwY2E5Y2Q1YzE0YTk4NDZkMmY3NGM0NTNlMjZlNjY5Yjc1ZTY2NWQ4YzAzNWI3MTJhYmY2MTUzM2NjMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzYwNTY5NjQ2ZWNjODFhNWRiNTU0NDdhYjc2MmNlOTgxNDAwY2VkMjNlZWMyYzAxYWZmMTcyNmEwZjE3MGRjZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGYyZTAwZmNjNDEwYTJiZjVlNmY3MGYxNDJiNGFhMmRkODdjZWY2Zjk2ZDRkYjdkMjZmZjhhN2NlYTVkZjdhZSJ9"
+        },
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L67-L68",
+          "version": "repo-lines-v1:sha256:207a05557c5c916b18839a3e3c3c1a754b9ecb33785f5ef5a53c4cf2cf641687:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzk1YzM3N2QxZjg1MTNiNGYyNzViMjUzZGZkODMxOTcwMTczMTJjZTBlZGUwMmY0NzQ2OTJhZjY5NzVlYWRiOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGU3YjA4YTMyYzY0ZGVhZjY1MThlMDhkMDU5NDIwZjRlNzc4MGY5MWI4ZmIzYjhkY2JkZWFhZTVlOTFiOWVkNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmVkYjQwMjEyYzg5MmZjYWQ5MWEzZGRkNWE2NzA1NjY1YzU2ZjZlYjM3ZTk1MjFmMTBiYzE1NzE5MDI3MDZkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmY3MDdlOTZkYjgzZjVjNTljNDMxMDkwZjYwMDEwZGQ2N2I2NzhjNTRiNDQ1MTBiMTVlNmY2MjQwMDhkNGQ3YiJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L22-L28",
+          "version": "repo-lines-v1:sha256:5c7784fee5810c42045673295314ab0ce8c9efd5f1841bf1033066ab0a0f6c21:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg5ZDNhYTU1ODZjMTE4NjE3NmE3ZTA4MzNhYjlmZjIzYmVhMDM1MmQ5OGVkNDcwMDNjNzU3ZWMyOWYwNGVlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAwYzVjNjdmYTEwM2IwMGFjZTk3Mjg1Nzk5ZWVmZmI0MTE3ZjFkYmY5MDYzNzA4YTkwODQ4YmEwZWFkODc5OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjQ2YmYxM2YxMWE2N2JkNDM5NmQ0NGQ2YzVhZDdlNDBkZTg5ZWM0MTFjNTczZWM5MDEzMzcwMDhiMDFiN2ExOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTdhZDk2Y2Y0OTExYTI2YzA5ZTcyZDNhYzBkZGRmZjhkNmFmNjAwZGFmNjZmMWI0YjQ5ZWZmODNiNzAwYzdjZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f488cd4e3974aa8ba80fdadd2f37ed3",
+      "statement": "OpenVerifiers' two content sources (domain knowledge vs. target/input context) match the DL TBox/ABox split, and the verifier keeps OWA at its structural layer rather than drifting into DB-style CWA.",
+      "evidence": [
+        {
+          "resource": "repo://docs/newer-additions.md#L118-L127",
+          "version": "repo-lines-v1:sha256:e758a20626074b0fd735ca7d42eb5879c21c9392dc4ba13faecb55cd97d2ab0e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5YjgyMDM1YjBhNWFkMzJhNWY4NmEyMDY5OGYzZTA1MTY3MDMxNmY3YWNhNTc1NzI0ZTQzMzgwMmFhMGQyMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNmQwMjFmMWI2MjlkYjFlNjdkMmVkYWRiNTRkMDBjNGY0N2UxYjc1YTliMTdjOGY5Nzg1ZWZhY2NlY2QxMTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0MjVmMGRiNTEzOTc1MDc3YTVkMWYyMTNlOWRiZDY3NTMwMTZiNWQzYTJiNjcwYTkyMWM2YjM4NGYyMjg3MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1YTczNGQ0MjhkMWM0OTE1YmFmMmEwZWE5NGUxN2YyM2Y5ZTk2ODkzMmFlOWFiZTY3MmVlOWIzYjNmYjIzZjYifQ"
+        },
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L7-L13",
+          "version": "repo-lines-v1:sha256:cd43adaafb889472ff58a4239cae443119fc36ddd19f77c185c9e8e50cc52fab:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGU1NzE0Nzg5OTg3OWM1ZmY2MzYzOWY0ZDZkNjAzNWE4YzlkMTVhYzA4M2RkYTEzZDczYmJkNGE2NTcyOWVhMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWFjMzlmZDRlNWE2YTgzMTBhNmI1NjA0YWQ5MmU0ZTQ0MjFhMWRmY2E1NjczZTRkODFkY2Q0ZWNhZTllNGQwMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWViYTg2M2YwOGI0YzIxZDc3NjFjMTY3MzNiODQ4NzcwMTBkOTgzODNkN2E2MDRhMDIzZDM3NjMxZjAxYTljNCJ9"
+        },
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L74-L74",
+          "version": "repo-lines-v1:sha256:3c491a76bb6e6b173abba862b28ca9d9c77a67c29bb9d82620793f667fb99817:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M0OTFhNzZiYjZlNmIxNzNhYmJhODYyYjI4Y2E5ZDljNzdhNjdjMjliYjlkODI2MjA3OTNmNjY3ZmI5OTgxNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M0OTFhNzZiYjZlNmIxNzNhYmJhODYyYjI4Y2E5ZDljNzdhNjdjMjliYjlkODI2MjA3OTNmNjY3ZmI5OTgxNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzZlOTBlMTM2MjYyZjM4YjE1NDJhZmRkZDg3MTVjMGNiMzY1NjRhOGMxZTczNWIxNGU5OTY0MDM3YTMzYmIxMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjIzODdiMDI0MmU5YTZjZGMyN2EwNTU4MDA4MmRkNzM0YzgwNjExNjQ3ODRmOTczOGU3MjM5NDJjNzk5NjNlZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_bb904d719cab48eca2c07b0605d31743",
+      "statement": "Verification under OWA is a three-way epistemic grading: verified (entailed by the KB), contradicted (negated by the TBox, a consistency failure), and unverified-unknown (some completions support it, some don't, carrying why-unknown and resolving evidence). The rule is to never emit 'false' merely because a fact is absent.",
+      "evidence": [
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L111-L111",
+          "version": "repo-lines-v1:sha256:dc3524495e61965ca2e9017b278800d3c79665a02d1ddd32cbc82d235af749b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGMzNTI0NDk1ZTYxOTY1Y2EyZTkwMTdiMjc4ODAwZDNjNzk2NjVhMDJkMWRkZDMyY2JjODJkMjM1YWY3NDliMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGMzNTI0NDk1ZTYxOTY1Y2EyZTkwMTdiMjc4ODAwZDNjNzk2NjVhMDJkMWRkZDMyY2JjODJkMjM1YWY3NDliMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDcyNWEwZjRhYmIyN2Y3ZThlNWFjYTFhNGIyY2Q1YTQ5MmNmYzZlMDk1OWNlOGNlYjYyODVhYWFkYTliOTFkYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWM1MzVlMTJhODdiYjYxZmY0MjhjZDYzZjFlNWQyNWQ5MzBlNDAzYTAyZjI0ZjU1NTc0NWFhMDE2N2NiMmExNSJ9"
+        },
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L70-L72",
+          "version": "repo-lines-v1:sha256:99da8940488e90d626103c918737588135412dd00c9ce915d5dad3371fe05b67:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGI0MTM4Yzg5ZWZjYzhlNzkzY2IwMjM1YjcyNTMxNjY2ZmExZmM1NmFjY2NiNGQ2NDczNWJhMTJmNmEwMDdhOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWI2ZThkOTFhNTIwOWU2ZWU2MzE0ZGYzMDUzMTkwMjJiYmQyYjgyYTY3M2MyYTAyODcwMmNhOTMzZGE5ZWNiNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTcxNWVmZTA2OWI3N2Q1MzU2N2Y5ZjgwNWNiODgxYWM0YjdkMDcwZDc5MzAxMmRlMmY1YmMzZjRmM2VhZTdkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGUxMjViNGU5ZmMzNGM5NThmZjM4NjVjMjU3MzliODZjNWMxNjlhZWM1YmFkNGNhMmJkN2Q3N2EwZTRhY2U0MCJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L26-L30",
+          "version": "repo-lines-v1:sha256:6930cfcbe0193fb5086f36bb9c2843d1538da408c40bfaec1c6dee2adb13bebd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMxN2JjN2U1MTk5Y2NiNzgyN2JmNWQ3NjRiOTA5Y2RkMDc0NjM4MmQ2MjJhMzRjMDc5MDQxNTZlMjI2YzE4MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM1NjMzOTQ4YzJhNGUwMjQ3NDllMGUxNGI1YTFkZGE5YThiMjYwZTAwMmM0NzRiNzYxNGJiZDQzMTFmMDZkZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzEyZGQyMjNhNDZhNGViMGZjMmI3ZjkwMDRiYWI3OGJkMThkYWVlMzY2YWFkMGY5M2QxOTE0NzY3MjdiYzNhYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2ExNmNhMGI2M2M3MzkwMDE2MjQ4ZWNmMTBiNmRmODE3MWE5Mjc2OWVmNTY4NTVlZWY3MWViYzEzOTZjZmM0MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d97b3f92f98845eba1a4e4fa8c2ebda2",
+      "statement": "The engine's shipped verdict surface is the discrete VerificationResult.status typed 'RESOLVED' | 'UNRESOLVED' | 'UNKNOWN', with shipped paths emitting RESOLVED (target derived) or UNKNOWN (no derivation possible); UNRESOLVED is reserved by the type but not produced by v1 code.",
+      "evidence": [
+        {
+          "resource": "repo://engine.py#L227-L231",
+          "version": "repo-lines-v1:sha256:4a70b3c147a463096157e503558564c1f6bccbc2089c452ada0c344f66bd1998:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjIwM2EwOWJkYzE2YjUzMmU5MDg0ZGNjMjkxNzM2ZmE1YjIxMDAxOGIyZmI0ZmZlNDZlZTI0ZmIxNGIyMWI1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDhkNmM4MzQ5OTU3YmIxNTk0Y2RlOTg0YTFhMmJiZjVkNDhiZmEzYTE5M2I3MTQzNzBlYzE1NjA4OTAwZDY2NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGNhNTVlN2UwZmY3ODBiYzlmN2E0YjAyMDFkNTE3MWYwNzI0NzExYmIzNzE3MGFkYjk1YjRmODBkNTc3NmVjMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjBmZjUxZjI1NzgyOWNlNWZhYTA4NTllYTEzYjJkYjk2NDM5NWY3MWQwZWQ2NDgwOTgxZmYxNjllY2ZhN2VlYSJ9"
+        },
+        {
+          "resource": "repo://engine.py#L98-L104",
+          "version": "repo-lines-v1:sha256:7d365f0564e2aeb7c60739fc3ed5fc4860fb7af8b31e808ccf5b85968743f432:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRkYTNhNjU3MDFiNzNjZWY1MTI4YmFiMDA5OTAwNjMxMzU1MjFiNzM4MTlmYmQyN2NiNzdjMTQxNWQwN2MwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWEyOTVjNjkwY2E1OWIwNjZjYTIyNTljYjBhYjQwOTIwZjI2OWUyY2I3YmEwYmY3NjU1ZmEwMDE5ZjFlMzJhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTBmOGYxNTlhY2ViMjI1NGFjZDU0MjFjYzZmMTU3OTkwMDhiNDJlZTk4YmQzZmVhYmM2YWI0NWZhYTJmNzRiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzBkYzZkMDhlMmUwOTZmOTU2MzgwMWRjOGIxMjEyY2Q4OGE3ZDUyMDUzNTFiYTRhMjA4MjQ0MWJmYWIxNmUyZCJ9"
+        },
+        {
+          "resource": "repo://model.py#L127-L136",
+          "version": "repo-lines-v1:sha256:03457bd8f4d899fdb6bed980496fe4e5903f8ceb094d7403c62f8a0207aaa58e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ZmJhZTBiOTFkNDRmYzBkNDlmNWRlNjkxZGE2ZmM0MzFmMjYwMTM0YmY3MzFlMGUyMWY3NjQ4MDk0MzM0Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyZTUyZmZjZGU3NDU0NWUzYjcyNGJlMjg0ZjEzYTAxMTdmYjZjMDMwN2QzYTE0NDc1ZDZkMzRmMDRkN2M3ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3ZmEyZjRhZmZmMTQ5NGU5MzJiYjhlYjE5NjcyM2E3ODhlMDU2NTEwMjMwNzViYzZiYzQ3MTQ2ZmY0YWI3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiMTNkMmZkNmVlNWExMTY5OWZmMDU4NDkzNGNiYmY5ODk1NzEyYzEzNDc1MDA5MDJmMTBiOWRlMDMyNWFiNTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_60da4c422ad941f5aef07ab5fdbedaaa",
+      "statement": "CWA-flavored rules (negation as failure, closed enumerations) are only valid on explicitly closed subdomains that the user declares complete; OWA + explicit Unknown makes 'no evidence' a distinct, first-class verdict never collapsed into 'false'.",
+      "evidence": [
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L74-L74",
+          "version": "repo-lines-v1:sha256:3c491a76bb6e6b173abba862b28ca9d9c77a67c29bb9d82620793f667fb99817:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M0OTFhNzZiYjZlNmIxNzNhYmJhODYyYjI4Y2E5ZDljNzdhNjdjMjliYjlkODI2MjA3OTNmNjY3ZmI5OTgxNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M0OTFhNzZiYjZlNmIxNzNhYmJhODYyYjI4Y2E5ZDljNzdhNjdjMjliYjlkODI2MjA3OTNmNjY3ZmI5OTgxNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzZlOTBlMTM2MjYyZjM4YjE1NDJhZmRkZDg3MTVjMGNiMzY1NjRhOGMxZTczNWIxNGU5OTY0MDM3YTMzYmIxMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjIzODdiMDI0MmU5YTZjZGMyN2EwNTU4MDA4MmRkNzM0YzgwNjExNjQ3ODRmOTczOGU3MjM5NDJjNzk5NjNlZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1b841f905b034f3d90ed51ce2a543909",
+      "statement": "The research flags an explicit CONFLICT: users expect closed-world (DB) behavior ('the DB doesn't contain it, so it isn't') while the verifier's structural layer is open-world, and the UNKNOWN verdict must be rendered distinctly from FALSE everywhere or the verifier silently turns into a closed-world checker that overclaims failures.",
+      "evidence": [
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L120-L120",
+          "version": "repo-lines-v1:sha256:cfd9e3168c07879bb80dc6cb4827a2bc49794b6d1de6c11db0abb20cad625eb6:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2ZkOWUzMTY4YzA3ODc5YmI4MGRjNmNiNDgyN2EyYmM0OTc5NGI2ZDFkZTZjMTFkYjBhYmIyMGNhZDYyNWViNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2ZkOWUzMTY4YzA3ODc5YmI4MGRjNmNiNDgyN2EyYmM0OTc5NGI2ZDFkZTZjMTFkYjBhYmIyMGNhZDYyNWViNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODY1YmI5M2ZjZmFiZDMzOWM2ZTI4ZjRjMjhiMTBiM2Y4ZTI1YTM0Y2Q2MmYzMGViMzFiMjZlMTY1MzdkZGQ0OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzg5ODIxMTUzMmM2ZDgwNGM2YjU3NDU4MzU2N2Q5NGE4NTQwZDljMmFjYWZhYmY1ZWJhM2VlNjE0ODZlN2UzYyJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L28-L30",
+          "version": "repo-lines-v1:sha256:b2655962627369c16b1318e4564edae962642b5038a3ed134201f489430f0042:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAwYzVjNjdmYTEwM2IwMGFjZTk3Mjg1Nzk5ZWVmZmI0MTE3ZjFkYmY5MDYzNzA4YTkwODQ4YmEwZWFkODc5OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM1NjMzOTQ4YzJhNGUwMjQ3NDllMGUxNGI1YTFkZGE5YThiMjYwZTAwMmM0NzRiNzYxNGJiZDQzMTFmMDZkZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTY5MjJlODU1MWVhYmE4NzZkMzAxN2U4ZGJiMjFjOTEzOTc1OTUyMGNiOTY0Y2VmMjMwMDQwOWJjZWJiNzk2MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2ExNmNhMGI2M2M3MzkwMDE2MjQ4ZWNmMTBiNmRmODE3MWE5Mjc2OWVmNTY4NTVlZWY3MWViYzEzOTZjZmM0MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b8e6b035da5946eca853035182eecffc",
+      "statement": "The trace render keeps the OWA distinction visible by emitting an explicit 'UNKNOWN <fact_id>: <reason>' line with the evidence note rather than an answer, and VerificationResult carries status UNKNOWN with answer=None.",
+      "evidence": [
+        {
+          "resource": "repo://model.py#L127-L136",
+          "version": "repo-lines-v1:sha256:03457bd8f4d899fdb6bed980496fe4e5903f8ceb094d7403c62f8a0207aaa58e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ZmJhZTBiOTFkNDRmYzBkNDlmNWRlNjkxZGE2ZmM0MzFmMjYwMTM0YmY3MzFlMGUyMWY3NjQ4MDk0MzM0Y2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyZTUyZmZjZGU3NDU0NWUzYjcyNGJlMjg0ZjEzYTAxMTdmYjZjMDMwN2QzYTE0NDc1ZDZkMzRmMDRkN2M3ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3ZmEyZjRhZmZmMTQ5NGU5MzJiYjhlYjE5NjcyM2E3ODhlMDU2NTEwMjMwNzViYzZiYzQ3MTQ2ZmY0YWI3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiMTNkMmZkNmVlNWExMTY5OWZmMDU4NDkzNGNiYmY5ODk1NzEyYzEzNDc1MDA5MDJmMTBiOWRlMDMyNWFiNTEifQ"
+        },
+        {
+          "resource": "repo://trace.py#L107-L109",
+          "version": "repo-lines-v1:sha256:7a315cab7a93048048d3cc95a2720e373c8e16d178efe79b33fd14c46f1d82be:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODYwOTJmNjlmNTk1YWVlYjI3YjNkOGJmNmM2MGFhMGQ3ZjgwMmI1MmRmOTZlZTczZmM4Njg5ZmQ2YzdmMTJiMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjFmYmJkYTRkZmU2YjdmODVlNjIwZjU4YTA0MWM5MTU4MzQ5MmQyNmRjYzA5MWU1Njk5MWNmYjZkMmU4ZTFjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDA1ZDQ4NTdjY2NlMGI4YzBhZmMyYmM1ZTRhZmZhNzhkODBmYzQ3YjY1ODA5ZjI5ODdkOTllZjQ1MTJjNWI3ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWIxMDVmZTc0ZWRiNWFlMjg5ZDM0MGRhM2EwYWE0ODBjYjk3ODVjYWEzYjgyYjAxN2Y4OTc5ZWUwYWJlY2EyMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_373235bb7bf646f388e75bc0a1568711",
+      "statement": "The model.py status vocabulary validates exactly five statuses (truth, unverified_truth, derived, target, unknown); the finalized-v1 design direction for an 'estimated' uncertainty status with confidence/interval is not shipped.",
+      "evidence": [
+        {
+          "resource": "repo://docs/newer-additions.md#L77-L88",
+          "version": "repo-lines-v1:sha256:770c69a48ba4a43d8b8b96928037a8efae4967233b477fb9eb7ac89e09cc855d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4MWQ4MTc2ZWI4ZGIxN2Y0NGEzZjMwOTRhNzZlM2I0MDk1ZmZhNDFjMTczZWRlYjE0NzJiOTEwNDJiZGQ0NjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA1MWFkYjk5ODU3NTU2NDY3NzU4OTU1YTQ3MTY0ODYzMTY2ZjIwNDFkY2Y2M2FlZWZkZjBiMDE2MTg0M2RjYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjODI0NDVhNmEyNGI0ZDM1M2JlOTNiYzUyYzJkMDNiNmFiNzdiNTE4MGU2YThjNWQ0MDAyNTU5ZDA2N2FmZDQifQ"
+        },
+        {
+          "resource": "repo://model.py#L12-L24",
+          "version": "repo-lines-v1:sha256:c9c3ed6a69ee46574d200e7d94c9d85f8b86b7022153fd9d3ebf11a5418ce0d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwMDQ0OTYwMWI1ZGU1OGUxNzMwOTJmYTUwMTJhNGNiYjgwMjMyN2Q1MWMyZjQ3Zjg1ZWExYjY3YjhmN2Q2YWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlZjEyOTQyYWZhMDUyYzU0ZDQzYWJmZmZjZDNjMWM1Mjc5ODU1N2ZiYTVlYTkyNWZmYjg0NmM0YTliYWY2OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhYzM5ZDU1YjFjNDA5YWVlN2MzMThhZThmZWU0ZjEyOWVlODM1OWViMjczNjU3NWJlYmI4MDcxN2E1Mzk2OWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8900abfb127640d7a766967fe02204b8",
+      "statement": "The DL research notes that without a unique-name assumption, two fact nodes with distinct ids may denote one individual, so an explicit sameAs/differentFrom identity policy is needed before DL consistency checking is trustworthy; this remains an open thread.",
+      "evidence": [
+        {
+          "resource": "repo://docs/research/03-dl-abox-tbox.md#L59-L59",
+          "version": "repo-lines-v1:sha256:dc5c91265d0fd63d765f0a986398ff6a7e50d8ab871390b13060ad32e27b5e1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGM1YzkxMjY1ZDBmZDYzZDc2NWYwYTk4NjM5OGZmNmE3ZTUwZDhhYjg3MTM5MGIxMzA2MGFkMzJlMjdiNWUxYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGM1YzkxMjY1ZDBmZDYzZDc2NWYwYTk4NjM5OGZmNmE3ZTUwZDhhYjg3MTM5MGIxMzA2MGFkMzJlMjdiNWUxYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDQ4MTdhMDk2MWI3MTljZjQ5Y2FkOGU3MDMwMzU5YTJhNGUyYWViOGQyMThmNzE4MzYxODQ1OGJhOTY0YjM5YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGFmZDE0YjNlZmQ2ZGI3NTNmMWI2MGQxNzQ1Mzk0N2QyMzMyYWUzYmI3MGY1MGM5ZTBlZDdmM2ZhOTU2ODZhMCJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L135-L137",
+          "version": "repo-lines-v1:sha256:bd908a8ba7fab4a9e2df96233ded14cd1ed4d460b890bc396320f32f3d9d83b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmIwMDM1NmM3OTcwYmFlMjM3ZmQ1ZGI1MjcwNzU5YWExNTJiZGJmMDllODA0OGFkMjc0YzYwNmFiNGEzMTNiNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzUyMzRiZGJhYWY4NDg5NzJjY2NiYjdjNWE2NmUwNTkyNzFkMDE1YmY4NmNjMjZkZjVlODg4MWQyMTk5NWM3MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzJmMDI2ZDAxMjAzNmE4YThjNzEyZTM4MjQ0NjdkODY4OTYxODdkNTAwYzU2ZjVjZWIyNGVmYTY4ODgyNGVmYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWYyNTIzMTYwN2VkZDU5OTY1MGUyYTRkYzI4ZmM0NjMxYjQ2OWI2MzFmNmJhNDUzNDQyZmVkMmU3M2M5MWM5NiJ9"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L271-L272",
+          "version": "repo-lines-v1:sha256:b5291088c7104edc014680e5c43fa7cfb5e725ae8663b1abe3a2010c98b6e8ab:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOThkNmE1ZjBkOWZjZWQxODBiMjg4ZDBkMmYwYmFlODJmZTg1OWZmMDAzMTZjMjQwMzk3NDRhMDdmYmI2YTAyMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmE4YjM5NjlmMjgyM2NiZGZhYjAyOTZhZGE2NTY4YjQzNDZjYzcwZDlkM2ZiODUzMzA0MzZkYmNkYTRjNDc5ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTkzMThiM2FiNmE3YTgyMTY2NjUwOTJjZWM5MjhjNWYyMzc0YjBmZjNjMzUzMzAxNmM5MjM0MzVjYzI4Y2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTYzNTM0MWRjZTkyODYzODM0NjdkMjBhMGQ2YmRhYjQ3NTA3MDA5ZjNiMzFlYTczOGQ5YjIyNjQ5ZmI2ZTM1MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b82bc2a5d1d6490dac39f3a8d20df0cd",
+      "statement": "Unknown-vs-wrong disambiguation is an open question: metrics to distinguish 'out of scope' from an 'actual gap' in the knowledge base are not yet defined.",
+      "evidence": [
+        {
+          "resource": "repo://ARCHITECTURE.md#L371-L375",
+          "version": "repo-lines-v1:sha256:f6552b7be9434c459330807d3e3a26d6100db61f18ba93d635ee65b8307b37f8:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWU4YTA2NTFjMzIyOTFiOGNiMDIxNDAyYTI1ZDZjYjY4MzM5ZmFkZWM3YmM1Yzk1NmVmYmI2ZjRmYWMxZTc0YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhmNzNiM2Y2ZWI3MmVmZTUxMDdkNzRiN2QyY2UxMmFkODU2NDUzZGQzZGI3ODU3NGNmYzdkNDI5MzcyOGQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzc4NzdlMGY0YTA5MjhlOWExNjI1OWJiY2NmNWE1MmYzNWMzMjJhNDY4Yzk5ZjMwYTA1NmM1ODI4YzA1OGM2YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTc5NmEyZTJiMDc2MGIwM2JmNGIwNTVkYTRkMjVhM2M2ZDhhN2UwNWRhNmI2MWU1YmM1MWUwZWRlNDA3ODFlMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1d7a4569a77b4b45b93ac2f615d0e574",
+      "statement": "The verdict-triad codification (verified / contradicted / unverified-unknown, rendering UNKNOWN distinctly from FALSE) is a research-synthesis 'act now' item for the TBox/ABox naming from design addition #9.",
+      "evidence": [
+        {
+          "resource": "repo://docs/research/synthesis.md#L172-L232",
+          "version": "repo-lines-v1:sha256:b2ceb1be072b4e543983fbd386236bf1d1ddf4b41126209e51c8ed04d4fd930d:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1YTk1ZjEzZGJkNDI4NzNlYWYwMzZiNTU3Njk4NDg3YTY1MjczOGJkMzA4NWRlZWRlMDcwOGMwOWE5YmQ4ZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkZTUyYzhiYTA5ZThhZjQ5YmQ0NTZlNTY1NjQyOGQ3YTAyYmU3Mjg4NTI5NjMzZWNhNmE4Y2I3MGE3MjRkNzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlNTE0N2ZjMWYzMjMxNzUwOGU1NjIyYmYwYTlmOTViNGVhMDc0NWIzYzBjOGZmNjk1YWE3MjNiNjE3NzEwYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiNzZhMTZkYzA2MDMxZDI2MDNiNGJlYmU1NjFmYzIwNjRlMjMyNDM0ZGU4NGY5MjUyZWQ1ZjNhNzgyMzkyNWEifQ"
+        },
+        {
+          "resource": "repo://docs/research/synthesis.md#L228-L232",
+          "version": "repo-lines-v1:sha256:45fd806eee8fe18983b58ae57d38ce72740c8e31e1f45ed31ca8f4949ae7ab89:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTQzOWYyMmRhNzM5OTc2N2M0MWEyNDI4Y2NhNzkyOGQ0YmFmNWFmYzdmM2ZiYTFlZmFlZThkNTM1ZmQ3MzIxYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWRlNTJjOGJhMDllOGFmNDliZDQ1NmU1NjU2NDI4ZDdhMDJiZTcyODg1Mjk2MzNlY2E2YThjYjcwYTcyNGQ3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGEyYmYxOTdmMjQ5MjJkMWUwZDRiNGJjOWEyYTIwMjIyZDJhNzE2ZmNiNGVjODgxOGMzNTNlOTk5YmQ0YWJlMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmI3NmExNmRjMDYwMzFkMjYwM2I0YmViZTU2MWZjMjA2NGUyMzI0MzRkZTg0ZjkyNTJlZDVmM2E3ODIzOTI1YSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-08-28T20:01:59.856Z"
+  }
+}

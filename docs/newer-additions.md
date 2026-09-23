@@ -19,7 +19,7 @@ Research directive: maps closely onto **frame-based knowledge representation**
 Research what frame systems got right and what modern successors (description
 logics, property graphs) do differently and better.
 
-Status: **open research** → see `research/01-frames-kr.md`.
+Status: **finalized v1 direction (research-informed)** → see `research/01-frames-kr.md` (slot descriptors + orthogonal is-a/part-of axes; decided in [`research/synthesis.md`](research/synthesis.md)).
 
 ## 2. Relationships beyond mathematical ones
 
@@ -35,7 +35,7 @@ standard technique for attaching context to a relationship itself (e.g.
 "velocity's owner is car1, reference-frame=ground") instead of hacking context
 in as a flat attribute.
 
-Status: **open research** → see `research/02-rdf-owl-reification.md`.
+Status: **finalized v1 direction (research-informed)** → see `research/02-rdf-owl-reification.md` (two-variant typed edges: edge-attribute map ↔ context node; decided in [`research/synthesis.md`](research/synthesis.md)).
 
 ## 3. Context-dependent attributes (the OWNER problem)
 
@@ -47,7 +47,7 @@ Research directive: reification and context-indexed facts in the KR literature;
 how existing systems represent frame-of-reference-relative facts; concrete
 design options.
 
-Status: **open research** → see `research/02-rdf-owl-reification.md`
+Status: **finalized v1 direction (research-informed)** → see `research/02-rdf-owl-reification.md`
 (frames-of-reference) and `research/03-dl-abox-tbox.md` (context indexed).
 
 ## 4. Proportionality/correlation chains — flagged mathematical risk
@@ -72,7 +72,9 @@ Do not let the system silently multiply correlation coefficients as exact
 proportionality constants.
 
 Status: **open research (must inform design)** → see
-`research/04-path-analysis-sem.md` and `research/05-bayesian-networks.md`.
+`research/04-path-analysis-sem.md` and `research/05-bayesian-networks.md`; the
+`chain-composition` guardrail (refusal-with-Unknown unless causal edges + error
+terms + no confounder) is specified in [`research/synthesis.md`](research/synthesis.md) §9.
 
 ## 5. Uncertainty must be first-class
 

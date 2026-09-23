@@ -1,6 +1,6 @@
 # RDF, OWL, and Reification for Context-Dependent Relationships
 
-Status: **Research brief — feeds design additions #2 and #3 (OWNER problem)**.
+Status: **Research brief [open] — feeds design additions #2 and #3 (OWNER problem)**.
 Prior art: W3C RDF/OWL specifications, RDF-star/RDF 1.2, graph/KR literature.
 Sibling briefs: `01-frames-kr.md`, `03-dl-abox-tbox.md`, `04-path-analysis-sem.md`,
 `05-bayesian-networks.md`, `06-property-graphs.md`.

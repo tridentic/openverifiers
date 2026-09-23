@@ -4,7 +4,7 @@
 domain business {
     unit: USD, dimless
 
-    fact money { unit: USD }
+    type money { value: quantity<USD> }
 
     relation business.compound {
         inputs: { principal: money, fv: money, rate_pct: dimless, years: dimless }

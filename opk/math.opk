@@ -5,7 +5,7 @@
 domain math {
     unit: dimless
 
-    fact num { unit: dimless }
+    type num { value: quantity<dimless> }
 
     # -- arithmetic -----------------------------------------------------------
     relation math.add {

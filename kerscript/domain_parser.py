@@ -14,17 +14,16 @@ blocks may open inline (`entity X { }`) or across lines.
         entity <Name> extends <Parent>
         object <id>: <EntityType>
 
-        # -- fact structs: typed fields ------------------------------------
-        fact <Name> {
+        # -- struct types: typed fields ------------------------------------
+        type <Name> {
             owner: <EntityType>       # fact belongs to an object of this type
             frame: <EntityType>       # fact carries a reference frame
-            value: float | bool | string
-            unit: <token>             # quantity structs only
+            value: quantity<Unit>     # quantity structs (unit-aware)
             kind: <str>               # action structs only
         }
 
         # -- fact instances (frozen context) --------------------------------
-        fact <id>: <Struct> {
+        fact <id>: <Type> {
             owner: <object-id>
             frame: <object-id>
             value: <scalar>
@@ -86,7 +85,8 @@ def parse_domain(text: str) -> dict:
         # single-line block: `entity X { }`, `fact n { unit: x }`
         m = re.match(r"^(\S.*?)\{\s*(.*)\}\s*$", line)
         if m and m.group(1).strip().split(None, 1)[0] in \
-                ("domain", "entity", "fact", "relation", "transform", "judge"):
+                ("domain", "entity", "type", "fact", "relation",
+                 "transform", "judge"):
             head, inner = m.group(1).strip(), m.group(2)
             ndoc = _open_block(doc, stack, head)
             if ndoc is not None:
@@ -184,14 +184,18 @@ def _open_block(doc, stack, head: str):
             "parent": chain or "entity", "fields": {}}
         stack.append(("entity", tname))
         return
+    if kind == "type":
+        if len(parts) != 2:
+            raise ValueError(f"type needs a name: {head!r}")
+        if parts[1] in doc["types"]:
+            raise ValueError(f"duplicate type {parts[1]!r}")
+        doc["types"][parts[1]] = {"base": "fact", "unit": None,
+                                  "kind": None, "framed": False,
+                                  "parent": None, "fields": {}}
+        stack.append(("type-schema", parts[1]))
+        return
     if kind == "fact":
-        # fact <Name> {  (schema)  vs  fact <id>: <Type> {  (instance)
-        if len(parts) == 2:
-            stack.append(("fact-schema", parts[1]))
-            doc["types"][parts[1]] = {"base": "fact", "unit": None,
-                                      "kind": None, "framed": False,
-                                      "parent": None, "fields": {}}
-            return
+        # fact <id>: <Type> { ... } — a typed INSTANCE (assertion)
         if len(parts) == 3 and parts[1].endswith(":"):
             fid, tname = parts[1][:-1], parts[2]
             if tname not in doc["types"]:
@@ -201,8 +205,7 @@ def _open_block(doc, stack, head: str):
                 {"id": fid, "type": tname, "fields": {}})
             stack.append(("fact-inst", (fid, tname)))
             return
-        raise ValueError(f"fact syntax: fact Name {{ }} or fact id: Type "
-                         f"{{ }}: {head!r}")
+        raise ValueError(f"fact syntax: fact <id>: <Type> {{ }}: {head!r}")
     if kind == "relation":
         if len(parts) != 2:
             raise ValueError(f"relation needs a name: {head!r}")
@@ -233,18 +236,20 @@ def _field(block, key: str, val: str, doc: dict) -> None:
         elif key == "doc":
             doc["doc"] = (doc["doc"] + " " if doc["doc"] else "") + val
         return
-    if kind == "fact-schema":
+    if kind == "type-schema":
         rec = doc["types"][name]
-        if key in ("owner", "frame", "value", "unit", "kind"):
+        if key in ("owner", "frame", "value", "kind"):
             rec["fields"][key] = {"type": val}
             if key == "kind":
-                rec["kind"] = val
-            if key == "unit":
-                rec["unit"] = val
-            if key in ("owner", "frame"):
-                rec[key] = val
+                rec["kind"] = val.strip()
+            if key == "owner":
+                rec["owner"] = val.strip()
+            if key == "frame":
+                rec["frame"] = val.strip()
+            if key == "value" and val.strip().startswith("quantity<"):
+                rec["unit"] = _unit_of_quantity(val)
         else:
-            raise ValueError(f"fact {name}: unknown field {key!r}")
+            raise ValueError(f"type {name}: unknown field {key!r}")
         return
     if kind == "fact-inst":
         fid, tname = name
@@ -384,8 +389,17 @@ def _csv(text: str) -> list[str]:
     return [t.strip() for t in text.split(",") if t.strip()]
 
 
-_GUARD_ARITY = {"same_owner": 2, "different_owner": 2, "frame_eq": 2,
-                "kind": 2, "unit": 2, "framed": 1, "positive": 1}
+def _unit_of_quantity(text: str) -> str:
+    """`value: quantity<m/s>` -> `m/s`."""
+    m = re.match(r"^quantity<\s*([^>]+?)\s*>$", text.strip())
+    if not m:
+        raise ValueError(f"value must be quantity<Unit>: {text!r}")
+    return m.group(1)
+
+
+_GUARD_ARITY = {"exists": 1, "same_owner": 2, "different_owner": 2,
+                "frame_eq": 2, "kind": 2, "unit": 2, "framed": 1,
+                "positive": 1, "owner_of_type": 2, "frame_of_type": 2}
 
 
 def _csvp(text: str) -> list[str]:
@@ -411,14 +425,15 @@ def _guard(text: str) -> dict:
     if not m:
         raise ValueError(f"cannot parse guard {text!r}")
     op, inner = m.groups()
-    args = _csvp(inner) if op in ("cluster", "schema") else _csv(inner)
-    sparse = op in ("different_owner", "frame_eq", "same_owner", "kind",
-                    "unit", "framed", "positive", "owner_of_type",
-                    "frame_of_type")
-    if len(args) != _GUARD_ARITY.get(op, -1):
-        if op not in sparse:  # tolerate mis-split for ragged inner commas
-            raise ValueError(f"guard {op} takes {_GUARD_ARITY.get(op)} "
-                             f"argument(s), got {len(args)}: {text!r}")
+    if op not in _GUARD_ARITY:
+        raise ValueError(
+            f"guard {op!r} is NOT in the frozen v1 vocabulary "
+            f"({sorted(_GUARD_ARITY)}). A new guard kind is a core "
+            f"escalation, not a grammar edit.")
+    args = _csv(inner)
+    if len(args) != _GUARD_ARITY[op]:
+        raise ValueError(f"guard {op} takes {_GUARD_ARITY[op]} "
+                         f"argument(s), got {len(args)}: {text!r}")
     return {"op": op, "args": args}
 
 

@@ -4,7 +4,7 @@
 domain logic {
     unit: dimless
 
-    fact prop { kind: proposition }
+    type prop { kind: proposition }
 
     transform logic.modus_ponens {
         builtin: logic.modus_ponens

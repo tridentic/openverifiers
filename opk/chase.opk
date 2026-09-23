@@ -16,10 +16,10 @@ domain chase {
 
     # a framed quantity struct: every Velocity IS-A point-object property
     # measured IN a reference frame
-    fact Velocity {
+    type Velocity {
         owner: PointObject
         frame: ReferenceFrame
-        unit: m/s
+        value: quantity<m/s>
     }
 
     # -- frozen context objects -------------------------------------------------

@@ -1,125 +1,277 @@
-# KDScript-Domain — syntax specification (v1 curly-brace)
+# KDScript-Domain — Language Specification v2 (syntax proposal)
 
-A declarative, harness-authored grammar language. NOT Turing-complete: no
-loops, no free code. Curly-brace blocks, typed fields with `:` annotations —
-a Pythonic/C# type-hint hybrid. The compiler turns a document into a v2
-`Grammar` (Registry dispatch, provenance tiers, owner/frame reification).
+Status: **proposal — awaiting approval.** One document, three parts. Every
+construct is shown working in a bite-sized example; Part 3 composes every
+construct from Parts 1–2 into one runnable domain. No grammar export is
+regenerated until this spec is approved.
 
-Core model:
+Semantic core (unchanged, non-negotiable):
 
     Transformation: Facts -> Facts, provided the input facts satisfy the
-    declared inner conditions. The grammar hosts the transformations;
-    a proof applies them fact by fact. Fact identity is semantic —
-    "Velocity belongs to PointObject, measured in ReferenceFrame" —
-    never a variable name.
+    declared inner conditions. The grammar hosts the transformations; a
+    proof applies them fact by fact. The engine computes, the agent names.
 
-## Document shape
+Keyword discipline (the fix):
+
+| keyword | means |
+|---|---|
+| `entity` | a typed OBJECT with identity (PointObject, ReferenceFrame) |
+| `type`   | a fact SHAPE / schema — typed fields, never an instance |
+| `fact`   | a typed INSTANCE / assertion — a specific entity with specific field values |
+| `relation` | a RULE — typed inputs, an equation or guard, an output |
+| `transform` | an applied step reusing a relation or a builtin, optionally with guards/params |
+| `judge`  | a model-backed step with typed output schema |
+
+---
+
+## PART 1 — Type system
+
+### 1.1 Entities: typed objects with identity
+
+An `entity` is a class of objects. Objects (`object`) are the individuals:
+real identities a fact can belong to.
 
 ```
-domain <name> {
-    unit: <token>, ...                  # built-in unit references
-    unit <name> = base(<dim>) | <expr>  # derivations: "kg * m / s^2"
+entity PointObject { }
+entity ReferenceFrame { }
 
-    entity <Name> { }
-    entity <Name> extends <Parent> { }
-    object <id>: <EntityType>
+object tiger: PointObject
+object ground: ReferenceFrame
+```
 
-    fact <Name> {                       # fact struct schema
-        owner: <EntityType>             #   belongs to an object of this type
-        frame: <EntityType>             #   measured in a frame of this type
-        value: float | bool | string
-        unit: <token>                   #   quantity structs
-        kind: <str>                     #   action structs
-    }
-    fact <id>: <StructName> {           # frozen-context instance
-        owner: <object-id>
-        frame: <object-id>
-        value: <scalar>
-    }
+### 1.2 Entity subtyping (is-a)
 
-    relation <name> {
-        inputs: { <var>: <Struct>, ... }
-        equation: <lhs> == <rhs>        # sympy-compatible; any direction
-        out: <var> | <var>: <Struct>
-        param: [<p>, ...]               # step-bound variables
-        guard: [<guard>(...), ...]
-    }
+`extends` declares inheritance. A role typed by the PARENT accepts any
+subtype instance (polymorphism).
 
-    transform <name> {
-        builtin: <builtin>              # or: relation: <existing>
-        param: [<p>, ...]
-        input: [<role>: <Struct>, ...]
-        guard: [<guard>(...), ...]
-    }
+```
+entity PointObject { }
+entity Deer extends PointObject { }
+entity Tiger extends PointObject { }
 
-    judge <name> {
-        model: <backend>
-        input: [<role>: <Struct>, ...]
-        schema: <field>: <type>(<opt>|<opt>)
-    }
+object deer: Deer              # a Deer IS a PointObject
+object tiger: Tiger            # a Tiger IS a PointObject
+```
 
-    exclusive: (<a>, <b>, ...)
+### 1.3 quantity<Unit> — the generic numeric type
+
+A quantity is ONE generic type, parameterized by its unit. No per-unit
+wrapper types, ever. The unit expression lives inside `<>` and may be a
+token, a derived name, or a full unit expression.
+
+```
+relation dyn.fma {
+    inputs: { F: quantity<Newton>, m: quantity<kg>, a: quantity<m/s^2> }
+    equation: F == m * a
+    out: F
 }
 ```
 
-Blocks may open inline (`entity PointObject { }`); fields are `key: value`
-lines within a block; `#` comments start at end of line.
+No `t_Newton`, `t_A`, `t_kg` aliases exist in the language. A unit is not
+a type; a quantity is a type-on-a-unit.
 
-## Semantics
-
-**Fact structs are the type system.** A struct field:
-- `owner: E` — the fact must carry an object of entity type E (engine
-  checks `isinstance`; subclasses accepted → polymorphism);
-- `frame: E` — the fact must carry a frame of entity type E;
-- `unit: t` — typed quantity dimension (any-direction solving);
-- `kind: k` — ActionFact kind match.
-
-Typed inputs AUTO-GENERATE the engine-evaluated guards. Relations with a
-framed output (`out: vrel: Velocity` where Velocity declares frame) inherit
-the common input frame; an owner-typed output inherits the common owner.
-
-**Guards (declarative conditions, engine-evaluated, never agent-claimed):**
-
-| guard | meaning |
-|---|---|
-| `same_owner(a,b)` | shared owner |
-| `different_owner(a,b)` | distinct owners |
-| `frame_eq(a,b)` | one shared frame |
-| `unit(r, token)` | role carries the declared dimension |
-| `kind(r, quantity\|action)` | role is that fact kind |
-| `framed(r)` | role carries a frame |
-| `owner_of_type(r, E)` | role's owner is entity type E |
-| `frame_of_type(r, E)` | role's frame is entity type E |
-| `positive(r)` | role's numeric value > 0 |
-
-Free solve-variables are never guarded — the engine computes them.
-
-**Entity round-trip.** `object tiger: PointObject` compiles to a real
-PhysicalObject instance; an instance fact `fact v_tiger: Velocity { owner:
-tiger, frame: ground, value: 12 }` binds the REAL objects by identity. A
-proof step consuming v_tiger carries owner/frame through to its outputs.
-`tests/test_kerscript_chase.py` is the round-trip proof.
-
-**Judged steps** stamp results at the `judged` provenance tier with model +
-confidence + evidence; deterministic stubs today, Jev behind the same
-registry.
-
-## Example
+Domain vocabulary may still be declared with names, when a relation set
+uses the same unit repeatedly — this is naming a UNIT, not declaring a
+type:
 
 ```
-domain physics {
-    unit: m, kg, s, N, m/s
+unit Newton = kg * m / s^2          # derived-unit vocabulary
 
+relation dyn.weight {
+    inputs: { w: quantity<Newton>, m: quantity<kg>, g: quantity<m/s^2> }
+    equation: w == m * g
+    out: w
+}
+```
+
+### 1.4 Struct types: the fact SHAPE
+
+A `type` groups entity-ref fields + a value into one reusable fact shape.
+The `value` field is typed with `quantity<Unit>` or a scalar tag.
+
+```
+type Velocity {
+    owner: PointObject
+    frame: ReferenceFrame
+    value: quantity<m/s>
+}
+
+type Money {
+    owner: PointObject
+    value: quantity<USD>
+}
+```
+
+Typed fields ARE conditions: the engine enforces that an instance of
+`Velocity` carries a real `PointObject` owner and a `ReferenceFrame` frame,
+by identity and by type.
+
+---
+
+## PART 2 — Fact vs Relation
+
+### 2.1 fact = a typed INSTANCE / assertion
+
+A `fact` is one specific claim about one specific entity, with specific
+field values. It always names a `type` and concrete object ids. It is
+NEVER a type, NEVER a unit alias.
+
+```
+object tiger: Tiger
+object ground: ReferenceFrame
+
+fact v_tiger: Velocity {
+    owner: tiger
+    frame: ground
+    value: 12
+}
+```
+
+Reads as: "the Velocity of the tiger, measured in the ground frame, is
+12 m/s". The identity is the OBJECT — not a variable name, not a string.
+
+### 2.2 relation = a RULE
+
+A relation has typed inputs, an equation (or guards), and an output. Inputs
+come in two shapes — side by side:
+
+**Shape A — scalar quantity inputs only:**
+
+```
+relation dyn.fma {
+    inputs: { F: quantity<Newton>, m: quantity<kg>, a: quantity<m/s^2> }
+    equation: F == m * a
+    out: F
+}
+```
+
+**Shape B — entity-carrying inputs (facts whose fields carry owner/frame
+types):**
+
+```
+relation chase.relative_speed {
+    inputs: { a: Velocity, b: Velocity }        # both carry typed owner+frame
+    equation: vrel == a - b
+    out: vrel: Velocity                          # framed output
+    guard: [different_owner(a, b), frame_eq(a, b)]
+}
+```
+
+Here `Velocity` is a struct type: the inputs bring `owner` and `frame`
+with them, and the engine's type guards (owner_of_type, frame_of_type,
+unit) fire automatically. The guards are the extra relational conditions:
+distinct owners, one shared frame.
+
+The output `vrel: Velocity` means: the produced fact is a Velocity too —
+inheriting the shared frame, with no common owner when owners differ.
+
+### 2.3 What a relation never does
+
+A relation never fabricates facts, never trusts a value the caller
+supplies for its output, and never skips its guards. The agent names the
+transformation and the inputs; the engine computes the output and decides
+legality.
+
+---
+
+## PART 3 — One complete worked example
+
+Every construct from Parts 1–2 in one small domain: entity, subtype,
+objects, struct type, fact instances referencing those objects, two
+relations consuming facts (entity-carrying and scalar), guards, typed
+output — three relations total.
+
+```
+domain chase {
+    unit: m, s, m/s, m/s^2
+
+    # -- 1: entities + identity + subtyping ----------------------------------
     entity PointObject { }
     entity ReferenceFrame { }
+    entity Deer extends PointObject { }
+    entity Tiger extends PointObject { }
 
-    fact t_N { unit: N }
-    fact t_kg { unit: kg }
+    object tiger: Tiger
+    object deer: Deer
+    object ground: ReferenceFrame
+    object ground2: ReferenceFrame
 
-    relation dyn.fma {
-        inputs: { F: t_N, m: t_kg, a: t_m_s_2 }
-        equation: F == m * a
-        out: F
+    # -- 2: fact shape ---------------------------------------------------------
+    type Velocity {
+        owner: PointObject              # any PointObject (Deer, Tiger, ...)
+        frame: ReferenceFrame
+        value: quantity<m/s>
+    }
+
+    # -- 3: fact instances (assertions about specific entities) -----------------
+    fact v_tiger: Velocity { owner: tiger, frame: ground, value: 12 }
+    fact v_deer: Velocity  { owner: deer,  frame: ground, value: 7 }
+
+    # -- 4: relations (rules) ----------------------------------------------------
+    # entity-carrying inputs: two Velocities, distinct owners, one frame
+    relation chase.relative_speed {
+        inputs: { a: Velocity, b: Velocity }
+        equation: vrel == a - b
+        out: vrel: Velocity
+        guard: [different_owner(a, b), frame_eq(a, b)]
+    }
+
+    # scalar quantity inputs: gap closes at the relative speed over time
+    relation chase.gap_closing {
+        inputs: { start: quantity<m>, speed: quantity<m/s>, t: quantity<s> }
+        equation: gap == start - speed * t
+        out: gap: quantity<m>
+    }
+
+    # scalar with a simple guard
+    relation chase.miss_step {
+        inputs: { gap: quantity<m>, step: quantity<m> }
+        equation: ok == gap - step
+        out: ok: quantity<m>
+        guard: [positive(gap)]
     }
 }
 ```
+
+### Composing it — the proof program
+
+The proof names transformations and inputs; the engine computes:
+
+```
+proof closure:
+    vrel = chase.relative_speed(a=v_tiger, b=v_deer)   # 5 m/s, frame=ground
+    gap  = chase.gap_closing(start=start, speed=vrel, t=t)
+    ok   = chase.miss_step(gap=gap, step=step)
+```
+
+What the engine guarantees, per step:
+
+1. `vrel`: both inputs are Velocities (typed owner/frame enforced), owners
+   DIFFER (deer vs tiger — Deer/Tiger are distinct PointObjects), frames
+   AGREE (both ground). Output is a Velocity; its frame is ground (the
+   shared input frame); no owner (two distinct owners).
+2. `gap`: scalar relation, unit-checked — `start` in m, `speed` in m/s,
+   `t` in s ⇒ `gap` in m.
+3. `ok`: guard `positive(gap)` is evaluated by the engine; a non-positive
+   gap refuses the step with the guard named.
+
+A second frame (`ground2`) exists only to prove the frame guard: using a
+velocity measured in `ground2` with one in `ground` fails `frame_eq` and
+the step is rejected.
+
+---
+
+## What this changes vs the current implementation
+
+1. `quantity<Unit>` generics replace every `fact t_X { unit: X }` wrapper
+   — unit vocabulary stays, wrapper types go.
+2. The keyword `fact` is reserved for instances; the previous
+   `fact Velocity { ... }` schema form becomes `type Velocity { ... }`.
+3. Entity-typed inputs flow through struct types; `owner`/`frame` fields
+   become automatic owner_of_type/frame_of_type/unit guards.
+4. Everything else (relations, transforms, judges, guards, proof traces)
+   is unchanged semantics.
+
+After approval: parser + compiler implement quantities-as-generics and
+the `type` keyword; physics.opk is regenerated from this shape; the
+dataset gate re-runs.

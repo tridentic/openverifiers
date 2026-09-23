@@ -7,41 +7,41 @@ domain physics {
     entity PointObject { }
     entity ReferenceFrame { }
 
-    fact t_A { unit: A }
-    fact t_C { unit: C }
-    fact t_F { unit: F }
-    fact t_Hz { unit: Hz }
-    fact t_J { unit: J }
-    fact t_K { unit: K }
-    fact t_N { unit: N }
-    fact t_N_m { unit: N/m }
-    fact t_Pa { unit: Pa }
-    fact t_T { unit: T }
-    fact t_V { unit: V }
-    fact t_W { unit: W }
-    fact t_Wb { unit: Wb }
-    fact t_area { unit: area }
-    fact t_dimless { unit: dimless }
-    fact t_diopter { unit: diopter }
-    fact t_el_field { unit: el_field }
-    fact t_g_newton { unit: g_newton }
-    fact t_gas_r { unit: gas_r }
-    fact t_heacap { unit: heat_cap }
-    fact t_k_coulomb { unit: k_coulomb }
-    fact t_kg { unit: kg }
-    fact t_kg_m_s { unit: kg m/s }
-    fact t_kg_m { unit: kg/m }
-    fact t_m { unit: m }
-    fact t_m_s { unit: m/s }
-    fact t_m_s_2 { unit: m/s^2 }
-    fact t_mol { unit: mol }
-    fact t_ohm { unit: ohm }
-    fact t_per_kelvin { unit: per_kelvin }
-    fact t_photon_h { unit: photon_h }
-    fact t_rho_res { unit: rho_res }
-    fact t_s { unit: s }
-    fact t_specific_heat { unit: specific_heat }
-    fact t_volume { unit: volume }
+    type t_A { value: quantity<A> }
+    type t_C { value: quantity<C> }
+    type t_F { value: quantity<F> }
+    type t_Hz { value: quantity<Hz> }
+    type t_J { value: quantity<J> }
+    type t_K { value: quantity<K> }
+    type t_N { value: quantity<N> }
+    type t_N_m { value: quantity<N/m> }
+    type t_Pa { value: quantity<Pa> }
+    type t_T { value: quantity<T> }
+    type t_V { value: quantity<V> }
+    type t_W { value: quantity<W> }
+    type t_Wb { value: quantity<Wb> }
+    type t_area { value: quantity<area> }
+    type t_dimless { value: quantity<dimless> }
+    type t_diopter { value: quantity<diopter> }
+    type t_el_field { value: quantity<el_field> }
+    type t_g_newton { value: quantity<g_newton> }
+    type t_gas_r { value: quantity<gas_r> }
+    type t_heacap { value: quantity<heat_cap> }
+    type t_k_coulomb { value: quantity<k_coulomb> }
+    type t_kg { value: quantity<kg> }
+    type t_kg_m_s { value: quantity<kg m/s> }
+    type t_kg_m { value: quantity<kg/m> }
+    type t_m { value: quantity<m> }
+    type t_m_s { value: quantity<m/s> }
+    type t_m_s_2 { value: quantity<m/s^2> }
+    type t_mol { value: quantity<mol> }
+    type t_ohm { value: quantity<ohm> }
+    type t_per_kelvin { value: quantity<per_kelvin> }
+    type t_photon_h { value: quantity<photon_h> }
+    type t_rho_res { value: quantity<rho_res> }
+    type t_s { value: quantity<s> }
+    type t_specific_heat { value: quantity<specific_heat> }
+    type t_volume { value: quantity<volume> }
 
     relation alg.solve {
         inputs: { x: t_dimless, val: t_dimless }

@@ -46,8 +46,8 @@ def export_physics() -> str:
     # quantity structs: one static type per unit dimension (frame/owner stay
     # hand-authored; exports are frame-free by declaration)
     for tok in tokens:
-        lines.append(f"    fact t_{_type_name(tok).replace('t_', '')} "
-                     f"{{ unit: {tok} }}")
+        lines.append(f"    type t_{_type_name(tok).replace('t_', '')} "
+                     f"{{ value: quantity<{tok}> }}")
     lines.append("")
     for name, prim in sorted(PRIMITIVES.transformations.items()):
         rule = prim.rule

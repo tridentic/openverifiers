@@ -51,6 +51,7 @@ def new_domain(name: str, doc: str = "") -> dict:
         "doc": doc,
         "units": {},
         "facts": [],
+        "objects": [],
         "relations": [],
         "transforms": [],
         "judgements": [],

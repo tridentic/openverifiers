@@ -31,37 +31,40 @@ def export_physics() -> str:
     lines = ["# KDScript-Domain — physics relations (exported from "
              "domains/physics_primitives.py; regenerate with "
              "`python -m kerscript.export`)", ""]
-    title = getattr(PRIMITIVES, "doc", "") or "physics"
-    lines.append(f"domain physics   # {title}")
+    lines.append("domain physics {")
     lines.append("")
     # unit reference table (built-in tokens, all used below)
     tokens = sorted({token_of(u)
                      for prim in PRIMITIVES.transformations.values()
                      for u in prim.rule["units"].values()})
-    lines.append("unit " + ", ".join(tokens))
+    lines.append("    unit: " + ", ".join(tokens))
     lines.append("")
     # object model: nominal entity hierarchy (is-a, polymorphic roles)
-    lines.append("type PhysicalObject = entity")
-    lines.append("type PointObject extends PhysicalObject")
-    lines.append("type ReferenceFrame = entity")
+    lines.append("    entity PointObject { }")
+    lines.append("    entity ReferenceFrame { }")
     lines.append("")
-    # quantity types: one static type per unit dimension (framed stays a
-    # hand-authored choice — exports are frame-free by declaration)
+    # quantity structs: one static type per unit dimension (frame/owner stay
+    # hand-authored; exports are frame-free by declaration)
     for tok in tokens:
-        lines.append(f"type {_type_name(tok)} extends quantity unit({tok})")
+        lines.append(f"    fact t_{_type_name(tok).replace('t_', '')} "
+                     f"{{ unit: {tok} }}")
     lines.append("")
     for name, prim in sorted(PRIMITIVES.transformations.items()):
         rule = prim.rule
-        unit_args = ", ".join(
-            f"{v}={_type_name(token_of(rule['units'][v]))}"
+        inputs = ", ".join(
+            f"{v}: t_{_type_name(token_of(rule['units'][v])).replace('t_', '')}"
             for v in rule["vars"])
         expr = sp.sstr(rule["expr"])
         doc = rule.get("doc", "")
-        lines.append(f"relation {name}: {expr}  "
-                     f"unit({unit_args})  out({rule['out']})")
+        lines.append(f"    relation {name} {{")
+        lines.append(f"        inputs: {{ {inputs} }}")
+        lines.append(f"        equation: {expr} == 0")
+        lines.append(f"        out: {rule['out']}")
         if doc:
-            lines.append(f"    # {doc}")
+            lines.append(f"        # {doc}")
+        lines.append("    }")
         lines.append("")
+    lines.append("}")
     return "\n".join(lines).rstrip() + "\n"
 
 

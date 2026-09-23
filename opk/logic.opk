@@ -1,16 +1,29 @@
-# KDScript-Domain — core logic: propositional and basic predicate inference.
-# The point of this domain: the SAME core builtins math uses serve a
-# non-numeric domain untouched — no core change between math and logic.
+# KDScript-Domain — core logic: propositional + basic predicate inference.
+# The SAME core builtins math uses serve a non-numeric domain untouched.
 
-domain logic
+domain logic {
+    unit: dimless
 
-# -- propositional inference --------------------------------------------------
-transform logic.modus_ponens: builtin(logic.modus_ponens)  input(implication, antecedent)
+    fact prop { kind: proposition }
 
-# -- proposition machinery shared with math (P(n) claims, induction) ----------
-transform logic.theorem_base: builtin(theorem_base)  param(n, expr)
-transform logic.theorem_step: builtin(theorem_step)  param(k, expr)  input(predecessor)
-transform logic.induction_combine: builtin(induction_combine)  param(variable, expr)  input(base, step)
+    transform logic.modus_ponens {
+        builtin: logic.modus_ponens
+        input: [implication: prop, antecedent: prop]
+    }
+    transform logic.theorem_base {
+        builtin: theorem_base
+        param: [n, expr]
+    }
+    transform logic.theorem_step {
+        builtin: theorem_step
+        param: [k, expr]
+        input: [predecessor: prop]
+    }
+    transform logic.induction_combine {
+        builtin: induction_combine
+        param: [variable, expr]
+        input: [base: prop, step: prop]
+    }
 
-# -- declared conflict pairs ---------------------------------------------------
-exclusive(true, false)
+    exclusive: (true, false)
+}

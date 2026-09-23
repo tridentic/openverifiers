@@ -1,99 +1,125 @@
-# KDScript-Domain — syntax specification (v1)
+# KDScript-Domain — syntax specification (v1 curly-brace)
 
 A declarative, harness-authored grammar language. NOT Turing-complete: no
-loops, no free code. A document declares units, types, objects, facts,
-relations, transformations, and judged steps; the compiler turns it into a
-v2 `Grammar` (Registry dispatch, provenance tiers, owner/frame reification).
+loops, no free code. Curly-brace blocks, typed fields with `:` annotations —
+a Pythonic/C# type-hint hybrid. The compiler turns a document into a v2
+`Grammar` (Registry dispatch, provenance tiers, owner/frame reification).
 
-The core model, stated plainly:
+Core model:
 
     Transformation: Facts -> Facts, provided the input facts satisfy the
-    declared inner conditions. The grammar is the host that holds the
-    transformations; a proof applies them fact by fact.
+    declared inner conditions. The grammar hosts the transformations;
+    a proof applies them fact by fact. Fact identity is semantic —
+    "Velocity belongs to PointObject, measured in ReferenceFrame" —
+    never a variable name.
 
-## File structure
+## Document shape
 
 ```
-domain <name>                      # required first statement
-doc <free text>
+domain <name> {
+    unit: <token>, ...                  # built-in unit references
+    unit <name> = base(<dim>) | <expr>  # derivations: "kg * m / s^2"
 
-namespace <name>                   # indentation-scoped nesting
-    ...declarations...             # names resolve relative to the scope
+    entity <Name> { }
+    entity <Name> extends <Parent> { }
+    object <id>: <EntityType>
 
-type <name> = <base>               # base: fact | quantity | action | entity
-type <name> extends <base> [unit(<token>)]     # quantity subtype
-type <name> extends <base> [kind(<str>)]       # action subtype
-type <name> extends <base> [framed]            # readonly: requires a frame
+    fact <Name> {                       # fact struct schema
+        owner: <EntityType>             #   belongs to an object of this type
+        frame: <EntityType>             #   measured in a frame of this type
+        value: float | bool | string
+        unit: <token>                   #   quantity structs
+        kind: <str>                     #   action structs
+    }
+    fact <id>: <StructName> {           # frozen-context instance
+        owner: <object-id>
+        frame: <object-id>
+        value: <scalar>
+    }
 
-unit <token>, <token>              # reference built-in tokens
-unit <name> = <expr>               # derive: "kg * m / s^2", "base(length)"
+    relation <name> {
+        inputs: { <var>: <Struct>, ... }
+        equation: <lhs> == <rhs>        # sympy-compatible; any direction
+        out: <var> | <var>: <Struct>
+        param: [<p>, ...]               # step-bound variables
+        guard: [<guard>(...), ...]
+    }
 
-object <id>: <entity-type> [frame(<obj>)]      # object instances
+    transform <name> {
+        builtin: <builtin>              # or: relation: <existing>
+        param: [<p>, ...]
+        input: [<role>: <Struct>, ...]
+        guard: [<guard>(...), ...]
+    }
 
-fact <id>: quantity(<value>, <unit>) [owner(<obj>)] [frame(<obj>)]
-fact <id>: action(<kind>, <value>)  [of=<x>]
+    judge <name> {
+        model: <backend>
+        input: [<role>: <Struct>, ...]
+        schema: <field>: <type>(<opt>|<opt>)
+    }
 
-relation <name>: <expr> unit(<v>=<unit-or-type>,...) out(<v>) [param(<p>,...)]
-transform <name>: builtin(<builtin>) [param(<p>,...)] [input(<r>:<type>,...)]
-                  [guard(<g>,...)] [doc(<text>)]
-transform <name>: relation(<rel>) [guard(<g>,...)]
-judge <name>: model(<m>) input(<r>:<type>,...) schema(<f>=<type>[|<opt>],...)
-
-exclusive(<a>, <b>, ...)
+    exclusive: (<a>, <b>, ...)
+}
 ```
+
+Blocks may open inline (`entity PointObject { }`); fields are `key: value`
+lines within a block; `#` comments start at end of line.
 
 ## Semantics
 
-**Names.** A declaration inside `namespace foo` (nested: `foo.bar`) gets that
-prefix; a name written with explicit dots is kept as written. No full
-qualification required anywhere.
+**Fact structs are the type system.** A struct field:
+- `owner: E` — the fact must carry an object of entity type E (engine
+  checks `isinstance`; subclasses accepted → polymorphism);
+- `frame: E` — the fact must carry a frame of entity type E;
+- `unit: t` — typed quantity dimension (any-direction solving);
+- `kind: k` — ActionFact kind match.
 
-**Types.** `type X extends quantity unit(m)` declares a unit-dimension typed
-role; a bound input fact must be a Quantity with that dimension. `extends`
-with base `entity` builds a nominal object class (polymorphism: a role typed
-by a base accepts subtypes). `framed` types must carry a reference frame on
-the fact; a relation with a framed output inherits the common input frame.
+Typed inputs AUTO-GENERATE the engine-evaluated guards. Relations with a
+framed output (`out: vrel: Velocity` where Velocity declares frame) inherit
+the common input frame; an owner-typed output inherits the common owner.
 
-**Relations.** One symbolic relation per declaration, solvable in any
-direction by the engine (bind all-but-one -> numeric solve, positive root
-preferred; all bound -> consistency check; two-or-more free -> symbolic
-ExpressionFact). `=` separates the two sides; `**` is power; `sqrt`,
-`pi` available. `param(...)` declares step params that may bind variables
-(e.g. `rate_pct`).
-
-**Transforms.** Two kinds: `builtin(...)` resolves a core logical primitive
-(modus ponens, induction machinery, law checklist), `relation(...)` wraps a
-declared relation (e.g. to attach guards). Typed inputs auto-generate
-guards; explicit `guard(...)` entries add declarative conditions.
-
-**Guards (declarative conditions; engine-evaluated, never agent-claimed):**
+**Guards (declarative conditions, engine-evaluated, never agent-claimed):**
 
 | guard | meaning |
 |---|---|
-| `same_owner(a,b)` | both facts share one owner |
-| `frame_eq(a,b)` | both facts carry one frame |
+| `same_owner(a,b)` | shared owner |
+| `different_owner(a,b)` | distinct owners |
+| `frame_eq(a,b)` | one shared frame |
+| `unit(r, token)` | role carries the declared dimension |
 | `kind(r, quantity\|action)` | role is that fact kind |
-| `unit(r, token)` | role's unit dimension matches |
-| `framed(r)` | role carries a reference frame |
+| `framed(r)` | role carries a frame |
+| `owner_of_type(r, E)` | role's owner is entity type E |
+| `frame_of_type(r, E)` | role's frame is entity type E |
 | `positive(r)` | role's numeric value > 0 |
 
-**Judged steps.** `judge` names a model backend, typed inputs, and an output
-schema. The engine stamps the result at the `judged` provenance tier with
-model, confidence, and evidence. Backends (deterministic stubs today, Jev
-later) plug into one registry; the document never changes.
+Free solve-variables are never guarded — the engine computes them.
+
+**Entity round-trip.** `object tiger: PointObject` compiles to a real
+PhysicalObject instance; an instance fact `fact v_tiger: Velocity { owner:
+tiger, frame: ground, value: 12 }` binds the REAL objects by identity. A
+proof step consuming v_tiger carries owner/frame through to its outputs.
+`tests/test_kerscript_chase.py` is the round-trip proof.
+
+**Judged steps** stamp results at the `judged` provenance tier with model +
+confidence + evidence; deterministic stubs today, Jev behind the same
+registry.
 
 ## Example
 
 ```
-domain physics
-doc High-school physics relations, one per transformation.
+domain physics {
+    unit: m, kg, s, N, m/s
 
-type PointObject = entity
-object car: PointObject
+    entity PointObject { }
+    entity ReferenceFrame { }
 
-type force   extends quantity unit(N)
-type mass    extends quantity unit(kg)
-type accel   extends quantity unit(m/s^2)
+    fact t_N { unit: N }
+    fact t_kg { unit: kg }
 
-relation dyn.fma: F = m * a  unit(F=force, m=mass, a=accel)  out(F)
+    relation dyn.fma {
+        inputs: { F: t_N, m: t_kg, a: t_m_s_2 }
+        equation: F == m * a
+        out: F
+    }
+}
 ```

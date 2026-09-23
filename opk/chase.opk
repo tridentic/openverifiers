@@ -1,0 +1,57 @@
+# KDScript-Domain — chase scenario: OWNER + FRAME round-trip proof.
+#
+# The core regression: a fact's semantic identity is "belongs to PointObject,
+# carries ReferenceFrame" — NOT a variable name. This document declares the
+# entity types, the Velocity struct with owner/frame fields, objects, and a
+# framed relation; the compiler must preserve the entity/owner/frame binding
+# end to end. The accompanying test (test_kerscript_chase.py) asserts the
+# round trip through the compiled grammar.
+
+domain chase {
+    unit: m, s, m/s
+
+    # entities come from the physics export (shared nominal classes)
+    entity PointObject { }
+    entity ReferenceFrame { }
+
+    # a framed quantity struct: every Velocity IS-A point-object property
+    # measured IN a reference frame
+    fact Velocity {
+        owner: PointObject
+        frame: ReferenceFrame
+        unit: m/s
+    }
+
+    # -- frozen context objects -------------------------------------------------
+    object tiger: PointObject
+    object deer: PointObject
+    object ground: ReferenceFrame
+    object ground2: ReferenceFrame
+
+    # -- frozen context facts (typed instances) ---------------------------------
+    fact v_tiger: Velocity {
+        owner: tiger
+        frame: ground
+        value: 12
+    }
+    fact v_deer: Velocity {
+        owner: deer
+        frame: ground
+        value: 7
+    }
+    fact v_alt: Velocity {
+        owner: tiger
+        frame: ground2
+        value: 9
+    }
+
+    # -- framed relation ---------------------------------------------------------
+    # relative velocity of two DIFFERENT owners observed in ONE frame; the
+    # result stays in that frame
+    relation chase.v_rel {
+        inputs: { vt: Velocity, vd: Velocity }
+        equation: vrel == vt - vd
+        out: vrel: Velocity
+        guard: [different_owner(vt, vd), frame_eq(vt, vd)]
+    }
+}

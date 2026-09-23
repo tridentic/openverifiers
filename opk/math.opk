@@ -2,43 +2,115 @@
 # trigonometry + combinatorics + deductive proof machinery.
 # Relations are solvable in ANY direction by the engine.
 
-domain math
+domain math {
+    unit: dimless
 
-# -- types --------------------------------------------------------------------
-type num extends quantity unit(dimless)
+    fact num { unit: dimless }
 
-# -- arithmetic ------------------------------------------------------------------
-relation math.add: c = a + b  unit(a=num, b=num, c=num)  out(c)
-relation math.mul: c = a * b  unit(a=num, b=num, c=num)  out(c)
+    # -- arithmetic -----------------------------------------------------------
+    relation math.add {
+        inputs: { a: num, b: num, c: num }
+        equation: c == a + b
+        out: c
+    }
+    relation math.mul {
+        inputs: { a: num, b: num, c: num }
+        equation: c == a * b
+        out: c
+    }
 
-# -- algebra ---------------------------------------------------------------------
-relation alg.linear: a*x + b = c  unit(a=num, x=num, b=num, c=num)  out(x)
-relation alg.quadratic: x**2 - s*x + p = 0  unit(x=num, s=num, p=num)  out(x)
-relation alg.pyth: c = sqrt(a**2 + b**2)  unit(c=num, a=num, b=num)  out(c)
+    # -- algebra ---------------------------------------------------------------
+    relation alg.linear {
+        inputs: { a: num, b: num, c: num, x: num }
+        equation: a*x + b == c
+        out: x
+    }
+    relation alg.quadratic {
+        inputs: { s: num, p: num, x: num }
+        equation: x**2 - s*x + p == 0
+        out: x
+    }
+    relation alg.pyth {
+        inputs: { a: num, b: num, c: num }
+        equation: c == sqrt(a**2 + b**2)
+        out: c
+    }
 
-# -- trigonometry (angles in degrees) --------------------------------------------
-relation trig.sine: x = h * sin(theta*pi/180)  unit(x=num, h=num, theta=num)  out(x)
-relation trig.cosine: x = h * cos(theta*pi/180)  unit(x=num, h=num, theta=num)  out(x)
-relation trig.tangent: x = h * tan(theta*pi/180)  unit(x=num, h=num, theta=num)  out(x)
+    # -- trigonometry (degrees) --------------------------------------------------
+    relation trig.sine {
+        inputs: { h: num, theta: num, x: num }
+        equation: x == h * sin(theta*pi/180)
+        out: x
+    }
+    relation trig.cosine {
+        inputs: { h: num, theta: num, x: num }
+        equation: x == h * cos(theta*pi/180)
+        out: x
+    }
+    relation trig.tangent {
+        inputs: { h: num, theta: num, x: num }
+        equation: x == h * tan(theta*pi/180)
+        out: x
+    }
 
-# -- sequences and series ----------------------------------------------------------
-relation seq.arith_nth: an = a1 + (n-1)*d  unit(an=num, a1=num, n=num, d=num)  out(an)
-relation seq.arith_sum: s = n/2 * (2*a1 + (n-1)*d)  unit(s=num, n=num, a1=num, d=num)  out(s)
-relation seq.geom_nth: an = a1 * r**(n-1)  unit(an=num, a1=num, n=num, r=num)  out(an)
-relation seq.geom_sum: s = a1 * (r**n - 1)/(r - 1)  unit(s=num, a1=num, n=num, r=num)  out(s)
+    # -- sequences --------------------------------------------------------------
+    relation seq.arith_nth {
+        inputs: { a1: num, n: num, d: num, an: num }
+        equation: an == a1 + (n-1)*d
+        out: an
+    }
+    relation seq.arith_sum {
+        inputs: { a1: num, n: num, d: num, s: num }
+        equation: s == n/2 * (2*a1 + (n-1)*d)
+        out: s
+    }
+    relation seq.geom_nth {
+        inputs: { a1: num, n: num, r: num, an: num }
+        equation: an == a1 * r**(n-1)
+        out: an
+    }
+    relation seq.geom_sum {
+        inputs: { a1: num, n: num, r: num, s: num }
+        equation: s == a1 * (r**n - 1)/(r - 1)
+        out: s
+    }
 
-# -- combinatorics ------------------------------------------------------------------
-relation comb.perm: p = factorial(n)/factorial(n-k)  unit(p=num, n=num, k=num)  out(p)
-relation comb.comb: c = factorial(n)/(factorial(k)*factorial(n-k))  unit(c=num, n=num, k=num)  out(c)
+    # -- combinatorics -------------------------------------------------------------
+    relation comb.perm {
+        inputs: { n: num, k: num, p: num }
+        equation: p == factorial(n)/factorial(n-k)
+        out: p
+    }
+    relation comb.comb {
+        inputs: { n: num, k: num, c: num }
+        equation: c == factorial(n)/(factorial(k)*factorial(n-k))
+        out: c
+    }
 
-# -- deductive proof machinery (cross-domain builtins) ----------------------------
-transform math.proof_base: builtin(theorem_base)  param(n, expr)
-transform math.proof_step: builtin(theorem_step)  param(k, expr)  input(predecessor)
-transform math.logic.modus_ponens: builtin(logic.modus_ponens)  input(implication, antecedent)
-transform math.induction_combine: builtin(induction_combine)  param(variable, expr)  input(base, step)
+    # -- deductive proof machinery (cross-domain builtins) ---------------------------
+    transform math.proof_base {
+        builtin: theorem_base
+        param: [n, expr]
+    }
+    transform math.proof_step {
+        builtin: theorem_step
+        param: [k, expr]
+        input: [predecessor]
+    }
+    transform math.logic.modus_ponens {
+        builtin: logic.modus_ponens
+        input: [implication, antecedent]
+    }
+    transform math.induction_combine {
+        builtin: induction_combine
+        param: [variable, expr]
+        input: [base, step]
+    }
 
-# -- trusted baseline facts -----------------------------------------------------------
-fact math.pi: quantity(3.141592653589793, dimless)
+    # -- trusted baseline facts -----------------------------------------------------
+    fact math.pi: num {
+        value: 3.141592653589793
+    }
 
-# -- declared conflict pairs -----------------------------------------------------------
-exclusive(even, odd)
+    exclusive: (even, odd)
+}

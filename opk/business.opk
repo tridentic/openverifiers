@@ -1,11 +1,21 @@
 # KDScript-Domain — business scenario arithmetic (compound value).
-# Port of domains/business.py: the compound rule is a relation, with money
-# typed in USD, rate and years dimensionless. Variables named to match the
-# trace roles; rate_pct/years arrive as step params (declared via param(...)).
+# Money is USD; rate and years are dimensionless shares, step-bound params.
 
-domain business
+domain business {
+    unit: USD, dimless
 
-relation business.compound: fv = principal * (1 + rate_pct/100)**years  unit(principal=USD, fv=USD, rate_pct=dimless, years=dimless)  out(fv)  param(rate_pct, years)
+    fact money { unit: USD }
 
-# a guarded wrapper: compounding a non-positive principal is refused up front
-transform business.compound_guarded: relation(business.compound)  guard(positive(principal))
+    relation business.compound {
+        inputs: { principal: money, fv: money, rate_pct: dimless, years: dimless }
+        equation: fv == principal * (1 + rate_pct/100)**years
+        param: [rate_pct, years]
+        out: fv
+    }
+
+    # a guarded wrapper: compounding a non-positive principal is refused up front
+    transform business.compound_guarded {
+        relation: business.compound
+        guard: [positive(principal)]
+    }
+}

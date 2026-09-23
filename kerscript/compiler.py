@@ -57,10 +57,12 @@ def entity_class(name: str, base: str) -> type:
 class RelationPrimitive(ParamTransformation):
     def __init__(self, *, name: str, vars_: tuple[str, ...], out: str,
                  expr: sp.Expr, units: dict[str, "Unit"], doc: str = "",
-                 params: tuple[str, ...] = (), out_framed: bool = False):
+                 params: tuple[str, ...] = (), out_framed: bool = False,
+                 out_owner: bool = False):
         self.rule = {"name": name, "vars": vars_, "out": out,
                      "units": units, "doc": doc}
         self.out_framed = out_framed
+        self.out_owner = out_owner
         super().__init__(name=name, doc=doc,
                          param_names=("axis", "theta") + params,
                          inputs=tuple(InputSpec(v, required=False)
@@ -88,6 +90,20 @@ class RelationPrimitive(ParamTransformation):
         if len(frames) == 1:
             return next(iter(frames.values()))
         return None
+
+    def _common_owner(self, inputs: dict) -> "PhysicalObject | None":
+        owners = {id(f.owner): f.owner for f in inputs.values()
+                  if getattr(f, "owner", None) is not None}
+        if len(owners) == 1:
+            return next(iter(owners.values()))
+        return None
+
+    def _result(self, value: float, unit, inputs: dict) -> Quantity:
+        return Quantity(value=value, unit=unit,
+                        frame=self._common_frame(inputs)
+                        if self.out_framed else None,
+                        owner=self._common_owner(inputs)
+                        if self.out_owner else None)
 
     def apply(self, inputs: dict, params: dict | None = None) -> Fact:
         params = params or {}
@@ -122,9 +138,7 @@ class RelationPrimitive(ParamTransformation):
                 raise ValueError(
                     f"relation {self.rule['name']} not satisfied by the "
                     f"bound values (residual {err:g})")
-            return Quantity(value=float(bound[out]), unit=out_unit,
-                            frame=self._common_frame(inputs)
-                            if self.out_framed else None)
+            return self._result(float(bound[out]), out_unit, inputs)
 
         if len(remaining) >= 2 or chained:
             expr = sp.solve(sp.Eq(self._expr, 0), self._syms[out])[0]
@@ -150,10 +164,8 @@ class RelationPrimitive(ParamTransformation):
                              f"{self.rule['name']}")
         pos = [v for v in vals if v > 0]
         val = pos[0] if pos else vals[0]
-        return Quantity(value=float(val),
-                        unit=self.rule["units"][remaining[0]],
-                        frame=self._common_frame(inputs)
-                        if self.out_framed else None)
+        return self._result(float(val),
+                            self.rule["units"][remaining[0]], inputs)
 
 
 _CONST_OR_FN = {"pi", "e", "sqrt", "sin", "cos", "tan", "exp", "log", "ln",
@@ -162,7 +174,10 @@ _CONST_OR_FN = {"pi", "e", "sqrt", "sin", "cos", "tan", "exp", "log", "ln",
 
 def _sympify(expr_text: str) -> sp.Expr:
     text = expr_text.strip().replace("^", "**")
-    if "=" in text:
+    if "==" in text:
+        lhs, _, rhs = text.partition("==")
+        text = f"{lhs.strip()} - ({rhs.strip()})"
+    elif "=" in text:
         lhs, _, rhs = text.partition("=")
         text = f"{lhs.strip()} - ({rhs.strip()})"
     # sympy's global namespace shadows bare identifiers (Q, E, I, O, N, S...)
@@ -213,25 +228,40 @@ def _compile_guards(guards: list[dict], resolver=None) -> callable:
             if op == "same_owner":
                 a, b = (inputs.get(x) for x in args)
                 if a is None or b is None:
-                    return f"guard same_owner({args[0]},{args[1]}): " \
-                           f"missing input"
+                    continue
                 if getattr(a, "owner", None) != getattr(b, "owner", None):
                     return (f"guard same_owner({args[0]},{args[1]}): "
                             f"owners differ")
+            elif op == "different_owner":
+                a, b = (inputs.get(x) for x in args)
+                if a is None or b is None:
+                    continue
+                if getattr(a, "owner", None) == getattr(b, "owner", None):
+                    return (f"guard different_owner({args[0]},{args[1]}): "
+                            f"same owner")
             elif op == "frame_eq":
                 a, b = (inputs.get(x) for x in args)
                 if a is None or b is None:
-                    return f"guard frame_eq({args[0]},{args[1]}): " \
-                           f"missing input"
+                    continue
                 fa, fb = getattr(a, "frame", None), getattr(b, "frame", None)
                 if fa != fb:
                     return (f"guard frame_eq({args[0]},{args[1]}): "
                             f"frames differ")
+            elif op == "frame_of_type":
+                role, tname = args
+                f = inputs.get(role)
+                if f is None:
+                    continue            # free variable — solver's job
+                frame = getattr(f, "frame", None)
+                cls = _ENTITY_CLASSES.get(tname, PhysicalObject)
+                if not isinstance(frame, cls):
+                    return (f"guard frame_of_type({role},{tname}): frame "
+                            f"is not an instance of {tname}")
             elif op == "kind":
                 role, kind = args
                 f = inputs.get(role)
                 if f is None:
-                    return f"guard kind({role},{kind}): missing input"
+                    continue
                 if kind == "quantity" and not isinstance(f, Quantity):
                     return f"guard kind({role},quantity): {role} is " \
                            f"{type(f).__name__}"
@@ -267,7 +297,7 @@ def _compile_guards(guards: list[dict], resolver=None) -> callable:
             elif op == "positive":
                 role = args[0]
                 f = inputs.get(role)
-                if f is None or f.value is None:
+                if f is None or getattr(f, "value", None) is None:
                     continue            # free variable — solver's job
                 num = as_number(getattr(f, "value", None),
                                 getattr(f, "unit", None))
@@ -275,6 +305,7 @@ def _compile_guards(guards: list[dict], resolver=None) -> callable:
                     return f"guard positive({role}): non-positive"
         return None
     return precond
+
 
 
 # ---------------------------------------------------------------------------
@@ -308,27 +339,35 @@ def compile_ir(doc: dict) -> Grammar:
     transforms: dict[str, Transformation] = {}
     rel_by_name = {rel["name"]: rel for rel in doc["relations"]}
     for rel in doc["relations"]:
-        units = {v: resolver(tok) for v, tok in rel["units"].items()}
-        out_rec = types.get(rel.get("types", {}).get(rel["out"], ""), {})
+        units: dict[str, "Unit"] = {}
+        guards = []
+        for var, tname in rel["types"].items():
+            rec = types.get(tname) or {}
+            tok = rec.get("unit") or "dimless"
+            units[var] = resolver(tok)
+            if var == rel["out"]:
+                continue                 # solved output is never guarded
+            if rec.get("unit"):
+                guards.append({"op": "unit", "args": [var, tok]})
+            if rec.get("owner"):
+                guards.append({"op": "owner_of_type",
+                               "args": [var, rec["owner"]]})
+            if rec.get("frame"):
+                guards.append({"op": "frame_of_type",
+                               "args": [var, rec["frame"]]})
+        out_rec = types.get(rel.get("out_type") or
+                            rel["types"].get(rel["out"]), {}) or {}
+        if rel["out"] not in units:
+            units[rel["out"]] = resolver(out_rec.get("unit") or "dimless")
         transforms[rel["name"]] = RelationPrimitive(
             name=rel["name"], vars_=tuple(units), out=rel["out"],
             expr=_sympify(rel["expr"]), units=units,
             params=tuple(rel.get("param") or ()),
-            out_framed=bool(out_rec.get("framed")),
+            out_framed=bool(out_rec.get("frame") or out_rec.get("framed")),
+            out_owner=bool(out_rec.get("owner")),
             doc=rel.get("doc", ""))
-        # input type guards -> precondition (quantity dimension / framed);
-        # the solve-for OUTPUT variable is never guarded (it is computed)
-        var_types = rel.get("types") or {}
-        guards = []
-        for var, tname in var_types.items():
-            if var == rel["out"]:
-                continue
-            rec = _resolve_type(types, tname)
-            if rec and rec["base"] == "quantity":
-                guards.append({"op": "unit",
-                               "args": [var, rec["unit"] or "dimless"]})
-                if rec.get("framed"):
-                    guards.append({"op": "framed", "args": [var]})
+        if rel.get("guards"):
+            guards = guards + rel["guards"]
         if guards:
             p = _compile_guards(guards, resolver)
             transforms[rel["name"]]._pre = p  # noqa: SLF001
@@ -338,12 +377,15 @@ def compile_ir(doc: dict) -> Grammar:
         if tr.get("relation"):
             src = rel_by_name[tr["relation"]]
             units = {v: resolver(tok) for v, tok in src["units"].items()}
+            out_rec = types.get(src.get("out_type") or
+                                src["types"].get(src["out"]), {}) or {}
             base = RelationPrimitive(
                 name=tr["name"], vars_=tuple(units), out=src["out"],
                 expr=_sympify(src["expr"]), units=units,
                 params=tuple(src.get("param") or ()),
-                out_framed=bool(types.get(src.get("types", {}).get(
-                    src["out"], ""), {}).get("framed")),
+                out_framed=bool(out_rec.get("frame") or
+                                out_rec.get("framed")),
+                out_owner=bool(out_rec.get("owner")),
                 doc=tr.get("doc", ""))
             if explicit:
                 base._pre = _compile_guards(explicit, resolver)  # noqa: SLF001
@@ -352,11 +394,11 @@ def compile_ir(doc: dict) -> Grammar:
         base = make_builtin(tr["builtin"])
         auto = _auto_guards(tr.get("input") or [], types)
         if auto or explicit:
-            orig = base.precond
+            orig = base._pre            # raw closure, NOT the bound method
             gpre = _compile_guards(auto + explicit, resolver)
             def precond(inputs: dict, _orig=orig, _gpre=gpre) -> str | None:
                 reason = _gpre(inputs)
-                return reason or _orig(inputs)
+                return reason or (_orig(inputs) if _orig else None)
             base._pre = precond  # noqa: SLF001 — compiler owns its objects
         transforms[tr["name"]] = base
 
@@ -372,16 +414,22 @@ def compile_ir(doc: dict) -> Grammar:
 
     facts: dict[str, Fact] = {}
     for f in doc.get("facts", []):
-        owner = objects.get(f.get("owner")) if f.get("owner") else None
-        frame = objects.get(f.get("frame")) if f.get("frame") else None
-        if f["kind"] == "quantity":
+        rec = types.get(f.get("type")) or {}
+        fields = f.get("fields") or {}
+        owner = objects.get(fields.get("owner")) \
+            if fields.get("owner") else None
+        frame = objects.get(fields.get("frame")) \
+            if fields.get("frame") else None
+        if rec.get("unit"):
             facts[f["id"]] = Quantity(
-                id=f["id"], value=f["value"], unit=resolver(f.get("unit")),
-                owner=owner, frame=frame, source=f.get("source", ""))
-        else:
+                id=f["id"], value=_scalar(fields.get("value")),
+                unit=resolver(rec["unit"]), owner=owner, frame=frame,
+                source=f.get("source", ""))
+        elif rec.get("kind"):
             facts[f["id"]] = ActionFact(
-                id=f["id"], kind=f["kind_name"], value=f["value"],
-                of=f.get("of"), owner=owner, source=f.get("source", ""))
+                id=f["id"], kind=rec["kind"], value=_scalar(fields.get("value")),
+                of=fields.get("of"), owner=owner,
+                source=f.get("source", ""))
 
     exclusive = tuple(frozenset(pair) for pair in doc.get("exclusive", []))
     return Grammar(name=name, transformations=transforms, facts=facts,
@@ -395,19 +443,35 @@ def _auto_guards(typed_inputs: list[dict], types: dict) -> list[dict]:
         rec = _resolve_type(types, tname)
         if rec is None:
             continue
-        if rec["base"] == "quantity":
-            guards.append({"op": "unit", "args": [item["role"], tname]})
-            if rec.get("framed"):
-                guards.append({"op": "framed", "args": [item["role"]]})
-        elif rec["base"] == "action":
-            guards.append({"op": "kind", "args": [item["role"],
-                                                  rec.get("kind") or
-                                                  "action"]})
-        elif rec["base"] == "entity":
+        if rec.get("unit"):
+            guards.append({"op": "unit", "args": [item["role"],
+                                                  rec["unit"]]})
+        if rec.get("owner"):
             guards.append({"op": "owner_of_type",
-                           "args": [item["role"], tname]})
-            _ENTITY_CLASSES.setdefault(tname, PhysicalObject)
+                           "args": [item["role"], rec["owner"]]})
+        if rec.get("frame"):
+            guards.append({"op": "frame_of_type",
+                           "args": [item["role"], rec["frame"]]})
+        if rec.get("kind"):
+            guards.append({"op": "kind", "args": [item["role"],
+                                                  rec["kind"]]})
+        if rec.get("framed"):
+            guards.append({"op": "framed", "args": [item["role"]]})
     return guards
+
+
+def _scalar(text) -> "float | bool | str":
+    if text is None or text == "":
+        return None
+    text = str(text).strip()
+    if text in ("true", "True"):
+        return True
+    if text in ("false", "False"):
+        return False
+    try:
+        return float(text)
+    except ValueError:
+        return text
 
 
 def compile_text(text: str) -> Grammar:

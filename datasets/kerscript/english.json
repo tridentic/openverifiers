@@ -1,0 +1,28 @@
+[
+  {
+    "id": "eng-agree-01",
+    "domain": "english",
+    "topics": ["judged", "agreement"],
+    "difficulty": "easy",
+    "description": "Subject-verb agreement judged by the stub backend: subject 'cat' -> consistent, provenance tier 'judged'.",
+    "given": {
+      "s": {"kind": "action", "kind_name": "claim", "value": "cat is happy", "of": "cat"},
+      "o": {"kind": "action", "kind_name": "claim", "value": "cat is happy", "of": "cat"}
+    },
+    "proof": "v = english.agreement(subject=s, object=o)",
+    "expected": {"id": "v", "value": "consistent"}
+  },
+  {
+    "id": "eng-agree-02",
+    "domain": "english",
+    "topics": ["judged", "agreement"],
+    "difficulty": "medium",
+    "description": "Non-alpha subject token -> judged inconsistent (still a valid trace; the verdict value differs).",
+    "given": {
+      "s": {"kind": "action", "kind_name": "claim", "value": "t1 is fast", "of": "t1"},
+      "o": {"kind": "action", "kind_name": "claim", "value": "t1 is fast", "of": "t1"}
+    },
+    "proof": "v = english.agreement(subject=s, object=o)",
+    "expected": {"id": "v", "value": "inconsistent"}
+  }
+]

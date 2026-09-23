@@ -1,0 +1,65 @@
+[
+  {
+    "id": "math-arith-01",
+    "domain": "math",
+    "topics": ["arithmetic", "multiplication"],
+    "difficulty": "easy",
+    "description": "a=3, b=4. Compute z = a * b.",
+    "given": {
+      "a": {"kind": "quantity", "value": 3, "unit": "dimless"},
+      "b": {"kind": "quantity", "value": 4, "unit": "dimless"}
+    },
+    "proof": "z = math.mul(a=a, b=b)",
+    "expected": {"id": "z", "value": 12.0}
+  },
+  {
+    "id": "math-arith-02",
+    "domain": "math",
+    "topics": ["arithmetic", "addition"],
+    "difficulty": "easy",
+    "description": "2+3=5, then 5+4=9: chained addition.",
+    "given": {
+      "a": {"kind": "quantity", "value": 2, "unit": "dimless"},
+      "b": {"kind": "quantity", "value": 3, "unit": "dimless"},
+      "c": {"kind": "quantity", "value": 4, "unit": "dimless"}
+    },
+    "proof": "x = math.add(a=a, b=b)\ny = math.add(a=x, b=c)",
+    "expected": {"id": "y", "value": 9.0}
+  },
+  {
+    "id": "math-mul-inv-01",
+    "domain": "math",
+    "topics": ["arithmetic", "multiplication"],
+    "difficulty": "medium",
+    "description": "z=12, a=3. Find the missing factor b = z / a. The engine solves the relation, the agent never submits a value.",
+    "given": {
+      "z": {"kind": "quantity", "value": 12, "unit": "dimless"},
+      "a": {"kind": "quantity", "value": 3, "unit": "dimless"}
+    },
+    "proof": "b = math.mul(c=z, a=a)",
+    "expected": {"id": "b", "value": 4.0}
+  },
+  {
+    "id": "math-ind-01",
+    "domain": "math",
+    "topics": ["proof", "induction"],
+    "difficulty": "hard",
+    "description": "Induction: base P(0) and chain-valid step P(0)->P(1) over the same closed form 2n-1 close to forall n: P(n).",
+    "given": {},
+    "proof": "base = math.proof_base with n=0, expr=\"2n-1\"\nstep = math.proof_step(predecessor=base) with k=0, expr=\"2n-1\"\nf = math.induction_combine(base=base, step=step) with variable=n, expr=\"2n-1\"",
+    "expected": {"id": "f", "value": null}
+  },
+  {
+    "id": "math-mp-01",
+    "domain": "math",
+    "topics": ["logic", "modus ponens"],
+    "difficulty": "medium",
+    "description": "From implication P -> Q and proposition P, derive Q.",
+    "given": {
+      "imp": {"kind": "action", "kind_name": "implication", "value": "P -> Q", "of": "theorem"},
+      "p": {"kind": "action", "kind_name": "proposition", "value": "P", "of": "theorem"}
+    },
+    "proof": "q = math.logic.modus_ponens(implication=imp, antecedent=p)",
+    "expected": {"id": "q", "value": "Q"}
+  }
+]

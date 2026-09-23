@@ -1,0 +1,150 @@
+[
+  {
+    "id": "phy-kin-01",
+    "domain": "physics",
+    "topics": ["kinematics", "suvat"],
+    "difficulty": "easy",
+    "description": "A car accelerates uniformly: u=5 m/s, a=2 m/s^2, t=3 s. Find final velocity v and distance s.",
+    "given": {
+      "u": {"kind": "quantity", "value": 5, "unit": "m/s"},
+      "a": {"kind": "quantity", "value": 2, "unit": "m/s^2"},
+      "t": {"kind": "quantity", "value": 3, "unit": "s"}
+    },
+    "proof": "v = kin.suvat_v_u_at(u=u, a=a, t=t)\ns = kin.suvat_s_ut_athalf(u=u, a=a, t=t)",
+    "expected": {"id": "v", "value": 11.0}
+  },
+  {
+    "id": "phy-kin-02",
+    "domain": "physics",
+    "topics": ["kinematics", "suvat"],
+    "difficulty": "easy",
+    "description": "v=12 m/s, u=4 m/s, t=2 s. Find acceleration.",
+    "given": {
+      "v": {"kind": "quantity", "value": 12, "unit": "m/s"},
+      "u": {"kind": "quantity", "value": 4, "unit": "m/s"},
+      "t": {"kind": "quantity", "value": 2, "unit": "s"}
+    },
+    "proof": "a2 = kin.suvat_v_u_at(v=v, u=u, t=t)",
+    "expected": {"id": "a2", "value": 4.0}
+  },
+  {
+    "id": "phy-dyn-01",
+    "domain": "physics",
+    "topics": ["dynamics", "newton"],
+    "difficulty": "easy",
+    "description": "m=2 kg, a=5 m/s^2. Find force F = ma.",
+    "given": {
+      "m": {"kind": "quantity", "value": 2, "unit": "kg"},
+      "a": {"kind": "quantity", "value": 5, "unit": "m/s^2"}
+    },
+    "proof": "F = dyn.fma(m=m, a=a)",
+    "expected": {"id": "F", "value": 10.0}
+  },
+  {
+    "id": "phy-dyn-02",
+    "domain": "physics",
+    "topics": ["dynamics", "weight"],
+    "difficulty": "easy",
+    "description": "m=10 kg, g=9.8 m/s^2. Find weight.",
+    "given": {
+      "m": {"kind": "quantity", "value": 10, "unit": "kg"},
+      "g": {"kind": "quantity", "value": 9.8, "unit": "m/s^2"}
+    },
+    "proof": "w = dyn.weight(m=m, g=g)",
+    "expected": {"id": "w", "value": 98.0}
+  },
+  {
+    "id": "phy-dyn-03",
+    "domain": "physics",
+    "topics": ["dynamics", "momentum"],
+    "difficulty": "medium",
+    "description": "m=3 kg, v=4 m/s. Find momentum p = mv.",
+    "given": {
+      "m": {"kind": "quantity", "value": 3, "unit": "kg"},
+      "v": {"kind": "quantity", "value": 4, "unit": "m/s"}
+    },
+    "proof": "p = dyn.momentum(m=m, v=v)",
+    "expected": {"id": "p", "value": 12.0}
+  },
+  {
+    "id": "phy-en-01",
+    "domain": "physics",
+    "topics": ["energy", "kinetic"],
+    "difficulty": "medium",
+    "description": "m=2 kg, v=3 m/s. Find kinetic energy KE = 1/2 m v^2.",
+    "given": {
+      "m": {"kind": "quantity", "value": 2, "unit": "kg"},
+      "v": {"kind": "quantity", "value": 3, "unit": "m/s"}
+    },
+    "proof": "ke = en.kinetic(m=m, v=v)",
+    "expected": {"id": "ke", "value": 9.0}
+  },
+  {
+    "id": "phy-ckt-01",
+    "domain": "physics",
+    "topics": ["circuits", "ohm"],
+    "difficulty": "easy",
+    "description": "i=2 A, r=5 ohm. Find voltage v = ir.",
+    "given": {
+      "i": {"kind": "quantity", "value": 2, "unit": "A"},
+      "r": {"kind": "quantity", "value": 5, "unit": "ohm"}
+    },
+    "proof": "v = ckt.ohms(i=i, r=r)",
+    "expected": {"id": "v", "value": 10.0}
+  },
+  {
+    "id": "phy-hooke-01",
+    "domain": "physics",
+    "topics": ["mechanics", "hooke"],
+    "difficulty": "easy",
+    "description": "k=5 N/m, x=2 m. Find spring force F = kx.",
+    "given": {
+      "k": {"kind": "quantity", "value": 5, "unit": "N/m"},
+      "x": {"kind": "quantity", "value": 2, "unit": "m"}
+    },
+    "proof": "F = dyn.hooke(k=k, x=x)",
+    "expected": {"id": "F", "value": 10.0}
+  },
+  {
+    "id": "phy-mod-01",
+    "domain": "physics",
+    "topics": ["modern", "half-life"],
+    "difficulty": "medium",
+    "description": "N0=100, t=6 s, T=3 s. Find remaining N = N0 2^(-t/T).",
+    "given": {
+      "N0": {"kind": "quantity", "value": 100, "unit": "dimless"},
+      "t": {"kind": "quantity", "value": 6, "unit": "s"},
+      "T": {"kind": "quantity", "value": 3, "unit": "s"}
+    },
+    "proof": "N = mod.half_life(N0=N0, t=t, T=T)",
+    "expected": {"id": "N", "value": 25.0}
+  },
+  {
+    "id": "phy-proj-01",
+    "domain": "physics",
+    "topics": ["kinematics", "projectile"],
+    "difficulty": "medium",
+    "description": "v=20 m/s, theta=30 deg, g=9.8 m/s^2. Find range R = v^2 sin(2 theta)/g.",
+    "given": {
+      "v": {"kind": "quantity", "value": 20, "unit": "m/s"},
+      "theta": {"kind": "quantity", "value": 30, "unit": "dimless"},
+      "g": {"kind": "quantity", "value": 9.8, "unit": "m/s^2"}
+    },
+    "proof": "R = kin.projectile_range(v=v, theta=theta, g=g)",
+    "expected": {"id": "R", "value": 35.348}
+  },
+  {
+    "id": "phy-en-02",
+    "domain": "physics",
+    "topics": ["energy", "work"],
+    "difficulty": "medium",
+    "description": "F=100 N, d=5 m, theta=60 deg. Find work W = F d cos(theta).",
+    "given": {
+      "F": {"kind": "quantity", "value": 100, "unit": "N"},
+      "d": {"kind": "quantity", "value": 5, "unit": "m"},
+      "theta": {"kind": "quantity", "value": 60, "unit": "dimless"}
+    },
+    "proof": "W = en.work(F=F, d=d, theta=theta)",
+    "expected": {"id": "W", "value": 250.0}
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "dataset": "kerscript-v1",
+  "version": 1,
+  "files": ["physics.json", "math.json", "logic.json", "law.json",
+            "business.json", "english.json"],
+  "note": "Every entry: given facts + a KDScript-Proof trace + expected result. The acceptance bar: run each trace against the compiled opk grammars and match the expected verdict/values.",
+  "entry_schema": {
+    "id": "unique per domain",
+    "domain": "physics|math|logic|law|business|english",
+    "topics": ["topic tags"],
+    "difficulty": "easy|medium|hard",
+    "description": "problem statement",
+    "given": {"fact_id": {"kind": "quantity|action", "value": "...",
+                          "unit": "token", "kind_name": "...", "of": "..."}},
+    "proof": "KDScript-Proof trace text",
+    "expected": {"id": "produced fact id", "value": "number|string|null"},
+    "must_fail": true
+  }
+}

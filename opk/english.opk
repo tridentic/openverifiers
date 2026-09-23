@@ -1,0 +1,9 @@
+# KDScript-Domain — English: a judged step, not a rule.
+# The agreement check is MODEL-BACKED: the document names a judge backend
+# and an output schema; the engine stamps the result at the "judged" tier.
+# Today the backend is a deterministic stub (kern/judged.py); an LLM judge
+# (Jev) plugs into the same registry without touching this document.
+
+domain english
+
+judge english.agreement: model(stub-english)  input(subject=action, object=action)  schema(verdict=enum|consistent|inconsistent)

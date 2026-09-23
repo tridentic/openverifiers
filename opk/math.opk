@@ -1,0 +1,21 @@
+# KDScript-Domain — arithmetic and deductive proof patterns.
+# Port of domains/math.py: arithmetic as relations (any direction solvable),
+# proof machinery via the core logical builtins.
+
+domain math
+
+# -- arithmetic (dimensionless quantities) ----------------------------------
+relation math.add: c = a + b  unit(a=dimless, b=dimless, c=dimless)  out(c)
+relation math.mul: c = a * b  unit(a=dimless, b=dimless, c=dimless)  out(c)
+
+# -- deductive proof machinery (cross-domain builtins) -----------------------
+transform math.proof_base: builtin(theorem_base)  param(n, expr)
+transform math.proof_step: builtin(theorem_step)  param(k, expr)  input(predecessor)
+transform math.logic.modus_ponens: builtin(logic.modus_ponens)  input(implication, antecedent)
+transform math.induction_combine: builtin(induction_combine)  param(variable, expr)  input(base, step)
+
+# -- trusted baseline facts ---------------------------------------------------
+fact math.pi: quantity(3.141592653589793, dimless)
+
+# -- declared conflict pairs (even cannot hold with odd on the same claim) -----
+exclusive(even, odd)

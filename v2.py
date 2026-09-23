@@ -36,7 +36,7 @@ class TraceStep(BaseModel):
 
 
 _STEP_RE = re.compile(
-    r"^([A-Za-z_][\w]*)\s*=\s*([A-Za-z_][\w]*(?:\.[A-Za-z_][\w]*)?)"  # dotted ns
+    r"^([A-Za-z_][\w]*)\s*=\s*([A-Za-z_][\w]*(?:\.[A-Za-z_][\w]*)*)"  # dotted ns
     r"\s*(?:\(([^)]*)\))?\s*(?:with\s+(.+))?$")
 _ASSIGNS_RE = re.compile(r"^assume\s+([A-Za-z_][\w]*)\s*:\s*(.+)$")
 _END_RE = re.compile(r"^end(?:\s+contradiction)?$")

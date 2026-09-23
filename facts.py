@@ -86,7 +86,8 @@ def as_number(value, unit: "Unit") -> "float | None":
                              else value), unit)
 
 Status = Literal["truth", "unverified_truth", "derived", "target", "unknown"]
-ProvenanceTier = Literal["verified", "extracted", "assumption-dependent"]
+ProvenanceTier = Literal["verified", "extracted", "assumption-dependent",
+                         "judged"]
 
 
 class DerivationRecord(BaseModel):
@@ -200,14 +201,20 @@ class ExpressionFact(Fact):
 
 
 class Quantity(Fact):
-    """A physics fact: value + typed unit (+ optional owner).
+    """A physics fact: value + typed unit (+ optional owner and frame).
 
     `value` is `None` ONLY when `status == "unknown"` — the verifier never
     coerces an unknown to a number (that is a hard rule of this codebase).
+
+    `frame` is the reference-context identity (a PhysicalObject). Domains may
+    leave it unset (frame-free quantities: mass, money, counts); framed
+    fact kinds (velocity, position) require it and the frame_eq guard keeps
+    derivations inside one frame.
     """
 
     value: Optional[float] = None
     unit: Unit
+    frame: Optional[PhysicalObject] = None
 
     @property
     def dimension(self):

@@ -1,0 +1,8 @@
+# KDScript-Domain — statute-element checklist (law/ethics slice).
+# Port of domains/law.py. Contested facts stay on the extracted trust tier;
+# the conjunction decides satisfaction.
+
+domain law
+
+transform law.element_met: builtin(element_met)  param(statute, element)  input(allegation)
+transform law.all_elements: builtin(all_elements)

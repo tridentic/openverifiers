@@ -1,0 +1,49 @@
+[
+  {
+    "id": "law-neg-01",
+    "domain": "law",
+    "topics": ["statute", "negligence"],
+    "difficulty": "easy",
+    "description": "Allegation of negligence admitted: both elements (duty, breach) met -> statute satisfied.",
+    "given": {
+      "allegation": {"kind": "action", "kind_name": "allegation", "value": true, "of": "negligence"}
+    },
+    "proof": "duty = law.element_met(allegation=allegation) with statute=negligence, element=duty\nbreach = law.element_met(allegation=allegation) with statute=negligence, element=breach\nv = law.all_elements(duty=duty, breach=breach)",
+    "expected": {"id": "v", "value": "satisfied"}
+  },
+  {
+    "id": "law-neg-02",
+    "domain": "law",
+    "topics": ["statute", "negligence"],
+    "difficulty": "easy",
+    "description": "Allegation denied: elements unmet -> statute not satisfied.",
+    "given": {
+      "allegation": {"kind": "action", "kind_name": "allegation", "value": false, "of": "negligence"}
+    },
+    "proof": "duty = law.element_met(allegation=allegation) with statute=negligence, element=duty\nbreach = law.element_met(allegation=allegation) with statute=negligence, element=breach\nv = law.all_elements(duty=duty, breach=breach)",
+    "expected": {"id": "v", "value": "not-satisfied"}
+  },
+  {
+    "id": "law-neg-03",
+    "domain": "law",
+    "topics": ["statute", "negligence"],
+    "difficulty": "medium",
+    "description": "Only duty element checked: partial checklist -> not satisfied (conjunction demands all elements).",
+    "given": {
+      "allegation": {"kind": "action", "kind_name": "allegation", "value": true, "of": "negligence"}
+    },
+    "proof": "duty = law.element_met(allegation=allegation) with statute=negligence, element=duty\nv = law.all_elements(duty=duty)",
+    "expected": {"id": "v", "value": "not-satisfied"}
+  },
+  {
+    "id": "law-neg-04",
+    "domain": "law",
+    "topics": ["statute", "validity"],
+    "difficulty": "medium",
+    "description": "Element assessment without an allegation fact must fail closed.",
+    "given": {},
+    "proof": "duty = law.element_met() with statute=negligence, element=duty",
+    "expected": {"id": "duty", "value": null},
+    "must_fail": true
+  }
+]

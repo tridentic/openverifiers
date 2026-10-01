@@ -23,6 +23,7 @@ import inspect
 import sympy as sp
 
 from ..facts import Fact, Quantity, ExpressionFact, DIMENSIONLESS
+from ..units import Vector3
 from ..model import ParamTransformation, InputSpec
 from ..units import Unit, Dimension
 from ..v2 import Grammar
@@ -82,18 +83,20 @@ class Primitive(ParamTransformation):
 
     # -- numerics -----------------------------------------------------------
     @staticmethod
-    def _num(fact: Fact, axis: int = 0) -> float:
+    def _num(fact: Fact, axis: int = 0) -> float | None:
         if fact is None:
+            return None
+        from ..facts import Quantity, as_number
+        if not isinstance(fact, Quantity):
             return None
         value = fact.value
         if value is None:
             return None
-        if hasattr(value, "component"):          # Vector3
-            comp = [value.x, value.y, value.z][axis]
+        if isinstance(value, Vector3):
+            comp = (value.x, value.y, value.z)[axis]
             from ..units import to_canonical
             return float(to_canonical(comp, fact.unit))
-        from ..facts import as_number
-        return as_number(value, getattr(fact, "unit", None))
+        return as_number(value, fact.unit)
 
     def apply(self, inputs: dict, params: dict | None = None) -> Fact:
         params = params or {}

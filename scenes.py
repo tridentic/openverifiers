@@ -73,7 +73,8 @@ class Scene:
                              f"ground time")
         t = Time(value=value, unit=Second(), id=label)
         self.ground.time = t
-        return self.add(t, label=label)
+        self.add(t, label=label)
+        return t
 
     def validate(self) -> list[str]:
         """Structural consistency, by reference not convention:

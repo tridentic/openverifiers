@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from collections.abc import Mapping
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, ConfigDict
@@ -208,7 +209,7 @@ class TraceStepResult:
 class TraceResult:
     def __init__(self, verdict: str, reason: str, steps: list[TraceStepResult],
                  env: dict[str, Fact], scopes: dict[str, str],
-                 registry: "Registry" = None):
+                 registry: "Registry | None" = None):
         self.verdict = verdict        # pass | fail | invalid
         self.reason = reason
         self.steps = steps
@@ -282,7 +283,8 @@ def _conflicts_with(fact: Fact, env: dict[str, Fact],
     return None
 
 
-def run_trace(registry: Registry, background: Dict[str, Fact],
+def run_trace(registry: Registry,
+              background: Mapping[str, Fact],
               steps: List, *, exclusive: tuple[frozenset[str], ...] = ()) \
         -> TraceResult:
     """Execute `steps` against the closed whitelist. `background` is the
@@ -521,14 +523,14 @@ def submit(mission: Query, *, traces: Iterable[str] | str = "",
         verdict, reason = outcome.verdict, outcome.reason
     else:
         verdict, reason = "pass", "all traces ran"
-    mission = None
+    mission_out = None
     if outcome is not None:
-        mission = {"verdict": outcome.verdict, "reason": outcome.reason,
-                   "subchecks": list(outcome.subchecks)}
+        mission_out = {"verdict": outcome.verdict, "reason": outcome.reason,
+                       "subchecks": list(outcome.subchecks)}
     return {
         "verdict": verdict,
         "reason": reason,
-        "mission": mission,
+        "mission": mission_out,
         "traces": [{"verdict": t.verdict, "reason": t.reason,
                     "steps": [s.as_dict() for s in t.steps]}
                    for t in trace_results],

@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openverifiers"
+version = "0.1.0"
+description = "Deterministic, typed verification for AI-generated reasoning — pass/fail/inapplicable verdicts with an auditable trace."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Tridib Roy Arjo", email = "arjo@snayuai.com" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "pydantic>=2.0",
+    "sympy>=1.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.10",
+]
+
+[project.scripts]
+openverifiers = "openverifiers.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["openverifiers*"]
+
+[tool.setuptools.package-data]
+openverifiers = ["py.typed", "datasets/*.csv"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+check_untyped_defs = true
+disable_error_code = ["import-untyped"]
+
+# Legacy v1-era layers, behavior-locked by tests but carrying pre-typing
+# debt (dynamic attributes, subclassed pydantic field types, reuse of
+# collection locals). Checked at runtime by the suite; excluded here so the
+# shipping lineage (v2 runtime, scenes, model, facts, plugin, domains,
+# examples) stays mypy-clean. See README "Known limitations".
+[[tool.mypy.overrides]]
+module = [
+    "openverifiers.units",
+    "openverifiers.solvers",
+    "openverifiers.controllers",
+    "openverifiers.context",
+    "openverifiers.queries",
+    "openverifiers.engine",
+    "openverifiers.formats",
+    "openverifiers.domains.conservation",
+    "openverifiers.domains.physics.props",
+]
+ignore_errors = true

@@ -1,7 +1,7 @@
 """Math domain v2 grammars — arithmetic facts and proof machinery (P5 slice).
 
 Trust discipline: numeric transformations act on dimensionless Quantity facts
-(unit=Meter() is the codebase's dimensionless convention) and produce
+(unit=DIMENSIONLESS is the codebase's dimensionless convention) and produce
 Quantities only. Proof transformations manipulate EnumValue-proposition facts
 and the Implication/Fact types the trace runner itself produces — the pattern
 gates (P(k) -> P(k+1)) are the pragmatic line between honest structure and
@@ -13,10 +13,15 @@ from __future__ import annotations
 import re
 
 from ..facts import (Fact, Quantity, ActionFact, EnumValue,
-                     ForAllFact, DerivationRecord)
+                     ForAllFact, DerivationRecord, DIMENSIONLESS)
 from ..model import Transformation, ParamTransformation, InputSpec
 from ..v2 import Grammar
-from .units_si import Meter
+
+
+def _leq_num(a: Fact, b: Fact) -> bool:
+    """|a - b| <= 1e-6 when both are numbers (math.eq semantics)."""
+    na, nb = _num(a), _num(b)
+    return na is not None and nb is not None and abs(na - nb) <= 1e-6
 
 
 def _num(f: Fact) -> float | None:
@@ -26,7 +31,9 @@ def _num(f: Fact) -> float | None:
 
 
 def _dimless(f: Fact) -> Quantity:
-    return Quantity(value=float(f.value), unit=Meter())
+    if not isinstance(f, Quantity) or f.value is None:
+        raise ValueError("math transformations need numeric facts")
+    return Quantity(value=float(f.value), unit=DIMENSIONLESS)
 
 
 def _mk(name: str, apply, **kw):
@@ -37,7 +44,7 @@ def _arith(fn, name, doc, *, inputs=()):
     def apply(inputs: dict) -> Fact:
         a, b = _num(inputs["a"]), _num(inputs["b"])
         assert a is not None and b is not None
-        return Quantity(value=fn(a, b), unit=Meter(),
+        return Quantity(value=fn(a, b), unit=DIMENSIONLESS,
                         derivation=DerivationRecord(
                             controller_name="math", rule_name=name,
                             input_fact_ids=(inputs["a"].id, inputs["b"].id)))
@@ -67,7 +74,7 @@ def _theorem_step(inputs: dict, params: dict) -> Fact:
     predecessor fact, so the produced implication carries a real derivation
     chain (runner stamps derivation.input_fact_ids with the predecessor's id).
     """
-    predecessor: ActionFact = inputs.get("predecessor")
+    predecessor = inputs.get("predecessor")
     if not isinstance(predecessor, ActionFact) or \
             not isinstance(predecessor.value, EnumValue):
         raise ValueError("proof.step needs a proposition predecessor")
@@ -159,7 +166,7 @@ MATH = Grammar(
             apply=lambda inputs: ActionFact(
                 kind="equality", of=f"{inputs['a'].id}_{inputs['b'].id}",
                 value=EnumValue(enum="truth", value="equal")
-                if abs(_num(inputs["a"]) - _num(inputs["b"])) <= 1e-6
+                if _leq_num(inputs["a"], inputs["b"])
                 else _mk_prop("mismatch")),
             doc="compare two dimensionless quantities",
             inputs=(InputSpec("a"), InputSpec("b")),),
@@ -188,7 +195,7 @@ MATH = Grammar(
             inputs=(InputSpec("base"), InputSpec("step")),),
     },
     facts={
-        "math.pi": Quantity(value=3.141592653589793, unit=Meter(),
+        "math.pi": Quantity(value=3.141592653589793, unit=DIMENSIONLESS,
                             id="math.pi", source="mathematical constant"),
     },
     exclusive=(frozenset({"even", "odd"}),),
@@ -197,4 +204,4 @@ MATH = Grammar(
 
 def make_number(value: float, id: str = "?") -> Quantity:
     """Public builder for dimensionless numeric facts in math traces."""
-    return Quantity(value=value, unit=Meter(), id=id)
+    return Quantity(value=value, unit=DIMENSIONLESS, id=id)

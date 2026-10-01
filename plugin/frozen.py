@@ -12,8 +12,23 @@ everything that is not literally in `MAPPINGS` is blocked before a step is
 even built.
 """
 
+from typing import TypedDict
+
 from openverifiers.domains.math import make_number
 from openverifiers.queries import FactQuery
+
+
+class MappingRef(TypedDict):
+    role: str
+    ref: str
+
+
+class ToolMapping(TypedDict):
+    grammar: str
+    transformation: str
+    output: str
+    refs: dict[str, MappingRef]
+    params: dict[str, object]
 
 # -- frozen per-grammar contexts: fact ref -> Fact --------------------------
 FROZEN_CONTEXTS = {
@@ -40,7 +55,7 @@ TARGETS = {
 # refs:  tool_input field -> {"role": transformation input role,
 #                             "ref": frozen-context fact ref}
 # params: tool_input field -> DSL step param (scalar passthrough)
-MAPPINGS = {
+MAPPINGS: dict[str, ToolMapping] = {
     "Tool__Math__Multiply": {
         "grammar": "math",
         "transformation": "math.mul",     # MUST exist in the Registry

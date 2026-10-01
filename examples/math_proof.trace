@@ -1,0 +1,24 @@
+# Demo: v2 trace — math proof slice (sum of first n odd numbers = n^2)
+# Run:  python -m openverifiers trace examples/math_proof.trace --fact a=3.0 --fact b=4.0
+#
+# Induction contract (P1 semantic gate):
+#   * proof.step consumes its predecessor -> the implication carries a real
+#     DerivationRecord naming the P(k) fact it extends
+#   * induction.combine verifies shape (P(0), P(0)->P(1)), content (one
+#     closed form across base/step/forall) AND the chain (step derives from
+#     THE SAME P(0) fact the base proves)
+
+# arithmetic first (background facts a=3, b=4)
+z = math.mul(a, b)        # 12
+
+# induction: forall n: P(n) = 2n-1 from P(0) and the chained step
+base = proof.base with n=0, expr="2n-1"
+step = proof.step(predecessor=base) with k=0, expr="2n-1"
+forall_n = induction.combine(base=base, step=step) with variable=n, expr="2n-1"
+
+# conditional discharge: assume P(0), derive P(1) by modus ponens
+assume A: P(0)
+  premise0 = proof.base with n=0, expr="1"
+  step0 = proof.step(predecessor=premise0) with k=0, expr="1"
+  derived1 = logic.modus_ponens(implication=step0, antecedent=premise0)
+end

@@ -15,7 +15,8 @@ from __future__ import annotations
 
 import sympy as sp
 
-from ..facts import Fact, Quantity, ExpressionFact
+from ..facts import Fact, Quantity, ExpressionFact, DIMENSIONLESS
+from ..units import Unit
 from ..model import Transformation, ParamTransformation, InputSpec
 from ..v2 import Grammar
 
@@ -60,8 +61,11 @@ class Equate(ParamTransformation):
         else:
             val = float(sp.N(roots[int(mode)]))
         unit = getattr(inputs["a"], "unit", None)
-        return Quantity(value=val, unit=unit or
-                        getattr(inputs["b"], "unit", None),
+        if not isinstance(unit, Unit):
+            unit = getattr(inputs["b"], "unit", None)
+            if not isinstance(unit, Unit):
+                unit = DIMENSIONLESS
+        return Quantity(value=val, unit=unit,
                         source=f"equated {lhs} == {rhs} -> {var} = {val:g}")
 
 
@@ -76,12 +80,14 @@ class Add(Transformation):
         a, b = inputs["a"], inputs["b"]
         sa, sb = _side(a), _side(b)
         total = sp.simplify(sa + sb)
+        ua, ub = getattr(a, "unit", None), getattr(b, "unit", None)
+        unit = ua if isinstance(ua, Unit) else (ub if isinstance(ub, Unit)
+                                                else DIMENSIONLESS)
         if isinstance(a, ExpressionFact) or isinstance(b, ExpressionFact):
-            free = tuple(sorted({str(s) for s in total.free_symbols}))
-            unit = getattr(a, "unit", None) or getattr(b, "unit", None)
-            return ExpressionFact(expression=str(total), variables=free,
+            return ExpressionFact(expression=str(total),
+                                  variables=tuple(sorted(
+                                      {str(ss) for ss in total.free_symbols})),
                                   unit=unit)
-        unit = getattr(a, "unit", None) or getattr(b, "unit", None)
         return Quantity(value=float(sp.N(total)), unit=unit)
 
 

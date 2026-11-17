@@ -1,0 +1,93 @@
+{
+  "id": "math_circuit_power",
+  "domain": "math",
+  "description": "12 V across 4 ohm: current and power",
+  "facts": [
+    {
+      "id": "V",
+      "type": "quantity",
+      "value": 12,
+      "unit": "V",
+      "attributes": {
+        "symbol": "V"
+      }
+    },
+    {
+      "id": "R",
+      "type": "quantity",
+      "value": 4,
+      "unit": "ohm",
+      "attributes": {
+        "symbol": "R"
+      }
+    },
+    {
+      "id": "P",
+      "type": "quantity",
+      "status": "target"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "power",
+      "fact_id": "P",
+      "predicate": "equals",
+      "args": {
+        "value": 36,
+        "unit": "W"
+      }
+    },
+    {
+      "id": "current",
+      "fact_id": "I",
+      "predicate": "equals",
+      "args": {
+        "value": 3,
+        "unit": "A"
+      }
+    }
+  ],
+  "candidate_proof": {
+    "steps": [
+      {
+        "id": "s1",
+        "transformation": "electric.ohm.solve_I",
+        "inputs": {
+          "V": "V",
+          "R": "R"
+        },
+        "outputs": {
+          "I": {
+            "id": "I",
+            "type": "quantity",
+            "value": 3.0,
+            "unit": "A",
+            "attributes": {
+              "symbol": "I"
+            }
+          }
+        }
+      },
+      {
+        "id": "s2",
+        "transformation": "arith.mul",
+        "inputs": {
+          "a": "V",
+          "b": "I"
+        },
+        "outputs": {
+          "result": {
+            "id": "P",
+            "type": "quantity",
+            "value": 36.0,
+            "unit": "W"
+          }
+        }
+      }
+    ]
+  },
+  "expected_verdict": {
+    "valid": true,
+    "trust_grade": "fully_hard"
+  }
+}

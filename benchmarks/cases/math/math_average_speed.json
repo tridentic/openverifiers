@@ -1,0 +1,82 @@
+{
+  "id": "math_average_speed",
+  "domain": "math",
+  "description": "Walk 2 km then 350 m in half an hour: average speed?",
+  "facts": [
+    {
+      "id": "d1",
+      "type": "quantity",
+      "value": 2,
+      "unit": "km"
+    },
+    {
+      "id": "d2",
+      "type": "quantity",
+      "value": 350,
+      "unit": "m"
+    },
+    {
+      "id": "t",
+      "type": "quantity",
+      "value": 0.5,
+      "unit": "h"
+    },
+    {
+      "id": "speed",
+      "type": "quantity",
+      "status": "target"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "goal",
+      "fact_id": "speed",
+      "predicate": "approx",
+      "args": {
+        "value": 4.7,
+        "unit": "km/h",
+        "rel_tol": 1e-09
+      }
+    }
+  ],
+  "candidate_proof": {
+    "steps": [
+      {
+        "id": "s1",
+        "transformation": "arith.add",
+        "inputs": {
+          "a": "d1",
+          "b": "d2"
+        },
+        "outputs": {
+          "result": {
+            "id": "dist",
+            "type": "quantity",
+            "value": 2.35,
+            "unit": "km"
+          }
+        }
+      },
+      {
+        "id": "s2",
+        "transformation": "arith.div",
+        "inputs": {
+          "a": "dist",
+          "b": "t"
+        },
+        "outputs": {
+          "result": {
+            "id": "speed",
+            "type": "quantity",
+            "value": 1.3055555555555556,
+            "unit": "m/s"
+          }
+        }
+      }
+    ]
+  },
+  "expected_verdict": {
+    "valid": true,
+    "trust_grade": "fully_hard"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "math_displacement",
+  "domain": "math",
+  "description": "u = 4 m/s, a = 2 m/s^2, t = 3 s: displacement?",
+  "facts": [
+    {
+      "id": "u",
+      "type": "quantity",
+      "value": 4,
+      "unit": "m/s",
+      "attributes": {
+        "symbol": "u"
+      }
+    },
+    {
+      "id": "a",
+      "type": "quantity",
+      "value": 2,
+      "unit": "m/s^2",
+      "attributes": {
+        "symbol": "a"
+      }
+    },
+    {
+      "id": "t",
+      "type": "quantity",
+      "value": 3,
+      "unit": "s",
+      "attributes": {
+        "symbol": "t"
+      }
+    },
+    {
+      "id": "s",
+      "type": "quantity",
+      "status": "target"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "goal",
+      "fact_id": "s",
+      "predicate": "equals",
+      "args": {
+        "value": 21,
+        "unit": "m"
+      }
+    }
+  ],
+  "candidate_proof": {
+    "steps": [
+      {
+        "id": "s1",
+        "transformation": "kinematics.displacement.solve_s",
+        "inputs": {
+          "u": "u",
+          "a": "a",
+          "t": "t"
+        },
+        "outputs": {
+          "s": {
+            "id": "s",
+            "type": "quantity",
+            "value": 21.0,
+            "unit": "m",
+            "attributes": {
+              "symbol": "s"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "expected_verdict": {
+    "valid": true,
+    "trust_grade": "fully_hard"
+  }
+}

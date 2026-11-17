@@ -1,0 +1,109 @@
+{
+  "id": "math_drop_speed",
+  "domain": "math",
+  "description": "2 kg dropped from 10 m: impact speed (g from a cited table)",
+  "facts": [
+    {
+      "id": "m",
+      "type": "quantity",
+      "value": 2,
+      "unit": "kg",
+      "attributes": {
+        "symbol": "m"
+      }
+    },
+    {
+      "id": "h",
+      "type": "quantity",
+      "value": 10,
+      "unit": "m",
+      "attributes": {
+        "symbol": "h"
+      }
+    },
+    {
+      "id": "v",
+      "type": "quantity",
+      "status": "target"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "goal",
+      "fact_id": "v",
+      "predicate": "approx",
+      "args": {
+        "value": 14.0,
+        "unit": "m/s",
+        "rel_tol": 0.001
+      }
+    }
+  ],
+  "candidate_proof": {
+    "steps": [
+      {
+        "id": "s0",
+        "transformation": "constant.lookup",
+        "inputs": {},
+        "outputs": {
+          "value": {
+            "id": "g",
+            "type": "quantity",
+            "value": 9.80665,
+            "unit": "m/s^2",
+            "attributes": {
+              "symbol": "g"
+            },
+            "provenance": {
+              "source": "table lookup",
+              "citation": "codata:g_n"
+            }
+          }
+        }
+      },
+      {
+        "id": "s1",
+        "transformation": "energy.potential.solve_E",
+        "inputs": {
+          "m": "m",
+          "g": "g",
+          "h": "h"
+        },
+        "outputs": {
+          "E": {
+            "id": "E",
+            "type": "quantity",
+            "value": 196.13299999999998,
+            "unit": "J",
+            "attributes": {
+              "symbol": "E"
+            }
+          }
+        }
+      },
+      {
+        "id": "s2",
+        "transformation": "energy.kinetic.solve_v",
+        "inputs": {
+          "E": "E",
+          "m": "m"
+        },
+        "outputs": {
+          "v": {
+            "id": "v",
+            "type": "quantity",
+            "value": 14.00474919446971,
+            "unit": "m/s",
+            "attributes": {
+              "symbol": "v"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "expected_verdict": {
+    "valid": true,
+    "trust_grade": "grounded"
+  }
+}

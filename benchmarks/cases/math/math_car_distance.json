@@ -1,0 +1,68 @@
+{
+  "id": "math_car_distance",
+  "domain": "math",
+  "description": "A car at 20 m/s for 1.5 min: how far?",
+  "facts": [
+    {
+      "id": "v",
+      "type": "quantity",
+      "value": 20,
+      "unit": "m/s",
+      "attributes": {
+        "symbol": "v"
+      }
+    },
+    {
+      "id": "t",
+      "type": "quantity",
+      "value": 1.5,
+      "unit": "min",
+      "attributes": {
+        "symbol": "t"
+      }
+    },
+    {
+      "id": "d",
+      "type": "quantity",
+      "status": "target"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "goal",
+      "fact_id": "d",
+      "predicate": "equals",
+      "args": {
+        "value": 1.8,
+        "unit": "km"
+      }
+    }
+  ],
+  "candidate_proof": {
+    "steps": [
+      {
+        "id": "s1",
+        "transformation": "kinematics.distance.solve_d",
+        "inputs": {
+          "v": "v",
+          "t": "t"
+        },
+        "outputs": {
+          "d": {
+            "id": "d",
+            "type": "quantity",
+            "value": 1800,
+            "unit": "m",
+            "attributes": {
+              "symbol": "d"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "expected_verdict": {
+    "valid": true,
+    "trust_grade": "fully_hard"
+  }
+}

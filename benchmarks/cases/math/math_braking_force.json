@@ -1,0 +1,114 @@
+{
+  "id": "math_braking_force",
+  "domain": "math",
+  "description": "1200 kg car brakes from 30 m/s to rest in 6 s: net force?",
+  "facts": [
+    {
+      "id": "u",
+      "type": "quantity",
+      "value": 30,
+      "unit": "m/s",
+      "attributes": {
+        "symbol": "u"
+      }
+    },
+    {
+      "id": "v",
+      "type": "quantity",
+      "value": 0,
+      "unit": "m/s",
+      "attributes": {
+        "symbol": "v"
+      }
+    },
+    {
+      "id": "t",
+      "type": "quantity",
+      "value": 6,
+      "unit": "s",
+      "attributes": {
+        "symbol": "t"
+      }
+    },
+    {
+      "id": "m",
+      "type": "quantity",
+      "value": 1200,
+      "unit": "kg",
+      "attributes": {
+        "symbol": "m"
+      }
+    },
+    {
+      "id": "F",
+      "type": "quantity",
+      "status": "target"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "goal",
+      "fact_id": "F",
+      "predicate": "equals",
+      "args": {
+        "value": -6000,
+        "unit": "N"
+      }
+    },
+    {
+      "id": "is_force",
+      "fact_id": "F",
+      "predicate": "has_dimension",
+      "args": {
+        "unit": "N"
+      }
+    }
+  ],
+  "candidate_proof": {
+    "steps": [
+      {
+        "id": "s1",
+        "transformation": "kinematics.velocity.solve_a",
+        "inputs": {
+          "v": "v",
+          "u": "u",
+          "t": "t"
+        },
+        "outputs": {
+          "a": {
+            "id": "a",
+            "type": "quantity",
+            "value": -5.0,
+            "unit": "m/s^2",
+            "attributes": {
+              "symbol": "a"
+            }
+          }
+        }
+      },
+      {
+        "id": "s2",
+        "transformation": "dynamics.newton2.solve_F",
+        "inputs": {
+          "m": "m",
+          "a": "a"
+        },
+        "outputs": {
+          "F": {
+            "id": "F",
+            "type": "quantity",
+            "value": -6000.0,
+            "unit": "kg*m/s^2",
+            "attributes": {
+              "symbol": "F"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "expected_verdict": {
+    "valid": true,
+    "trust_grade": "fully_hard"
+  }
+}

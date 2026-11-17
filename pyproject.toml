@@ -4,63 +4,74 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openverifiers"
-version = "0.1.0"
-description = "Deterministic, typed verification for AI-generated reasoning — pass/fail/inapplicable verdicts with an auditable trace."
+version = "0.2.0.dev0"
+description = "A small trusted kernel that checks proofs proposed by untrusted solvers and LLMs."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Tridib Roy Arjo", email = "arjo@snayuai.com" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+# The kernel itself is stdlib-only. sympy/z3 back the math pack's hard tier.
 dependencies = [
-    "pydantic>=2.0",
     "sympy>=1.12",
+    "z3-solver>=4.12",
 ]
 
 [project.optional-dependencies]
+# Pre-M1 code under openverifiers/legacy/ is built on pydantic.
+legacy = ["pydantic>=2.0"]
 dev = [
+    "pydantic>=2.0",
     "pytest>=8.0",
+    "hypothesis>=6.100",
     "mypy>=1.10",
+    "ruff>=0.5",
 ]
 
 [project.scripts]
-openverifiers = "openverifiers.__main__:main"
+ov = "openverifiers.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["openverifiers*"]
 
 [tool.setuptools.package-data]
-openverifiers = ["py.typed", "datasets/*.csv"]
+openverifiers = ["py.typed", "legacy/datasets/*.csv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
-[tool.mypy]
-python_version = "3.12"
-ignore_missing_imports = true
-check_untyped_defs = true
-disable_error_code = ["import-untyped"]
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["openverifiers/legacy", "tests/legacy", "openwiki", "kerscript"]
 
-# Legacy v1-era layers, behavior-locked by tests but carrying pre-typing
-# debt (dynamic attributes, subclassed pydantic field types, reuse of
-# collection locals). Checked at runtime by the suite; excluded here so the
-# shipping lineage (v2 runtime, scenes, model, facts, plugin, domains,
-# examples) stays mypy-clean. See README "Known limitations".
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["openverifiers", "benchmarks", "tests"]
+exclude = ["openverifiers/legacy/", "tests/legacy/"]
+warn_unused_configs = true
+check_untyped_defs = true
+
+# The trusted kernel is held to --strict.
 [[tool.mypy.overrides]]
-module = [
-    "openverifiers.units",
-    "openverifiers.solvers",
-    "openverifiers.controllers",
-    "openverifiers.context",
-    "openverifiers.queries",
-    "openverifiers.engine",
-    "openverifiers.formats",
-    "openverifiers.domains.conservation",
-    "openverifiers.domains.physics.props",
-]
+module = ["openverifiers.kernel", "openverifiers.kernel.*"]
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["sympy", "sympy.*", "z3", "z3.*"]
+ignore_missing_imports = true
+
+# Pre-M1 code: excluded from type checking (797 errors under --strict).
+[[tool.mypy.overrides]]
+module = ["openverifiers.legacy", "openverifiers.legacy.*"]
 ignore_errors = true
+follow_imports = "skip"

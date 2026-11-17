@@ -1,0 +1,117 @@
+{
+  "id": "code_clamp",
+  "domain": "code_requirements",
+  "description": "Implement clamp satisfying 4 requirements",
+  "facts": [
+    {
+      "id": "spec",
+      "type": "spec",
+      "value": {
+        "function": "clamp",
+        "requirements": {
+          "R1": "a value inside [lo, hi] is returned unchanged",
+          "R2": "a value outside the range returns the nearer bound",
+          "R3": "lo > hi raises ValueError",
+          "R4": "for any integers, the result lies within [lo, hi]"
+        }
+      }
+    },
+    {
+      "id": "checks",
+      "type": "check_suite",
+      "value": {
+        "tests": "import pytest\nfrom hypothesis import given\nfrom hypothesis import strategies as st\nfrom solution import clamp\n\n\ndef test_R1_inside_range_is_identity():\n    assert clamp(5, 0, 10) == 5\n\n\ndef test_R2_outside_range_hits_bound():\n    assert clamp(-3, 0, 10) == 0\n    assert clamp(42, 0, 10) == 10\n\n\ndef test_R3_empty_range_raises():\n    with pytest.raises(ValueError):\n        clamp(1, 5, 4)\n\n\n@given(st.integers(), st.integers(), st.integers())\ndef test_R4_result_within_bounds(x, a, b):\n    lo, hi = min(a, b), max(a, b)\n    assert lo <= clamp(x, lo, hi) <= hi\n"
+      }
+    },
+    {
+      "id": "report",
+      "type": "check_report",
+      "status": "target"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "all",
+      "fact_id": "report",
+      "predicate": "all_checks_pass"
+    },
+    {
+      "id": "R1",
+      "fact_id": "report",
+      "predicate": "requirement_passes",
+      "args": {
+        "requirement": "R1"
+      }
+    },
+    {
+      "id": "R2",
+      "fact_id": "report",
+      "predicate": "requirement_passes",
+      "args": {
+        "requirement": "R2"
+      }
+    },
+    {
+      "id": "R3",
+      "fact_id": "report",
+      "predicate": "requirement_passes",
+      "args": {
+        "requirement": "R3"
+      }
+    },
+    {
+      "id": "R4",
+      "fact_id": "report",
+      "predicate": "requirement_passes",
+      "args": {
+        "requirement": "R4"
+      }
+    }
+  ],
+  "candidate_proof": {
+    "steps": [
+      {
+        "id": "s1",
+        "transformation": "code.implement",
+        "inputs": {
+          "spec": "spec"
+        },
+        "outputs": {
+          "source": {
+            "id": "impl",
+            "type": "source",
+            "value": "def clamp(x, lo, hi):\n    if lo > hi:\n        raise ValueError(\"lo must not exceed hi\")\n    return min(max(x, lo), hi)\n"
+          }
+        }
+      },
+      {
+        "id": "s2",
+        "transformation": "code.run_checks",
+        "inputs": {
+          "spec": "spec",
+          "source": "impl",
+          "checks": "checks"
+        },
+        "outputs": {
+          "report": {
+            "id": "report",
+            "type": "check_report",
+            "value": {
+              "passed": true,
+              "results": {
+                "R1": "passed",
+                "R2": "passed",
+                "R3": "passed",
+                "R4": "passed"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "expected_verdict": {
+    "valid": true,
+    "trust_grade": "fully_hard"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "id": "code_parse_duration",
+  "domain": "code_requirements",
+  "description": "Implement parse_duration satisfying 4 requirements",
+  "facts": [
+    {
+      "id": "spec",
+      "type": "spec",
+      "value": {
+        "function": "parse_duration",
+        "requirements": {
+          "R1": "single units: '90s' -> 90, '5m' -> 300, '2h' -> 7200",
+          "R2": "combined units in h, m, s order: '1h30m' -> 5400",
+          "R3": "malformed input (empty, no unit, unknown unit, wrong order, spaces, repeats) raises ValueError",
+          "R4": "for any h, m, s in 0..99, formatting then parsing returns 3600h + 60m + s"
+        }
+      }
+    },
+    {
+      "id": "checks",
+      "type": "check_suite",
+      "value": {
+        "tests": "import pytest\nfrom hypothesis import given\nfrom hypothesis import strategies as st\nfrom solution import parse_duration\n\n\ndef test_R1_single_units():\n    assert parse_duration(\"90s\") == 90\n    assert parse_duration(\"5m\") == 300\n    assert parse_duration(\"2h\") == 7200\n\n\ndef test_R2_combined_units():\n    assert parse_duration(\"1h30m\") == 5400\n    assert parse_duration(\"1h2m3s\") == 3723\n\n\n@pytest.mark.parametrize(\"bad\", [\"\", \"10\", \"5x\", \"m5\", \"1m1h\", \"1h 2m\", \"1h1h\"])\ndef test_R3_rejects_malformed(bad):\n    with pytest.raises(ValueError):\n        parse_duration(bad)\n\n\n@given(st.integers(0, 99), st.integers(0, 99), st.integers(0, 99))\ndef test_R4_round_trip(h, m, s):\n    text = \"\".join(f\"{n}{u}\" for n, u in ((h, \"h\"), (m, \"m\"), (s, \"s\")) if n)\n    if text:\n        assert parse_duration(text) == 3600 * h + 60 * m + s\n"
+      }
+    },
+    {
+      "id": "report",
+      "type": "check_report",
+      "status": "target"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "all",
+      "fact_id": "report",
+      "predicate": "all_checks_pass"
+    },
+    {
+      "id": "R1",
+      "fact_id": "report",
+      "predicate": "requirement_passes",
+      "args": {
+        "requirement": "R1"
+      }
+    },
+    {
+      "id": "R2",
+      "fact_id": "report",
+      "predicate": "requirement_passes",
+      "args": {
+        "requirement": "R2"
+      }
+    },
+    {
+      "id": "R3",
+      "fact_id": "report",
+      "predicate": "requirement_passes",
+      "args": {
+        "requirement": "R3"
+      }
+    },
+    {
+      "id": "R4",
+      "fact_id": "report",
+      "predicate": "requirement_passes",
+      "args": {
+        "requirement": "R4"
+      }
+    }
+  ],
+  "candidate_proof": {
+    "steps": [
+      {
+        "id": "s1",
+        "transformation": "code.implement",
+        "inputs": {
+          "spec": "spec"
+        },
+        "outputs": {
+          "source": {
+            "id": "impl",
+            "type": "source",
+            "value": "import re\n\n_PART = re.compile(r\"(\\d+)([hms])\")\n_SCALE = {\"h\": 3600, \"m\": 60, \"s\": 1}\n\n\ndef parse_duration(text):\n    if not isinstance(text, str) or not text:\n        raise ValueError(\"empty duration\")\n    pos, total, last = 0, 0, -1\n    for m in _PART.finditer(text):\n        if m.start() != pos:\n            raise ValueError(f\"unexpected text at {pos}\")\n        rank = \"hms\".index(m.group(2))\n        if rank <= last:\n            raise ValueError(\"units must appear once, in h, m, s order\")\n        last, pos = rank, m.end()\n        total += int(m.group(1)) * _SCALE[m.group(2)]\n    if pos != len(text):\n        raise ValueError(f\"unexpected text at {pos}\")\n    return total\n"
+          }
+        }
+      },
+      {
+        "id": "s2",
+        "transformation": "code.run_checks",
+        "inputs": {
+          "spec": "spec",
+          "source": "impl",
+          "checks": "checks"
+        },
+        "outputs": {
+          "report": {
+            "id": "report",
+            "type": "check_report",
+            "value": {
+              "passed": true,
+              "results": {
+                "R1": "passed",
+                "R2": "passed",
+                "R3": "passed",
+                "R4": "passed"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "expected_verdict": {
+    "valid": true,
+    "trust_grade": "fully_hard"
+  }
+}

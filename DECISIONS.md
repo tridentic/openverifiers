@@ -40,3 +40,41 @@ grammar DSL) lives only on the `kdscript` branch.
 - **Children are flattened into the fact index** so they are deduplicated and addressable like top-level facts.
 - **Kernel size:** `check.py` + `model.py` ≈ 740 lines with docstrings, plus ≈ 210 for JSON parsing/rendering. Over "a few hundred" because rejection reasons are spelled out per rule; nothing domain-specific is in it.
 - **Purity is enforced by a test** that parses kernel imports and allows only the stdlib (and forbids `socket`, `urllib`, `http`, `subprocess`).
+
+## Math pack
+
+- **Units are strings parsed into 7-exponent SI dimension vectors** (no parentheses, left-to-right). This is enough for kinematics, dynamics, energy and circuits, and stays JSON-friendly.
+- **Formulas are pack-authored; each one registers a `solve_<var>` transformation per variable.** A proposer must never be able to submit its own "hard" formula. This also gives fixed role signatures, which the search proposers rely on.
+- **Formula effects solve with sympy, and a separate residual check substitutes back.** The check is cheap but not independent of sympy; this is noted in STATUS.
+- **`algebra.solve_linear` uses z3** to prove existence and uniqueness of the root, and compares it with the claim.
+- **Equation text is untrusted**, so it is parsed with a character allowlist, no dunders, no builtins, and every identifier forced to a plain Symbol (`E` and `I` are not constants).
+- **mul/div results are expressed in SI units**, which avoids composing unit strings. Quantity equality converts units, so a claim in km/h still matches.
+- **Ambiguous roots are an `effect_error`, not a guess.** `nonnegative` variables pick the non-negative root only when exactly one remains.
+
+## Benchmark
+
+- **Mutation operators work on the JSON-level case**, with per-domain value-perturbation hooks. Kinds that don't apply to a domain show as n/a, not as 0.
+- **"Missing precondition" means a premise the proof consumes is removed** from the given facts (the proof rests on an unestablished premise). Dropping a role binding would only test signature checking.
+- **"Unreachable target" points a requirement at a fact nothing produces.**
+- **"Right reason" is reported separately from "caught"**, using the failure codes that are expected for each label.
+- **`misread_given` was added beyond the eight requested kinds:** a consistent misreading of one given number. It is the cheapest way to show the kernel's real boundary: it checks proofs against requirements, not intent.
+- **The LLM judge is a deterministic mock that reads only final claims**, and is labeled as such everywhere. Faking "LLM-like" randomness would add noise without adding information.
+- **`benchmarks` is included in the setuptools package list** so `ov bench run` works from an editable install. Distribution packaging is a non-goal.
+
+## Proposers
+
+- **`Proposer` is a Protocol** (`propose(state, requirements, pack, feedback)`), so any object with that method works.
+- **The search proposers bind roles to facts by name** (`attributes.symbol` or id), falling back to any fact of the right type. They use only transformations with effects, and prune to the kernel's support set.
+- **Forward chaining prioritizes target-filling, then fully-named bindings, then everything else, with a novelty filter and a step cap.** Unrestricted arithmetic made it explode in the first version.
+- **The LLM adapter takes `complete(prompt) -> str`** (no SDK dependency); replies must be JSON proofs, optionally fenced.
+- **An unparseable reply counts as a failed attempt** with failure code `unparseable_proposal` (a proposer-side code, not a kernel one) and is fed back like any other failure.
+- **The repair demo uses a scripted model and asserts that the second prompt carried the structured failures.** It demonstrates the loop, not model quality.
+
+## code_requirements pack
+
+- **Requirements become tests named `test_Rk_*`; a requirement passes only if all its tests pass.** The id is read from the test name, so mapping needs no extra metadata.
+- **`code.implement` has no effect (code can't be recomputed) and a static checker** (parses, defines the function, small denylist). `code.run_checks` has an effect that reruns the suite, so a false "all passed" claim is an `output_mismatch`.
+- **`run_checks` takes the spec as an input**, so its precondition can require a test for every stated requirement.
+- **Hypothesis is derandomized and the hypothesis database is disabled** in the subprocess, so the effect is deterministic for deterministic tests.
+- **A timeout produces a `timeout` report rather than an exception.** The claimed report then mismatches, and the trace says why.
+- **Case JSON embeds source files from `benchmarks/sources/`;** `python -m benchmarks.build_code_cases` rebuilds them.

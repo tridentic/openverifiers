@@ -6,7 +6,8 @@ step by step, and says exactly what is wrong when it is wrong.
 
 Status: research prototype, Milestone 1. See [STATUS.md](STATUS.md) for what
 works, what doesn't, and the measured numbers. Design choices and their reasons
-are in [DECISIONS.md](DECISIONS.md).
+are in [DECISIONS.md](DECISIONS.md). End-to-end diagrams of every stage are in
+[docs/architecture.md](docs/architecture.md).
 
 ## The idea
 

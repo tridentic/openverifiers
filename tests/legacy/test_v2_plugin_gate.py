@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]   # openverifiers repo root
-HOOK = REPO / "openverifiers" / "legacy" / "plugin" / "pre_tool_use.py"
+HOOK = REPO / "src" / "openverifiers" / "legacy" / "plugin" / "pre_tool_use.py"
 
 
 def run_hook(payload: dict) -> tuple[dict, int]:

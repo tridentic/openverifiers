@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 openverifiers/legacy/plugin/pre_tool_use.py"
+            "command": "python3 src/openverifiers/legacy/plugin/pre_tool_use.py"
           }
         ]
       }

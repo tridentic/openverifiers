@@ -129,7 +129,7 @@ def test_no_bare_meter_masquerades_as_constant():
 
 
 # -- DEFECT 3: dataset must not zero out physical constants ---------------
-DS = Path(__file__).resolve().parents[2] / "openverifiers" / "legacy" / "datasets" / \
+DS = Path(__file__).resolve().parents[2] / "src" / "openverifiers" / "legacy" / "datasets" / \
     "physics_syllabus_problems.csv"
 
 

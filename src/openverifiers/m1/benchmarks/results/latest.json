@@ -1,0 +1,333 @@
+{
+  "base": {
+    "math": {
+      "no_verification": {
+        "total": 7,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 7,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 7,
+        "rejected": 0,
+        "right_reason": 0
+      }
+    },
+    "code_requirements": {
+      "no_verification": {
+        "total": 2,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 2,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 2,
+        "rejected": 0,
+        "right_reason": 0
+      }
+    }
+  },
+  "mutants": [
+    {
+      "domain": "math",
+      "mutation": "unit_mismatch",
+      "no_verification": {
+        "total": 16,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 16,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 16,
+        "rejected": 16,
+        "right_reason": 16
+      }
+    },
+    {
+      "domain": "math",
+      "mutation": "sign_error",
+      "no_verification": {
+        "total": 12,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 12,
+        "rejected": 5,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 12,
+        "rejected": 12,
+        "right_reason": 12
+      }
+    },
+    {
+      "domain": "math",
+      "mutation": "dropped_step",
+      "no_verification": {
+        "total": 11,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 11,
+        "rejected": 7,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 11,
+        "rejected": 11,
+        "right_reason": 11
+      }
+    },
+    {
+      "domain": "math",
+      "mutation": "missing_precondition",
+      "no_verification": {
+        "total": 17,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 17,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 17,
+        "rejected": 17,
+        "right_reason": 17
+      }
+    },
+    {
+      "domain": "math",
+      "mutation": "wrong_effect",
+      "no_verification": {
+        "total": 12,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 12,
+        "rejected": 5,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 12,
+        "rejected": 12,
+        "right_reason": 12
+      }
+    },
+    {
+      "domain": "math",
+      "mutation": "unreachable_target",
+      "no_verification": {
+        "total": 9,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 9,
+        "rejected": 9,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 9,
+        "rejected": 9,
+        "right_reason": 9
+      }
+    },
+    {
+      "domain": "math",
+      "mutation": "duplicated_fact_id",
+      "no_verification": {
+        "total": 12,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 12,
+        "rejected": 7,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 12,
+        "rejected": 12,
+        "right_reason": 12
+      }
+    },
+    {
+      "domain": "math",
+      "mutation": "circular_dependency",
+      "no_verification": {
+        "total": 7,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 7,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 7,
+        "rejected": 7,
+        "right_reason": 7
+      }
+    },
+    {
+      "domain": "math",
+      "mutation": "misread_given",
+      "no_verification": {
+        "total": 16,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 16,
+        "rejected": 6,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 16,
+        "rejected": 15,
+        "right_reason": 15
+      }
+    },
+    {
+      "domain": "code_requirements",
+      "mutation": "dropped_step",
+      "no_verification": {
+        "total": 4,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 4,
+        "rejected": 2,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 4,
+        "rejected": 4,
+        "right_reason": 4
+      }
+    },
+    {
+      "domain": "code_requirements",
+      "mutation": "missing_precondition",
+      "no_verification": {
+        "total": 4,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 4,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 4,
+        "rejected": 4,
+        "right_reason": 4
+      }
+    },
+    {
+      "domain": "code_requirements",
+      "mutation": "wrong_effect",
+      "no_verification": {
+        "total": 4,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 4,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 4,
+        "rejected": 4,
+        "right_reason": 4
+      }
+    },
+    {
+      "domain": "code_requirements",
+      "mutation": "unreachable_target",
+      "no_verification": {
+        "total": 10,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 10,
+        "rejected": 10,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 10,
+        "rejected": 10,
+        "right_reason": 10
+      }
+    },
+    {
+      "domain": "code_requirements",
+      "mutation": "duplicated_fact_id",
+      "no_verification": {
+        "total": 4,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 4,
+        "rejected": 2,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 4,
+        "rejected": 4,
+        "right_reason": 4
+      }
+    },
+    {
+      "domain": "code_requirements",
+      "mutation": "circular_dependency",
+      "no_verification": {
+        "total": 2,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "mock_llm_judge": {
+        "total": 2,
+        "rejected": 0,
+        "right_reason": 0
+      },
+      "kernel": {
+        "total": 2,
+        "rejected": 2,
+        "right_reason": 2
+      }
+    }
+  ],
+  "misses": [
+    {
+      "mutant": "math_drop_speed~misread_given~0",
+      "note": "given m 2 -> 4.0, rest recomputed consistently"
+    }
+  ],
+  "false_rejections": [],
+  "wrong_reason": []
+}

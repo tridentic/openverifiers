@@ -47,13 +47,16 @@ fact_type: "fact" "type" NAME ["extends" NAME ("," NAME)*] "{" member* "}"
        | "theorem" NAME ":" fbody            -> theorem
        | "derived" NAME ":" tyexpr "=" expr  -> derived
 tyexpr: NAME ["<" tyexpr ("," tyexpr)* ">"]
-// The conditions of a body are conjoined. A quantifier's body runs to the end
-// of the enclosing body, so `exists` and `none` come last.
-fbody: fsimple+ | fsimple* fquant
+// The conditions of a body are conjoined; `P -> Q` is an implication. A
+// quantifier over a collection runs to the end of the enclosing body, so it
+// comes last, and an implication belongs to the innermost such quantifier.
+fbody: fseq ["->" fbody]
+fseq: fsimple+ | fsimple* fquant
 ?fquant: "exists" NAME "in" expr ":" fbody   -> fexists
        | "none" NAME "in" expr ":" fbody     -> fnone
+       | "all" NAME "in" expr ":" fbody      -> fall_in
 ?fsimple: fchain
-        | "all" NAME ["in" expr] ":" fchain  -> fall
+        | "all" NAME ":" fchain              -> fall
         | "not" fchain                       -> fnot
 fchain: expr (CMPOP expr)*
 
@@ -129,9 +132,10 @@ STRING: /"(?:[^"\\\n]|\\.)*"/
 QUANTITY.-1: /(?:\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)(?:[ \t]+@UNIT@(?:\^-?\d+)?(?:[*\/·]@UNIT@(?:\^-?\d+)?)*(?![A-Za-z0-9_\-(]))?/
 NUMBER: /\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/
 // Names may contain inner hyphens (pent-1-ene) and may start with digits when
-// a hyphen follows (2-chloropentane, 1,1-dimethylcyclopropane). So `a-b` is
-// one name: write `a - b` for subtraction.
-NAME: /(?:\d+(?:,\d+)*-)?[A-Za-z_][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*/
+// a hyphen follows (2-chloropentane, 1,1-dimethylcyclopropane). A hyphen joins
+// a part with a letter in it, or digits followed by another hyphen. So `a-b`
+// is one name, while `i-1` is `i - 1` (as in `v[i-1]`).
+NAME: /(?:\d+(?:,\d+)*-)?[A-Za-z_][A-Za-z0-9_]*(?:-(?:\d+(?=-)|[A-Za-z0-9_]*[A-Za-z_][A-Za-z0-9_]*))*/
 
 COMMENT: /#[^\n]*/
 %import common.WS

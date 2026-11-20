@@ -445,3 +445,37 @@ def expand(formula: Term, props: Mapping[str, Term], symmetry: bool = True) -> C
 def seq_items(v: SVal) -> tuple[SVal, ...]:
     """The elements of a symbolic collection."""
     return _seq(v)
+
+
+def _atoms(f: CF, out: list[Poly]) -> list[Poly]:
+    if f[0] == "atom":
+        p = f[2]
+        assert isinstance(p, Poly)
+        out.append(p)
+    elif f[0] in ("and", "or"):
+        parts = f[1]
+        assert isinstance(parts, (frozenset, tuple))
+        for x in parts:
+            _atoms(x, out)
+    return out
+
+
+def _shifted(p: Poly, group: set[str]) -> Poly:
+    """p with every variable v in group replaced by v + T (T a fresh symbol)."""
+    t = Poly.var("__shift__")
+    out = Poly.const(Fraction(0))
+    for mono, c in p.terms:
+        term = Poly.const(c)
+        for v, k in mono:
+            base = Poly.var(v) + t if v in group else Poly.var(v)
+            for _ in range(k):
+                term = term * base
+        out = out + term
+    return out
+
+
+def translation_invariant(fs: Iterable[CF], group: set[str]) -> bool:
+    """Every constraint is unchanged when all variables in group move by the same amount.
+
+    Then any model can be shifted so that one of them is 0: fixing it loses no model."""
+    return all(_shifted(p, group) == p for f in fs for p in _atoms(f, []))

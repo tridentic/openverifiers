@@ -21,7 +21,7 @@ from .engine import Run, ask, find_all, run, without
 from .kernel.evaluate import Budget
 from .lang import ast as A
 from .lang.check import Env, load
-from .lang.errors import OVError
+from .lang.errors import Diagnostic, OVError
 from .lang.units import show_quantity
 from .lower.lower import Lowered, QueryPlan, _Ctx, _value, lower, term
 from .objects.engine import ObjAnswer, Settings, check_classes, show
@@ -40,6 +40,11 @@ class Answer:
     candidates: dict[str, list[Term]] = field(default_factory=dict)
     expect_ok: bool | None = None
     expect_msg: str = ""
+
+    @property
+    def trust_base(self) -> frozenset[str]:
+        """Rule verdicts come from a trace the independent checker accepted."""
+        return frozenset() if self.verdict == "UNKNOWN" else frozenset({"kernel"})
 
     @property
     def assumptions(self) -> frozenset[tuple[str, bool]]:
@@ -72,6 +77,11 @@ class FileResult:
 def run_file(path: str | Path, *, source: str | None = None, budget: Budget | None = None,
              files: set[str] | None = None, settings: Settings | None = None) -> FileResult:
     env = load(path, source=source)
+    if settings is not None and settings.strict:
+        undeclared = [d for d in env.warnings if d.code == "W201"]
+        if undeclared:
+            raise OVError([Diagnostic("E208", d.message + " (an error under --strict)", d.span,
+                                      d.hint) for d in undeclared], env.sources())
     lowered = lower(env, files)
     answers: list[Answer] = []
     runs: dict[str, Run] = {}
@@ -225,7 +235,7 @@ def render(res: FileResult, verbose: bool = False) -> str:
         where = f"{Path(q.span.file).name}:{q.span.line}"
         test = f" [test {a.plan.test}]" if a.plan.test else ""
         out.append(f"{where}{test}  query {q.text}")
-        out.append("  " + _line(a, lw))
+        out.append("  " + _line(a, lw) + ("  trust {kernel}" if a.trust_base else ""))
         if a.expect_ok is not None:
             mark = "ok" if a.expect_ok else f"FAILED ({a.expect_msg})"
             out.append(f"  expect {a.plan.expect.verdict if a.plan.expect else ''}: {mark}")
@@ -258,6 +268,8 @@ def _obj_lines(a: ObjAnswer, verbose: bool, check: bool = False) -> list[str]:
         parts.append(", ".join(f"?{k} = {show(t)}" for k, t in b.items()))
     if a.count is not None:
         parts.append(f"count = {a.count}")
+    if a.trust_base:
+        parts.append("trust {" + ", ".join(sorted(a.trust_base)) + "}")
     if a.names:
         parts.append(("conflicting invariants: " if v == "INCONSISTENT" else "fails: ")
                      + ", ".join(a.names))
@@ -319,14 +331,15 @@ def _atom(a: Atom, lw: Lowered) -> str:
 def main(argv: Sequence[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
     verbose = "--verbose" in args
+    settings = Settings(strict="--strict" in args)
     paths = [a for a in args if not a.startswith("--")]
     if not paths:
-        print("usage: python -m openverifiers.runner FILE.ov [--verbose]", file=sys.stderr)
+        print("usage: ov run FILE.ov [FILE.ov ...] [--verbose] [--strict]", file=sys.stderr)
         return 2
     code = 0
     for p in paths:
         try:
-            res = run_file(p, files={str(p)})
+            res = run_file(p, files={str(p)}, settings=settings)
         except OVError as e:
             print(e.render(), file=sys.stderr)
             code = 1

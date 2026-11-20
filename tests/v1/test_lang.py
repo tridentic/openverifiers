@@ -117,6 +117,7 @@ def test_query_text_and_expect() -> None:
     ("package p\npredicate q(x: Number) -> {Number} world open\n"
      "generator g(x: Number) yields Number from q(x)", [("E404", 3, 43)]),
     ("import state \"x.ovs\" as old", [("E207", 1, 1)]),
+    ("scenario s {\n  tolerance 0.001\n}", [("E207", 2, 3)]),
     ("predicate q(x: Number) world open\naxiom a(x: Number): q(x) -> q(x)", [("E206", 2, 1)]),
 ])
 def test_error_codes_and_spans(src: str, want: list[tuple[str, int, int]],
@@ -402,3 +403,22 @@ def test_package_tests_pass(pkg: str) -> None:
     path = PKG / pkg
     res = run_file(path, files={str(path)})
     assert not res.failed, render(res)
+
+
+def test_strict_makes_undeclared_types_errors(tmp_path: Path) -> None:
+    from openverifiers.objects.engine import Settings
+    p = tmp_path / "t.ov"
+    p.write_text("package p\npredicate f(s: Surface) world open\n")
+    with pytest.raises(OVError) as e:
+        run_file(p, files={str(p)}, settings=Settings(strict=True))
+    assert [d.code for d in e.value.diagnostics] == ["E208"]
+
+
+def test_ov_cli(capsys: pytest.CaptureFixture[str]) -> None:
+    from openverifiers.cli import main as ov
+    assert ov(["run", str(ROOT / "examples/physics/newton2.ov")]) == 0
+    out = capsys.readouterr().out
+    assert "PROVEN  m = 5 kg  assumptions {}  trust {kernel}" in out
+    assert ov(["frobnicate"]) == 2
+    assert ov([]) == 2
+    assert ov(["--help"]) == 0

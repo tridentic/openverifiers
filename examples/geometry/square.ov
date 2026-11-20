@@ -1,4 +1,5 @@
-# Brief §3.7, verbatim, plus the two OKQL queries as a test block.
+# Brief §3.7, plus the two OKQL queries as a test block. The theorem is rewritten
+# (see the comment on it); the rest is verbatim.
 #   python -m openverifiers.runner examples/geometry/square.ov --verbose
 # prints the trace: solve -> substitution re-check -> uniqueness unsat.
 
@@ -11,7 +12,13 @@ fact type Square extends Quadrilateral {
   invariant shape: exists v in cycles(vertices):
                      all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
                      all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
-  theorem diagonals_equal: exists v in cycles(vertices): dist(v[0], v[2]) = dist(v[1], v[3])
+  # The brief's version, `exists v in cycles(vertices): dist(v[0], v[2]) = dist(v[1], v[3])`,
+  # was vacuous: it may choose an ordering that pairs up sides (it holds for any rhombus).
+  # This one speaks about every ordering that has the square's shape.
+  theorem diagonals_equal: all v in cycles(vertices):
+                             all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+                             all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
+                             -> dist2(v[0], v[2]) = dist2(v[1], v[3])
 }
 
 test fourth_vertex {

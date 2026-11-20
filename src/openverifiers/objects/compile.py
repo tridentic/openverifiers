@@ -9,7 +9,6 @@ rejects, with a span, anything the exact evaluator could not decide.
 
 from __future__ import annotations
 
-import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from fractions import Fraction
@@ -145,7 +144,10 @@ def _compile_class(d: A.FactType, decls: dict[str, A.FactType], cls: Classes, en
                                 m.span)
                 props[m.name] = t
             elif isinstance(m, A.Derived):
-                derived[m.name] = m.expr
+                # Not unit-checked and no `requires` yet: reject rather than half-support.
+                raise _Fail("E207", "`derived` properties are not supported yet", m.span,
+                            "write the expression where it is used, or make it a property "
+                            "with an invariant")
     cls.prop_types[d.name] = props
     cls.spans[d.name] = d.span
     cls.ancestors[d.name] = tuple(_ancestors(d.name, decls)[:-1])
@@ -160,15 +162,19 @@ def _compile_class(d: A.FactType, decls: dict[str, A.FactType], cls: Classes, en
     theorems = []
     for m in d.members:
         if isinstance(m, A.Invariant) and m.theorem:
-            theorems.append((f"{d.name}.{m.name}",
-                             _Formula(cls, props, derived).body(m.body, m.span)))
+            th = _Formula(cls, props, derived).body(m.body, m.span)
+            theorems.append((f"{d.name}.{m.name}", th))
             cls.spans[f"{d.name}.{m.name}"] = m.span
+            shared = _exists_over(th) & {g for _, f in invariants for g in _exists_over(f)}
+            if shared:
+                env.diags.append(Diagnostic(
+                    "W202", f"theorem '{m.name}' says `exists` over the same generator as an "
+                    "invariant, so it may be vacuous", m.span,
+                    "it may pick a different ordering than the invariant did; say "
+                    "`all v in ...: <shape of v> -> <property of v>` instead"))
         elif isinstance(m, A.Invariant):
             cls.spans[f"{d.name}.{m.name}"] = m.span
     cls.defs[d.name] = ClassDef(d.name, tuple(props), tuple(invariants), tuple(theorems))
-
-
-_SHIFT = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)-(\d+)$")
 
 
 class _Formula:
@@ -186,24 +192,26 @@ class _Formula:
             return self.chain(f)
         if isinstance(f, A.FNot):
             return _f("not", self.chain(f.body))
-        if isinstance(f, A.FAll) and f.coll is None:
+        if isinstance(f, A.FAll):
             return self.index_all(f)
+        if isinstance(f, A.FImp):
+            return _f("or", _f("not", self.body(f.premise, f.span)),
+                      self.body(f.conclusion, f.span))
         var = f.var
         if var in self.bound or var in self.props:
             raise _Fail("E202", f"'{var}' is already bound", f.span)
-        assert f.coll is not None
         coll, ty = self.coll(f.coll)
         elem = ty[1]
         assert isinstance(elem, tuple)
         self.bound[var] = elem
         try:
-            inner = self.chain(f.body) if isinstance(f, A.FAll) else self.body(f.body, f.span)
+            inner = self.body(f.body, f.span)
         finally:
             del self.bound[var]
-        if isinstance(f, A.FAll):
+        if f.quant == "all":
             return _f("forall", Str(var), coll, inner)
         ex = _f("exists", Str(var), coll, inner)
-        return _f("not", ex) if f.negated else ex
+        return _f("not", ex) if f.quant == "none" else ex
 
     def index_all(self, f: A.FAll) -> Term:
         lists: list[Term] = []
@@ -282,9 +290,6 @@ class _Formula:
                 return _f("p", Str(e.name)), self.props[e.name]
             if e.name in self.derived:
                 return go(self.derived[e.name])
-            m = _SHIFT.match(e.name)
-            if m and m.group(1) in self.bound:   # `v[i-1]`: the lexer read `i-1` as one name
-                return Compound("-", (_f("v", Str(m.group(1))), Num(Fraction(m.group(2))))), REAL
             raise _Fail("E201", f"unknown name '{e.name}' in a class formula", e.span,
                         "use a property, a derived property or a bound variable")
         if isinstance(e, A.Index):
@@ -328,6 +333,15 @@ class _Formula:
         raise _Fail("E206", "not allowed in a class formula", e.span)
 
 
+def _exists_over(f: Term) -> set[Term]:
+    """The collections a formula's top-level conjuncts quantify `exists` over."""
+    if isinstance(f, Compound) and f.functor == "f.and":
+        return {g for a in f.args for g in _exists_over(a)}
+    if isinstance(f, Compound) and f.functor == "f.exists":
+        return {f.args[1]}
+    return set()
+
+
 def _has_dist(e: A.Expr) -> bool:
     if isinstance(e, A.Call):
         return e.fn in ("dist", "angle") or any(_has_dist(a) for a in e.args)
@@ -338,8 +352,7 @@ def _has_dist(e: A.Expr) -> bool:
 
 def _mentions(e: A.Expr, var: str) -> bool:
     if isinstance(e, A.Name):
-        m = _SHIFT.match(e.name)
-        return e.name == var or bool(m and m.group(1) == var)
+        return e.name == var
     if isinstance(e, A.BinOp):
         return _mentions(e.left, var) or _mentions(e.right, var)
     if isinstance(e, A.Neg):

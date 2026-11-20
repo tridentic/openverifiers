@@ -3,6 +3,17 @@
 Breaking changes, newest first. Each entry says what changed, why, and what
 to do.
 
+## v1 hygiene (change order v1.1, step 1)
+
+| change | before | after | what to do |
+|---|---|---|---|
+| `ov` command | the pre-v1 step verifier (`ov check/trace/solve/bench/demo`) | the v1 CLI (`ov run FILE.ov [--verbose] [--strict]`) | use `ov-m1` for the old tool |
+| `tolerance` | parsed and ignored | error E207 | remove it; arithmetic is exact |
+| `derived` | substituted, not unit-checked | error E207 | inline the expression |
+| `all x in C:` in a class body | one comparison chain | a quantifier whose body runs to the end of the enclosing body | put it last; use `->` for implications |
+| names with a final digits part | `i-1` was one name | `i - 1` | none in the repo |
+| `COUNTEREXAMPLE T.thm` | PROVEN when a counterexample exists | the theorem's verdict: REFUTED with the counterexample, PROVEN when none exists | flip `expect` lines |
+
 ## v1 Milestone 1b (object layer)
 
 | change | before | after | what to do |

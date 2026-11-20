@@ -37,7 +37,8 @@ dev = [
 ]
 
 [project.scripts]
-ov = "openverifiers.m1.cli:main"   # becomes the v1 CLI in M3
+ov = "openverifiers.cli:main"
+ov-m1 = "openverifiers.m1.cli:main"   # the pre-v1 step verifier
 
 [tool.setuptools.packages.find]
 where = ["src"]

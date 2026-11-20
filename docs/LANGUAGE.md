@@ -55,8 +55,9 @@ test newton2_mass {
 - **Names** are letters, digits and `_`. They may also contain inner hyphens
   (`pent-1-ene`), and may start with digits when a hyphen follows
   (`2-chloropentane`, `1,1-dimethylcyclopropane`).
-  - Because of this, `a-b` is one name. Write `a - b`, with spaces, to
-    subtract. Error E201 points this out.
+  - A hyphen joins a part that has a letter in it, or digits followed by
+    another hyphen. So `a-b` is one name (write `a - b` to subtract), while
+    `i-1` is `i - 1`, as in `v[i-1]`. Error E201 points out a joined name.
 - **Quantities** are a number, optionally followed on the same line by a unit:
   `10 N`, `2 m/s^2`, `0.5 kg`, `3 km/h`.
   - Numbers are exact rationals. Decimals are read exactly: `0.1` is 1/10.
@@ -70,13 +71,18 @@ test newton2_mass {
 This is the grammar in `src/openverifiers/lang/grammar.lark`. It is LALR(1).
 `{x}` means zero or more, `[x]` optional, `"..."` a keyword.
 
-There are four shift/reduce conflicts, all inside class bodies, where
-conditions are written one after another with no separator (as in the brief's
-`Square`). Each is resolved as *shift*, so a condition extends as far as it
-can: after a name, `(` starts a call, `{` a pattern, `[` an index, and `-`
-continues a subtraction. Start each condition on a new line with a name, a
-number or `all`. `tests/v1/test_objects.py` checks that these four are the
-only conflicts.
+There are five shift/reduce conflicts, all inside class bodies, and each is
+resolved as *shift*:
+
+- Four come from conditions written one after another with no separator (as
+  in the brief's `Square`). A condition extends as far as it can: after a
+  name, `(` starts a call, `{` a pattern, `[` an index, and `-` continues a
+  subtraction. Start each condition on a new line with a name, a number or
+  `all`.
+- The fifth is `->` inside a quantifier: an implication belongs to the
+  innermost quantifier over a collection.
+
+`tests/v1/test_objects.py` checks that these five are the only conflicts.
 
 ```ebnf
 file        = { item } ;
@@ -116,9 +122,10 @@ member      = "property" NAME ":" tyexpr
             | "theorem" NAME ":" fbody
             | "derived" NAME ":" tyexpr "=" expr ;
 tyexpr      = NAME [ "<" tyexpr { "," tyexpr } ">" ] ;      (* Set<Point>, Real *)
-fbody       = fsimple { fsimple } | { fsimple } fquant ;    (* conditions are conjoined *)
-fquant      = ( "exists" | "none" ) NAME "in" expr ":" fbody ;
-fsimple     = fchain | "all" NAME [ "in" expr ] ":" fchain | "not" fchain ;
+fbody       = fseq [ "->" fbody ] ;                      (* P -> Q: implication *)
+fseq        = fsimple { fsimple } | { fsimple } fquant ;  (* conditions are conjoined *)
+fquant      = ( "exists" | "none" | "all" ) NAME "in" expr ":" fbody ;   (* runs to the end *)
+fsimple     = fchain | "all" NAME ":" fchain | "not" fchain ;
 fchain      = expr { CMPOP expr } ;                         (* a = b > 0 *)
 
 params      = group { "," group } ;
@@ -330,9 +337,12 @@ fact type Square extends Quadrilateral {
   included once (the diamond rule): `Square extends Rectangle, Rhombus` in
   `math.geometry` has `Quadrilateral.four` and `Parallelogram.bisect` once each.
 - **Quantifiers.** `exists v in C: ...`, `none v in C: ...` (no element
-  satisfies it) and `all x in C: ...`. `all i: ...` without `in` ranges over the
-  indices of the list the body indexes with `i`. Indices wrap around: `v[i+1]`
-  of the last element is the first, and `v[i-1]` works too.
+  satisfies it) and `all v in C: ...` range over a collection; their body
+  runs to the end of the enclosing body, so they come last. `all i: chain`
+  (no `in`) ranges over the indices of the list the chain indexes with `i`.
+  Indices wrap around: `v[i+1]` of the last element is the first.
+- **Implication.** `P -> Q` inside a body: `all v in cycles(s): <shape of v>
+  -> <property of v>`.
 - **Generators** introduce order into sets: `cycles(s)` and `orderings(s)`
   (every ordering), `subsets(s, k)`, `pairs(s)`.
 - **Functions:** `count`, `dist`, `dist2` (squared distance), `angle(a, b, c)`
@@ -342,11 +352,13 @@ fact type Square extends Quadrilateral {
   cosine squared is rational (0, 30, 45, 60, 90, 120, 135, 150, 180). Other
   comparisons are rejected with E405. Write `dist2` for arithmetic on
   distances (Pythagoras: `dist2(a, c) = dist2(a, b) + dist2(b, c)`).
-- **Write theorems with `none`.** `exists v in cycles(s): P(v)` may pick any
-  ordering. "The diagonals are equal", written that way, holds for every
-  rhombus, by choosing an ordering that pairs up sides. Say instead that no
-  ordering with the defining shape lacks the property:
-  `none v in cycles(s): <shape of v>  <property of v fails>`.
+- **Do not write theorems with `exists` over an invariant's generator.**
+  `exists v in cycles(s): P(v)` may pick any ordering. "The diagonals are
+  equal", written that way, holds for every rhombus, by choosing an ordering
+  that pairs up sides; the brief's own `Square.diagonals_equal` did this.
+  Warning W202 flags it. Say that every ordering with the defining shape has
+  the property: `all v in cycles(s): <shape of v> -> <property of v>`, or
+  `none v in cycles(s): <shape of v> <property of v fails>`.
 
 ### Object queries
 
@@ -356,7 +368,7 @@ fact type Square extends Quadrilateral {
 | `PROVE UNIQUE ?p [WHERE ...]` | PROVEN if blocking the solution leaves no other; REFUTED with two witnesses; without WHERE it reuses the FIND before it |
 | `COUNT ?p WHERE ...` | the exact number of solutions, or UNKNOWN(budget) past 64 |
 | `CHECK T1{...} IS T` | PROVEN, or REFUTED naming the invariants the instance fails |
-| `COUNTEREXAMPLE T.theorem` | PROVEN with a checked counterexample, or REFUTED (none exists) |
+| `COUNTEREXAMPLE T.theorem` | the theorem's verdict: REFUTED with a checked counterexample, PROVEN if its negation is unsat, UNKNOWN otherwise |
 
 A pattern `T{field = value, ...}` is a partial instance: `?x` and unspecified
 fields are unknowns (`Point{x = 3}` leaves `y` open). A set with unknown
@@ -377,6 +389,14 @@ Every answer follows the same steps, all printed by `--verbose`:
 A query whose class has no instance at all is REFUTED with a minimal set of
 invariants that conflict.
 
+**Trust base.** Every verdict says what it rests on, like Lean's
+`#print axioms`: `kernel` (the trusted evaluator re-checked an instance, or
+the checker accepted a rule trace) and `z3_unsat` (an unsat answer only the
+solver vouches for: UNIQUE, COUNT, a class with no instance, a proven
+theorem). `ov run --strict` turns every verdict that rests on `z3_unsat` into
+UNKNOWN(plugin_unknown). A FIND keeps its re-checked bindings but no longer
+claims the list is complete. Under `--strict`, W201 becomes error E208.
+
 ### Class checks
 
 For every class in the file it runs, the runner checks:
@@ -390,7 +410,19 @@ For every class in the file it runs, the runner checks:
 Both use a *generic instance*: fresh unknowns in every slot, with collection
 sizes taken from `count(p) = n` invariants. A class with an unbounded
 collection gets UNPROVEN, not a guess. A theorem that states, word for word,
-a theorem an ancestor proved is inherited. Refuted theorems and empty classes
+a theorem an ancestor proved is inherited.
+
+Before solving, a theorem check applies only reductions that lose no model,
+each printed in the trace:
+
+- **counterexample ordering:** the counterexample's vertex ordering is fixed,
+  because the generic set's elements are interchangeable unknowns;
+- **implied invariants:** an invariant implied by the counterexample's
+  conditions is left out;
+- **translation:** one point is pinned to 0 in each coordinate where every
+  polynomial is unchanged when all points shift together (checked exactly);
+- **invariants last:** the negated theorem is first tried without the
+  invariants, which proves the stronger statement when it is unsat. Refuted theorems and empty classes
 make the runner exit with status 1.
 
 ## Error codes
@@ -410,7 +442,7 @@ exact span.
 | E204 | unknown field |
 | E205 | wrong number of arguments |
 | E206 | construct not allowed here (axioms outside packages, a predicate used as a value, ...) |
-| E207 | not supported until a later milestone (`import state`) |
+| E207 | not supported yet (`import state`, `tolerance`, `derived`) |
 | E301 | dimension mismatch (`2 kg + 1 m`, `expected Mass, got Length`) |
 | E302 | type mismatch |
 | E303 | arithmetic or ordering on something that is not a quantity |
@@ -420,7 +452,9 @@ exact span.
 | E404 | a generator does not draw from a closed set-valued predicate |
 | E405 | a class formula the exact evaluator cannot decide (an angle other than 0, 30, 45, 60, 90, 120, 135, 150, 180 deg; a distance inside arithmetic) |
 | E406 | a class inherits from itself |
+| E208 | an undeclared type under `--strict` (W201 otherwise) |
 | W201 | warning: an undeclared type is used and treated as an opaque entity type |
+| W202 | warning: a theorem says `exists` over the same generator as an invariant, so it may be vacuous |
 
 ## Standard packages (Milestone 1)
 

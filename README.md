@@ -16,16 +16,17 @@ language is described in [docs/LANGUAGE.md](docs/LANGUAGE.md). The definitions a
 [docs/SEMANTICS.md](docs/SEMANTICS.md) and the shortcuts in
 [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md). What moved is in
 [MIGRATION.md](MIGRATION.md). The Milestone-1 step verifier still works under
-`openverifiers.m1` ([docs/m1/](docs/m1/README.md)).
+`openverifiers.m1` and the `ov-m1` command ([docs/m1/](docs/m1/README.md)).
 
 ```bash
 uv pip install -e ".[dev]"
-python -m openverifiers.runner examples/chem/q11.ov --verbose   # HSC q11 from .ov
-python -m openverifiers.runner examples/physics/newton2.ov       # the brief's physics test
-python -m openverifiers.runner examples/geometry/square.ov --verbose  # §3.7: fourth vertex (3,5), unique
-python -m openverifiers.runner src/openverifiers/packages/math/geometry.ov  # classes, proven theorems
+ov run examples/chem/q11.ov --verbose   # HSC q11 from .ov
+ov run examples/physics/newton2.ov       # the brief's physics test
+ov run examples/geometry/square.ov --verbose  # §3.7: fourth vertex (3,5), unique
+ov run src/openverifiers/packages/math/geometry.ov  # classes, proven theorems
+ov run --strict examples/geometry/square.ov  # verdicts resting on solver unsat become UNKNOWN
 python scripts/q11_raw.py          # the same q11 from hand-written RawOV (Milestone 0)
-ruff check . && mypy && pytest -q  # 486 tests
+ruff check . && mypy && pytest -q  # 494 tests
 python scripts/tcb_size.py         # trusted code must stay under 1,500 lines
 ```
 

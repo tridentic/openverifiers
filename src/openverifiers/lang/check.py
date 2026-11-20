@@ -454,6 +454,10 @@ class _Checker:
                 sc.new_unknowns = False
             elif isinstance(st, A.Query):
                 self.query(st, info)
+            elif isinstance(st, A.Tolerance):
+                # Parsed but not implemented: accepting it silently would be a hidden default.
+                self.err("E207", "`tolerance` is not supported yet", st.span,
+                         "all arithmetic is exact; floats arrive with the plugins (Milestone 2)")
 
     def gen_use(self, g: A.GenUse, info: ScenarioInfo, sc: Scope) -> None:
         src = g.source

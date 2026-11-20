@@ -10,16 +10,16 @@ milestone. Newest milestone first.
   consequences, both giving UNKNOWN or UNPROVEN, never a wrong answer:
   - an instance that has no rational solution (an equilateral triangle with
     two given rational vertices) is UNKNOWN(plugin_unknown);
-  - a counterexample that lies on a curved variety may not be found in time.
-    `none v in cycles(vertices): <rhombus sides> dist(v[0], v[2]) !=
-    dist(v[1], v[3])` (false: only squares qualify) comes back UNPROVEN
-    (budget) rather than REFUTED. A proposer that fixes some coordinates to
-    small integers before solving is planned for the z3 plugin in M2.
-- **Unsat is trusted to z3.** UNIQUE, COUNT, theorem PROVEN and empty classes
-  rest on unsat answers. These cannot be checked by substitution. They are
-  re-solved in a fresh solver, as the brief allows, but the same solver runs
-  both times. An independent unsat certificate (e.g. a Positivstellensatz
-  witness) is open.
+  - a counterexample that lies on a curved variety may not be found. "A
+    rhombus has equal diagonals" (false) gets an irrational model from z3,
+    hence UNKNOWN(plugin_unknown) instead of REFUTED.
+- **Unsat is trusted to z3, and says so.** UNIQUE, COUNT, theorem PROVEN and
+  empty classes rest on unsat answers. These cannot be checked by
+  substitution. They are re-solved in a fresh solver, as the brief allows,
+  but the same solver runs both times. Their `trust_base` names `z3_unsat`,
+  and `--strict` turns them into UNKNOWN. An independent unsat certificate
+  (e.g. a Positivstellensatz witness) is open; a cvc5 cross-check is planned
+  as an optional extra.
 - **Theorems need bounded collections.** The generic instance takes each
   collection's size from a `count(p) = n` invariant. Otherwise the theorem is
   UNPROVEN.
@@ -30,22 +30,26 @@ milestone. Newest milestone first.
 - **Angles** are exact only for 0, 30, 45, 60, 90, 120, 135, 150 and 180
   degrees, and compare only by `=` and `!=`. Distances compare with numbers,
   properties or other distances, not inside arithmetic (use `dist2`).
-- **`exists` in a theorem is weak** (it may choose any ordering); the docs and
-  the `math.geometry` package write theorems with `none`. The brief's own
-  `Square.diagonals_equal` uses `exists` and is proven as written.
-- **Symmetry.** Orderings whose expansion is identical are merged, and a
+- **`exists` in a theorem is weak** (it may choose any ordering). W202 warns
+  about it. The brief's own `Square.diagonals_equal` did this and is
+  rewritten in `examples/geometry/square.ov` as `all v in cycles(...): ... ->
+  ...`.
+- **Symmetry.** Orderings whose expansion is identical are merged, a
   theorem's counterexample ordering over a generic set is fixed (its elements
-  are interchangeable). Without merging (`Settings(symmetry=False)`) the
-  solver sees every ordering: verdicts agree in the tests, but the solver can
-  then run out of time on larger classes.
+  are interchangeable), and points are pinned by translation when every
+  constraint allows it. With `Settings(symmetry=False)` query answers are
+  identical in the tests. Class checks never disagree, but the solver then
+  runs out of time on the rewritten `Square.diagonals_equal` (UNKNOWN
+  (budget), even at 60 s).
 - **Smaller gaps.**
   - `CHECK x IS T` takes an instance written as a pattern, not a scenario
     entity.
   - An object query's WHERE is exactly one pattern; extra conditions on the
     unknowns belong in a class.
-  - `derived` properties are substituted where they are used; they are not
-    unit-checked, and `requires` on them is not supported.
-  - No `or` and no implication inside class bodies (use `none`).
+  - `derived` properties are rejected (E207) until they are unit-checked and
+    support `requires`.
+  - No `or` inside class bodies (implication `->` and `none` cover the
+    cases met so far).
   - FIND stops after 16 solutions (LIMIT), COUNT after 64; past that the
     answer says more exist, or UNKNOWN(budget) for COUNT.
   - Steps are listed per answer (`--verbose`), not yet written into the
@@ -70,13 +74,12 @@ milestone. Newest milestone first.
   with that controller's guards.
 - **No user-declared units or dimensions yet.** USD is built in. `count`
   dimensions and `unit` declarations are open.
-- **`tolerance` is parsed and stored but unused.** Floats only arrive through
-  plugins (Milestone 2).
+- **`tolerance` is rejected (E207).** Floats only arrive through plugins
+  (Milestone 2).
 - **`import state`** is parsed and rejected (E207) until Milestone 3.
-- **Undeclared types are a warning, not an error** (W201). The brief's
-  physics example uses `Surface` without declaring it, and the brief says
-  that example must run exactly as written. Undeclared types are treated as
-  opaque entity sorts.
+- **Undeclared types are a warning, not an error** (W201), and opaque entity
+  sorts. Under `--strict` they are error E208. The brief's §3.5 example now
+  declares `type Surface`.
 - **`2 m` after a number is a quantity.** A variable named like a unit must
   be multiplied explicitly (`2 * m`).
 

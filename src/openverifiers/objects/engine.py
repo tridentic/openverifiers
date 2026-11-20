@@ -35,6 +35,7 @@ from .expand import (
     not_,
     or_,
     seq_items,
+    translation_invariant,
 )
 from .solve import Result, solve
 
@@ -55,12 +56,53 @@ class ObjAnswer:
     plan: ObjPlan | None = None
     expect_ok: bool | None = None
     expect_msg: str = ""
+    #: What the verdict rests on, like Lean's `#print axioms`: "kernel" (the exact
+    #: evaluator re-checked an instance) and/or "z3_unsat" (an unsat answer that only
+    #: the solver vouches for). Empty for UNKNOWN.
+    trust_base: frozenset[str] = frozenset()
+    kind: str = ""                                 # find unique count check counterexample
+                                                   # consistency theorem
 
 
 @dataclass
 class Settings:
     symmetry: bool = True
     timeout_ms: int = 20_000
+    #: Verdicts resting on an unchecked solver unsat become UNKNOWN(plugin_unknown).
+    strict: bool = False
+
+
+KERNEL, Z3_UNSAT = "kernel", "z3_unsat"
+
+
+def settle(ans: ObjAnswer, st: Settings) -> ObjAnswer:
+    """Record the trust base of a finished answer, then apply --strict."""
+    v, k = ans.verdict, ans.kind
+    base: set[str] = set()
+    if v == "UNKNOWN":
+        pass
+    elif k in ("check", "consistency") and v == "PROVEN":
+        base = {KERNEL}
+    elif k in ("theorem", "counterexample"):
+        base = {KERNEL} if v == "REFUTED" else {Z3_UNSAT}
+    elif k == "consistency":                       # INCONSISTENT: the invariants are unsat
+        base = {Z3_UNSAT}
+    elif k in ("find", "unique"):
+        base = {KERNEL} if ans.bindings else set()
+        if (v == "PROVEN" and k == "unique") or not ans.bindings:
+            base.add(Z3_UNSAT)                     # no other / no solution: solver unsat
+    elif k == "count":
+        base = {KERNEL, Z3_UNSAT} if ans.bindings else {Z3_UNSAT}
+    else:
+        base = {KERNEL}
+    ans.trust_base = frozenset(base)
+    if st.strict and k == "find" and v == "PROVEN" and ans.complete:
+        ans.complete = False                       # "no more solutions" is solver unsat
+        ans.steps.append("strict: completeness of the list rests on z3 unsat; not claimed")
+    elif st.strict and Z3_UNSAT in base:
+        ans.steps.append(f"strict: {v} rests on an unchecked z3 unsat, so UNKNOWN")
+        ans.verdict, ans.reason, ans.trust_base = "UNKNOWN", "plugin_unknown", frozenset()
+    return ans
 
 
 def _vars(t: Term, out: dict[str, None]) -> None:
@@ -146,7 +188,11 @@ def _expand(invs: list[tuple[str, Term]] | tuple[tuple[str, Term], ...],
 
 def answer(plan: ObjPlan, st: Settings | None = None) -> ObjAnswer:
     st = st or Settings()
-    ans = ObjAnswer(plan.query.text, "UNKNOWN", plan=plan)
+    return settle(_answer(plan, st), st)
+
+
+def _answer(plan: ObjPlan, st: Settings) -> ObjAnswer:
+    ans = ObjAnswer(plan.query.text, "UNKNOWN", plan=plan, kind=plan.kind)
     r = _Run(st, ans.steps)
     try:
         if plan.kind == "check":
@@ -160,13 +206,9 @@ def answer(plan: ObjPlan, st: Settings | None = None) -> ObjAnswer:
             assert plan.theorem is not None
             v, why, wit, names = theorem(plan.cls, plan.theorem, r, ans.steps,
                                          plan.note or plan.props)
-            ans.witness, ans.names = wit, names
-            if v == "REFUTED":
-                ans.verdict = "PROVEN"           # a counterexample exists, and it was checked
-            elif v == "PROVEN":
-                ans.verdict = "REFUTED"          # no instance violates the theorem
-            else:
-                ans.reason = why
+            # The verdict is the theorem's: REFUTED with the checked counterexample,
+            # PROVEN when its negation is unsat, UNKNOWN otherwise.
+            ans.witness, ans.names, ans.verdict, ans.reason = wit, names, v, why
             return ans
         return _search(plan, r, ans)
     except Unsupported as e:
@@ -268,12 +310,69 @@ def _items(t: Term) -> tuple[Term, ...]:
     return t.args if isinstance(t, Compound) else ()
 
 
-def _wlog(f: Term, gen: Mapping[str, Term]) -> tuple[str, str, Term] | None:
-    """For ``none v in cycles(p): body`` over a generic set p: (v, p, body)."""
-    if not (isinstance(f, Compound) and f.functor == "f.not"):
+def _coordinate_groups(gen: Mapping[str, Term]) -> list[list[str]]:
+    """Variables of the generic instance's points, grouped by coordinate (all x, all y)."""
+    groups: dict[tuple[int, int], list[str]] = {}
+
+    def walk(t: Term) -> None:
+        if isinstance(t, Compound) and t.functor == "f.tuple" and t.args and all(
+                isinstance(a, Var) for a in t.args):
+            for j, a in enumerate(t.args):
+                assert isinstance(a, Var)
+                groups.setdefault((len(t.args), j), []).append(a.name)
+        elif isinstance(t, Compound):
+            for a in t.args:
+                walk(a)
+    for v in gen.values():
+        walk(v)
+    return [g for _, g in sorted(groups.items())]
+
+
+def _pin(cons: list[CF], gen: Mapping[str, Term], steps: list[str]) -> list[CF]:
+    """Translation symmetry: pin one point to 0 in each coordinate that every constraint
+    is invariant under shifting. Checked exactly on the polynomials, so it loses no model."""
+    pins = []
+    for g in _coordinate_groups(gen):
+        if len(g) > 1 and translation_invariant(cons, set(g)):
+            pins.append(atom("=", Poly.var(g[0])))
+            steps.append(f"symmetry: every constraint is invariant under shifting "
+                         f"{', '.join(g)} together, so {g[0]} = 0")
+    return [*cons, *pins]
+
+
+def _implied(inv: Term, coll: Term, order: SSeq, props: Mapping[str, Term], bad: CF,
+             st: Settings) -> bool:
+    if not (isinstance(inv, Compound) and inv.functor == "f.exists" and inv.args[1] == coll
+            and isinstance(inv.args[0], Str)):
+        return False
+    ex = Expander(props, st.symmetry)
+    ex.env[inv.args[0].value] = order
+    need = ex.formula(inv.args[2])
+    return _conj_parts(need) <= _conj_parts(bad)
+
+
+def _conj_parts(f: CF) -> set[object]:
+    if f[0] == "and":
+        parts = f[1]
+        assert isinstance(parts, (frozenset, tuple))
+        return set(parts)
+    return {f}
+
+
+def _wlog(f: Term, gen: Mapping[str, Term]) -> tuple[str, str, Term, Term] | None:
+    """A theorem ``none v in cycles(p): body`` or ``all v in cycles(p): body`` over a
+    generic set p: (v, p, what a counterexample's ordering v must satisfy)."""
+    if isinstance(f, Compound) and f.functor == "f.not":
+        ex = f.args[0]
+        if not (isinstance(ex, Compound) and ex.functor == "f.exists"):
+            return None
+        bad: Term | None = ex.args[2] if len(ex.args) == 3 else None
+    elif isinstance(f, Compound) and f.functor == "f.forall":
+        ex = f
+        bad = Compound("f.not", (f.args[2],))
+    else:
         return None
-    ex = f.args[0]
-    if not (isinstance(ex, Compound) and ex.functor == "f.exists" and isinstance(ex.args[0], Str)):
+    if bad is None or not isinstance(ex.args[0], Str):
         return None
     coll = ex.args[1]
     if not (isinstance(coll, Compound) and coll.functor in ("f.cycles", "f.orderings")):
@@ -285,7 +384,7 @@ def _wlog(f: Term, gen: Mapping[str, Term]) -> tuple[str, str, Term] | None:
     val = gen.get(prop)
     if not (isinstance(val, Compound) and val.functor == "f.set"):
         return None
-    return ex.args[0].value, prop, ex.args[2]
+    return ex.args[0].value, prop, bad, coll
 
 
 def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
@@ -298,32 +397,55 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
     names: dict[str, None] = {}
     for v in gen.values():
         _vars(v, names)
-    inv = conj([f for _, f in cls.invariants])
     st = r.st
     wlog = _wlog(th[1], gen) if st.symmetry else None
-    parts = []
+    full, alone = [], []
+    dropped: set[str] = set()
     for p, cond in cases(gen, st.symmetry):
         ex = Expander(p, st.symmetry)
-        holds_inv = ex.formula(inv)
-        if holds_inv == FALSE:
+        invs = [(n, ex.formula(f)) for n, f in cls.invariants]
+        if any(c == FALSE for _, c in invs):
             continue
         if wlog is not None and len(_items(p[wlog[1]])) == len(_items(gen[wlog[1]])):
             # The vertices are fresh, interchangeable unknowns and these are all distinct,
             # so a counterexample's ordering can be taken to be the listed order.
-            var, _, body = wlog
-            ex.env[var] = SSeq("list", seq_items(ex.value(p[wlog[1]])))
+            var, _, body, coll = wlog
+            order = SSeq("list", seq_items(ex.value(p[wlog[1]])))
+            ex.env[var] = order
             bad = ex.formula(body)
+            # An invariant `exists w in <same collection>: B` whose B, at that ordering, is
+            # already among the counterexample's conditions is implied: leave it out.
+            kept = []
+            for (n, f), (_, c) in zip(cls.invariants, invs, strict=True):
+                if _implied(f, coll, order, p, bad, st):
+                    dropped.add(n)
+                else:
+                    kept.append(c)
+            invs_cf = kept
         else:
             bad = not_(ex.formula(th[1]))
-        parts.append(and_([cond, holds_inv, bad]))
+            invs_cf = [c for _, c in invs]
+        full.append(and_([cond, *invs_cf, bad]))
+        alone.append(and_([cond, bad]))
     if wlog is not None:
         steps.append(f"symmetry: the counterexample's ordering of {wlog[1]} is fixed (its "
                      "elements are interchangeable unknowns)")
-    cons = or_(parts)
+    if dropped:
+        steps.append("implied by the counterexample's conditions, so left out: "
+                     + ", ".join(sorted(dropped)))
+    # Cheap first: if the theorem's negation is unsat even without the invariants,
+    # the theorem holds for every instance (a stronger, sound result).
+    quick = Settings(st.symmetry, max(1, st.timeout_ms // 10))
+    what0 = f"not {th[0]} (without the invariants)"
+    alone_c = _pin([or_(alone)], gen, steps)
+    res0 = _Run(quick, steps).solve(what0, alone_c, list(names))
+    if res0.status == "unsat" and r.confirm_unsat(what0, alone_c, list(names)):
+        return "PROVEN", "", None, ()
+    cons = _pin([or_(full)], gen, steps)
     what = f"invariants of {cls.name} and not {th[0]}"
-    res = r.solve(what, [cons], list(names))
+    res = r.solve(what, cons, list(names))
     if res.status == "unsat":
-        if r.confirm_unsat(what, [cons], list(names)):
+        if r.confirm_unsat(what, cons, list(names)):
             return "PROVEN", "", None, ()
         return "UNKNOWN", "plugin_unknown", None, ()
     if res.status == "unknown":
@@ -354,17 +476,16 @@ def check_classes(classes: Classes, only: set[str] | None = None,
             gen = generic(cls, classes.prop_types[name], classes.records)
         except Unsupported as e:
             gen = str(e)
-        ans = ObjAnswer(f"class {name} is consistent", "UNKNOWN")
+        ans = ObjAnswer(f"class {name} is consistent", "UNKNOWN", kind="consistency")
         r = _Run(st, ans.steps)
         if isinstance(gen, str):
             ans.steps.append(f"no bounded instance: {gen}")
             ans.reason = "budget"
         else:
-            out_cls = _consistency(cls, gen, r, ans)
-            ans = out_cls
-        out.append(ans)
+            ans = _consistency(cls, gen, r, ans)
+        out.append(settle(ans, st))
         for th in cls.theorems:
-            ta = ObjAnswer(f"theorem {th[0]}", "UNKNOWN")
+            ta = ObjAnswer(f"theorem {th[0]}", "UNKNOWN", kind="theorem")
             same = [n for n in proven if n.split(".")[0] in classes.ancestors[name]
                     and proven[n] == th[1]]
             if same:
@@ -374,13 +495,12 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                                 f"{name} includes every invariant of "
                                 f"{same[0].split('.')[0]}")
                 ta.verdict = "PROVEN"
+            else:
+                v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps), ta.steps, gen)
+                ta.verdict, ta.reason, ta.witness = v, why, wit
+            settle(ta, st)
+            if ta.verdict == "PROVEN":
                 proven[th[0]] = th[1]
-                out.append(ta)
-                continue
-            v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps), ta.steps, gen)
-            if v == "PROVEN":
-                proven[th[0]] = th[1]
-            ta.verdict, ta.reason, ta.witness = v, why, wit
             out.append(ta)
     return out
 
@@ -395,7 +515,7 @@ def _consistency(cls: ClassDef, gen: dict[str, Term], r: _Run, ans: ObjAnswer) -
         ans.steps.append(f"cannot expand: {e}")
         ans.reason = "plugin_unknown"
         return ans
-    res = r.solve(f"invariants of {cls.name}", [cons], list(names))
+    res = r.solve(f"invariants of {cls.name}", _pin([cons], gen, ans.steps), list(names))
     if res.status == "sat" and res.model is not None:
         g = _ground(gen, res.model)
         if r.recheck(cls, g) == ():

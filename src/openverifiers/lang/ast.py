@@ -416,8 +416,9 @@ class FChain:
 
 @dataclass(frozen=True)
 class FAll:
+    """``all i: chain``: i ranges over the indices of the lists the chain indexes with i."""
+
     var: str
-    coll: Expr | None       # None: an index over the lists the body indexes with var
     body: FChain
     span: Span
 
@@ -430,16 +431,25 @@ class FNot:
 
 @dataclass(frozen=True)
 class FExists:
-    """``exists v in C: body``, or ``none v in C: body`` (no element satisfies it)."""
+    """``exists | none | all v in C: body`` (``none``: no element satisfies it)."""
 
     var: str
     coll: Expr
     body: tuple[Formula, ...]
     span: Span
-    negated: bool = False
+    quant: str = "exists"
 
 
-Formula = FChain | FAll | FNot | FExists
+@dataclass(frozen=True)
+class FImp:
+    """``P -> Q`` inside a class body."""
+
+    premise: tuple[Formula, ...]
+    conclusion: tuple[Formula, ...]
+    span: Span
+
+
+Formula = FChain | FAll | FNot | FExists | FImp
 
 
 @dataclass(frozen=True)

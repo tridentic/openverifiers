@@ -93,9 +93,14 @@ def test_symmetry_pruning_never_changes_a_verdict() -> None:
         off = engine.answer(plan, Settings(symmetry=False))
         assert (on.verdict, on.bindings, on.names) == (off.verdict, off.bindings, off.names), \
             plan.query.text
+    # Class checks: without the symmetry reductions the solver may run out of time (the
+    # Square theorem does, even at 60 s), but it must never reach a different verdict.
     on_c = run_file(SQUARE, files={str(SQUARE)}).classes
-    off_c = run_file(SQUARE, files={str(SQUARE)}, settings=Settings(symmetry=False)).classes
-    assert [(a.title, a.verdict) for a in on_c] == [(a.title, a.verdict) for a in off_c]
+    off_c = run_file(SQUARE, files={str(SQUARE)},
+                     settings=Settings(symmetry=False, timeout_ms=2000)).classes
+    for a, b in zip(on_c, off_c, strict=True):
+        assert a.title == b.title
+        assert a.verdict == b.verdict or (b.verdict, b.reason) == ("UNKNOWN", "budget"), a.title
 
 
 def test_diamond_includes_shared_invariants_once() -> None:
@@ -121,7 +126,7 @@ fact type Parallelogram extends Quadrilateral {
 }
 scenario s {
   query COUNTEREXAMPLE Parallelogram.diagonals_equal
-  expect PROVEN
+  expect REFUTED
 }
 """
 
@@ -135,7 +140,9 @@ def test_false_theorem_is_refuted_with_a_checked_counterexample(tmp_path: Path) 
     assert failing(cls, th.witness) == ()
     assert not holds(cls.theorems[0][1], th.witness)
     assert res.class_errors == [th]
-    assert res.objects[0].verdict == "PROVEN" and not res.failed
+    ce = res.objects[0]
+    assert ce.verdict == "REFUTED" and ce.witness is not None and not res.failed
+    assert ce.trust_base == {"kernel"} and th.trust_base == {"kernel"}
 
 
 def test_inconsistent_class_names_the_conflicting_invariants(tmp_path: Path) -> None:
@@ -284,8 +291,9 @@ def test_object_error_codes_and_spans(src: str, want: list[tuple[str, int, int]]
 
 
 def test_grammar_conflicts_are_the_documented_ones(caplog: pytest.LogCaptureFixture) -> None:
-    # Juxtaposed conditions in a class body make four shift/reduce conflicts, all resolved
-    # as shift (a condition extends as far as it can). docs/LANGUAGE.md lists them.
+    # Juxtaposed conditions in a class body make four shift/reduce conflicts, and `->`
+    # inside a quantifier a fifth; all resolve as shift (a condition extends as far as it
+    # can; an implication binds to the innermost quantifier). docs/LANGUAGE.md lists them.
     from lark import Lark
 
     from openverifiers.lang.units import unit_regex
@@ -297,7 +305,7 @@ def test_grammar_conflicts_are_the_documented_ones(caplog: pytest.LogCaptureFixt
         lark_logger.setLevel(logging.WARNING)
     found = sorted(r.getMessage().split("terminal ")[1].split(":")[0]
                    for r in caplog.records if "Shift/Reduce" in r.getMessage())
-    assert found == ["LBRACE", "LPAR", "LSQB", "MINUS"]
+    assert found == ["LBRACE", "LPAR", "LSQB", "MINUS", "__ANON_0"]   # __ANON_0 is "->"
     assert not any("Reduce/Reduce" in r.getMessage() for r in caplog.records)
 
 
@@ -381,8 +389,55 @@ fact type Rhombus extends Quadrilateral {
 
 
 def test_rhombus_false_theorem(tmp_path: Path) -> None:
-    # Pinned behaviour: z3 alone finds no rational counterexample in time, so the
-    # theorem is UNPROVEN (budget). It must never be PROVEN.
+    # Pinned behaviour: z3 finds no rational counterexample. It was UNKNOWN(budget); with
+    # translation pinning z3 now finds models, but irrational ones, which cannot be
+    # re-checked exactly: UNKNOWN(plugin_unknown). It must never be PROVEN.
     res = run(RHOMBUS_FALSE, tmp_path, Settings(timeout_ms=3000))
     (th,) = [a for a in res.classes if a.title.startswith("theorem")]
-    assert (th.verdict, th.reason) == ("UNKNOWN", "budget")
+    assert (th.verdict, th.reason) == ("UNKNOWN", "plugin_unknown")
+
+
+
+def test_derived_is_rejected_until_supported(tmp_path: Path) -> None:
+    src = POINT + "fact type T { property a: Real  derived b: Real = a * 2 }"
+    assert errors(src, tmp_path) == [("E207", 2, 33)]
+
+
+def test_vacuous_theorem_warning(tmp_path: Path) -> None:
+    src = POINT + """
+fact type Q { property vertices: Set<Point>  invariant four: count(vertices) = 4 }
+fact type S extends Q {
+  invariant shape: exists v in cycles(vertices): all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+  theorem t: exists v in cycles(vertices): dist(v[0], v[2]) = dist(v[1], v[3])
+}
+"""
+    p = tmp_path / "t.ov"
+    p.write_text(src)
+    assert [(w.code, w.span.line) for w in load(p).warnings] == [("W202", 6)]
+    assert not load(SQUARE).warnings      # the rewritten brief theorem is not vacuous
+
+
+def test_implication_compiles_to_or_not() -> None:
+    env = load(SQUARE)
+    th = env.objects.defs["Square"].theorems[0][1]
+    assert isinstance(th, Compound) and th.functor == "f.forall"
+    body = th.args[2]
+    assert isinstance(body, Compound) and body.functor == "f.or"
+    assert isinstance(body.args[0], Compound) and body.args[0].functor == "f.not"
+
+
+def test_trust_base_and_strict() -> None:
+    res = run_file(SQUARE, files={str(SQUARE)})
+    find, unique = res.objects
+    assert find.trust_base == {"kernel"} and find.complete
+    assert unique.trust_base == {"kernel", "z3_unsat"}
+    th = res.classes[-1]
+    assert th.verdict == "PROVEN" and th.trust_base == {"z3_unsat"}
+    strict = run_file(SQUARE, files={str(SQUARE)}, settings=Settings(strict=True))
+    s_find, s_unique = strict.objects
+    assert s_find.verdict == "PROVEN" and not s_find.complete     # bindings are kernel-checked
+    assert (s_unique.verdict, s_unique.reason) == ("UNKNOWN", "plugin_unknown")
+    s_th = strict.classes[-1]
+    assert (s_th.verdict, s_th.reason, s_th.trust_base) == ("UNKNOWN", "plugin_unknown",
+                                                             frozenset())
+    assert strict.classes[1].verdict == "PROVEN"                  # a re-checked witness

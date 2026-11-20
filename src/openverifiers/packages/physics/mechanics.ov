@@ -2,6 +2,7 @@ package physics.mechanics @0.1
 import math.core
 
 type Body { mass: Mass, accel: Accel }
+type Surface
 predicate net_force(b: Body, F: Force) world open
 predicate frictionless(s: Surface) world open
 

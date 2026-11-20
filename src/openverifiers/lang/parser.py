@@ -248,17 +248,24 @@ class _ToAst(Transformer[Token, Any]):
         name, *args = xs
         return A.TyExpr(str(name), tuple(a for a in args if a is not None), self.sp(m))
 
-    def fbody(self, m: Any, xs: list[Any]) -> tuple[A.Formula, ...]:
+    def fseq(self, m: Any, xs: list[Any]) -> tuple[A.Formula, ...]:
         return tuple(xs)
+
+    def fbody(self, m: Any, xs: list[Any]) -> tuple[A.Formula, ...]:
+        seq, then = xs
+        return seq if then is None else (A.FImp(seq, then, self.sp(m)),)
 
     def fexists(self, m: Any, xs: list[Any]) -> A.FExists:
         return A.FExists(str(xs[0]), xs[1], xs[2], self.sp(m))
 
     def fnone(self, m: Any, xs: list[Any]) -> A.FExists:
-        return A.FExists(str(xs[0]), xs[1], xs[2], self.sp(m), negated=True)
+        return A.FExists(str(xs[0]), xs[1], xs[2], self.sp(m), quant="none")
+
+    def fall_in(self, m: Any, xs: list[Any]) -> A.FExists:
+        return A.FExists(str(xs[0]), xs[1], xs[2], self.sp(m), quant="all")
 
     def fall(self, m: Any, xs: list[Any]) -> A.FAll:
-        return A.FAll(str(xs[0]), xs[1], xs[2], self.sp(m))
+        return A.FAll(str(xs[0]), xs[1], self.sp(m))
 
     def fnot(self, m: Any, xs: list[Any]) -> A.FNot:
         return A.FNot(xs[0], self.sp(m))

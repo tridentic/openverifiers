@@ -11,7 +11,8 @@ Codes (docs/LANGUAGE.md lists every one):
   E303 not a quantity.
 * ``E4xx`` lowering: E401 nothing to solve for, E402 cannot solve,
   E403 unsafe variable, E404 generator source not finite.
-* ``W2xx`` warnings: W201 undeclared type used as an opaque entity type.
+* ``W2xx`` warnings: W201 undeclared type used as an opaque entity type,
+  W202 a theorem may be vacuous (``exists`` over an invariant's generator).
 """
 
 from __future__ import annotations

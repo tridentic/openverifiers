@@ -38,7 +38,7 @@ def _verdict(case: Case, mode: TraceFilter) -> int:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(prog="ov", description=__doc__)
+    ap = argparse.ArgumentParser(prog="ov-m1", description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("check", help="check a case's candidate proof; print the verdict")
     p.add_argument("case")

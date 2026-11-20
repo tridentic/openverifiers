@@ -8,8 +8,8 @@ Last updated: 2026-11-17 (Milestone 1, branch `m1-kernel`).
 |---|---|---|
 | 1. Kernel test suite passes, mypy strict, ruff clean | done | `pytest -q`: 310 tests (59 kernel); `mypy` strict on `openverifiers.kernel`; `ruff check .` |
 | 2. Both packs through the same kernel, zero kernel changes between them | done | `git diff 5caedc4 -- openverifiers/kernel` is empty: no kernel change since the kernel commit, across both packs |
-| 3. Mutation benchmark runs end to end and prints the table | done | `ov bench run` (about 5 s); latest output in `benchmarks/results/latest.md` |
-| 4. Repair-loop demo | done | `ov demo repair`; `tests/test_proposers.py::test_repair_demo_acceptance_criterion` |
+| 3. Mutation benchmark runs end to end and prints the table | done | `ov-m1 bench run` (about 5 s); latest output in `benchmarks/results/latest.md` |
+| 4. Repair-loop demo | done | `ov-m1 demo repair`; `tests/test_proposers.py::test_repair_demo_acceptance_criterion` |
 | 5. README explains idea, tiers, pack in < 20 lines | done | the README example runs in `tests/test_readme.py`, which also enforces the length |
 
 Also done: the pre-M1 code moved intact to `openverifiers/legacy` (202 tests

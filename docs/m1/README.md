@@ -76,11 +76,11 @@ requirements actually rest on:
 
 ```bash
 pip install -e ".[dev]"
-ov check benchmarks/cases/math/math_braking_force.json        # verdict JSON; exit 0 = valid
-ov trace benchmarks/cases/math/math_braking_force.json --filter success_path
-ov solve benchmarks/cases/math/math_braking_force.json --proposer backward
-ov demo repair       # an LLM-style proposer is rejected, gets the reasons, then accepted
-ov bench run         # mutation benchmark table
+ov-m1 check benchmarks/cases/math/math_braking_force.json        # verdict JSON; exit 0 = valid
+ov-m1 trace benchmarks/cases/math/math_braking_force.json --filter success_path
+ov-m1 solve benchmarks/cases/math/math_braking_force.json --proposer backward
+ov-m1 demo repair       # an LLM-style proposer is rejected, gets the reasons, then accepted
+ov-m1 bench run         # mutation benchmark table
 ```
 
 A case file holds `facts`, `requirements`, `candidate_proof` and (optionally)

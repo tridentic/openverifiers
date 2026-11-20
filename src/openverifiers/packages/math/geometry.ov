@@ -167,8 +167,9 @@ test point_on_circle {
   expect PROVEN 2
 }
 
+# COUNTEREXAMPLE answers with the theorem's own verdict: PROVEN, none exists.
 test no_pythagoras_counterexample {
   scenario no_pythagoras_counterexample_s uses math.geometry { }
   query COUNTEREXAMPLE RightTriangle.pythagoras
-  expect REFUTED
+  expect PROVEN
 }

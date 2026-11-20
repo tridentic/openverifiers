@@ -365,3 +365,24 @@ def test_evaluator_generators_and_rejections() -> None:
     inner = c("f.exists", Str("v"), p, c("f.cmp", Str("="), v, v))
     assert holds(c("f.exists", Str("v"), p, c("f.and", inner, c("f.cmp", Str("="), v, v))),
                  props)
+
+
+RHOMBUS_FALSE = POINT + """
+fact type Quadrilateral { property vertices: Set<Point>  invariant four: count(vertices) = 4 }
+fact type Rhombus extends Quadrilateral {
+  invariant sides: exists v in cycles(vertices): all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+  # False: only squares have equal diagonals. (0,0), (2,1), (3,3), (1,2) is a rational
+  # counterexample (sides sqrt 5, diagonals sqrt 18 and sqrt 2).
+  theorem diagonals_equal: none v in cycles(vertices):
+    all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+    dist(v[0], v[2]) != dist(v[1], v[3])
+}
+"""
+
+
+def test_rhombus_false_theorem(tmp_path: Path) -> None:
+    # Pinned behaviour: z3 alone finds no rational counterexample in time, so the
+    # theorem is UNPROVEN (budget). It must never be PROVEN.
+    res = run(RHOMBUS_FALSE, tmp_path, Settings(timeout_ms=3000))
+    (th,) = [a for a in res.classes if a.title.startswith("theorem")]
+    assert (th.verdict, th.reason) == ("UNKNOWN", "budget")

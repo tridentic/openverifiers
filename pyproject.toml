@@ -32,6 +32,7 @@ dev = [
     "hypothesis>=6.100",
     "mypy>=1.10",
     "ruff>=0.5",
+    "coverage>=7.4",
 ]
 
 [project.scripts]
@@ -44,6 +45,12 @@ include = ["openverifiers*"]
 [tool.setuptools.package-data]
 openverifiers = ["py.typed", "legacy/datasets/*.csv", "m1/benchmarks/cases/*/*.json",
                  "m1/benchmarks/sources/*.py", "m1/benchmarks/results/*"]
+
+[tool.coverage.run]
+source = ["src/openverifiers/raw", "src/openverifiers/kernel", "src/openverifiers/checker"]
+
+[tool.coverage.report]
+fail_under = 95
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

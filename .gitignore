@@ -26,4 +26,4 @@ web/.next/
 web/.env*
 
 # KDScript compiled outputs (regenerate via kdscript branch tooling)
-*.ovpl.ir
+*.ovpl.ir.coverage

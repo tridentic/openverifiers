@@ -1,0 +1,171 @@
+% HSC q11 written by hand in RawOV (Milestone 0). Milestone 1 lowers the
+% .ov version of the same scenario to an equivalent program.
+%
+% Molecules are structures, not names. An alkyl group is a substituent tree:
+% h, or c(X, Y, Z) for a carbon carrying three more groups, with arguments in
+% standard term order (h sorts before any c(...)). The groups used:
+%   methyl    me  = c(h, h, h)
+%   ethyl     et  = c(h, h, me)
+%   n-propyl  pr  = c(h, h, et)
+%   isopropyl ipr = c(h, me, me)
+% An alkene C(a)=C(b) is raw_alkene(Ga1, Ga2, Gb1, Gb2); rule mol puts it into
+% canonical form alk(side(..), side(..)) with sort_args.
+% The structure -> name table at the bottom is only used to print answers.
+% Every answer is derived from the rules.
+
+% ---------------------------------------------------------------- generator
+% isomers(C5H10): the five acyclic alkenes (E/Z not distinguished) and the
+% five cycloalkanes.
+domain iso: isomer(c5h10) = {'pent-1-ene', 'pent-2-ene', '2-methylbut-1-ene',
+  '3-methylbut-1-ene', '2-methylbut-2-ene', 'cyclopentane', 'methylcyclobutane',
+  'ethylcyclopropane', '1,1-dimethylcyclopropane', '1,2-dimethylcyclopropane'} complete.
+
+fact s1: structure('pent-1-ene', raw_alkene(h, h, h, c(h, h, c(h, h, c(h, h, h))))) @"axiom:chem.organic".
+fact s2: structure('pent-2-ene', raw_alkene(h, c(h, h, h), h, c(h, h, c(h, h, h)))) @"axiom:chem.organic".
+fact s3: structure('2-methylbut-1-ene', raw_alkene(h, h, c(h, h, h), c(h, h, c(h, h, h)))) @"axiom:chem.organic".
+fact s4: structure('3-methylbut-1-ene', raw_alkene(h, h, h, c(h, c(h, h, h), c(h, h, h)))) @"axiom:chem.organic".
+fact s5: structure('2-methylbut-2-ene', raw_alkene(c(h, h, h), c(h, h, h), h, c(h, h, h))) @"axiom:chem.organic".
+
+rule mol: alkene_of(N, M) :- isomer(c5h10, N), structure(N, raw_alkene(A, B, C, D)),
+  S1 is sort_args(side(A, B)), S2 is sort_args(side(C, D)), M is sort_args(alk(S1, S2)).
+rule so1: side_of(S1) :- alkene_of(N, alk(S1, S2)).
+rule so2: side_of(S2) :- alkene_of(N, alk(S1, S2)).
+
+% ---------------------------------------------------------------- package rules (chem.organic)
+% Ozonolysis cleaves C=C. Each carbon becomes C=O and keeps its two groups.
+world ozon closed.
+rule oz1: ozon(N, carbonyl(A, B), carbonyl(C, D)) :- alkene_of(N, alk(side(A, B), side(C, D))).
+rule oz2: ozon(N, carbonyl(C, D), carbonyl(A, B)) :- alkene_of(N, alk(side(A, B), side(C, D))).
+rule cm: carbonyl_mol(P) :- ozon(N, P, Q).
+rule g1: grp(A) :- carbonyl_mol(carbonyl(A, B)).
+rule g2: grp(B) :- carbonyl_mol(carbonyl(A, B)).
+rule g3: grp(X) :- grp(c(X, Y, Z)).
+rule g4: grp(Y) :- grp(c(X, Y, Z)).
+rule g5: grp(Z) :- grp(c(X, Y, Z)).
+
+% Keto-enol tautomerism needs an alpha-H: an H on a carbon bonded to C=O.
+% In canonical order a carbon group with an H is c(h, ...).
+rule ah1: alpha_h(carbonyl(c(h, Y, Z), B)) :- carbonyl_mol(carbonyl(c(h, Y, Z), B)).
+rule ah2: alpha_h(carbonyl(A, c(h, Y, Z))) :- carbonyl_mol(carbonyl(A, c(h, Y, Z))).
+rule nh1: no_alpha_group(h) :- grp(h).
+rule nh2: no_alpha_group(c(X, Y, Z)) :- grp(c(X, Y, Z)), X != h.
+rule nah: neg alpha_h(carbonyl(A, B)) :- carbonyl_mol(carbonyl(A, B)), no_alpha_group(A), no_alpha_group(B).
+rule tt1: tautomerizes(P) :- alpha_h(P).
+rule tt2: neg tautomerizes(P) :- neg alpha_h(P).
+
+% Grignard (RMgX) + carbonyl -> alcohol whose carbinol carbon has R plus the
+% carbonyl's carbon groups: methanal -> 1°, aldehyde -> 2°, ketone -> 3°.
+rule gr1: grignard_alcohol(carbonyl(h, h), primary) :- carbonyl_mol(carbonyl(h, h)).
+rule gr2: grignard_alcohol(carbonyl(h, c(X, Y, Z)), secondary) :- carbonyl_mol(carbonyl(h, c(X, Y, Z))).
+rule gr3: grignard_alcohol(carbonyl(c(P, Q, R), c(X, Y, Z)), tertiary) :- carbonyl_mol(carbonyl(c(P, Q, R), c(X, Y, Z))).
+
+% HX addition. The product set has both regiochemistries. X on C(a) leaves
+% C(b) as c(h, Gb1, Gb2), and vice versa.
+fact rg1: markov(hcl, none) @"axiom:chem.organic".
+fact rg2: markov(hcl, peroxide) @"axiom:chem.organic".
+fact rg3: markov(hbr, none) @"axiom:chem.organic".
+fact rg4: anti(hbr, peroxide) @"axiom:chem.organic".
+fact hx1: halogen(hcl, cl) @"axiom:chem.organic".
+fact hx2: halogen(hbr, br) @"axiom:chem.organic".
+rule rc1: reagent(X, Cd) :- markov(X, Cd).
+rule rc2: reagent(X, Cd) :- anti(X, Cd).
+world add_product closed.
+rule ad1: add_product(N, X, Cd, rx(Hal, G)) :- alkene_of(N, alk(side(A, B), side(C, D))), reagent(X, Cd), halogen(X, Hal),
+  H is sort_args(c(h, C, D)), G is sort_args(c(A, B, H)).
+rule ad2: add_product(N, X, Cd, rx(Hal, G)) :- alkene_of(N, alk(side(A, B), side(C, D))), reagent(X, Cd), halogen(X, Hal),
+  H is sort_args(c(h, A, B)), G is sort_args(c(C, D, H)).
+
+% Regioselectivity. Markovnikov: X goes to the carbon with fewer H. Peroxide
+% effect (HBr only): Br goes to the carbon with more H. Equal H counts: no
+% single major product.
+rule hc1: side_h(side(h, h), 2) :- side_of(side(h, h)).
+rule hc2: side_h(side(h, c(X, Y, Z)), 1) :- side_of(side(h, c(X, Y, Z))).
+rule hc3: side_h(side(c(P, Q, R), c(X, Y, Z)), 0) :- side_of(side(c(P, Q, R), c(X, Y, Z))).
+rule xs1: x_site(N, X, Cd, a) :- alkene_of(N, alk(S1, S2)), side_h(S1, H1), side_h(S2, H2), markov(X, Cd), H1 < H2.
+rule xs2: x_site(N, X, Cd, b) :- alkene_of(N, alk(S1, S2)), side_h(S1, H1), side_h(S2, H2), markov(X, Cd), H2 < H1.
+rule xs3: x_site(N, X, Cd, a) :- alkene_of(N, alk(S1, S2)), side_h(S1, H1), side_h(S2, H2), anti(X, Cd), H1 > H2.
+rule xs4: x_site(N, X, Cd, b) :- alkene_of(N, alk(S1, S2)), side_h(S1, H1), side_h(S2, H2), anti(X, Cd), H2 > H1.
+rule sm1: has_single_major(add(N, X, Cd)) :- x_site(N, X, Cd, Site).
+rule sm2: neg has_single_major(add(N, X, Cd)) :- alkene_of(N, alk(S1, S2)), side_h(S1, H1), side_h(S2, H2),
+  H1 = H2, reagent(X, Cd).
+rule mj1: major(add(N, X, Cd), rx(Hal, G)) :- x_site(N, X, Cd, a), halogen(X, Hal), alkene_of(N, alk(side(A, B), side(C, D))),
+  H is sort_args(c(h, C, D)), G is sort_args(c(A, B, H)).
+rule mj2: major(add(N, X, Cd), rx(Hal, G)) :- x_site(N, X, Cd, b), halogen(X, Hal), alkene_of(N, alk(side(A, B), side(C, D))),
+  H is sort_args(c(h, A, B)), G is sort_args(c(C, D, H)).
+
+% HCN adds to C=O, giving C(OH)(CN)(A)(B). That is a stereocentre iff A != B.
+% The carbonyl is planar and nothing chiral is present, so both faces are
+% attacked equally and the product is racemic: not optically active.
+rule st1: stereocentre(add(carbonyl(A, B), hcn)) :- carbonyl_mol(carbonyl(A, B)), A != B.
+rule st2: neg stereocentre(add(carbonyl(A, B), hcn)) :- carbonyl_mol(carbonyl(A, B)), A = B.
+rule ac0: achiral_group(h) :- grp(h).
+rule ac1: achiral_group(c(X, Y, Z)) :- grp(c(X, Y, Z)), X = Y, achiral_group(X), achiral_group(Z).
+rule ac2: achiral_group(c(X, Y, Z)) :- grp(c(X, Y, Z)), Y = Z, achiral_group(X), achiral_group(Y).
+rule ac3: achiral(carbonyl(A, B)) :- carbonyl_mol(carbonyl(A, B)), achiral_group(A), achiral_group(B).
+rule rac: racemic(add(P, hcn)) :- stereocentre(add(P, hcn)), achiral(P).
+rule oa1: neg optically_active(add(P, hcn)) :- racemic(add(P, hcn)).
+rule oa2: neg optically_active(add(P, hcn)) :- neg stereocentre(add(P, hcn)), achiral(P).
+
+% ---------------------------------------------------------------- scenario q11
+% Unknown entities A, B (from the generator) and C, D (A's ozonolysis
+% products). A stated fact about an unknown eliminates a candidate only when
+% its contradiction is derived. A value is proven only when exactly one
+% candidate survives a complete domain. None surviving means the scenario is
+% inconsistent.
+
+% fact ozonolysis(A) -> {C, D}
+rule acd0: cand0_acd(A, C, D) :- isomer(c5h10, A), ozon(A, C, D).
+% fact not tautomerizes(D)
+world elim_acd closed.
+rule f_taut: elim_acd(A, C, D) :- cand0_acd(A, C, D), tautomerizes(D).
+% fact grignard_alcohol(C) = tertiary
+rule f_grig: elim_acd(A, C, D) :- cand0_acd(A, C, D), grignard_alcohol(C, G), G != tertiary.
+world cand_acd closed.
+world other_acd closed.
+world some_acd closed.
+rule acd1: cand_acd(A, C, D) :- cand0_acd(A, C, D), not elim_acd(A, C, D).
+rule acd2: other_acd(A, C, D) :- cand_acd(A, C, D), cand_acd(A2, C2, D2), t(A, C, D) != t(A2, C2, D2).
+rule acd3: value_acd(A, C, D) :- cand_acd(A, C, D), not other_acd(A, C, D).
+rule acd4: some_acd :- cand_acd(A, C, D).
+fact ok_acd: consistent(acd) @"axiom:ov.generators".
+rule acd5: neg consistent(acd) :- not some_acd.
+rule va: value_a(A) :- value_acd(A, C, D).
+rule vc: value_c(C) :- value_acd(A, C, D).
+rule vd: value_d(D) :- value_acd(A, C, D).
+
+rule b0: cand0_b(B) :- isomer(c5h10, B).
+world elim_b closed.
+% fact 2-chloropentane in add(B, HCl)
+rule f_hcl: elim_b(B) :- cand0_b(B), not add_product(B, hcl, none, rx(cl, c(h, c(h, h, h), c(h, h, c(h, h, c(h, h, h)))))).
+% assume single_major: has_single_major(add(B, HBr, peroxide))
+fact single_major: assumption(single_major) @"assume:single_major".
+rule a_sm: elim_b(B) :- cand0_b(B), neg has_single_major(add(B, hbr, peroxide)), assumption(single_major).
+world cand_b closed.
+world other_b closed.
+world some_b closed.
+rule b1: cand_b(B) :- cand0_b(B), not elim_b(B).
+rule b2: other_b(B) :- cand_b(B), cand_b(B2), B != B2.
+rule b3: value_b(B) :- cand_b(B), not other_b(B).
+rule b4: some_b :- cand_b(B).
+fact ok_b: consistent(b) @"axiom:ov.generators".
+rule b5: neg consistent(b) :- not some_b.
+
+% ---------------------------------------------------------------- queries
+% query FIND ?A, ?C, ?D                                  -> value_acd(?A, ?C, ?D)
+% query FIND ?p WHERE major(add(B, HBr, peroxide)) = ?p  -> q2(?p)
+rule q2: q2(P) :- value_b(B), major(add(B, hbr, peroxide), P).
+% query PROVE optically_active(add(C, HCN))              -> q3
+rule q3p: q3 :- value_c(C), optically_active(add(C, hcn)).
+rule q3n: neg q3 :- value_c(C), neg optically_active(add(C, hcn)).
+% query WHAT IF RETRACT not tautomerizes(D) THEN FIND ?A -> value_a(?A) without rule f_taut
+
+% ---------------------------------------------------------------- display names
+fact n1: name(carbonyl(h, h), "methanal") @"axiom:chem.names".
+fact n2: name(carbonyl(c(h, h, h), c(h, h, c(h, h, h))), "butanone") @"axiom:chem.names".
+fact n3: name(carbonyl(h, c(h, h, c(h, h, c(h, h, h)))), "butanal") @"axiom:chem.names".
+fact n4: name(carbonyl(h, c(h, h, h)), "ethanal") @"axiom:chem.names".
+fact n5: name(carbonyl(h, c(h, h, c(h, h, h))), "propanal") @"axiom:chem.names".
+fact n6: name(carbonyl(c(h, h, h), c(h, h, h)), "propanone") @"axiom:chem.names".
+fact n7: name(carbonyl(h, c(h, c(h, h, h), c(h, h, h))), "2-methylpropanal") @"axiom:chem.names".
+fact n8: name(rx(br, c(h, h, c(h, h, c(h, h, c(h, h, c(h, h, h)))))), "1-bromopentane") @"axiom:chem.names".
+fact n9: name(rx(cl, c(h, c(h, h, h), c(h, h, c(h, h, c(h, h, h))))), "2-chloropentane") @"axiom:chem.names".

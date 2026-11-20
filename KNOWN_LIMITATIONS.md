@@ -10,9 +10,13 @@ milestone. Newest milestone first.
   consequences, both giving UNKNOWN or UNPROVEN, never a wrong answer:
   - an instance that has no rational solution (an equilateral triangle with
     two given rational vertices) is UNKNOWN(plugin_unknown);
-  - a counterexample that lies on a curved variety may not be found. "A
-    rhombus has equal diagonals" (false) gets an irrational model from z3,
-    hence UNKNOWN(plugin_unknown) instead of REFUTED.
+  - a counterexample that lies on a curved variety may not be found. A
+    small-scope pass (integer coordinates in [-4, 4], before z3) now finds
+    many of them: "a rhombus has equal diagonals" is REFUTED with
+    (0,0), (1,2), (3,3), (2,1)-style witnesses. Counterexamples with no small
+    integer point still depend on z3. The pass costs up to 1 s per solve that
+    has no small solution (the `math.geometry` package went from about 3.6 s
+    to about 7 s).
 - **Unsat is trusted to z3, and says so.** UNIQUE, COUNT, theorem PROVEN and
   empty classes rest on unsat answers. These cannot be checked by
   substitution. They are re-solved in a fresh solver, as the brief allows,

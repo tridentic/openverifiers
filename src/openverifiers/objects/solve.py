@@ -14,6 +14,7 @@ from fractions import Fraction
 
 import z3
 
+from . import smallscope
 from .expand import CF, Poly
 
 SEEDS = (0, 1, 2, 3)
@@ -24,6 +25,7 @@ class Result:
     status: str                                  # sat | unsat | unknown
     model: dict[str, Fraction] | None = None
     reason: str = ""                             # for unknown: budget | plugin_unknown
+    via: str = "z3"                              # z3 | small-scope
 
 
 def _poly(p: Poly, vs: dict[str, z3.ArithRef]) -> z3.ArithRef:
@@ -100,8 +102,13 @@ def solve(constraints: Sequence[CF], variables: Sequence[str] = (),
     """Solve the conjunction. Exists-disjunctions (one branch per ordering of a cycle,
     say) are split into separate, conjunctive problems: nonlinear search is far easier
     on each branch than on the disjunction, and unsat needs every branch unsat."""
-    deadline = time.monotonic() + 3 * timeout_ms / 1000
     cs = _conjuncts(constraints)
+    # Small scope first (Alloy-style): integer points in [-4, 4]. Cheap, and it finds
+    # the rational witnesses that nonlinear search misses. It never claims unsat.
+    found = smallscope.search(cs, variables, seconds=min(1.0, timeout_ms / 10_000))
+    if found is not None:
+        return Result("sat", found, via=f"small-scope [-{smallscope.BOUND}, {smallscope.BOUND}]")
+    deadline = time.monotonic() + 3 * timeout_ms / 1000
     # A quick pass over every branch first: a sat branch late in the order is found
     # without waiting for hard unsat branches before it to time out.
     r = _solve(cs, list(variables), max(1, timeout_ms // 20), deadline, 2)

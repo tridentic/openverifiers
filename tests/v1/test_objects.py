@@ -389,12 +389,15 @@ fact type Rhombus extends Quadrilateral {
 
 
 def test_rhombus_false_theorem(tmp_path: Path) -> None:
-    # Pinned behaviour: z3 finds no rational counterexample. It was UNKNOWN(budget); with
-    # translation pinning z3 now finds models, but irrational ones, which cannot be
-    # re-checked exactly: UNKNOWN(plugin_unknown). It must never be PROVEN.
+    # History: z3 alone gave UNKNOWN(budget), then (with translation pinning) irrational
+    # models, UNKNOWN(plugin_unknown). The small-scope pass finds an integer
+    # counterexample, so the theorem is now REFUTED, and the trusted evaluator agrees.
     res = run(RHOMBUS_FALSE, tmp_path, Settings(timeout_ms=3000))
     (th,) = [a for a in res.classes if a.title.startswith("theorem")]
-    assert (th.verdict, th.reason) == ("UNKNOWN", "plugin_unknown")
+    assert th.verdict == "REFUTED" and th.witness is not None
+    assert any("small-scope" in st and st.endswith("sat") for st in th.steps)
+    cls = load(tmp_path / "t.ov").objects.defs["Rhombus"]
+    assert failing(cls, th.witness) == () and not holds(cls.theorems[0][1], th.witness)
 
 
 

@@ -142,7 +142,8 @@ class _Run:
 
     def solve(self, what: str, cons: list[CF], names: list[str]) -> Result:
         r = solve(cons, names, self.st.timeout_ms)
-        self.steps.append(f"solve [z3] {what}: {r.status}" + (f" ({r.reason})" if r.reason else ""))
+        self.steps.append(f"solve [{r.via}] {what}: {r.status}"
+                          + (f" ({r.reason})" if r.reason else ""))
         return r
 
     def confirm_unsat(self, what: str, cons: list[CF], names: list[str]) -> bool:

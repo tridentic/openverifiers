@@ -39,6 +39,7 @@ from fractions import Fraction
 from ..lang import ast as A
 from ..lang.check import Env, ScenarioInfo
 from ..lang.errors import Diagnostic, OVError
+from ..objects.compile import is_object_query
 from ..raw.builtins import ARITH
 from ..raw.builtins import evaluate as eval_term
 from ..raw.program import (
@@ -86,6 +87,9 @@ class Lowered:
     names: dict[Term, str]                          # display names (never used to reason)
     candidates: dict[str, tuple[str, int, int]]     # unknown -> (cand pred, index, arity)
     meta: dict[str, tuple[Fraction | None, str | None]] = field(default_factory=dict)
+    #: object-layer queries (patterns, UNIQUE, COUNT, CHECK, COUNTEREXAMPLE), answered by
+    #: ``objects.engine`` rather than by evaluating the program
+    objects: list[tuple[A.Query, A.Expect | None, str | None]] = field(default_factory=list)
 
 
 class _Fail(Exception):
@@ -957,14 +961,19 @@ def lower(env: Env, files: set[str] | None = None) -> list[Lowered]:
         try:
             lw.packages()
             lw.scenario()
+            objs = []
             for qy, ex, test in plans.get(name, []):
-                lw.query(qy, ex, test)
+                if is_object_query(qy.q):
+                    objs.append((qy, ex, test))
+                else:
+                    lw.query(qy, ex, test)
         except _Fail as f:
             errors.append(f.d)
             continue
         prog = lw.program()
         errors.extend(_unsafe(prog, info.decl.span))
-        out.append(Lowered(name, prog, lw.queries, _display(env, info), lw.candidates, lw.meta))
+        out.append(Lowered(name, prog, lw.queries, _display(env, info), lw.candidates, lw.meta,
+                           objs))
     if errors:
         raise OVError(errors, env.sources())
     return out

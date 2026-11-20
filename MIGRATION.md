@@ -3,6 +3,15 @@
 Breaking changes, newest first. Each entry says what changed, why, and what
 to do.
 
+## v1 Milestone 1b (object layer)
+
+| change | before | after | what to do |
+|---|---|---|---|
+| new `.ov` keywords | `property`, `invariant`, `theorem`, `derived`, `exists`, `none`, `all`, `LIMIT`, `UNIQUE`, `COUNT`, `CHECK`, `IS`, `COUNTEREXAMPLE` were names | they are keywords | rename any entity, field or predicate that used one (none in the repo did) |
+| `deg` | not a unit | a unit with its own dimension (angles stay exact) | none |
+
+No dependency changes: z3-solver was already a runtime dependency.
+
 ## v1 Milestone 1 (OV front end)
 
 | change | before | after | what to do |

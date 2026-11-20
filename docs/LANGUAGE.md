@@ -67,14 +67,22 @@ test newton2_mass {
 
 ## Grammar (EBNF)
 
-This is the grammar in `src/openverifiers/lang/grammar.lark`. It is LALR(1),
-with no conflicts. `{x}` means zero or more, `[x]` optional, `"..."` a keyword.
+This is the grammar in `src/openverifiers/lang/grammar.lark`. It is LALR(1).
+`{x}` means zero or more, `[x]` optional, `"..."` a keyword.
+
+There are four shift/reduce conflicts, all inside class bodies, where
+conditions are written one after another with no separator (as in the brief's
+`Square`). Each is resolved as *shift*, so a condition extends as far as it
+can: after a name, `(` starts a call, `{` a pattern, `[` an index, and `-`
+continues a subtraction. Start each condition on a new line with a name, a
+number or `all`. `tests/v1/test_objects.py` checks that these four are the
+only conflicts.
 
 ```ebnf
 file        = { item } ;
 item        = package | import | type | predicate | function | entity | axiom
             | transformation | controller | generator_decl | scenario | test
-            | target | query | expect ;
+            | target | query | expect | fact_type ;
 
 package     = "package" dotted [ "@" version ] ;
 import      = "import" dotted | "import" "state" STRING "as" NAME ;
@@ -101,6 +109,18 @@ tolerance   = "tolerance" NUMBER ;
 test        = "test" NAME "{" { scenario | stmt } "}" ;
 target      = "target" NAME "{" { "must" conj | "prefer" conj } "}" ;
 
+(* object layer (brief §3.7) *)
+fact_type   = "fact" "type" NAME [ "extends" NAME { "," NAME } ] "{" { member } "}" ;
+member      = "property" NAME ":" tyexpr
+            | "invariant" NAME ":" fbody
+            | "theorem" NAME ":" fbody
+            | "derived" NAME ":" tyexpr "=" expr ;
+tyexpr      = NAME [ "<" tyexpr { "," tyexpr } ">" ] ;      (* Set<Point>, Real *)
+fbody       = fsimple { fsimple } | { fsimple } fquant ;    (* conditions are conjoined *)
+fquant      = ( "exists" | "none" ) NAME "in" expr ":" fbody ;
+fsimple     = fchain | "all" NAME [ "in" expr ] ":" fchain | "not" fchain ;
+fchain      = expr { CMPOP expr } ;                         (* a = b > 0 *)
+
 params      = group { "," group } ;
 group       = names ":" NAME [ "=" expr ] ;          (* a, b: Group *)
 names       = NAME { "," NAME } ;
@@ -108,8 +128,13 @@ dotted      = NAME { "." NAME } ;
 
 query       = "query" okql ;
 okql        = "PROVE" lit
-            | "FIND" QVAR { "," QVAR } [ "WHERE" conj ]
+            | "FIND" qvar { "," qvar } [ "WHERE" conj ] [ "LIMIT" NUMBER ]
+            | "PROVE" "UNIQUE" qvar { "," qvar } [ "WHERE" conj ]
+            | "COUNT" qvar { "," qvar } [ "WHERE" conj ]
+            | "CHECK" expr "IS" NAME
+            | "COUNTEREXAMPLE" dotted
             | "WHAT" "IF" change { "AND" change } "THEN" okql ;
+qvar        = QVAR [ ":" NAME ] ;                     (* ?p: Point *)
 change      = "RETRACT" fact_lit | "ASSUME" NAME ;
 expect      = "expect" VERDICT [ expr { "," expr } ] [ "assuming" "{" [ names ] "}" ] ;
 VERDICT     = "PROVEN" | "REFUTED" | "UNKNOWN" | "INCONSISTENT" ;
@@ -124,8 +149,10 @@ sum         = product { ( "+" | "-" ) product } ;
 product     = unary { ( "*" | "/" ) unary } ;
 unary       = "-" unary | power ;
 power       = postfix [ "^" unary ] ;
-postfix     = atom { "." NAME } | NAME "(" [ expr { "," expr } ] ")" ;
+postfix     = atom { "." NAME | "[" expr "]" } | NAME "(" [ expr { "," expr } ] ")"
+            | NAME "{" [ NAME "=" expr { "," NAME "=" expr } ] "}" ;   (* pattern T{...} *)
 atom        = NAME | QVAR | QUANTITY | STRING | "unknown" | "(" expr ")"
+            | "(" expr "," expr { "," expr } ")"                    (* tuple *)
             | "{" [ expr { "," expr } ] "}" | "[" expr "," expr "]" ;
 ```
 
@@ -275,6 +302,97 @@ rule deriving `neg f(x, v2)` when `f(x, v1)` and `f(x, v2)` with `v1 ≠ v2`
 are both derived. So a stated mass that disagrees with the mass `newton2`
 derives is reported as INCONSISTENT, never silently overwritten.
 
+## Concept classes (the object layer)
+
+A `fact type` is a class defined by its invariants. Its instances are the
+values of its properties that satisfy every invariant, its own and its
+ancestors'. `examples/geometry/square.ov` is the brief's example:
+
+```ov
+type Point { x: Real, y: Real }          # a record: every field is a quantity
+
+fact type Quadrilateral { property vertices: Set<Point>  invariant four: count(vertices) = 4 }
+
+fact type Square extends Quadrilateral {
+  invariant shape: exists v in cycles(vertices):
+                     all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+                     all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
+  theorem diagonals_equal: exists v in cycles(vertices): dist(v[0], v[2]) = dist(v[1], v[3])
+}
+```
+
+- **Properties** are typed: quantities, records (`Point`), `Set<T>`, `List<T>`.
+  Tuples `(3, 1)` are record values, in field order.
+- **Invariants** are the definition and are trusted. **Theorems** are claims:
+  the runner proves each one from the invariants (see below) and reports
+  PROVEN, REFUTED with a counterexample, or UNPROVEN.
+- **`extends`** may name several parents. A shared ancestor's invariants are
+  included once (the diamond rule): `Square extends Rectangle, Rhombus` in
+  `math.geometry` has `Quadrilateral.four` and `Parallelogram.bisect` once each.
+- **Quantifiers.** `exists v in C: ...`, `none v in C: ...` (no element
+  satisfies it) and `all x in C: ...`. `all i: ...` without `in` ranges over the
+  indices of the list the body indexes with `i`. Indices wrap around: `v[i+1]`
+  of the last element is the first, and `v[i-1]` works too.
+- **Generators** introduce order into sets: `cycles(s)` and `orderings(s)`
+  (every ordering), `subsets(s, k)`, `pairs(s)`.
+- **Functions:** `count`, `dist`, `dist2` (squared distance), `angle(a, b, c)`
+  (at b, in degrees), `abs`, `min`, `max`, and arithmetic on numbers.
+- **Exactness.** Everything stays rational. `dist` comparisons are squared;
+  `angle(...) = θ deg` is decided on the dot product for the angles whose
+  cosine squared is rational (0, 30, 45, 60, 90, 120, 135, 150, 180). Other
+  comparisons are rejected with E405. Write `dist2` for arithmetic on
+  distances (Pythagoras: `dist2(a, c) = dist2(a, b) + dist2(b, c)`).
+- **Write theorems with `none`.** `exists v in cycles(s): P(v)` may pick any
+  ordering. "The diagonals are equal", written that way, holds for every
+  rhombus, by choosing an ordering that pairs up sides. Say instead that no
+  ordering with the defining shape lacks the property:
+  `none v in cycles(s): <shape of v>  <property of v fails>`.
+
+### Object queries
+
+| query | answer |
+|---|---|
+| `FIND ?p: Point WHERE Square{vertices = {(3,1), (1,3), (5,3), ?p}} [LIMIT n]` | every solution (default limit 16), each re-checked |
+| `PROVE UNIQUE ?p [WHERE ...]` | PROVEN if blocking the solution leaves no other; REFUTED with two witnesses; without WHERE it reuses the FIND before it |
+| `COUNT ?p WHERE ...` | the exact number of solutions, or UNKNOWN(budget) past 64 |
+| `CHECK T1{...} IS T` | PROVEN, or REFUTED naming the invariants the instance fails |
+| `COUNTEREXAMPLE T.theorem` | PROVEN with a checked counterexample, or REFUTED (none exists) |
+
+A pattern `T{field = value, ...}` is a partial instance: `?x` and unspecified
+fields are unknowns (`Point{x = 3}` leaves `y` open). A set with unknown
+elements is split into cases by which elements coincide, so `{(3,1), ?p}` has
+one element when `?p = (3,1)`.
+
+Every answer follows the same steps, all printed by `--verbose`:
+
+1. **solve:** the invariants become polynomial constraints and z3 searches for
+   a model (untrusted);
+2. **re-check:** the model is substituted and every invariant is decided by the
+   exact evaluator `raw/formula.py` (trusted, ~150 lines, no solver). A model
+   that fails is never reported: the answer becomes UNKNOWN(plugin_unknown);
+3. **block and re-solve** (FIND, UNIQUE, COUNT): found solutions are excluded
+   and z3 asked again. Unsat ends the search. Unsat cannot be checked by
+   substitution, so it is confirmed in a fresh solver, and the trace says so.
+
+A query whose class has no instance at all is REFUTED with a minimal set of
+invariants that conflict.
+
+### Class checks
+
+For every class in the file it runs, the runner checks:
+
+- **consistency:** the invariants have an instance (PROVEN, with a re-checked
+  witness), or INCONSISTENT with the conflicting invariants (an empty class);
+- **each theorem:** no instance satisfies the invariants and violates the
+  theorem (PROVEN, unsat confirmed by a fresh solver), or REFUTED with a
+  counterexample that the evaluator confirms, or UNPROVEN.
+
+Both use a *generic instance*: fresh unknowns in every slot, with collection
+sizes taken from `count(p) = n` invariants. A class with an unbounded
+collection gets UNPROVEN, not a guess. A theorem that states, word for word,
+a theorem an ancestor proved is inherited. Refuted theorems and empty classes
+make the runner exit with status 1.
+
 ## Error codes
 
 Every diagnostic has a file, line and column, a caret under the offending
@@ -300,6 +418,8 @@ exact span.
 | E402 | an equation cannot be solved syntactically (nonlinear: sympy plugin, M2) |
 | E403 | a lowered rule is unsafe (a variable is used before it is bound) |
 | E404 | a generator does not draw from a closed set-valued predicate |
+| E405 | a class formula the exact evaluator cannot decide (an angle other than 0, 30, 45, 60, 90, 120, 135, 150, 180 deg; a distance inside arithmetic) |
+| E406 | a class inherits from itself |
 | W201 | warning: an undeclared type is used and treated as an opaque entity type |
 
 ## Standard packages (Milestone 1)
@@ -308,6 +428,7 @@ exact span.
 |---|---|
 | `math.core` | shared vocabulary only. The arithmetic is native; Milestone 5 adds linear systems, divisibility, parity and induction |
 | `physics.mechanics` | `Body` with mass and acceleration, `net_force`, Newton's second law |
+| `math.geometry` | `Point`; Triangle, RightTriangle, Quadrilateral, Parallelogram, Rectangle, Rhombus, Square (diamond), Circle, OnCircle; theorems Pythagoras, opposite sides, equal and perpendicular diagonals, diagonal length, all proven; 13 tests |
 | `chem.organic` | structures (substituent trees), C5H10 isomers, ozonolysis, tautomerism, Grignard alcohols, HX addition with Markovnikov/peroxide regioselectivity, HCN addition, stereocentres, racemic mixtures; 10 tests |
 
 [KNOWN_LIMITATIONS.md](../KNOWN_LIMITATIONS.md) lists what the language does

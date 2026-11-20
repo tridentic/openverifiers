@@ -43,6 +43,8 @@ What v1 reuses from M1:
 | `kernel/semiring.py` | `Semiring` protocol: Bool, Label, Why, Count, Tropical | no | yes | M2 (Label in M0) |
 | `lang/` | Lark grammar, AST, type checker, units, errors with spans | no | partial | M1 |
 | `lower/` | OV AST → RawOV (deterministic, keeps spans) | no | partial | M1 |
+| `raw/formula.py` | object-layer formulas as RawOV terms; exact ground evaluator (sets, tuples, cycles, `dist`, `angle`) used to re-check every instance | yes | yes | M1b |
+| `objects/` | concept classes: inheritance (diamond-safe), expansion of invariants over finite generators with symmetry, FIND/UNIQUE/COUNT/CHECK/COUNTEREXAMPLE, theorem checking | no | yes | M1b |
 | `plugins/` | `units`, `sympy`, `z3`, `chem`; one `Plugin` protocol | no | partial | M2 |
 | `trace/` | OVTrace JSONL plus text/JSON/DOT/HTML renderers | no | partial | M3 |
 | `state/` | OVState canonical JSON, SHA-256, load/import, optional ed25519 | yes (hash+load) | yes | M3 |
@@ -113,7 +115,27 @@ if `checker/` imports `kernel`, `prover` or `okql`.
    - Open-world `not` lowers straight to the positive literal `neg p`.
 
    Details are in `docs/LANGUAGE.md`.
-8. **`WHAT IF RETRACT <fact>`.** Facts have the label `{∅}`, so retracting a
+8. **Object layer (§3.7, added to the brief after M1 was planned).**
+   - A `fact type` lowers to a RawOV *class definition*: its property names
+     and one formula, the conjunction of its own and inherited invariants
+     (a shared ancestor once). Formulas are RawOV terms, so they print,
+     parse and round-trip like everything else.
+   - Formulas stay exact: `dist` comparisons are squared, `angle(a,b,c) = θ
+     deg` becomes a polynomial condition on the dot product for θ in
+     {0, 30, 45, 60, 90, 120, 135, 150, 180}. Other angles are rejected,
+     never approximated.
+   - Solving (FIND, UNIQUE, COUNT, theorems, COUNTEREXAMPLE) is untrusted:
+     the expander turns the formula into polynomial constraints and z3
+     solves them. Every model is re-checked by the trusted ground evaluator
+     in `raw/formula.py`, which enumerates *all* cyclic orders (no symmetry
+     pruning), so pruning in the solver cannot hide a wrong answer.
+   - Unsat answers (UNIQUE, theorem PROVEN, empty class) cannot be checked
+     by substitution. They are re-solved in a fresh solver, as the brief
+     allows for unsat cores, and the result says so.
+   - Theorems and class consistency are checked on a generic instance whose
+     collection sizes come from `count(p) = n` invariants. A class with an
+     unbounded collection gives UNPROVEN, not a guess.
+9. **`WHAT IF RETRACT <fact>`.** Facts have the label `{∅}`, so retracting a
    fact is a re-run, not a lookup. M4 adds an opt-in mode that tags scenario
    facts with hidden tokens so fact retraction is a lookup too. M5 measures
    both modes.
@@ -124,10 +146,11 @@ if `checker/` imports `kernel`, `prover` or `okql`.
 |---|---|---|
 | **M0** ✅ | `raw/`, `kernel/`, `checker/`, labels, verdicts, stratified negation, budgets. q11 in hand-written RawOV | round-trip and hypothesis tests; stratification errors; checker rejects 100% of trace mutations; q11 reference answers including `{single_major}` |
 | **M1** ✅ | `lang/` (Lark, LALR), type and unit checker, `lower/` with spans, error codes, `docs/LANGUAGE.md` | §3.5 physics test and §3.6 q11 run from `.ov`; error-code tests with exact spans |
+| **M1b** ✅ | object layer (§3.7): `fact type`, `property`, `invariant`, `theorem`, `derived`, `extends` (diamond), `Set`/`List`, generators `cycles`/`orderings`/`subsets`/`pairs` with symmetry, instance patterns, FIND / PROVE UNIQUE / COUNT / CHECK IS / COUNTEREXAMPLE, `ov check` for theorems, `math.geometry` package. Needs z3 early (pulled forward from M2) | §3.7 square: PROVEN (3,5), PROVEN UNIQUE, trace solve → re-check → uniqueness unsat; every `math.geometry` theorem proven; a false theorem refuted with a checked counterexample; an empty class reported INCONSISTENT; symmetry pruning never changes a verdict |
 | **M2** | plugin protocol plus `units`, `sympy`, `z3`, `chem` (structure generator for isomers); checker re-verification of models, cores and solutions; semiring family | buggy-plugin tests rejected; all semirings agree with Bool on the derived set; z3 cores become nogoods |
 | **M3** | OVTrace renderers (text, JSON, DOT, single-file HTML), OVState with hash, import and ed25519, `ov` CLI | tampered state hash rejected; import never raises trust; CLI snapshot tests |
 | **M4** | OKQL: PROVE, FIND, WHY, WHY NOT, WHAT IF, NEAR, DEPENDS ON, EXPLAIN; `docs/OKQL.md` | WHAT IF by lookup equals a full re-run (property test); answers re-checked |
-| **M5** | packages (math, logic, physics, chem, agent) with ≥10 tests each; 6 benchmark suites with hand-written gold; `ov bench` and ablations | minimum suite sizes met; false-PROVEN = 0; `results/<date>/` written |
+| **M5** | packages (math, logic, physics, chem, agent, geometry) with ≥10 tests each; 7 benchmark suites (geometry/object layer added) with hand-written gold; `ov bench` and ablations | minimum suite sizes met; false-PROVEN = 0; `results/<date>/` written |
 | **M6** | OVProver: AND–OR backward chaining, abduction (hitting sets), Search and Constraint proposers, optional LLM proposer, plan synthesis, gap report | the prover cannot reach the `state/` write APIs (structural test); synthesis targets in the agent suite |
 | **M7** | docs, Dockerfile, CI gates, `scripts/reproduce.sh`, MCP server, `KNOWN_LIMITATIONS.md`, `REPORT.md`, Apache-2.0 relicense, `CITATION.cff` | definition-of-done checklist |
 
@@ -139,6 +162,7 @@ if `checker/` imports `kernel`, `prover` or `okql`.
 | Checker closure pass is slow on 10k-fact programs | per-predicate first-argument index; closure only for strata a verdict depends on is a later optimisation if needed |
 | Chemistry scope creep | v1 covers acyclic alkenes, carbonyls, alkyl halides and cyanohydrins as canonical substituent trees; RDKit is optional; names come from a structure→name table, but answers never do |
 | LALR conflicts in a keyword-led grammar | grammar kept small; Earley fallback only per rule, documented |
+| Nonlinear real solving (z3 nlsat) is slow or returns algebraic, non-rational models | budgets give `UNKNOWN(budget)`; irrational models cannot be re-checked exactly and give `UNKNOWN(plugin_unknown)` |
 | Benchmark gold drift | gold is hand-written with a comment per case and never produced by running OV; a test enforces that each case has a comment |
 | Relicensing MIT → Apache-2.0 | requested by the brief; done in M7 with a NOTICE line; flagged in MIGRATION.md |
 | Two older systems in one package | each is isolated under `m1/` and `legacy/`, excluded from the v1 coverage and mypy gates, and removable later without touching v1 |

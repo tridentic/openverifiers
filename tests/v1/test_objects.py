@@ -1,0 +1,367 @@
+"""The object layer (brief §3.7): concept classes, invariants, theorems, object queries."""
+
+from __future__ import annotations
+
+import logging
+from fractions import Fraction
+from pathlib import Path
+
+import pytest
+from lark import logger as lark_logger
+
+from openverifiers.lang.check import load
+from openverifiers.lang.errors import OVError
+from openverifiers.lang.parser import _GRAMMAR
+from openverifiers.lower.lower import lower
+from openverifiers.objects import engine
+from openverifiers.objects.engine import Settings
+from openverifiers.objects.solve import Result
+from openverifiers.raw.formula import ClassDef, Unsupported, failing, holds
+from openverifiers.raw.terms import Compound, Num, Str
+from openverifiers.raw.text import dump_term, parse_term
+from openverifiers.runner import render, run_file
+
+ROOT = Path(__file__).resolve().parents[2]
+GEOMETRY = ROOT / "src" / "openverifiers" / "packages" / "math" / "geometry.ov"
+SQUARE = ROOT / "examples" / "geometry" / "square.ov"
+
+POINT = "type Point { x: Real, y: Real }\n"
+
+
+def run(src: str, tmp_path: Path, settings: Settings | None = None):  # type: ignore[no-untyped-def]
+    p = tmp_path / "t.ov"
+    p.write_text(src)
+    return run_file(p, files={str(p)}, settings=settings)
+
+
+def errors(src: str, tmp_path: Path) -> list[tuple[str, int, int]]:
+    p = tmp_path / "e.ov"
+    p.write_text(src)
+    with pytest.raises(OVError) as e:
+        lower(load(p), {str(p)})
+    return [(d.code, d.span.line, d.span.col) for d in e.value.diagnostics if not d.warning]
+
+
+@pytest.fixture(scope="module")
+def geometry():  # type: ignore[no-untyped-def]
+    return run_file(GEOMETRY, files={str(GEOMETRY)})
+
+
+def pt(x: int, y: int) -> Compound:
+    return Compound("f.tuple", (Num(Fraction(x)), Num(Fraction(y))))
+
+
+# ---------------------------------------------------------------- the brief's square
+
+
+def test_square_brief_example() -> None:
+    res = run_file(SQUARE, files={str(SQUARE)})
+    find, unique = res.objects
+    assert find.verdict == "PROVEN" and find.bindings == [{"p": pt(3, 5)}]
+    assert unique.verdict == "PROVEN"
+    # The trace shows solve -> substitution re-check -> block -> uniqueness unsat (re-solved).
+    kinds = [s.split(" ")[0] for s in unique.steps]
+    assert kinds == ["solve", "re-check", "block", "solve", "re-solve"]
+    assert "every invariant holds" in unique.steps[1]
+    assert unique.steps[3].endswith("unsat") and unique.steps[4].endswith("unsat")
+    assert not res.failed
+    checks = {a.title: a.verdict for a in res.classes}
+    assert checks == {"class Quadrilateral is consistent": "PROVEN",
+                      "class Square is consistent": "PROVEN",
+                      "theorem Square.diagonals_equal": "PROVEN"}
+    out = render(res, verbose=True)
+    assert "PROVEN  ?p = (3, 5)" in out and "re-solve [z3, fresh solver]" in out
+
+
+def test_geometry_package_tests_and_theorems(geometry) -> None:  # type: ignore[no-untyped-def]
+    res = geometry
+    assert len(res.objects) >= 10 and not res.failed
+    theorems = [a for a in res.classes if a.title.startswith("theorem")]
+    assert len(theorems) >= 6 and all(a.verdict == "PROVEN" for a in theorems)
+    assert all(a.verdict == "PROVEN" for a in res.classes if a.title.startswith("class"))
+    assert not res.class_errors
+
+
+def test_symmetry_pruning_never_changes_a_verdict() -> None:
+    # Pruning merges the orderings of a cycle that give identical constraints. Without it
+    # the solver sees every ordering; it may only run out of time, never disagree.
+    env = load(GEOMETRY)
+    plans = list(env.objects.plans.values())
+    assert len(plans) >= 10
+    for plan in plans:
+        on = engine.answer(plan, Settings())
+        off = engine.answer(plan, Settings(symmetry=False))
+        assert (on.verdict, on.bindings, on.names) == (off.verdict, off.bindings, off.names), \
+            plan.query.text
+    on_c = run_file(SQUARE, files={str(SQUARE)}).classes
+    off_c = run_file(SQUARE, files={str(SQUARE)}, settings=Settings(symmetry=False)).classes
+    assert [(a.title, a.verdict) for a in on_c] == [(a.title, a.verdict) for a in off_c]
+
+
+def test_diamond_includes_shared_invariants_once() -> None:
+    env = load(GEOMETRY)
+    names = [n for n, _ in env.objects.defs["Square"].invariants]
+    assert names == ["Quadrilateral.four", "Parallelogram.bisect", "Rectangle.right",
+                     "Rhombus.sides"]
+
+
+# ---------------------------------------------------------------- honest outcomes
+
+FALSE_THEOREM = POINT + """
+fact type Quadrilateral { property vertices: Set<Point>  invariant four: count(vertices) = 4 }
+fact type Parallelogram extends Quadrilateral {
+  invariant bisect: exists v in cycles(vertices):
+    v[0].x + v[2].x = v[1].x + v[3].x
+    v[0].y + v[2].y = v[1].y + v[3].y
+  # False: only rectangles have equal diagonals.
+  theorem diagonals_equal: none v in cycles(vertices):
+    v[0].x + v[2].x = v[1].x + v[3].x
+    v[0].y + v[2].y = v[1].y + v[3].y
+    dist(v[0], v[2]) != dist(v[1], v[3])
+}
+scenario s {
+  query COUNTEREXAMPLE Parallelogram.diagonals_equal
+  expect PROVEN
+}
+"""
+
+
+def test_false_theorem_is_refuted_with_a_checked_counterexample(tmp_path: Path) -> None:
+    res = run(FALSE_THEOREM, tmp_path)
+    (th,) = [a for a in res.classes if a.title.startswith("theorem")]
+    assert th.verdict == "REFUTED" and th.witness is not None
+    cls = load(tmp_path / "t.ov").objects.defs["Parallelogram"]
+    # Independent of the engine: the counterexample is a rhombus and violates the theorem.
+    assert failing(cls, th.witness) == ()
+    assert not holds(cls.theorems[0][1], th.witness)
+    assert res.class_errors == [th]
+    assert res.objects[0].verdict == "PROVEN" and not res.failed
+
+
+def test_inconsistent_class_names_the_conflicting_invariants(tmp_path: Path) -> None:
+    src = POINT + """
+fact type Odd {
+  property vertices: Set<Point>
+  invariant three: count(vertices) = 3
+  invariant big: exists v in cycles(vertices): dist(v[0], v[1]) > 2
+  invariant four: count(vertices) = 4
+}
+"""
+    res = run(src, tmp_path)
+    (a,) = res.classes
+    assert a.verdict == "INCONSISTENT" and set(a.names) == {"Odd.three", "Odd.four"}
+
+
+def test_impossible_points_are_refuted_naming_the_invariant(tmp_path: Path) -> None:
+    res = run_file(GEOMETRY, files={str(GEOMETRY)})
+    a = next(x for x in res.objects if "(2,0), ?p" in x.title)
+    assert a.verdict == "REFUTED" and a.names == ("Rhombus.sides",)
+
+
+def test_under_determined_unique_is_refuted_with_two_witnesses(geometry) -> None:  # type: ignore[no-untyped-def]
+    res = geometry
+    a = next(x for x in res.objects if "PROVE UNIQUE ?p WHERE Parallelogram" in x.title)
+    assert a.verdict == "REFUTED" and len(a.bindings) == 2
+
+
+def test_unbounded_collection_leaves_theorems_unproven(tmp_path: Path) -> None:
+    src = POINT + """
+fact type Cloud {
+  property points: Set<Point>
+  invariant some: count(points) > 0
+  theorem nonempty: count(points) >= 1
+}
+"""
+    res = run(src, tmp_path)
+    th = next(a for a in res.classes if a.title.startswith("theorem"))
+    assert th.verdict == "UNKNOWN" and th.reason == "budget"
+    assert "UNPROVEN" in render(res)
+
+
+def test_irrational_models_are_not_reported(tmp_path: Path) -> None:
+    # No equilateral triangle has rational vertices: z3's model is algebraic, so no
+    # instance can be re-checked exactly. The answer is UNKNOWN, never a rounded point.
+    src = POINT + """
+fact type Equilateral {
+  property vertices: Set<Point>
+  invariant three: count(vertices) = 3
+  invariant sides: exists v in cycles(vertices): all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+}
+scenario s {
+  query FIND ?p: Point WHERE Equilateral{ vertices = {(0,0), (2,0), ?p} }
+  expect UNKNOWN
+}
+"""
+    res = run(src, tmp_path)
+    assert res.objects[0].verdict == "UNKNOWN" and res.objects[0].reason == "plugin_unknown"
+    assert not res.objects[0].bindings and not res.failed
+
+
+def test_buggy_plugin_model_is_rejected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def wrong(constraints: object, names: list[str], timeout_ms: int = 0) -> Result:
+        return Result("sat", {n: Fraction(7) for n in names})   # (7, 7): not a square vertex
+    monkeypatch.setattr(engine, "solve", wrong)
+    res = run_file(SQUARE, files={str(SQUARE)})
+    find = res.objects[0]
+    assert find.verdict == "UNKNOWN" and find.reason == "plugin_unknown" and not find.bindings
+    assert any("fails Square.shape" in s for s in find.steps)
+    assert all(a.verdict != "PROVEN" for a in res.classes if a.title.startswith("class"))
+
+
+def test_check_is(geometry) -> None:  # type: ignore[no-untyped-def]
+    res = geometry
+    checks = {a.title: (a.verdict, a.names) for a in res.objects if "CHECK" in a.title}
+    assert ("REFUTED", ("Rhombus.sides",)) in checks.values()
+    assert sum(v == "PROVEN" for v, _ in checks.values()) == 3
+
+
+# ---------------------------------------------------------------- the exact evaluator
+
+
+def test_evaluator_is_exact() -> None:
+    sq = {"vertices": Compound("f.set", (pt(0, 0), pt(1, 0), pt(1, 1), pt(0, 1)))}
+    dist = Compound("f.dist", (pt(0, 0), pt(1, 1)))
+    def cmp(op: str, a: object, b: object) -> Compound:
+        return Compound("f.cmp", (Str(op), a, b))  # type: ignore[arg-type]
+    two = Num(Fraction(2))
+    with pytest.raises(Unsupported):
+        holds(cmp("=", Compound("*", (dist, dist)), two), {})  # arithmetic on a root
+    assert holds(cmp(">", dist, Num(Fraction(-1))), {})
+    assert holds(cmp("<", dist, Num(Fraction(3, 2))), {})       # sqrt 2 < 1.5
+    assert not holds(cmp("<", dist, Num(Fraction(7, 5))), {})    # sqrt 2 > 1.4
+    deg = (("deg", Fraction(1)),)
+    ang = Compound("f.angle", (pt(1, 0), pt(0, 0), pt(1, 1)))
+    assert holds(cmp("=", ang, Num(Fraction(45), deg)), {})
+    assert not holds(cmp("=", ang, Num(Fraction(135), deg)), {})
+    degenerate = Compound("f.angle", (pt(0, 0), pt(0, 0), pt(1, 1)))
+    assert not holds(cmp("=", degenerate, Num(Fraction(90), deg)), {})
+    with pytest.raises(Unsupported):
+        holds(cmp("=", ang, Num(Fraction(37), deg)), {})
+    four = cmp("=", Compound("f.count", (Compound("f.p", (Str("vertices"),)),)),
+               Num(Fraction(4)))
+    assert failing(ClassDef("Q", ("vertices",), (("Q.four", four),), ()), sq) == ()
+    dup = {"vertices": Compound("f.set", (pt(0, 0), pt(0, 0), pt(1, 1), pt(0, 1)))}
+    assert failing(ClassDef("Q", ("vertices",), (("Q.four", four),), ()), dup) == ("Q.four",)
+
+
+def test_class_formulas_round_trip_through_rawov_text() -> None:
+    env = load(GEOMETRY)
+    for cls in env.objects.defs.values():
+        for _, f in (*cls.invariants, *cls.theorems):
+            assert parse_term(dump_term(f)) == f
+
+
+def test_lowering_classes_is_deterministic() -> None:
+    a = load(GEOMETRY).objects.defs
+    b = load(GEOMETRY).objects.defs
+    assert a == b
+
+
+# ---------------------------------------------------------------- errors
+
+
+@pytest.mark.parametrize("src, want", [
+    (POINT + "fact type T { property v: Set<Point> invariant a: exists w in cycles(v): "
+     "angle(w[0], w[1], w[2]) = 37 deg }", [("E405", 2, 74)]),
+    (POINT + "fact type T { property v: Set<Point> invariant a: exists w in cycles(v): "
+     "dist(w[0], w[1]) = 2 m }", [("E405", 2, 74)]),
+    ("fact type A extends B { }\nfact type B extends A { }", [("E406", 2, 1)]),
+    ("fact type A extends Nope { }", [("E201", 1, 1)]),
+    (POINT + "fact type T { property v: Set<Point> invariant a: exists w in cycles(v): "
+     "w[0].z = 1 }", [("E204", 2, 74)]),
+    (POINT + "fact type T { property v: Set<Point> invariant a: count(v) = 4 }\n"
+     "scenario s { query FIND ?p WHERE Nope{ v = {?p} } }", [("E201", 3, 34)]),
+    (POINT + "fact type T { property v: Set<Point> invariant a: count(v) = 4 }\n"
+     "scenario s { query PROVE UNIQUE ?p }", [("E206", 3, 20)]),
+    (POINT + "fact type T { property v: Set<Point> invariant a: count(v) = 4 }\n"
+     "scenario s { query CHECK T{ v = {?p} } IS T }", [("E206", 3, 26)]),
+    (POINT + "fact type T { property v: Set<Point> invariant a: foo(v) = 4 }",
+     [("E201", 2, 51)]),
+])
+def test_object_error_codes_and_spans(src: str, want: list[tuple[str, int, int]],
+                                      tmp_path: Path) -> None:
+    assert errors(src, tmp_path) == want
+
+
+def test_grammar_conflicts_are_the_documented_ones(caplog: pytest.LogCaptureFixture) -> None:
+    # Juxtaposed conditions in a class body make four shift/reduce conflicts, all resolved
+    # as shift (a condition extends as far as it can). docs/LANGUAGE.md lists them.
+    from lark import Lark
+
+    from openverifiers.lang.units import unit_regex
+    lark_logger.setLevel(logging.DEBUG)
+    try:
+        with caplog.at_level(logging.DEBUG, logger="lark"):
+            Lark(_GRAMMAR.read_text().replace("@UNIT@", unit_regex()), parser="lalr")
+    finally:
+        lark_logger.setLevel(logging.WARNING)
+    found = sorted(r.getMessage().split("terminal ")[1].split(":")[0]
+                   for r in caplog.records if "Shift/Reduce" in r.getMessage())
+    assert found == ["LBRACE", "LPAR", "LSQB", "MINUS"]
+    assert not any("Reduce/Reduce" in r.getMessage() for r in caplog.records)
+
+
+def test_evaluator_generators_and_rejections() -> None:
+    def c(f: str, *a: object) -> Compound:
+        return Compound(f, a)  # type: ignore[arg-type]
+
+    def n(x: int) -> Num:
+        return Num(Fraction(x))
+    s = c("f.set", pt(0, 0), pt(1, 0), pt(0, 1))
+    p = c("f.p", Str("s"))
+    props = {"s": s}
+    v = c("f.v", Str("v"))
+    # orderings, subsets, pairs, plain collections, or/not/forall
+    assert holds(c("f.exists", Str("v"), c("f.orderings", p),
+                   c("f.cmp", Str("="), c("f.idx", v, n(0)), pt(1, 0))), props)
+    assert holds(c("f.forall", Str("v"), c("f.subsets", p, n(2)),
+                   c("f.cmp", Str("="), c("f.count", v), n(2))), props)
+    assert holds(c("f.forall", Str("v"), c("f.pairs", p),
+                   c("f.cmp", Str(">"), c("f.dist", c("f.at", v, n(0)), c("f.at", v, n(1))),
+                     n(0))), props)
+    assert holds(c("f.or", c("f.not", c("f.cmp", Str("="), n(1), n(1))),
+                   c("f.forall", Str("v"), p, c("f.cmp", Str(">="), c("f.at", v, n(0)), n(0)))),
+                 props)
+    assert holds(c("f.cmp", Str("!="), c("f.list", n(1)), c("f.list", n(2))), {})
+    assert holds(c("f.cmp", Str("="), c("abs", n(-2)), n(2)), {})
+    assert holds(c("f.cmp", Str("<"), n(1), c("f.dist", pt(0, 0), pt(3, 4))), {})
+    assert holds(c("f.cmp", Str("="), c("f.dist2", pt(0, 0), pt(3, 4)), n(25)), {})
+    assert holds(c("f.cmp", Str("<"), c("f.dist", pt(0, 0), pt(1, 0)),
+                   c("f.dist", pt(0, 0), pt(2, 0))), {})
+    assert not holds(c("f.cmp", Str("="), c("f.dist", pt(0, 0), pt(1, 0)), n(-1)), {})
+    deg = (("deg", Fraction(1)),)
+    ang = c("f.angle", pt(1, 0), pt(0, 0), pt(-1, 0))
+    assert holds(c("f.cmp", Str("!="), ang, Num(Fraction(90), deg)), {})
+    assert holds(c("f.cmp", Str("="), Num(Fraction(180), deg), ang), {})
+    bad = [
+        c("f.cmp", Str("="), c("f.v", Str("nope")), n(1)),               # unbound
+        c("f.cmp", Str("="), c("f.at", pt(0, 0), n(5)), n(1)),            # component index
+        c("f.cmp", Str("="), c("f.idx", c("f.list"), n(0)), n(1)),        # empty list
+        c("f.cmp", Str("="), c("f.idx", c("f.list", n(1)), Str("x")), n(1)),
+        c("f.cmp", Str("="), c("f.count", n(1)), n(1)),                   # not a collection
+        c("f.cmp", Str("="), c("f.dist", n(1), pt(0, 0)), n(1)),          # not a point
+        c("f.cmp", Str("="), c("f.dist", pt(0, 0), c("f.tuple", n(1), n(2), n(3))), n(1)),
+        c("f.cmp", Str("="), c("f.set", c("f.dist", pt(0, 0), pt(1, 1))), n(1)),
+        c("f.cmp", Str("="), c("+", n(1), Num(Fraction(1), deg)), n(1)),  # arithmetic fails
+        c("f.cmp", Str("="), c("foo", n(1)), n(1)),
+        c("f.cmp", Str("<"), c("f.dist", pt(0, 0), pt(1, 0)), Num(Fraction(1), deg)),
+        c("f.cmp", Str("<"), ang, Num(Fraction(90), deg)),
+        c("f.cmp", Str("="), n(1), Num(Fraction(1), deg)),
+        c("f.cmp", Str("<"), pt(0, 0), pt(1, 1)),
+        c("f.cmp", Str("~"), n(1), n(1)),
+        c("f.exists", Str("v"), c("f.subsets", p, Str("k")), c("f.cmp", Str("="), n(1), n(1))),
+        c("f.exists", Str("v"), c("f.nope", p), c("f.cmp", Str("="), n(1), n(1))),
+        c("f.what"), Str("x"), Str("y"),
+    ]
+    for f in bad:
+        with pytest.raises(Unsupported):
+            holds(f, props)   # type: ignore[arg-type]
+    with pytest.raises(Unsupported):
+        failing(ClassDef("C", ("a",), (), ()), props)
+    from openverifiers.raw.formula import generate
+    with pytest.raises(Unsupported):
+        list(generate("f.nope", ()))
+    # a bound variable shadowing an outer one is restored afterwards
+    inner = c("f.exists", Str("v"), p, c("f.cmp", Str("="), v, v))
+    assert holds(c("f.exists", Str("v"), p, c("f.and", inner, c("f.cmp", Str("="), v, v))),
+                 props)

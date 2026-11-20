@@ -1,0 +1,174 @@
+# Plane geometry as concept classes. Each class is defined by its invariants;
+# each theorem is proven from them by `ov check` (the runner checks every class
+# declared in the file it is given). Points are exact rational pairs.
+#
+# Theorems say "no ordering of the vertices that has the defining shape lacks
+# the property" (`none v in cycles(...)`). An `exists v in cycles(...)` theorem
+# would be weaker than it reads: it may pick any ordering, e.g. one that pairs
+# up sides instead of diagonals.
+
+package math.geometry @0.1
+
+type Point { x: Real, y: Real }
+
+# ---------------------------------------------------------------- polygons
+
+fact type Triangle {
+  property vertices: Set<Point>
+  invariant three: count(vertices) = 3
+  # not collinear: the (doubled) signed area is non-zero
+  invariant proper: exists v in cycles(vertices):
+    (v[1].x - v[0].x) * (v[2].y - v[0].y) - (v[2].x - v[0].x) * (v[1].y - v[0].y) != 0
+}
+
+fact type RightTriangle extends Triangle {
+  invariant right: exists v in cycles(vertices): angle(v[0], v[1], v[2]) = 90 deg
+  theorem pythagoras: none v in cycles(vertices):
+    angle(v[0], v[1], v[2]) = 90 deg
+    dist2(v[0], v[2]) != dist2(v[0], v[1]) + dist2(v[1], v[2])
+}
+
+fact type Quadrilateral {
+  property vertices: Set<Point>
+  invariant four: count(vertices) = 4
+}
+
+# Diagonals that bisect each other define a parallelogram.
+fact type Parallelogram extends Quadrilateral {
+  invariant bisect: exists v in cycles(vertices):
+    v[0].x + v[2].x = v[1].x + v[3].x
+    v[0].y + v[2].y = v[1].y + v[3].y
+  theorem opposite_sides: none v in cycles(vertices):
+    v[0].x + v[2].x = v[1].x + v[3].x
+    v[0].y + v[2].y = v[1].y + v[3].y
+    dist(v[0], v[1]) != dist(v[2], v[3])
+}
+
+fact type Rectangle extends Parallelogram {
+  invariant right: exists v in cycles(vertices): all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
+  theorem diagonals_equal: none v in cycles(vertices):
+    all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
+    dist(v[0], v[2]) != dist(v[1], v[3])
+}
+
+fact type Rhombus extends Parallelogram {
+  invariant sides: exists v in cycles(vertices):
+    all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+  theorem diagonals_perpendicular: none v in cycles(vertices):
+    all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+    (v[2].x - v[0].x) * (v[3].x - v[1].x) + (v[2].y - v[0].y) * (v[3].y - v[1].y) != 0
+}
+
+# The diamond: Quadrilateral and Parallelogram are inherited once, through both parents.
+fact type Square extends Rectangle, Rhombus {
+  theorem diagonals_equal: none v in cycles(vertices):
+    all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
+    dist(v[0], v[2]) != dist(v[1], v[3])
+  theorem diagonals_perpendicular: none v in cycles(vertices):
+    all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+    (v[2].x - v[0].x) * (v[3].x - v[1].x) + (v[2].y - v[0].y) * (v[3].y - v[1].y) != 0
+  # A square's sides equal its diagonals divided by sqrt 2: dist2 makes it exact.
+  theorem diagonal_length: none v in cycles(vertices):
+    all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+    all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
+    dist2(v[0], v[2]) != 2 * dist2(v[0], v[1])
+}
+
+# ---------------------------------------------------------------- circles
+
+fact type Circle {
+  property center: Point
+  property radius: Real
+  invariant positive: radius > 0
+}
+
+fact type OnCircle extends Circle {
+  property p: Point
+  invariant on: dist(p, center) = radius
+}
+
+# ---------------------------------------------------------------- tests
+
+test square_fourth_vertex {
+  scenario square_fourth_vertex_s uses math.geometry { }
+  query FIND ?p: Point WHERE Square{ vertices = {(3,1), (1,3), (5,3), ?p} }
+  expect PROVEN (3,5)
+}
+
+test square_unique {
+  scenario square_unique_s uses math.geometry { }
+  query FIND ?p: Point WHERE Square{ vertices = {(3,1), (1,3), (5,3), ?p} }
+  query PROVE UNIQUE ?p
+  expect PROVEN
+}
+
+test rectangle_fourth_vertex {
+  scenario rectangle_fourth_vertex_s uses math.geometry { }
+  query FIND ?p: Point WHERE Rectangle{ vertices = {(0,0), (4,0), (0,2), ?p} }
+  expect PROVEN (4,2)
+}
+
+# Three points fix a parallelogram only up to which of them is opposite the
+# missing vertex: (1,-1), (-1,1) and (3,1) all work.
+test parallelogram_not_unique {
+  scenario parallelogram_not_unique_s uses math.geometry { }
+  query PROVE UNIQUE ?p WHERE Parallelogram{ vertices = {(0,0), (2,0), (1,1), ?p} }
+  expect REFUTED
+}
+
+test parallelogram_count {
+  scenario parallelogram_count_s uses math.geometry { }
+  query COUNT ?p WHERE Parallelogram{ vertices = {(0,0), (2,0), (1,1), ?p} }
+  expect PROVEN 3
+}
+
+# No fourth point makes these three (collinear) points a square.
+test square_impossible {
+  scenario square_impossible_s uses math.geometry { }
+  query FIND ?p: Point WHERE Square{ vertices = {(0,0), (1,0), (2,0), ?p} }
+  expect REFUTED
+}
+
+test check_square {
+  scenario check_square_s uses math.geometry { }
+  query CHECK Quadrilateral{ vertices = {(0,0), (1,0), (1,1), (0,1)} } IS Square
+  expect PROVEN
+}
+
+test check_not_square {
+  scenario check_not_square_s uses math.geometry { }
+  query CHECK Quadrilateral{ vertices = {(0,0), (2,0), (2,1), (0,1)} } IS Square
+  expect REFUTED
+}
+
+test check_rhombus {
+  scenario check_rhombus_s uses math.geometry { }
+  query CHECK Quadrilateral{ vertices = {(0,0), (2,1), (4,0), (2,-1)} } IS Rhombus
+  expect PROVEN
+}
+
+# Any (3, y) with y != 0 makes a right angle at (3,0): under-determined.
+test right_triangle_not_unique {
+  scenario right_triangle_not_unique_s uses math.geometry { }
+  query PROVE UNIQUE ?y WHERE RightTriangle{ vertices = {(0,0), (3,0), Point{x = 3, y = ?y}} }
+  expect REFUTED
+}
+
+test check_right_triangle {
+  scenario check_right_triangle_s uses math.geometry { }
+  query CHECK Triangle{ vertices = {(0,0), (3,0), (3,4)} } IS RightTriangle
+  expect PROVEN
+}
+
+# 3^2 + y^2 = 5^2: y = 4 or y = -4.
+test point_on_circle {
+  scenario point_on_circle_s uses math.geometry { }
+  query COUNT ?y WHERE OnCircle{ center = (0,0), radius = 5, p = Point{x = 3, y = ?y} }
+  expect PROVEN 2
+}
+
+test no_pythagoras_counterexample {
+  scenario no_pythagoras_counterexample_s uses math.geometry { }
+  query COUNTEREXAMPLE RightTriangle.pythagoras
+  expect REFUTED
+}

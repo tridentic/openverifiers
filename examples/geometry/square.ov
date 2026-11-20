@@ -1,0 +1,23 @@
+# Brief §3.7, verbatim, plus the two OKQL queries as a test block.
+#   python -m openverifiers.runner examples/geometry/square.ov --verbose
+# prints the trace: solve -> substitution re-check -> uniqueness unsat.
+
+package math.geometry @0.1
+type Point { x: Real, y: Real }
+
+fact type Quadrilateral { property vertices: Set<Point>  invariant four: count(vertices) = 4 }
+
+fact type Square extends Quadrilateral {
+  invariant shape: exists v in cycles(vertices):
+                     all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0
+                     all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
+  theorem diagonals_equal: exists v in cycles(vertices): dist(v[0], v[2]) = dist(v[1], v[3])
+}
+
+test fourth_vertex {
+  scenario square uses math.geometry { }
+  query FIND ?p: Point WHERE Square{ vertices = {(3,1), (1,3), (5,3), ?p} }   # PROVEN ?p = (3,5)
+  expect PROVEN (3,5)
+  query PROVE UNIQUE ?p                                                       # PROVEN (alternative is unsat)
+  expect PROVEN
+}

@@ -203,11 +203,68 @@ class _ToAst(Transformer[Token, Any]):
         return A.Prove(self._lit(xs[0]), self.sp(m))
 
     def find(self, m: Any, xs: list[Any]) -> A.Find:
-        vs, where = xs
-        return A.Find(vs, where or (), self.sp(m))
+        vs, where, limit = xs
+        return A.Find(vs, where or (), self.sp(m), int(str(limit)) if limit else None)
 
-    def qvars(self, m: Any, xs: list[Token]) -> tuple[A.QVar, ...]:
-        return tuple(A.QVar(str(x)[1:], self.tsp(x)) for x in xs)
+    def unique(self, m: Any, xs: list[Any]) -> A.Unique:
+        return A.Unique(xs[0], xs[1] or (), self.sp(m))
+
+    def count(self, m: Any, xs: list[Any]) -> A.Count:
+        return A.Count(xs[0], xs[1] or (), self.sp(m))
+
+    def check_is(self, m: Any, xs: list[Any]) -> A.CheckIs:
+        return A.CheckIs(xs[0], str(xs[1]), self.sp(m))
+
+    def counterexample(self, m: Any, xs: list[Any]) -> A.Counterexample:
+        return A.Counterexample(xs[0], self.sp(m))
+
+    def qvars(self, m: Any, xs: list[A.QVar]) -> tuple[A.QVar, ...]:
+        return tuple(xs)
+
+    def qvar_t(self, m: Any, xs: list[Any]) -> A.QVar:
+        tok, ty = xs
+        return A.QVar(str(tok)[1:], self.tsp(tok), str(ty) if ty else None)
+
+    # ------------------------------------------------------------ object layer
+    def fact_type(self, m: Any, xs: list[Any]) -> A.FactType:
+        name, *rest = xs
+        parents = tuple(str(x) for x in rest if isinstance(x, Token))
+        members = tuple(x for x in rest if x is not None and not isinstance(x, Token))
+        return A.FactType(str(name), parents, members, self.sp(m))
+
+    def prop(self, m: Any, xs: list[Any]) -> A.Prop:
+        return A.Prop(str(xs[0]), xs[1], self.sp(m))
+
+    def invariant(self, m: Any, xs: list[Any]) -> A.Invariant:
+        return A.Invariant(str(xs[0]), xs[1], self.sp(m))
+
+    def theorem(self, m: Any, xs: list[Any]) -> A.Invariant:
+        return A.Invariant(str(xs[0]), xs[1], self.sp(m), theorem=True)
+
+    def derived(self, m: Any, xs: list[Any]) -> A.Derived:
+        return A.Derived(str(xs[0]), xs[1], xs[2], self.sp(m))
+
+    def tyexpr(self, m: Any, xs: list[Any]) -> A.TyExpr:
+        name, *args = xs
+        return A.TyExpr(str(name), tuple(a for a in args if a is not None), self.sp(m))
+
+    def fbody(self, m: Any, xs: list[Any]) -> tuple[A.Formula, ...]:
+        return tuple(xs)
+
+    def fexists(self, m: Any, xs: list[Any]) -> A.FExists:
+        return A.FExists(str(xs[0]), xs[1], xs[2], self.sp(m))
+
+    def fnone(self, m: Any, xs: list[Any]) -> A.FExists:
+        return A.FExists(str(xs[0]), xs[1], xs[2], self.sp(m), negated=True)
+
+    def fall(self, m: Any, xs: list[Any]) -> A.FAll:
+        return A.FAll(str(xs[0]), xs[1], xs[2], self.sp(m))
+
+    def fnot(self, m: Any, xs: list[Any]) -> A.FNot:
+        return A.FNot(xs[0], self.sp(m))
+
+    def fchain(self, m: Any, xs: list[Any]) -> A.FChain:
+        return A.FChain(tuple(xs[0::2]), tuple(str(o) for o in xs[1::2]), self.sp(m))
 
     def whatif(self, m: Any, xs: list[Any]) -> A.WhatIf:
         *changes, then = xs
@@ -265,6 +322,19 @@ class _ToAst(Transformer[Token, Any]):
 
     def call(self, m: Any, xs: list[Any]) -> A.Call:
         return A.Call(str(xs[0]), xs[1] or (), self.sp(m))
+
+    def index(self, m: Any, xs: list[Any]) -> A.Index:
+        return A.Index(xs[0], xs[1], self.sp(m))
+
+    def tuplelit(self, m: Any, xs: list[Any]) -> A.TupleLit:
+        return A.TupleLit(tuple(xs), self.sp(m))
+
+    def pattern(self, m: Any, xs: list[Any]) -> A.Pattern:
+        name, *fields = xs
+        return A.Pattern(str(name), tuple(f for f in fields if f is not None), self.sp(m))
+
+    def pfield(self, m: Any, xs: list[Any]) -> tuple[str, Any]:
+        return str(xs[0]), xs[1]
 
     def name(self, m: Any, xs: list[Token]) -> A.Name:
         return A.Name(str(xs[0]), self.tsp(xs[0]))

@@ -12,7 +12,7 @@ from fractions import Fraction
 
 from ..raw.terms import Dims, make_dims
 
-BASE = ("kg", "m", "s", "A", "K", "mol", "cd", "USD")
+BASE = ("kg", "m", "s", "A", "K", "mol", "cd", "USD", "deg")
 
 
 def _d(**e: int) -> Dims:
@@ -39,6 +39,9 @@ UNITS: dict[str, tuple[Fraction, Dims]] = {
     "Hz": (_F(1), _d(s=-1)),
     "L": (_F(1, 1000), _d(m=3)), "mL": (_F(1, 10**6), _d(m=3)),
     "USD": (_F(1), _d(USD=1)),
+    # Angles are their own dimension, counted in degrees, so they stay exact
+    # (a radian is an irrational number of degrees and has no unit here).
+    "deg": (_F(1), _d(deg=1)),
 }
 
 #: Built-in quantity types (the type of a field or parameter) -> dims.
@@ -52,6 +55,7 @@ QUANTITY_TYPES: dict[str, Dims] = {
     "Charge": _d(A=1, s=1), "Voltage": _d(kg=1, m=2, s=-3, A=-1),
     "Resistance": _d(kg=1, m=2, s=-3, A=-2), "Frequency": _d(s=-1),
     "Molarity": _d(mol=1, m=-3), "MolarMass": _d(kg=1, mol=-1), "Money": _d(USD=1),
+    "Real": (), "Angle": _d(deg=1),
 }
 
 _FACTOR = re.compile(r"([^\s*/·^]+)(?:\^(-?\d+))?")

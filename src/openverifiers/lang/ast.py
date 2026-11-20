@@ -18,10 +18,11 @@ class Name:
 
 @dataclass(frozen=True)
 class QVar:
-    """``?x``: a variable to solve for in a query."""
+    """``?x``: a variable to solve for in a query (``?p: Point`` gives a type)."""
 
     name: str
     span: Span
+    ty: str | None = None
 
 
 @dataclass(frozen=True)
@@ -86,7 +87,32 @@ class Interval:
     span: Span
 
 
-Expr = Name | QVar | Quantity | StrLit | UnknownLit | Call | Field | BinOp | Neg | SetLit | Interval
+@dataclass(frozen=True)
+class Index:
+    """``v[i]`` (indices wrap around: ``v[i+1]`` of the last element is the first)."""
+
+    obj: Expr
+    idx: Expr
+    span: Span
+
+
+@dataclass(frozen=True)
+class TupleLit:
+    items: tuple[Expr, ...]
+    span: Span
+
+
+@dataclass(frozen=True)
+class Pattern:
+    """``T{field = value, ...}``: a partial instance of a class or record type."""
+
+    cls: str
+    fields: tuple[tuple[str, Expr], ...]
+    span: Span
+
+
+Expr = (Name | QVar | Quantity | StrLit | UnknownLit | Call | Field | BinOp | Neg | SetLit
+        | Interval | Index | TupleLit | Pattern)
 
 # ---------------------------------------------------------------- literals
 
@@ -275,6 +301,7 @@ class Find:
     vars: tuple[QVar, ...]
     where: tuple[Lit, ...]
     span: Span
+    limit: int | None = None
 
 
 @dataclass(frozen=True)
@@ -296,7 +323,35 @@ class WhatIf:
     span: Span
 
 
-Okql = Prove | Find | WhatIf
+@dataclass(frozen=True)
+class Unique:
+    vars: tuple[QVar, ...]
+    where: tuple[Lit, ...]
+    span: Span
+
+
+@dataclass(frozen=True)
+class Count:
+    vars: tuple[QVar, ...]
+    where: tuple[Lit, ...]
+    span: Span
+
+
+@dataclass(frozen=True)
+class CheckIs:
+    obj: Expr
+    cls: str
+    span: Span
+
+
+@dataclass(frozen=True)
+class Counterexample:
+    theorem: str      # Class.theorem
+    span: Span
+
+
+Okql = Prove | Find | WhatIf | Unique | Count | CheckIs | Counterexample
+ObjQuery = Unique | Count | CheckIs | Counterexample
 
 
 @dataclass(frozen=True)
@@ -341,8 +396,85 @@ class Target:
     span: Span
 
 
-Item = (Package | ImportPkg | ImportState | TypeDecl | PredDecl | FuncDecl | EntityDecl | Axiom
-        | Controller | GenDecl | Scenario | Test | Target | Query | Expect)
+@dataclass(frozen=True)
+class TyExpr:
+    """``Set<Point>``, ``Real``."""
+
+    name: str
+    args: tuple[TyExpr, ...]
+    span: Span
+
+
+@dataclass(frozen=True)
+class FChain:
+    """``a = b > 0``: comparisons chained left to right (one expr: a bare test)."""
+
+    exprs: tuple[Expr, ...]
+    ops: tuple[str, ...]
+    span: Span
+
+
+@dataclass(frozen=True)
+class FAll:
+    var: str
+    coll: Expr | None       # None: an index over the lists the body indexes with var
+    body: FChain
+    span: Span
+
+
+@dataclass(frozen=True)
+class FNot:
+    body: FChain
+    span: Span
+
+
+@dataclass(frozen=True)
+class FExists:
+    """``exists v in C: body``, or ``none v in C: body`` (no element satisfies it)."""
+
+    var: str
+    coll: Expr
+    body: tuple[Formula, ...]
+    span: Span
+    negated: bool = False
+
+
+Formula = FChain | FAll | FNot | FExists
+
+
+@dataclass(frozen=True)
+class Prop:
+    name: str
+    ty: TyExpr
+    span: Span
+
+
+@dataclass(frozen=True)
+class Invariant:
+    name: str
+    body: tuple[Formula, ...]
+    span: Span
+    theorem: bool = False
+
+
+@dataclass(frozen=True)
+class Derived:
+    name: str
+    ty: TyExpr
+    expr: Expr
+    span: Span
+
+
+@dataclass(frozen=True)
+class FactType:
+    name: str
+    parents: tuple[str, ...]
+    members: tuple[Prop | Invariant | Derived, ...]
+    span: Span
+
+
+Item = (FactType | Package | ImportPkg | ImportState | TypeDecl | PredDecl | FuncDecl
+        | EntityDecl | Axiom | Controller | GenDecl | Scenario | Test | Target | Query | Expect)
 
 
 @dataclass(frozen=True)

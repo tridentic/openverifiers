@@ -6,7 +6,7 @@ start: item*
 
 ?item: package | import_pkg | import_state | type_decl | predicate | function
      | entity | axiom | transformation | controller | gen_decl | scenario
-     | test | target | query | expect
+     | test | target | query | expect | fact_type
 
 package: "package" dotted [VERSION]
 import_pkg: "import" dotted
@@ -39,6 +39,24 @@ target: "target" NAME "{" (must | prefer)* "}"
 must: "must" conj
 prefer: "prefer" conj
 
+// ---------------------------------------------------------------- object layer
+// A concept class is defined by its invariants; theorems must be proven.
+fact_type: "fact" "type" NAME ["extends" NAME ("," NAME)*] "{" member* "}"
+?member: "property" NAME ":" tyexpr          -> prop
+       | "invariant" NAME ":" fbody          -> invariant
+       | "theorem" NAME ":" fbody            -> theorem
+       | "derived" NAME ":" tyexpr "=" expr  -> derived
+tyexpr: NAME ["<" tyexpr ("," tyexpr)* ">"]
+// The conditions of a body are conjoined. A quantifier's body runs to the end
+// of the enclosing body, so `exists` and `none` come last.
+fbody: fsimple+ | fsimple* fquant
+?fquant: "exists" NAME "in" expr ":" fbody   -> fexists
+       | "none" NAME "in" expr ":" fbody     -> fnone
+?fsimple: fchain
+        | "all" NAME ["in" expr] ":" fchain  -> fall
+        | "not" fchain                       -> fnot
+fchain: expr (CMPOP expr)*
+
 params: group ("," group)*
 group: names ":" NAME ["=" expr]
 names: NAME ("," NAME)*
@@ -47,9 +65,14 @@ dotted: NAME ("." NAME)*
 // ---------------------------------------------------------------- queries
 query: "query" okql
 ?okql: "PROVE" lit                          -> prove
-     | "FIND" qvars ["WHERE" conj]          -> find
+     | "FIND" qvars ["WHERE" conj] ["LIMIT" NUMBER]  -> find
+     | "PROVE" "UNIQUE" qvars ["WHERE" conj] -> unique
+     | "COUNT" qvars ["WHERE" conj]         -> count
+     | "CHECK" expr "IS" NAME               -> check_is
+     | "COUNTEREXAMPLE" dotted              -> counterexample
      | "WHAT" "IF" change ("AND" change)* "THEN" okql  -> whatif
-qvars: QVAR ("," QVAR)*
+qvars: qvar_t ("," qvar_t)*
+qvar_t: QVAR [":" NAME]
 ?change: "RETRACT" fact_lit                 -> retract
        | "ASSUME" NAME                      -> assume_name
 expect: "expect" VERDICT [args] ["assuming" "{" [names] "}"]
@@ -79,12 +102,16 @@ conj: lit ("," lit)*
 ?postfix: atom
     | postfix "." NAME                      -> field
     | NAME "(" [args] ")"                   -> call
+    | postfix "[" expr "]"                  -> index
+    | NAME "{" [pfield ("," pfield)*] "}"   -> pattern
+pfield: NAME "=" expr
 ?atom: NAME                                 -> name
      | QVAR                                 -> qvar
      | QUANTITY                             -> quantity
      | STRING                               -> string
      | "unknown"                            -> unknown
      | "(" expr ")"
+     | "(" expr ("," expr)+ ")"             -> tuplelit
      | "{" [args] "}"                       -> setlit
      | "[" expr "," expr "]"                -> interval
 args: expr ("," expr)*

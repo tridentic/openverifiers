@@ -16,6 +16,9 @@ from dataclasses import dataclass, field
 from fractions import Fraction
 from pathlib import Path
 
+# The object layer compiles classes during checking; it imports `lang.ast` only.
+from ..objects.compile import Classes, ObjPlan, compile_classes, is_object_query, plan_query
+from ..objects.compile import _Fail as ObjFail
 from ..raw.program import Span
 from ..raw.terms import Dims, make_dims
 from . import ast as A
@@ -105,6 +108,9 @@ class Env:
     scenarios: dict[str, ScenarioInfo] = field(default_factory=dict)
     opaque: set[str] = field(default_factory=set)
     diags: list[Diagnostic] = field(default_factory=list)
+    class_decls: dict[str, A.FactType] = field(default_factory=dict)
+    class_pkgs: dict[str, str] = field(default_factory=dict)
+    objects: Classes = field(default_factory=Classes)
 
     @property
     def warnings(self) -> list[Diagnostic]:
@@ -259,6 +265,10 @@ def _declare(env: Env, mod: A.Module, pkg: str) -> None:
             env.axioms.append((pkg, it))
         elif isinstance(it, A.Controller):
             env.controllers.append((pkg, it))
+        elif isinstance(it, A.FactType) and not _dup(env, "class", it.name, it.span,
+                                                     {**env.types, **env.class_decls}):
+            env.class_decls[it.name] = it
+            env.class_pkgs[it.name] = pkg
     # Fields become functional predicates ``Type.field(self) -> T``.
     for t in list(env.types.values()):
         if t.pkg != pkg:
@@ -283,6 +293,7 @@ class Scope:
 class _Checker:
     def __init__(self, env: Env) -> None:
         self.env = env
+        self.last_find: ObjPlan | None = None
 
     def err(self, code: str, msg: str, span: Span, hint: str = "") -> Ty:
         self.env.diags.append(Diagnostic(code, msg, span, hint))
@@ -315,6 +326,7 @@ class _Checker:
                 self.assign(self.ty(e.value, Scope()), want, e.value.span)
         for gd, _ in env.gens.values():
             self.gen_decl(gd)
+        env.objects = compile_classes(env, env.class_decls)
         for pkg, ax in env.axioms:
             if pkg == "<main>":
                 self.err("E206", f"{ax.kind} '{ax.name}' outside a package", ax.span,
@@ -462,6 +474,16 @@ class _Checker:
             info.unknowns[n] = self.env.ty_of(gd.yields)
 
     def query(self, qy: A.Query, info: ScenarioInfo | None) -> None:
+        if is_object_query(qy.q):
+            try:
+                plan = plan_query(qy, self.env.objects, self.last_find)
+            except ObjFail as e:
+                self.env.diags.append(e.d)
+                return
+            self.env.objects.plans[qy.span] = plan
+            if plan.kind == "find":
+                self.last_find = plan
+            return
         sc = Scope(scenario=info, qvars={})
         self.okql(qy.q, sc)
 
@@ -478,7 +500,9 @@ class _Checker:
                              "add `WHERE ...` to say what ?" + v.name + " is")
                 elif o.where and v.name not in (sc.qvars or {}) and v.name not in unknowns:
                     self.err("E201", f"?{v.name} does not occur in WHERE", v.span)
-        else:
+        elif isinstance(o, A.WhatIf):
+            if is_object_query(o.then):
+                self.err("E206", "WHAT IF over an object query is not supported", o.span)
             for c in o.changes:
                 if isinstance(c, A.Retract):
                     self.lit(c.lit, sc)
@@ -631,6 +655,10 @@ class _Checker:
             t = self.ty(e.arg, sc)
             return t if t[0] in ("q", "any") else self.err(
                 "E303", f"cannot negate {show_ty(t)}", e.span)
+        if not isinstance(e, A.BinOp):
+            return self.err("E206", "tuples, indexing and patterns belong to classes and object "
+                            "queries", e.span, "use them inside a `fact type` or in "
+                            "`FIND ... WHERE T{...}`")
         return self.binop(e, sc)
 
     def call(self, e: A.Call, sc: Scope) -> Ty:

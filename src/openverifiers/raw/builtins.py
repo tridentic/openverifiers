@@ -109,3 +109,8 @@ def compare(op: str, left: Term, right: Term, s: Subst) -> bool:
     if op == ">=":
         return a.value >= b.value
     return False
+
+
+def apply_op(op: str, args: list[Term]) -> Term | None:
+    """Apply one arithmetic builtin to evaluated arguments (``None``: it fails)."""
+    return _apply(op, args)

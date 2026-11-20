@@ -3,6 +3,54 @@
 Every shortcut, unsupported case and open question, kept current per
 milestone. Newest milestone first.
 
+## Milestone 1b (object layer: concept classes)
+
+- **Solving is nonlinear real arithmetic, and z3 is weak at finding rational
+  points.** A model must be rational to be re-checked exactly. Two
+  consequences, both giving UNKNOWN or UNPROVEN, never a wrong answer:
+  - an instance that has no rational solution (an equilateral triangle with
+    two given rational vertices) is UNKNOWN(plugin_unknown);
+  - a counterexample that lies on a curved variety may not be found in time.
+    `none v in cycles(vertices): <rhombus sides> dist(v[0], v[2]) !=
+    dist(v[1], v[3])` (false: only squares qualify) comes back UNPROVEN
+    (budget) rather than REFUTED. A proposer that fixes some coordinates to
+    small integers before solving is planned for the z3 plugin in M2.
+- **Unsat is trusted to z3.** UNIQUE, COUNT, theorem PROVEN and empty classes
+  rest on unsat answers. These cannot be checked by substitution. They are
+  re-solved in a fresh solver, as the brief allows, but the same solver runs
+  both times. An independent unsat certificate (e.g. a Positivstellensatz
+  witness) is open.
+- **Theorems need bounded collections.** The generic instance takes each
+  collection's size from a `count(p) = n` invariant. Otherwise the theorem is
+  UNPROVEN.
+- **Theorems use only the invariants.** The brief says "from the invariants
+  and the imported axioms". Classes cannot yet refer to Datalog predicates,
+  and `T(x)` cannot be used inside axioms: classes and rules are two separate
+  worlds connected only by the runner.
+- **Angles** are exact only for 0, 30, 45, 60, 90, 120, 135, 150 and 180
+  degrees, and compare only by `=` and `!=`. Distances compare with numbers,
+  properties or other distances, not inside arithmetic (use `dist2`).
+- **`exists` in a theorem is weak** (it may choose any ordering); the docs and
+  the `math.geometry` package write theorems with `none`. The brief's own
+  `Square.diagonals_equal` uses `exists` and is proven as written.
+- **Symmetry.** Orderings whose expansion is identical are merged, and a
+  theorem's counterexample ordering over a generic set is fixed (its elements
+  are interchangeable). Without merging (`Settings(symmetry=False)`) the
+  solver sees every ordering: verdicts agree in the tests, but the solver can
+  then run out of time on larger classes.
+- **Smaller gaps.**
+  - `CHECK x IS T` takes an instance written as a pattern, not a scenario
+    entity.
+  - An object query's WHERE is exactly one pattern; extra conditions on the
+    unknowns belong in a class.
+  - `derived` properties are substituted where they are used; they are not
+    unit-checked, and `requires` on them is not supported.
+  - No `or` and no implication inside class bodies (use `none`).
+  - FIND stops after 16 solutions (LIMIT), COUNT after 64; past that the
+    answer says more exist, or UNKNOWN(budget) for COUNT.
+  - Steps are listed per answer (`--verbose`), not yet written into the
+    OVTrace JSON-lines file (M3).
+
 ## Milestone 1 (OV front end)
 
 ### Language

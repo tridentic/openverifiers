@@ -12,6 +12,7 @@ from __future__ import annotations
 import sys
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from fractions import Fraction
 from pathlib import Path
 
 from .checker import Inconsistent, Proven, Refuted, Unknown, Verdict, verdict
@@ -23,6 +24,8 @@ from .lang.check import Env, load
 from .lang.errors import OVError
 from .lang.units import show_quantity
 from .lower.lower import Lowered, QueryPlan, _Ctx, _value, lower, term
+from .objects.engine import ObjAnswer, Settings, check_classes, show
+from .objects.engine import answer as obj_answer
 from .raw.program import Atom
 from .raw.terms import Compound, Num, Str, Sym, Term
 
@@ -52,19 +55,34 @@ class FileResult:
     lowered: list[Lowered]
     answers: list[Answer]
     runs: dict[str, Run]
+    objects: list[ObjAnswer] = field(default_factory=list)     # object-layer queries
+    classes: list[ObjAnswer] = field(default_factory=list)     # class and theorem checks
 
     @property
-    def failed(self) -> list[Answer]:
-        return [a for a in self.answers if a.expect_ok is False]
+    def failed(self) -> list[Answer | ObjAnswer]:
+        both: list[Answer | ObjAnswer] = [*self.answers, *self.objects]
+        return [a for a in both if a.expect_ok is False]
+
+    @property
+    def class_errors(self) -> list[ObjAnswer]:
+        """Refuted theorems and empty classes: errors for `ov check`."""
+        return [a for a in self.classes if a.verdict in ("REFUTED", "INCONSISTENT")]
 
 
 def run_file(path: str | Path, *, source: str | None = None, budget: Budget | None = None,
-             files: set[str] | None = None) -> FileResult:
+             files: set[str] | None = None, settings: Settings | None = None) -> FileResult:
     env = load(path, source=source)
     lowered = lower(env, files)
     answers: list[Answer] = []
     runs: dict[str, Run] = {}
+    objs: list[ObjAnswer] = []
     for lw in lowered:
+        for qy, ex, test in lw.objects:
+            oa = obj_answer(env.objects.plans[qy.span], settings)
+            oa.title = (f"[test {test}] " if test else "") + oa.title
+            if ex is not None:
+                _check_obj_expect(oa, ex)
+            objs.append(oa)
         base = run(lw.program, budget)
         runs[lw.scenario] = base
         for plan in lw.queries:
@@ -76,7 +94,42 @@ def run_file(path: str | Path, *, source: str | None = None, budget: Budget | No
             if plan.expect is not None:
                 _check_expect(ans, plan.expect, env, lw)
             answers.append(ans)
-    return FileResult(env, lowered, answers, runs)
+    files_ = {env.main.file} if files is None else files
+    mine = {n for n, d in env.class_decls.items() if d.span.file in files_}
+    classes = check_classes(env.objects, mine, settings) if mine else []
+    return FileResult(env, lowered, answers, runs, objs, classes)
+
+
+def _check_obj_expect(a: ObjAnswer, ex: A.Expect) -> None:
+    problems = []
+    if a.verdict != ex.verdict:
+        problems.append(f"verdict {a.verdict}")
+    if ex.values:
+        try:
+            want = [_obj_value(e) for e in ex.values]
+        except ValueError as e:
+            want, problems = [], [*problems, str(e)]
+        if a.count is not None:
+            got = [Num(Fraction(a.count))]
+            if got != want:
+                problems.append(f"count {a.count}")
+        elif want and a.plan is not None:
+            got_rows = {tuple(b[q] for q in a.plan.unknowns) for b in a.bindings}
+            if got_rows != {tuple(want)}:
+                problems.append("values " + "; ".join(
+                    ", ".join(show(t) for t in r) for r in sorted(got_rows, key=str)))
+    a.expect_ok = not problems
+    a.expect_msg = "" if not problems else "got " + ", ".join(problems)
+
+
+def _obj_value(e: A.Expr) -> Term:
+    if isinstance(e, A.Quantity):
+        return Num(e.value, e.dims)
+    if isinstance(e, A.Neg) and isinstance(e.arg, A.Quantity):
+        return Num(-e.arg.value, e.arg.dims)
+    if isinstance(e, A.TupleLit):
+        return Compound("f.tuple", tuple(_obj_value(x) for x in e.items))
+    raise ValueError("expected values are numbers or tuples")
 
 
 def answer(plan: QueryPlan, lw: Lowered, r: Run, ctx: frozenset[str]) -> Answer:
@@ -178,10 +231,46 @@ def render(res: FileResult, verbose: bool = False) -> str:
             out.append(f"  expect {a.plan.expect.verdict if a.plan.expect else ''}: {mark}")
         if verbose:
             out.extend("    " + s for s in _proof_lines(a, res.runs[a.scenario], lw))
-    n_exp = sum(1 for a in res.answers if a.expect_ok is not None)
+    for oa in res.objects:
+        out.extend(_obj_lines(oa, verbose))
+    for ca in res.classes:
+        out.extend(_obj_lines(ca, verbose, check=True))
+    both: list[Answer | ObjAnswer] = [*res.answers, *res.objects]
+    n_exp = sum(1 for a in both if a.expect_ok is not None)
     if n_exp:
         out.append(f"{n_exp - len(res.failed)}/{n_exp} expectations met")
     return "\n".join(out)
+
+
+def _obj_lines(a: ObjAnswer, verbose: bool, check: bool = False) -> list[str]:
+    if a.plan is not None:
+        q = a.plan.query
+        head = f"{Path(q.span.file).name}:{q.span.line}  query {a.title}"
+    else:
+        head = f"check {a.title}"
+    v = a.verdict
+    if check and v == "UNKNOWN" and a.title.startswith("theorem"):
+        v = "UNPROVEN"
+    parts = [v]
+    if a.reason:
+        parts.append(f"({a.reason})")
+    for b in a.bindings:
+        parts.append(", ".join(f"?{k} = {show(t)}" for k, t in b.items()))
+    if a.count is not None:
+        parts.append(f"count = {a.count}")
+    if a.names:
+        parts.append(("conflicting invariants: " if v == "INCONSISTENT" else "fails: ")
+                     + ", ".join(a.names))
+    if a.witness is not None and (v != "PROVEN" or a.plan is not None):
+        parts.append("instance: " + ", ".join(f"{k} = {show(t)}" for k, t in a.witness.items()))
+    if not a.complete and a.bindings and not (a.plan and a.plan.kind == "unique"):
+        parts.append("(more solutions exist)")
+    out = [head, "  " + "  ".join(parts)]
+    if a.expect_ok is not None:
+        out.append("  expect: " + ("ok" if a.expect_ok else f"FAILED ({a.expect_msg})"))
+    if verbose:
+        out.extend("    " + s for s in a.steps)
+    return out
 
 
 def _line(a: Answer, lw: Lowered) -> str:
@@ -243,7 +332,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             code = 1
             continue
         print(render(res, verbose))
-        if res.failed:
+        if res.failed or res.class_errors:
             code = 1
     return code
 

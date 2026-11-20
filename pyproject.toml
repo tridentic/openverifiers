@@ -19,6 +19,7 @@ classifiers = [
 ]
 # The kernel itself is stdlib-only. sympy/z3 back the math pack's hard tier.
 dependencies = [
+    "lark>=1.1",
     "sympy>=1.12",
     "z3-solver>=4.12",
 ]
@@ -44,7 +45,8 @@ include = ["openverifiers*"]
 
 [tool.setuptools.package-data]
 openverifiers = ["py.typed", "legacy/datasets/*.csv", "m1/benchmarks/cases/*/*.json",
-                 "m1/benchmarks/sources/*.py", "m1/benchmarks/results/*"]
+                 "m1/benchmarks/sources/*.py", "m1/benchmarks/results/*",
+                 "lang/grammar.lark", "packages/**/*.ov"]
 
 [tool.coverage.run]
 source = ["src/openverifiers/raw", "src/openverifiers/kernel", "src/openverifiers/checker"]

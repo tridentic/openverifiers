@@ -103,7 +103,17 @@ if `checker/` imports `kernel`, `prover` or `okql`.
    PROVEN only when exactly one candidate survives a complete domain. Several
    survivors give UNKNOWN; none gives INCONSISTENT. In M0 this is hand-written
    RawOV; M1 lowering generates it.
-7. **`WHAT IF RETRACT <fact>`.** Facts have the label `{∅}`, so retracting a
+7. **Lowering decisions (M1).**
+   - A head equation becomes one rule per solvable slot.
+   - Functional predicates and fields get a clash rule (`neg f(x, v2)` on a
+     second value), so disagreements surface as INCONSISTENT.
+   - Facts that are not atoms become `neg ov.consistent` checks.
+   - Unknowns are solved by the generator semantics of point 6, generated
+     per connected component.
+   - Open-world `not` lowers straight to the positive literal `neg p`.
+
+   Details are in `docs/LANGUAGE.md`.
+8. **`WHAT IF RETRACT <fact>`.** Facts have the label `{∅}`, so retracting a
    fact is a re-run, not a lookup. M4 adds an opt-in mode that tags scenario
    facts with hidden tokens so fact retraction is a lookup too. M5 measures
    both modes.
@@ -113,7 +123,7 @@ if `checker/` imports `kernel`, `prover` or `okql`.
 | | deliverable | exit criteria |
 |---|---|---|
 | **M0** ✅ | `raw/`, `kernel/`, `checker/`, labels, verdicts, stratified negation, budgets. q11 in hand-written RawOV | round-trip and hypothesis tests; stratification errors; checker rejects 100% of trace mutations; q11 reference answers including `{single_major}` |
-| **M1** | `lang/` (Lark, LALR), type and unit checker, `lower/` with spans, error codes, `docs/LANGUAGE.md` | §3.5 physics test and §3.6 q11 run from `.ov`; error-code tests with exact spans |
+| **M1** ✅ | `lang/` (Lark, LALR), type and unit checker, `lower/` with spans, error codes, `docs/LANGUAGE.md` | §3.5 physics test and §3.6 q11 run from `.ov`; error-code tests with exact spans |
 | **M2** | plugin protocol plus `units`, `sympy`, `z3`, `chem` (structure generator for isomers); checker re-verification of models, cores and solutions; semiring family | buggy-plugin tests rejected; all semirings agree with Bool on the derived set; z3 cores become nogoods |
 | **M3** | OVTrace renderers (text, JSON, DOT, single-file HTML), OVState with hash, import and ed25519, `ov` CLI | tampered state hash rejected; import never raises trust; CLI snapshot tests |
 | **M4** | OKQL: PROVE, FIND, WHY, WHY NOT, WHAT IF, NEAR, DEPENDS ON, EXPLAIN; `docs/OKQL.md` | WHAT IF by lookup equals a full re-run (property test); answers re-checked |

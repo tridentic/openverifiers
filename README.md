@@ -7,9 +7,11 @@ kernel, and answer queries with a proof, a refutation, or an honest UNKNOWN.
 > declared axioms and stated facts. The evaluator proposes; only the checker
 > decides.
 
-**Status: v1 Milestone 0 is done** (RawOV kernel IR, labelled evaluator,
-independent checker). The `.ov` language, plugins, OKQL and the prover come
-in later milestones; see [PLAN.md](PLAN.md). The definitions are in
+**Status: v1 Milestones 0 and 1 are done.** That covers the RawOV kernel IR,
+the labelled evaluator, the independent checker and the `.ov` language front
+end. Plugins, OVState, OKQL and the prover come in later milestones; see
+[PLAN.md](PLAN.md) and the checklist in [PROGRESS.md](PROGRESS.md). The
+language is described in [docs/LANGUAGE.md](docs/LANGUAGE.md). The definitions are in
 [docs/SEMANTICS.md](docs/SEMANTICS.md) and the shortcuts in
 [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md). What moved is in
 [MIGRATION.md](MIGRATION.md). The Milestone-1 step verifier still works under
@@ -17,8 +19,10 @@ in later milestones; see [PLAN.md](PLAN.md). The definitions are in
 
 ```bash
 uv pip install -e ".[dev]"
-python scripts/q11_raw.py          # HSC q11 from hand-written RawOV, all four verdicts
-ruff check . && mypy && pytest -q  # 413 tests
+python -m openverifiers.runner examples/chem/q11.ov --verbose   # HSC q11 from .ov
+python -m openverifiers.runner examples/physics/newton2.ov       # the brief's physics test
+python scripts/q11_raw.py          # the same q11 from hand-written RawOV (Milestone 0)
+ruff check . && mypy && pytest -q  # 459 tests
 python scripts/tcb_size.py         # trusted code must stay under 1,500 lines
 ```
 
@@ -28,3 +32,7 @@ python scripts/tcb_size.py         # trusted code must stay under 1,500 lines
 | `openverifiers.checker` | re-verifies every trace step, checks closure, computes verdicts | yes |
 | `openverifiers.kernel` | stratified semi-naive evaluator with labels and budgets | no (checked) |
 | `openverifiers.engine` | evaluate → check → verdict | no |
+| `openverifiers.lang` | `.ov` parser (Lark LALR), names, types, units, error codes | no |
+| `openverifiers.lower` | OV → RawOV, deterministic, keeps source spans | no |
+| `openverifiers.runner` | run a `.ov` file: queries, `expect` checks, proofs | no |
+| `openverifiers/packages` | standard `.ov` packages: `math.core`, `physics.mechanics`, `chem.organic` | content |

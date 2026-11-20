@@ -1,0 +1,15 @@
+import chem.organic
+
+scenario q11 uses chem.organic {
+  generator A, B from isomers(C5H10)
+  fact   ozonolysis(A) -> {C, D}
+  fact   not tautomerizes(D)
+  fact   grignard_alcohol(C) = tertiary
+  fact   2-chloropentane in add(B, HCl)
+  assume single_major: has_single_major(add(B, HBr, peroxide))
+
+  query FIND ?A, ?C, ?D                                # A=2-methylbut-1-ene, C=butanone, D=methanal (unique)
+  query FIND ?p WHERE major(add(B, HBr, peroxide)) = ?p # 1-bromopentane, assumptions {single_major}
+  query PROVE optically_active(add(C, HCN))            # REFUTED: stereocentre but racemic
+  query WHAT IF RETRACT not tautomerizes(D) THEN FIND ?A  # UNKNOWN: two candidates
+}

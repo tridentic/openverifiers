@@ -1,0 +1,10 @@
+# math.core: the arithmetic every package can rely on.
+#
+# Exact rational arithmetic, units, comparisons, intervals, abs/min/max and
+# equation solving are built into the language (docs/LANGUAGE.md, "Native
+# math"), so this package declares only shared vocabulary for now. Milestone 5
+# adds linear systems, divisibility, parity and induction schemas with tests.
+package math.core @0.1
+
+predicate positive(x: Number) world closed
+predicate nonzero(x: Number) world closed

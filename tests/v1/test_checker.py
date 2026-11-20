@@ -20,7 +20,17 @@ from openverifiers.raw import trace as T
 from .mutations import mutants
 from .programs import NAT_SRC, PENGUIN, REACH, ROOT, programs, q11
 
-CORPUS = {"reach": REACH, "penguin": PENGUIN, "q11": q11(), "nat": parse(NAT_SRC)}
+
+def lowered(path: str) -> Program:
+    """A RawOV program lowered from an .ov file (so lowered code is mutation-tested too)."""
+    from openverifiers.lang.check import load
+    from openverifiers.lower.lower import lower
+    return lower(load(ROOT / path))[0].program
+
+
+CORPUS = {"reach": REACH, "penguin": PENGUIN, "q11": q11(), "nat": parse(NAT_SRC),
+          "q11_ov": lowered("examples/chem/q11.ov"),
+          "newton2_ov": lowered("examples/physics/newton2.ov")}
 
 
 def model_of(program: Program, trace: T.Trace) -> dict[object, object]:

@@ -1,0 +1,275 @@
+# chem.organic: alkenes, carbonyls and alkyl halides as structures, with real
+# reaction rules (ozonolysis, Markovnikov, the peroxide effect, alpha-H and
+# tautomerism, Grignard alcohol degree, HCN addition, stereocentres and
+# racemic mixtures).
+#
+# Structures. An alkyl group is `h` or `c(x, y, z)`: a carbon carrying three
+# more groups. `c`, `side`, `alkene` and `carbonyl` are unordered, so their
+# arguments are sorted into the standard term order and equal structures are
+# equal terms (`h` sorts before any `c(...)`). An alkene C(a)=C(b) is
+# `alkene(side(a1, a2), side(b1, b2))`; a carbonyl C=O is `carbonyl(g1, g2)`;
+# an alkyl halide is `halide(X, g)` where g is the carbon bearing X.
+#
+# Names. `entity butanone: Molecule = carbonyl(me, et)` makes `butanone`
+# stand for that structure. Rules never look at names; the runner uses them
+# only to print answers.
+package chem.organic @0.1
+
+type Group
+type Side
+type Molecule
+type Formula
+type Reagent
+type Condition
+type Element
+type Degree
+type Site
+type Reaction
+
+function c(x, y, z: Group) -> Group unordered
+function side(x, y: Group) -> Side unordered
+function alkene(a, b: Side) -> Molecule unordered
+function carbonyl(x, y: Group) -> Molecule unordered
+function halide(x: Element, g: Group) -> Molecule
+function add(m: Molecule, r: Reagent, cond: Condition = none) -> Reaction
+
+entity h: Group
+entity me: Group = c(h, h, h)
+entity et: Group = c(h, h, me)
+entity pr: Group = c(h, h, et)
+entity ipr: Group = c(h, me, me)
+entity bu: Group = c(h, h, pr)
+
+entity C5H10: Formula
+entity HCl, HBr, HCN: Reagent
+entity none, peroxide: Condition
+entity cl, br: Element
+entity primary, secondary, tertiary: Degree
+entity first, second: Site
+
+# ---------------------------------------------------------------- isomers
+# The candidates a generator draws from. These are inputs (which structures
+# have formula C5H10), not answers: every answer is derived by the rules below.
+# Cycloalkanes have no C=C, so they carry no structure here. E/Z isomers are
+# not distinguished. Milestone 2 replaces this list with a structure generator.
+entity pent-1-ene: Molecule = alkene(side(h, h), side(h, pr))
+entity pent-2-ene: Molecule = alkene(side(h, me), side(h, et))
+entity 2-methylbut-1-ene: Molecule = alkene(side(h, h), side(me, et))
+entity 3-methylbut-1-ene: Molecule = alkene(side(h, h), side(h, ipr))
+entity 2-methylbut-2-ene: Molecule = alkene(side(me, me), side(h, me))
+entity cyclopentane, methylcyclobutane, ethylcyclopropane: Molecule
+entity 1,1-dimethylcyclopropane, 1,2-dimethylcyclopropane: Molecule
+
+predicate isomer_of(f: Formula) -> {Molecule} world closed
+axiom c5h10: isomer_of(C5H10) = {pent-1-ene, pent-2-ene, 2-methylbut-1-ene, 3-methylbut-1-ene,
+  2-methylbut-2-ene, cyclopentane, methylcyclobutane, ethylcyclopropane,
+  1,1-dimethylcyclopropane, 1,2-dimethylcyclopropane}
+generator isomers(f: Formula) yields Molecule from isomer_of(f)
+
+# Products, for printing answers only.
+entity methanal: Molecule = carbonyl(h, h)
+entity ethanal: Molecule = carbonyl(h, me)
+entity propanal: Molecule = carbonyl(h, et)
+entity butanal: Molecule = carbonyl(h, pr)
+entity 2-methylpropanal: Molecule = carbonyl(h, ipr)
+entity propanone: Molecule = carbonyl(me, me)
+entity butanone: Molecule = carbonyl(me, et)
+entity 1-bromopentane: Molecule = halide(br, c(h, h, bu))
+entity 2-bromopentane: Molecule = halide(br, c(h, me, pr))
+entity 2-chloropentane: Molecule = halide(cl, c(h, me, pr))
+entity 3-chloropentane: Molecule = halide(cl, c(h, et, et))
+
+# Molecules under consideration: generated isomers and everything made from them.
+predicate molecule(m: Molecule) world closed
+predicate group(g: Group) world closed
+axiom generated(f: Formula, m: Molecule): isomer_of(f, m) -> molecule(m)
+
+# ---------------------------------------------------------------- ozonolysis
+# O3 then Zn/H2O cleaves C=C. Each alkene carbon becomes C=O and keeps its
+# two groups.
+predicate ozonolysis(m: Molecule) -> {Molecule, Molecule} world closed
+axiom ozonolysis_cleaves(a, b, d, e: Group):
+  molecule(alkene(side(a, b), side(d, e)))
+  -> ozonolysis(alkene(side(a, b), side(d, e)), carbonyl(a, b), carbonyl(d, e))
+axiom ozonolysis_products(m, p, r: Molecule): ozonolysis(m, p, r) -> molecule(p), molecule(r)
+axiom carbonyl_groups(a, b: Group): molecule(carbonyl(a, b)) -> group(a), group(b)
+axiom subgroups(x, y, z: Group): group(c(x, y, z)) -> group(x), group(y), group(z)
+
+# ---------------------------------------------------------------- tautomerism
+# Keto-enol tautomerism needs an alpha-H: an H on a carbon bonded to C=O.
+# In standard order a carbon group with an H is c(h, ...).
+predicate alpha_h(p: Molecule) world open
+predicate tautomerizes(p: Molecule) world open
+predicate no_alpha_h_group(g: Group) world closed
+axiom alpha_h_first(y, z, b: Group):
+  molecule(carbonyl(c(h, y, z), b)) -> alpha_h(carbonyl(c(h, y, z), b))
+axiom alpha_h_second(a, y, z: Group):
+  molecule(carbonyl(a, c(h, y, z))) -> alpha_h(carbonyl(a, c(h, y, z)))
+axiom hydrogen_has_no_alpha: group(h) -> no_alpha_h_group(h)
+axiom carbon_without_h(x, y, z: Group):
+  group(c(x, y, z)), x != h -> no_alpha_h_group(c(x, y, z))
+axiom no_alpha_h(a, b: Group):
+  molecule(carbonyl(a, b)), no_alpha_h_group(a), no_alpha_h_group(b)
+  -> not alpha_h(carbonyl(a, b))
+axiom keto_enol(p: Molecule): alpha_h(p) -> tautomerizes(p)
+axiom no_enol(p: Molecule): not alpha_h(p) -> not tautomerizes(p)
+
+# ---------------------------------------------------------------- Grignard
+# RMgX + carbonyl -> alcohol. The carbinol carbon keeps the carbonyl's two
+# groups and gains R: methanal gives 1°, other aldehydes 2°, ketones 3°.
+predicate grignard_alcohol(p: Molecule) -> Degree world open
+axiom grignard_methanal:
+  molecule(carbonyl(h, h)) -> grignard_alcohol(carbonyl(h, h)) = primary
+axiom grignard_aldehyde(x, y, z: Group):
+  molecule(carbonyl(h, c(x, y, z))) -> grignard_alcohol(carbonyl(h, c(x, y, z))) = secondary
+axiom grignard_ketone(p, q, r, x, y, z: Group):
+  molecule(carbonyl(c(p, q, r), c(x, y, z)))
+  -> grignard_alcohol(carbonyl(c(p, q, r), c(x, y, z))) = tertiary
+
+# ---------------------------------------------------------------- HX addition
+# The product set of add(alkene, HX) has both regiochemistries: X on one
+# alkene carbon, H on the other. `x in s` means `member(s, x)`.
+predicate member(s: Reaction, x: Molecule) world closed
+predicate markov(r: Reagent, cond: Condition) world closed
+predicate anti(r: Reagent, cond: Condition) world closed
+predicate regime(r: Reagent, cond: Condition) world closed
+predicate halogen(r: Reagent) -> Element world closed
+axiom regiochemistry: markov(HCl, none), markov(HCl, peroxide), markov(HBr, none),
+  anti(HBr, peroxide)
+axiom halogens: halogen(HCl) = cl, halogen(HBr) = br
+axiom markov_regime(r: Reagent, cond: Condition): markov(r, cond) -> regime(r, cond)
+axiom anti_regime(r: Reagent, cond: Condition): anti(r, cond) -> regime(r, cond)
+axiom x_on_first(a, b, d, e: Group, r: Reagent, cond: Condition, x: Element):
+  molecule(alkene(side(a, b), side(d, e))), regime(r, cond), halogen(r) = x
+  -> halide(x, c(a, b, c(h, d, e))) in add(alkene(side(a, b), side(d, e)), r, cond)
+axiom x_on_second(a, b, d, e: Group, r: Reagent, cond: Condition, x: Element):
+  molecule(alkene(side(a, b), side(d, e))), regime(r, cond), halogen(r) = x
+  -> halide(x, c(d, e, c(h, a, b))) in add(alkene(side(a, b), side(d, e)), r, cond)
+
+# Regioselectivity by H count on the two alkene carbons. Markovnikov: X goes
+# to the carbon with fewer H. Peroxide effect (HBr only): Br goes to the
+# carbon with more H. Equal counts: no single major product.
+predicate side_known(s: Side) world closed
+predicate side_h(s: Side) -> Number world closed
+predicate x_site(r: Reaction) -> Site world closed
+predicate has_single_major(r: Reaction) world open
+predicate major(r: Reaction) -> Molecule world open
+axiom alkene_sides(s, t: Side): molecule(alkene(s, t)) -> side_known(s), side_known(t)
+axiom two_h: side_known(side(h, h)) -> side_h(side(h, h)) = 2
+axiom one_h(x, y, z: Group):
+  side_known(side(h, c(x, y, z))) -> side_h(side(h, c(x, y, z))) = 1
+axiom no_h(p, q, r, x, y, z: Group):
+  side_known(side(c(p, q, r), c(x, y, z))) -> side_h(side(c(p, q, r), c(x, y, z))) = 0
+axiom markov_first(s, t: Side, r: Reagent, cond: Condition):
+  molecule(alkene(s, t)), markov(r, cond), side_h(s) < side_h(t)
+  -> x_site(add(alkene(s, t), r, cond)) = first
+axiom markov_second(s, t: Side, r: Reagent, cond: Condition):
+  molecule(alkene(s, t)), markov(r, cond), side_h(t) < side_h(s)
+  -> x_site(add(alkene(s, t), r, cond)) = second
+axiom anti_first(s, t: Side, r: Reagent, cond: Condition):
+  molecule(alkene(s, t)), anti(r, cond), side_h(s) > side_h(t)
+  -> x_site(add(alkene(s, t), r, cond)) = first
+axiom anti_second(s, t: Side, r: Reagent, cond: Condition):
+  molecule(alkene(s, t)), anti(r, cond), side_h(t) > side_h(s)
+  -> x_site(add(alkene(s, t), r, cond)) = second
+axiom single_major(rx: Reaction, s: Site): x_site(rx) = s -> has_single_major(rx)
+axiom tie(s, t: Side, r: Reagent, cond: Condition):
+  molecule(alkene(s, t)), regime(r, cond), side_h(s) = side_h(t)
+  -> not has_single_major(add(alkene(s, t), r, cond))
+axiom major_first(a, b, d, e: Group, r: Reagent, cond: Condition, x: Element):
+  molecule(alkene(side(a, b), side(d, e))),
+  x_site(add(alkene(side(a, b), side(d, e)), r, cond)) = first, halogen(r) = x
+  -> major(add(alkene(side(a, b), side(d, e)), r, cond)) = halide(x, c(a, b, c(h, d, e)))
+axiom major_second(a, b, d, e: Group, r: Reagent, cond: Condition, x: Element):
+  molecule(alkene(side(a, b), side(d, e))),
+  x_site(add(alkene(side(a, b), side(d, e)), r, cond)) = second, halogen(r) = x
+  -> major(add(alkene(side(a, b), side(d, e)), r, cond)) = halide(x, c(d, e, c(h, a, b)))
+
+# ---------------------------------------------------------------- HCN addition
+# HCN adds to C=O, giving C(OH)(CN)(a)(b): a stereocentre iff a != b. The
+# carbonyl is planar and nothing chiral is present, so both faces are
+# attacked equally: the product is racemic and not optically active.
+predicate stereocentre(rx: Reaction) world open
+predicate achiral_group(g: Group) world closed
+predicate achiral(m: Molecule) world closed
+predicate racemic(rx: Reaction) world open
+predicate optically_active(rx: Reaction) world open
+axiom hcn_stereocentre(a, b: Group):
+  molecule(carbonyl(a, b)), a != b -> stereocentre(add(carbonyl(a, b), HCN))
+axiom hcn_no_stereocentre(a, b: Group):
+  molecule(carbonyl(a, b)), a = b -> not stereocentre(add(carbonyl(a, b), HCN))
+axiom h_achiral: group(h) -> achiral_group(h)
+axiom achiral_xy(x, y, z: Group):
+  group(c(x, y, z)), x = y, achiral_group(x), achiral_group(z) -> achiral_group(c(x, y, z))
+axiom achiral_yz(x, y, z: Group):
+  group(c(x, y, z)), y = z, achiral_group(x), achiral_group(y) -> achiral_group(c(x, y, z))
+axiom achiral_carbonyl(a, b: Group):
+  molecule(carbonyl(a, b)), achiral_group(a), achiral_group(b) -> achiral(carbonyl(a, b))
+axiom planar_attack(p: Molecule):
+  stereocentre(add(p, HCN)), achiral(p) -> racemic(add(p, HCN))
+axiom racemic_inactive(p: Molecule): racemic(add(p, HCN)) -> not optically_active(add(p, HCN))
+axiom achiral_inactive(p: Molecule):
+  not stereocentre(add(p, HCN)), achiral(p) -> not optically_active(add(p, HCN))
+
+# ---------------------------------------------------------------- tests
+test ozonolysis_of_2_methylbut_1_ene {
+  scenario oz uses chem.organic {
+    entity x: Molecule = 2-methylbut-1-ene
+  }
+  query PROVE ozonolysis(2-methylbut-1-ene, butanone, methanal)
+  expect PROVEN
+}
+
+test methanal_does_not_tautomerize {
+  scenario t1 uses chem.organic { }
+  query PROVE tautomerizes(methanal)
+  expect REFUTED
+}
+
+test butanone_gives_tertiary_alcohol {
+  scenario t2 uses chem.organic { }
+  query FIND ?d WHERE grignard_alcohol(butanone) = ?d
+  expect PROVEN tertiary
+}
+
+test markovnikov_hcl_on_pent_1_ene {
+  scenario t3 uses chem.organic { }
+  query FIND ?p WHERE major(add(pent-1-ene, HCl)) = ?p
+  expect PROVEN 2-chloropentane
+}
+
+test peroxide_effect_hbr_on_pent_1_ene {
+  scenario t4 uses chem.organic { }
+  query FIND ?p WHERE major(add(pent-1-ene, HBr, peroxide)) = ?p
+  expect PROVEN 1-bromopentane
+}
+
+test pent_2_ene_has_no_single_major {
+  scenario t5 uses chem.organic { }
+  query PROVE has_single_major(add(pent-2-ene, HCl))
+  expect REFUTED
+}
+
+test butanone_cyanohydrin_is_racemic {
+  scenario t6 uses chem.organic { }
+  query PROVE optically_active(add(butanone, HCN))
+  expect REFUTED
+}
+
+test propanone_cyanohydrin_has_no_stereocentre {
+  scenario t7 uses chem.organic { }
+  query PROVE stereocentre(add(propanone, HCN))
+  expect REFUTED
+}
+
+test cycloalkanes_do_not_add_hcl {
+  scenario t8 uses chem.organic { }
+  query PROVE 2-chloropentane in add(cyclopentane, HCl)
+  expect REFUTED
+}
+
+test both_regiochemistries_are_products {
+  scenario t9 uses chem.organic { }
+  query PROVE 3-chloropentane in add(pent-2-ene, HCl)
+  expect PROVEN
+}

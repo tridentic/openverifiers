@@ -1,0 +1,112 @@
+// The OV grammar (LALR(1)). docs/LANGUAGE.md has the same grammar as EBNF,
+// with the meaning of every construct. Statements start with a keyword, so
+// newlines carry no meaning and every statement can span lines.
+
+start: item*
+
+?item: package | import_pkg | import_state | type_decl | predicate | function
+     | entity | axiom | transformation | controller | gen_decl | scenario
+     | test | target | query | expect
+
+package: "package" dotted [VERSION]
+import_pkg: "import" dotted
+import_state: "import" "state" STRING "as" NAME
+type_decl: "type" NAME ["extends" NAME] ["{" [field ("," field)* ","?] "}"]
+field: NAME ":" NAME
+predicate: "predicate" NAME "(" [params] ")" [output] [world]
+output: "->" NAME                          -> out_fn
+      | "->" "{" NAME ("," NAME)* "}"      -> out_set
+world: "world" WORLD
+function: "function" NAME "(" [params] ")" "->" NAME [UNORDERED]
+entity: "entity" names ":" NAME ["=" expr]
+axiom: "axiom" NAME ["(" [params] ")"] ":" conj ["->" conj]
+transformation: "transformation" NAME "(" [params] ")" "requires" conj "ensures" conj
+controller: "controller" NAME "(" [params] ")" "{" ctrl* "}"
+?ctrl: "pipe" NAME ("->" NAME)*              -> pipe
+     | "branch" NAME ("|" NAME)+             -> branch
+     | "guard" conj                          -> guard
+gen_decl: "generator" NAME "(" [params] ")" "yields" NAME "from" expr
+gen_use: "generator" names "from" expr
+scenario: "scenario" NAME ["uses" dotted ("," dotted)*] ["extends" NAME] "{" stmt* "}"
+?stmt: entity | fact | assume | gen_use | query | expect | tolerance
+fact: "fact" fact_lit meta*
+assume: "assume" NAME ":" fact_lit meta*
+?meta: "confidence" NUMBER                  -> confidence
+     | "source" STRING                      -> source
+tolerance: "tolerance" NUMBER
+test: "test" NAME "{" (scenario | stmt)* "}"
+target: "target" NAME "{" (must | prefer)* "}"
+must: "must" conj
+prefer: "prefer" conj
+
+params: group ("," group)*
+group: names ":" NAME ["=" expr]
+names: NAME ("," NAME)*
+dotted: NAME ("." NAME)*
+
+// ---------------------------------------------------------------- queries
+query: "query" okql
+?okql: "PROVE" lit                          -> prove
+     | "FIND" qvars ["WHERE" conj]          -> find
+     | "WHAT" "IF" change ("AND" change)* "THEN" okql  -> whatif
+qvars: QVAR ("," QVAR)*
+?change: "RETRACT" fact_lit                 -> retract
+       | "ASSUME" NAME                      -> assume_name
+expect: "expect" VERDICT [args] ["assuming" "{" [names] "}"]
+
+// ---------------------------------------------------------------- formulas
+conj: lit ("," lit)*
+?fact_lit: lit
+         | expr "->" expr                   -> arrow
+?lit: "not" cmp                             -> not_
+    | cmp
+?cmp: expr
+    | expr CMPOP expr                       -> compare
+    | expr "in" expr                        -> member
+
+// ---------------------------------------------------------------- expressions
+?expr: sum
+?sum: product
+    | sum "+" product                       -> add
+    | sum "-" product                       -> sub
+?product: unary
+    | product "*" unary                     -> mul
+    | product "/" unary                     -> div
+?unary: power
+    | "-" unary                             -> neg
+?power: postfix
+    | postfix "^" unary                     -> pow
+?postfix: atom
+    | postfix "." NAME                      -> field
+    | NAME "(" [args] ")"                   -> call
+?atom: NAME                                 -> name
+     | QVAR                                 -> qvar
+     | QUANTITY                             -> quantity
+     | STRING                               -> string
+     | "unknown"                            -> unknown
+     | "(" expr ")"
+     | "{" [args] "}"                       -> setlit
+     | "[" expr "," expr "]"                -> interval
+args: expr ("," expr)*
+
+// ---------------------------------------------------------------- tokens
+VERSION: /@[0-9][0-9A-Za-z.\-]*/
+WORLD: "open" | "closed"
+UNORDERED: "unordered"
+VERDICT: "PROVEN" | "REFUTED" | "UNKNOWN" | "INCONSISTENT"
+CMPOP: "=" | "!=" | "<=" | ">=" | "<" | ">"
+QVAR: /\?[A-Za-z_][A-Za-z0-9_]*/
+STRING: /"(?:[^"\\\n]|\\.)*"/
+// A number, optionally followed on the same line by a unit: 10 N, 2 m/s^2.
+// @UNIT@ is replaced by the known unit names from lang/units.py.
+QUANTITY.-1: /(?:\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)(?:[ \t]+@UNIT@(?:\^-?\d+)?(?:[*\/·]@UNIT@(?:\^-?\d+)?)*(?![A-Za-z0-9_\-(]))?/
+NUMBER: /\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/
+// Names may contain inner hyphens (pent-1-ene) and may start with digits when
+// a hyphen follows (2-chloropentane, 1,1-dimethylcyclopropane). So `a-b` is
+// one name: write `a - b` for subtraction.
+NAME: /(?:\d+(?:,\d+)*-)?[A-Za-z_][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*/
+
+COMMENT: /#[^\n]*/
+%import common.WS
+%ignore WS
+%ignore COMMENT

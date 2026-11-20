@@ -1,0 +1,19 @@
+package physics.mechanics @0.1
+import math.core
+
+type Body { mass: Mass, accel: Accel }
+predicate net_force(b: Body, F: Force) world open
+predicate frictionless(s: Surface) world open
+
+axiom newton2(b: Body, F: Force):
+  net_force(b, F) -> F = b.mass * b.accel
+
+test newton2_mass {
+  scenario t uses physics.mechanics {
+    entity block: Body
+    fact net_force(block, 10 N)
+    fact block.accel = 2 m/s^2
+  }
+  query FIND ?m WHERE t.block.mass = ?m
+  expect PROVEN 5 kg
+}

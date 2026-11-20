@@ -3,6 +3,15 @@
 Breaking changes, newest first. Each entry says what changed, why, and what
 to do.
 
+## v1 Milestone 1 (OV front end)
+
+| change | before | after | what to do |
+|---|---|---|---|
+| new runtime dependency | sympy, z3-solver | adds `lark>=1.1` (allowed by the v1 brief) | reinstall: `uv pip install -e ".[dev]"` |
+
+Nothing else breaks: `openverifiers.lang`, `openverifiers.lower`,
+`openverifiers.runner` and `openverifiers/packages/` are new.
+
 ## v1 restructure (branch `v1`)
 
 | change | before | after | what to do |

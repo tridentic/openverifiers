@@ -1,0 +1,30 @@
+# A block pushed across a floor. Under the assumption that the floor is
+# frictionless, the push is the net force, so m = F / a = 10 N / 2 m/s^2 = 5 kg.
+# Retracting that assumption leaves friction unknown: the net force needs the
+# friction coefficient and the normal force, neither of which is given.
+package bench.push_block
+import physics.mechanics
+
+predicate on(b: Body, s: Surface) world open
+predicate pushed(b: Body, F: Force) world open
+predicate mu(s: Surface) -> Number
+predicate normal_force(b: Body) -> Force
+
+axiom smooth(b: Body, s: Surface, F: Force):
+  on(b, s), frictionless(s), pushed(b, F) -> net_force(b, F)
+
+axiom rough(b: Body, s: Surface, F, N, G: Force, k: Number):
+  on(b, s), pushed(b, F), mu(s) = k, normal_force(b) = N, G = F - k * N -> net_force(b, G)
+
+test push_block {
+  scenario push_block_s uses bench.push_block {
+    entity block: Body
+    entity floor: Surface
+    fact on(block, floor)
+    fact pushed(block, 10 N)
+    fact block.accel = 2 m/s^2
+    assume frictionless: frictionless(floor)
+    query FIND ?m WHERE block.mass = ?m
+    query WHAT IF RETRACT frictionless(floor) THEN FIND ?m WHERE block.mass = ?m
+  }
+}

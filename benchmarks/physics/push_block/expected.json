@@ -1,0 +1,29 @@
+{
+  "suite": "physics",
+  "case": "push_block",
+  "tag": "needs_assumption",
+  "why": "Gold as specified by the CTO (change order v1.1, smaller calls): 5 kg under {frictionless}; UNKNOWN(missing: mu, normal_force) when the assumption is retracted.",
+  "queries": [
+    {
+      "query": "FIND ?m WHERE block.mass = ?m",
+      "verdict": "PROVEN",
+      "values": [
+        "5 kg"
+      ],
+      "assumptions": [
+        "frictionless"
+      ],
+      "why": "frictionless: net force = push = 10 N; m = 10 N / 2 m/s^2 = 5 kg, resting on the frictionless assumption."
+    },
+    {
+      "query": "WHAT IF RETRACT frictionless(floor) THEN FIND ?m WHERE block.mass = ?m",
+      "verdict": "UNKNOWN",
+      "reason": "missing_facts",
+      "missing": [
+        "mu",
+        "normal_force"
+      ],
+      "why": "without frictionless the net force is F - mu*N; mu and the normal force are not given, so the mass cannot be determined. The answer should name them."
+    }
+  ]
+}

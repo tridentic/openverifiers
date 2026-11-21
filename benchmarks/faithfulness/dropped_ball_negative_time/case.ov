@@ -1,0 +1,18 @@
+# A deliberately unfaithful formalization: elapsed time is not constrained to
+# be non-negative, so the model also admits running the motion backwards in
+# time and answers both +10 m/s and -10 m/s.
+package bench.dropped_ball_negative_time
+
+fact type FallNoTimeBound {
+  property u: Velocity
+  property a: Accel
+  property t: Time
+  property v: Velocity
+  property s: Length
+  invariant velocity: v = u + integral(a, t)
+  invariant displacement: s = integral(u + integral(a, t), t)
+}
+
+scenario dropped_ball_negative_time_s uses bench.dropped_ball_negative_time {
+  query FIND ?v WHERE FallNoTimeBound{ u = 0 m/s, a = -10 m/s^2, s = -5 m, v = ?v }
+}

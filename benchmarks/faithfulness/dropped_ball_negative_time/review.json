@@ -1,0 +1,9 @@
+{
+  "case": "dropped_ball_negative_time",
+  "kind": "adversarial_faithfulness",
+  "expected_review": "flag",
+  "expected_issues": ["dropped_condition"],
+  "must_mention": ["time", "non-negative"],
+  "correct_answer": "-10 m/s (10 m/s downward)",
+  "why": "The problem's motion runs forward in time from release. Without t >= 0 the model admits t = -1 s, giving +10 m/s as well. Found in the library on 2026-11-22 (physics.mechanics now has invariant elapsed: t >= 0); the CTO asked for it as a reviewer test."
+}

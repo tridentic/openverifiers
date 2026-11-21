@@ -19,7 +19,12 @@ output: "->" NAME                          -> out_fn
 world: "world" WORLD
 function: "function" NAME "(" [params] ")" "->" NAME [UNORDERED]
 entity: "entity" names ":" NAME ["=" expr]
-axiom: "axiom" NAME ["(" [params] ")"] ":" conj ["->" conj]
+// The keyword says what kind of axiom it is (for `ov audit`): `axiom` a foundation,
+// `law` an empirical law of nature, `definition` a definition. All three lower alike.
+axiom: axiom_kind NAME ["(" [params] ")"] ":" conj ["->" conj]
+axiom_kind: "axiom" -> kind_foundation
+          | "law" -> kind_law
+          | "definition" -> kind_definition
 transformation: "transformation" NAME "(" [params] ")" "requires" conj "ensures" conj
 controller: "controller" NAME "(" [params] ")" "{" ctrl* "}"
 ?ctrl: "pipe" NAME ("->" NAME)*              -> pipe
@@ -44,7 +49,9 @@ prefer: "prefer" conj
 fact_type: "fact" "type" NAME ["extends" NAME ("," NAME)*] "{" member* "}"
 ?member: "property" NAME ":" tyexpr          -> prop
        | "invariant" NAME ":" fbody          -> invariant
+       | "law" NAME ":" fbody                -> law
        | "theorem" NAME ":" fbody            -> theorem
+       | "lemma" NAME ":" fbody              -> lemma
        | "derived" NAME ":" tyexpr "=" expr  -> derived
 tyexpr: NAME ["<" tyexpr ("," tyexpr)* ">"]
 // The conditions of a body are conjoined; `P -> Q` is an implication. A

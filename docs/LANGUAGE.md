@@ -425,8 +425,69 @@ each printed in the trace:
 - **translation:** one point is pinned to 0 in each coordinate where every
   polynomial is unchanged when all points shift together (checked exactly);
 - **invariants last:** the negated theorem is first tried without the
-  invariants, which proves the stronger statement when it is unsat. Refuted theorems and empty classes
-make the runner exit with status 1.
+  invariants, which proves the stronger statement when it is unsat.
+
+Refuted theorems and empty classes make the runner exit with status 1.
+
+**Lemmas.** If z3 can settle a theorem neither way from the invariants, the
+check is retried with every theorem already PROVEN in the class or its
+ancestors as an extra hypothesis. This is sound because each holds on every
+instance. The answer lists the lemmas it used, and its trust base includes
+theirs. An UNPROVEN theorem is never used.
+
+### Axiom kinds (for `ov audit`)
+
+Every assumption a package makes says what kind it is. All kinds lower the
+same way; the kind is what `ov audit` reports.
+
+| where | keyword | kind |
+|---|---|---|
+| package rule | `axiom` | foundation |
+| package rule | `law` | an empirical law of nature (Newton's second law) |
+| package rule | `definition` | a definition (momentum, molarity) |
+| class member | `invariant` | a definition: a class is defined by its invariants |
+| class member | `law` | an empirical law holding on the class (`law newton2: F = m * a`) |
+| class member | `theorem`, `lemma` | must be proven by `ov check`; `lemma` marks a helper |
+
+The built-in mathematics are the foundations. `ov audit` lists the ones a
+package uses:
+- ordered-field arithmetic;
+- coordinates and the distance formula;
+- angles via the dot product;
+- polynomial integral and derivative;
+- finite sets and generators.
+
+### Quantities and calculus in classes
+
+- **Properties may have quantity types** (`property v: Velocity`).
+  - Class formulas and pattern values are dimension-checked when the class
+    compiles (E301). A bare `0` matches any dimension.
+  - Inside the solver and the evaluator, values are base-SI magnitudes.
+  - Unknowns of a quantity type print with their unit: `?s = 21 m`.
+- **`integral(e, t)`** is the integral of `e` from 0 to the value of the
+  property `t`. **`deriv(e, t)`** is de/dt at that value.
+  - `e` must be a polynomial in `t`; other properties are constants.
+  - The trusted evaluator decides both exactly: it samples `e` at
+    t = 0..degree, recovers the coefficients, and integrates or
+    differentiates.
+  - The units are those of `e` times (or divided by) those of `t`.
+
+`physics.mechanics` defines velocity and displacement this way and proves
+SUVAT from them:
+
+```ov
+fact type ConstantAcceleration {
+  property u: Velocity
+  property a: Accel
+  property t: Time
+  property v: Velocity
+  property s: Length
+  invariant elapsed: t >= 0
+  invariant velocity: v = u + integral(a, t)
+  invariant displacement: s = integral(u + integral(a, t), t)
+  theorem suvat_timeless: v * v = u * u + 2 * a * s
+}
+```
 
 ## Error codes
 
@@ -458,6 +519,10 @@ exact span.
 | E208 | an undeclared type under `--strict` (W201 otherwise) |
 | W201 | warning: an undeclared type is used and treated as an opaque entity type |
 | W202 | warning: a theorem says `exists` over the same generator as an invariant, so it may be vacuous |
+
+`ov audit PACKAGE` prints a package's axioms by kind (foundation, law,
+definition), its theorems with status and trust base, the axiom ratio, and
+with `--dag THEOREM` the theorem's dependencies down to axioms.
 
 ## Standard packages (Milestone 1)
 

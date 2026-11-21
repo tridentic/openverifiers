@@ -121,10 +121,19 @@ class _ToAst(Transformer[Token, Any]):
         return A.EntityDecl(names, str(ty), value, self.sp(m))
 
     def axiom(self, m: Any, xs: list[Any]) -> A.Axiom:
-        name, params, body, head = xs
+        kw, name, params, body, head = xs
         if head is None:  # ``axiom name: facts`` has no premises
             body, head = (), body
-        return A.Axiom(str(name), params or (), body, head, self.sp(m))
+        return A.Axiom(str(name), params or (), body, head, self.sp(m), basis=str(kw))
+
+    def kind_foundation(self, m: Any, xs: list[Any]) -> str:
+        return "foundation"
+
+    def kind_law(self, m: Any, xs: list[Any]) -> str:
+        return "law"
+
+    def kind_definition(self, m: Any, xs: list[Any]) -> str:
+        return "definition"
 
     def transformation(self, m: Any, xs: list[Any]) -> A.Axiom:
         name, params, req, ens = xs
@@ -239,7 +248,13 @@ class _ToAst(Transformer[Token, Any]):
         return A.Invariant(str(xs[0]), xs[1], self.sp(m))
 
     def theorem(self, m: Any, xs: list[Any]) -> A.Invariant:
-        return A.Invariant(str(xs[0]), xs[1], self.sp(m), theorem=True)
+        return A.Invariant(str(xs[0]), xs[1], self.sp(m), theorem=True, kind="theorem")
+
+    def law(self, m: Any, xs: list[Any]) -> A.Invariant:
+        return A.Invariant(str(xs[0]), xs[1], self.sp(m), kind="law")
+
+    def lemma(self, m: Any, xs: list[Any]) -> A.Invariant:
+        return A.Invariant(str(xs[0]), xs[1], self.sp(m), theorem=True, kind="lemma")
 
     def derived(self, m: Any, xs: list[Any]) -> A.Derived:
         return A.Derived(str(xs[0]), xs[1], xs[2], self.sp(m))

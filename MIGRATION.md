@@ -3,6 +3,16 @@
 Breaking changes, newest first. Each entry says what changed, why, and what
 to do.
 
+## M-CAP library layer (2026-11-22)
+
+| change | before | after | what to do |
+|---|---|---|---|
+| new `.ov` keywords | `law`, `definition`, `lemma` were names | keywords (axiom kinds; class members) | rename anything named so (nothing in the repo was) |
+| `physics.mechanics` | `axiom newton2` | `law newton2`, plus classes ConstantAcceleration, ConstantForce, UniformGravity, TwoBodyInteraction | none: the rule is unchanged |
+| `math.core` | vocabulary only | quadratic, Vieta, AM-GM classes and theorems | none |
+| class properties of a quantity type | unknowns refused (E206), formulas not unit-checked | unknowns allowed; formulas and pattern values dimension-checked (E301) | fix any E301 the checker now reports |
+| WHAT IF RETRACT of a fact | re-ran the whole program | the fact is a hidden assumption; retracting it is a context change | none; answers are unchanged |
+
 ## v1 hygiene (change order v1.1, step 1)
 
 | change | before | after | what to do |

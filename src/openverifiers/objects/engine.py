@@ -16,10 +16,11 @@ Each step is recorded in ``ObjAnswer.steps``.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from fractions import Fraction
 
-from ..raw.formula import ClassDef, Unsupported, failing, holds
+from ..lang.units import show_quantity
+from ..raw.formula import DEG, ClassDef, Unsupported, failing, holds
 from ..raw.terms import Compound, Num, Str, Term, Var, substitute
 from .compile import Classes, ObjPlan, conj, generic, size_invariants
 from .expand import (
@@ -64,6 +65,9 @@ class ObjAnswer:
     #: docs/SEMANTICS.md §7). Listed in trust_base as ``red:<name>`` when the verdict
     #: rests on z3_unsat; a kernel-checked instance needs none of them.
     reductions: frozenset[str] = frozenset()
+    #: proven theorems this proof used as hypotheses (a theorem check that z3 could not
+    #: settle from the invariants alone is retried with them)
+    lemmas: tuple[str, ...] = ()
     kind: str = ""                                 # find unique count check counterexample
                                                    # consistency theorem
 
@@ -128,6 +132,8 @@ def _ground(props: Mapping[str, Term], model: Mapping[str, Fraction]) -> dict[st
 
 
 def show(t: Term) -> str:
+    if isinstance(t, Num) and t.dims and t.dims != DEG:
+        return show_quantity(t.value, t.dims)
     if isinstance(t, Num):
         v = t.value
         return str(v.numerator) if v.denominator == 1 else f"{v.numerator}/{v.denominator}"
@@ -259,6 +265,9 @@ def _search(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> ObjAnswer:
         binding: dict[str, Term] = {}
         for q, coords in plan.unknowns.items():
             vals = tuple(model[c.name] for c in coords)
+            if q in plan.unknown_dims:                 # for display and expectations only
+                vals = tuple(Num(x.value, plan.unknown_dims[q]) if isinstance(x, Num) else x
+                             for x in vals)
             binding[q] = Compound("f.tuple", vals) if plan.is_tuple[q] else vals[0]
         ans.bindings.append(binding)
         if len(ans.bindings) >= limit:
@@ -537,6 +546,22 @@ def check_classes(classes: Classes, only: set[str] | None = None,
             else:
                 used: set[str] = set()
                 v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps), ta.steps, gen, used=used)
+                lemmas = tuple((n, f) for n, (f, _) in proven.items()
+                               if n.split(".")[0] in (*classes.ancestors[name], name))
+                if v == "UNKNOWN" and lemmas and not isinstance(gen, str):
+                    # A proven theorem holds on every instance, so adding it as a hypothesis
+                    # keeps satisfiability; it often gives z3 the step it could not find.
+                    ta.steps.append("retry with the proven lemmas " + ", ".join(
+                        n for n, _ in lemmas))
+                    used2: set[str] = set()
+                    with_lemmas = replace(cls, invariants=(*cls.invariants, *lemmas))
+                    v2, why2, wit2, _ = theorem(with_lemmas, th, _Run(st, ta.steps), ta.steps,
+                                                gen, used=used2)
+                    if v2 != "UNKNOWN":
+                        v, why, wit, used = v2, why2, wit2, used2
+                        ta.lemmas = tuple(n for n, _ in lemmas)
+                        for n, _ in lemmas:
+                            used |= proven[n][1]
                 ta.verdict, ta.reason, ta.witness = v, why, wit
                 ta.reductions = frozenset(used)
             settle(ta, st)

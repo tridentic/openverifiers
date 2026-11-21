@@ -4,6 +4,7 @@
     ov check FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions]
     ov bench [DIR] [--suite NAME] [--case NAME] [--seeds N] [--out DIR] [--strict]
              [--no-reductions]
+    ov audit PACKAGE|FILE [--dag THEOREM ...] [--json]
 
 ``run`` checks, lowers and evaluates each file, answers its queries, checks its
 ``expect`` lines and its classes' theorems, and exits 1 if any expectation
@@ -39,6 +40,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         return runner.main(rest)
     if cmd == "check":
         return runner.main(rest, check=True)
+    if cmd == "audit":
+        from .audit import main as audit
+        return audit(rest)
     if cmd == "bench":
         from .bench.run import main as bench
         return bench(rest)

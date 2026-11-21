@@ -1,0 +1,114 @@
+# math.calculus: polynomial calculus as theorems over two definitions.
+#
+# Foundations (built in, definitions; listed by `ov audit`):
+#   integral(e, t)  the integral of e from 0 to t, for e a polynomial in t;
+#   deriv(e, t)     de/dt.
+# Both are evaluated exactly by the trusted evaluator (it recovers the
+# polynomial's coefficients from exact samples). Everything below is a
+# theorem that `ov check` proves.
+package math.calculus @0.1
+
+fact type Cubic {
+  property c0: Real
+  property c1: Real
+  property c2: Real
+  property c3: Real
+  property t: Real
+  theorem power_rule_2: deriv(t * t, t) = 2 * t
+  theorem power_rule_3: deriv(t * t * t, t) = 3 * t * t
+  theorem constant_rule: deriv(c0, t) = 0
+  theorem linearity: deriv(c2 * t * t + c1 * t, t) = c2 * deriv(t * t, t) + c1 * deriv(t, t)
+  theorem product_rule: deriv((c0 + c1 * t) * (c2 + c3 * t), t)
+                          = c1 * (c2 + c3 * t) + (c0 + c1 * t) * c3
+  # The fundamental theorem of calculus, both directions, for cubics.
+  theorem ftc_derivative_of_integral:
+    deriv(integral(c0 + c1 * t + c2 * t * t + c3 * t * t * t, t), t)
+      = c0 + c1 * t + c2 * t * t + c3 * t * t * t
+  theorem ftc_integral_of_derivative:
+    integral(deriv(c1 * t + c2 * t * t + c3 * t * t * t, t), t)
+      = c1 * t + c2 * t * t + c3 * t * t * t
+  theorem integral_power_2: integral(t * t, t) = t * t * t / 3
+}
+
+# A stationary point of a quadratic is its vertex.
+fact type QuadraticExtremum {
+  property a: Real
+  property b: Real
+  property c: Real
+  property t: Real
+  invariant leading: a != 0
+  invariant stationary: deriv(a * t * t + b * t + c, t) = 0
+  theorem vertex: 2 * a * t = -b
+  theorem vertex_value: a * (a * t * t + b * t + c) * 4 = 4 * a * c - b * b
+}
+
+# Area under a line from 0 to t (a trapezoid).
+fact type LinearArea {
+  property m: Real
+  property k: Real
+  property t: Real
+  theorem trapezoid: integral(m * t + k, t) = t * (k + (m * t + k)) / 2
+}
+
+# ---------------------------------------------------------------- tests
+
+test stationary_point {
+  scenario stationary_point_s uses math.calculus { }
+  query FIND ?t WHERE QuadraticExtremum{ a = 1, b = -6, c = 5, t = ?t }
+  expect PROVEN 3
+}
+
+test stationary_point_unique {
+  scenario stationary_point_unique_s uses math.calculus { }
+  query FIND ?t WHERE QuadraticExtremum{ a = 2, b = 8, c = 1, t = ?t }
+  query PROVE UNIQUE ?t
+  expect PROVEN
+}
+
+test no_stationary_point_without_leading {
+  scenario no_stationary_point_without_leading_s uses math.calculus { }
+  query FIND ?t WHERE QuadraticExtremum{ a = 0, b = 2, c = 1, t = ?t }
+  expect REFUTED
+}
+
+test ftc_no_counterexample {
+  scenario ftc_no_counterexample_s uses math.calculus { }
+  query COUNTEREXAMPLE Cubic.ftc_derivative_of_integral
+  expect PROVEN
+}
+
+test product_rule_no_counterexample {
+  scenario product_rule_no_counterexample_s uses math.calculus { }
+  query COUNTEREXAMPLE Cubic.product_rule
+  expect PROVEN
+}
+
+test vertex_no_counterexample {
+  scenario vertex_no_counterexample_s uses math.calculus { }
+  query COUNTEREXAMPLE QuadraticExtremum.vertex
+  expect PROVEN
+}
+
+test area_under_line {
+  scenario area_under_line_s uses math.calculus { }
+  query CHECK LinearArea{ m = 2, k = 1, t = 3 } IS LinearArea
+  expect PROVEN
+}
+
+test check_stationary {
+  scenario check_stationary_s uses math.calculus { }
+  query CHECK QuadraticExtremum{ a = 1, b = -4, c = 0, t = 2 } IS QuadraticExtremum
+  expect PROVEN
+}
+
+test check_not_stationary {
+  scenario check_not_stationary_s uses math.calculus { }
+  query CHECK QuadraticExtremum{ a = 1, b = -4, c = 0, t = 1 } IS QuadraticExtremum
+  expect REFUTED
+}
+
+test count_stationary {
+  scenario count_stationary_s uses math.calculus { }
+  query COUNT ?t WHERE QuadraticExtremum{ a = 3, b = 6, c = 0, t = ?t }
+  expect PROVEN 1
+}

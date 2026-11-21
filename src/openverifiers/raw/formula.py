@@ -15,7 +15,9 @@ Expression terms::
     f.tuple(E..), f.set(E..), f.list(E..), f.idx(C, E) (index mod length),
     f.at(E, k) (tuple component), + - * / ^ abs min max, f.count(C),
     f.dist(P, P), f.dist2(P, P) (squared), f.angle(P, P, P), f.cycles(C), f.orderings(C),
-    f.subsets(C, k), f.pairs(C)
+    f.subsets(C, k), f.pairs(C),
+    f.integral(E, "t") (the integral of E from 0 to property t's value, in t),
+    f.deriv(E, "t") (dE/dt at t's value); E must be a polynomial in t
 
 The evaluator here re-checks every instance any solver proposes. It is exact:
 ``dist`` values are kept as square roots of rationals and compared by
@@ -102,6 +104,52 @@ def _dot(a: tuple[Fraction, ...], b: tuple[Fraction, ...]) -> Fraction:
     return sum((x * y for x, y in zip(a, b, strict=True)), Fraction(0))
 
 
+def _degree(t: Term, var: str) -> int:
+    """An upper bound on t's degree as a polynomial in property ``var``; Unsupported if
+    t is not polynomial in it."""
+    if not isinstance(t, Compound):
+        return 0
+    f, a = t.functor, t.args
+    if f == "f.p":
+        return 1 if a[0] == Str(var) else 0
+    if f in ("f.v", "f.tuple", "f.list", "f.set") or not _mentions(t, var):
+        return 0
+    ds = [_degree(x, var) for x in a if not isinstance(x, Str)]
+    if f in ("+", "-"):
+        return max(ds)
+    if f == "*":
+        return sum(ds)
+    if f == "/" and ds[1] == 0:
+        return ds[0]
+    if f == "^" and isinstance(a[1], Num) and a[1].value.denominator == 1 and a[1].value >= 0:
+        return ds[0] * int(a[1].value)
+    if f in ("f.integral", "f.deriv"):
+        own = a[1] == Str(var)
+        return ds[0] + 1 if own and f == "f.integral" else max(ds[0] - 1, 0) if own else ds[0]
+    raise Unsupported(f"{f} is not polynomial in {var}")
+
+
+def _mentions(t: Term, var: str) -> bool:
+    if isinstance(t, Compound):        # integral(e, t) and deriv(e, t) depend on t's value
+        return (t.functor in ("f.p", "f.integral", "f.deriv") and Str(var) in t.args) or any(
+            _mentions(x, var) for x in t.args)
+    return False
+
+
+def _coefficients(ys: list[Fraction]) -> list[Fraction]:
+    """c with sum(c[k] * i^k) = ys[i] for i = 0..n-1 (exact Gaussian elimination)."""
+    n = len(ys)
+    m = [[Fraction(i) ** k for k in range(n)] + [ys[i]] for i in range(n)]
+    for col in range(n):
+        piv = next(r for r in range(col, n) if m[r][col] != 0)
+        m[col], m[piv] = m[piv], m[col]
+        for r in range(n):
+            if r != col and m[r][col] != 0:
+                k = m[r][col] / m[col][col]
+                m[r] = [x - k * y for x, y in zip(m[r], m[col], strict=True)]
+    return [m[k][n] / m[k][k] for k in range(n)]
+
+
 def generate(name: str, items: tuple[Term, ...], k: int | None = None) -> Iterator[Term]:
     """Elements of a collection generator, all of them, in a fixed order."""
     if name in ("f.cycles", "f.orderings"):
@@ -135,6 +183,8 @@ class _Eval:
                 raise Unsupported(f"unbound {key}")
             # Bound variables hold values; properties hold expressions to evaluate.
             return table[key] if f == "f.v" else self.expr(table[key])
+        if f in ("f.integral", "f.deriv"):
+            return self._calculus(f, a)
         vals = [self.expr(x) for x in a] if f not in ("f.at",) else []
         if f in ("f.tuple", "f.list"):
             return Compound(f, tuple(self._term(v) for v in vals))
@@ -169,6 +219,27 @@ class _Eval:
                 raise Unsupported(f"arithmetic failed: {t}")
             return r
         raise Unsupported(f"cannot evaluate {f}")
+
+    def _calculus(self, f: str, a: tuple[Term, ...]) -> Num:
+        """Exact: sample the polynomial at 0..degree, recover its coefficients, then
+        integrate from 0 (or differentiate) and evaluate at the property's value."""
+        var = a[1].value if isinstance(a[1], Str) else ""
+        x = self.expr(Compound("f.p", (Str(var),)))
+        ys = []
+        for i in range(_degree(a[0], var) + 1):
+            e = _Eval({**self.props, var: Num(Fraction(i))})
+            e.env = self.env
+            y = e.expr(a[0])
+            if not isinstance(y, Num) or y.dims:
+                raise Unsupported("integral or derivative of a non-number")
+            ys.append(y.value)
+        if not isinstance(x, Num) or x.dims:
+            raise Unsupported(f"{var} is not a number")
+        c = _coefficients(ys)
+        if f == "f.integral":
+            return Num(sum((c[k] * x.value ** (k + 1) / (k + 1) for k in range(len(c))),
+                           Fraction(0)))
+        return Num(sum((k * c[k] * x.value ** (k - 1) for k in range(1, len(c))), Fraction(0)))
 
     @staticmethod
     def _term(v: Value) -> Term:

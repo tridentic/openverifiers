@@ -16,10 +16,10 @@ from typing import TYPE_CHECKING
 
 from ..lang import ast as A
 from ..lang.errors import Diagnostic
-from ..lang.units import QUANTITY_TYPES
+from ..lang.units import QUANTITY_TYPES, dims_text
 from ..raw.formula import COS2, DEG, ClassDef, Unsupported
 from ..raw.program import Span
-from ..raw.terms import Compound, Num, Str, Term, Var
+from ..raw.terms import Compound, Dims, Num, Str, Term, Var, make_dims
 
 if TYPE_CHECKING:
     from ..lang.check import Env
@@ -29,6 +29,9 @@ Ty = tuple[object, ...]
 REAL: Ty = ("Real",)
 GENERATORS = {"cycles": 1, "orderings": 1, "pairs": 1, "subsets": 2}
 FUNCS = {"count": 1, "dist": 2, "dist2": 2, "angle": 3, "abs": 1, "min": 2, "max": 2}
+#: calculus on polynomials (math.calculus): integral(e, t) = the integral of e from 0 to
+#: t; deriv(e, t) = de/dt. t must be a numeric property.
+CALCULUS = {"integral", "deriv"}
 
 
 class _Fail(Exception):
@@ -54,6 +57,28 @@ class Classes:
     records: dict[str, tuple[str, ...]] = field(default_factory=dict)
     plans: dict[Span, ObjPlan] = field(default_factory=dict)
     ancestors: dict[str, tuple[str, ...]] = field(default_factory=dict)   # without the class
+    #: record type -> field -> dimension (Point's x and y are dimensionless Reals)
+    field_dims: dict[str, dict[str, Dims]] = field(default_factory=dict)
+    #: qualified member -> invariant (a definition) | law | theorem | lemma, for audit
+    kinds: dict[str, str] = field(default_factory=dict)
+
+
+def _num(value: Fraction, dims: Dims) -> Num:
+    """A class-formula number. Quantities are already in base SI units and dimensions are
+    checked when the class compiles, so the solver and the evaluator see magnitudes. Only
+    degrees keep their dimension: the evaluator compares angles by it."""
+    return Num(value, dims if dims == DEG else ())
+
+
+def _dmul(a: Dims, b: Dims, k: int = 1) -> Dims:
+    out: dict[str, Fraction] = dict(a)
+    for n, e in b:
+        out[n] = out.get(n, Fraction(0)) + k * e
+    return make_dims(out)
+
+
+def _zero(e: A.Expr) -> bool:
+    return isinstance(e, A.Quantity) and e.value == 0 and not e.dims
 
 
 def records(env: Env) -> dict[str, tuple[str, ...]]:
@@ -84,7 +109,9 @@ def ty_of(e: A.TyExpr, cls: Classes, env: Env) -> Ty:
 
 
 def compile_classes(env: Env, decls: dict[str, A.FactType]) -> Classes:
-    cls = Classes(records=records(env))
+    cls = Classes(records=records(env), field_dims={
+        n: {f: QUANTITY_TYPES[env.types[n].fields[f][0]] for f in fs}
+        for n, fs in records(env).items()})
     order: list[str] = []
     state: dict[str, int] = {}
 
@@ -159,6 +186,10 @@ def _compile_class(d: A.FactType, decls: dict[str, A.FactType], cls: Classes, en
                         m.body, m.span)))
                 else:
                     invariants += [x for x in cls.defs[c].invariants if x[0] == f"{c}.{m.name}"]
+    for m in d.members:
+        if isinstance(m, A.Invariant):
+            cls.kinds[f"{d.name}.{m.name}"] = m.kind
+            cls.spans[f"{d.name}.{m.name}"] = m.span
     theorems = []
     for m in d.members:
         if isinstance(m, A.Invariant) and m.theorem:
@@ -183,6 +214,66 @@ class _Formula:
     def __init__(self, cls: Classes, props: dict[str, Ty], derived: dict[str, A.Expr]) -> None:
         self.cls, self.props, self.derived = cls, props, derived
         self.bound: dict[str, Ty] = {}
+
+    # ------------------------------------------------------------ dimensions
+    def dims(self, e: A.Expr) -> Dims | None:
+        """The dimension of a numeric expression (None: not checked here). E301 when the
+        two sides of + or - differ. A bare 0 matches any dimension."""
+        if isinstance(e, A.Quantity):
+            return e.dims
+        if isinstance(e, A.Name):
+            ty = self.bound.get(e.name) or self.props.get(e.name)
+            if ty is None:
+                return None
+            if ty == REAL:
+                return ()
+            return QUANTITY_TYPES.get(str(ty[0]))
+        if isinstance(e, A.Field):
+            obj_ty = self._ty(e.obj)
+            fd = self.cls.field_dims.get(str(obj_ty[0])) if obj_ty else None
+            return fd.get(e.name) if fd else None
+        if isinstance(e, A.Neg):
+            return self.dims(e.arg)
+        if isinstance(e, A.BinOp):
+            a, b = self.dims(e.left), self.dims(e.right)
+            if e.op == "^":
+                k = e.right
+                if a is None or not (isinstance(k, A.Quantity) and not k.dims
+                                     and k.value.denominator == 1):
+                    return None
+                return _dmul((), a, int(k.value))
+            if a is None or b is None:
+                return None
+            if e.op in ("+", "-"):
+                if a != b and not (_zero(e.left) or _zero(e.right)):
+                    raise _Fail("E301", f"dimension mismatch: {dims_text(a) or '1'} "
+                                f"{e.op} {dims_text(b) or '1'}", e.span)
+                return b if _zero(e.left) else a
+            return _dmul(a, b, 1 if e.op == "*" else -1)
+        if isinstance(e, A.Call) and e.fn in ("abs", "min", "max"):
+            ds = [self.dims(x) for x in e.args]
+            return ds[0] if ds and all(d == ds[0] for d in ds) else None
+        if isinstance(e, A.Call) and e.fn == "count":
+            return ()
+        if isinstance(e, A.Call) and e.fn in CALCULUS and len(e.args) == 2:
+            body, var = self.dims(e.args[0]), self.dims(e.args[1])
+            if body is None or var is None:
+                return None
+            return _dmul(body, var, 1 if e.fn == "integral" else -1)
+        return None
+
+    def _ty(self, e: A.Expr) -> Ty | None:
+        try:
+            return self.expr(e)[1]
+        except _Fail:
+            return None
+
+    def same_dims(self, a: A.Expr, op: str, b: A.Expr, span: Span) -> None:
+        da, db = self.dims(a), self.dims(b)
+        if da is not None and db is not None and da != db and not (_zero(a) or _zero(b)):
+            raise _Fail("E301", f"dimension mismatch: {dims_text(da) or '1'} {op} "
+                        f"{dims_text(db) or '1'}", span,
+                        "both sides of a comparison need the same dimension")
 
     def body(self, items: tuple[A.Formula, ...], span: Span) -> Term:
         return conj([self.formula(f) for f in items])
@@ -235,6 +326,7 @@ class _Formula:
         out = []
         for i, op in enumerate(c.ops):
             self.comparable(c.exprs[i], op, c.exprs[i + 1], c.span)
+            self.same_dims(c.exprs[i], op, c.exprs[i + 1], c.span)
             out.append(_f("cmp", Str(op), terms[i][0], terms[i + 1][0]))
         return conj(out)
 
@@ -282,7 +374,7 @@ class _Formula:
         def go(x: A.Expr) -> tuple[Term, Ty]:
             return self.expr(x, lists, ivar)
         if isinstance(e, A.Quantity):
-            return Num(e.value, e.dims), REAL
+            return _num(e.value, e.dims), REAL
         if isinstance(e, A.Name):
             if e.name in self.bound:
                 return _f("v", Str(e.name)), self.bound[e.name]
@@ -326,6 +418,16 @@ class _Formula:
             return (_f(name, *args) if name else Compound(e.fn, tuple(args))), REAL
         if isinstance(e, A.Call) and e.fn in GENERATORS:
             return self.coll(e)
+        if isinstance(e, A.Call) and e.fn in CALCULUS:
+            if len(e.args) != 2:
+                raise _Fail("E205", f"{e.fn} takes an expression and a property", e.span)
+            v = e.args[1]
+            if not (isinstance(v, A.Name) and v.name in self.props and v.name not in self.bound
+                    and self.dims(v) is not None):
+                raise _Fail("E206", f"{e.fn}'s second argument must be a numeric property",
+                            v.span, f"e.g. {e.fn}(a, t) with t: Time")
+            self.dims(e)            # checks the body's dimensions
+            return _f(e.fn, go(e.args[0])[0], Str(v.name)), REAL
         if isinstance(e, A.Call):
             raise _Fail("E201", f"unknown function '{e.fn}' in a class formula", e.span,
                         "class formulas use count, dist, dist2, angle, abs, min, max and the "
@@ -373,6 +475,7 @@ class ObjPlan:
     props: dict[str, Term]                      # property -> value expression (Vars = unknowns)
     unknowns: dict[str, tuple[Var, ...]] = field(default_factory=dict)  # ?x -> coordinates
     is_tuple: dict[str, bool] = field(default_factory=dict)
+    unknown_dims: dict[str, Dims] = field(default_factory=dict)     # ?x -> unit, for display
     theorem: tuple[str, Term] | None = None
     limit: int | None = None
     note: str = ""                              # why there is no bounded instance
@@ -420,7 +523,7 @@ def plan_query(qy: A.Query, cls: Classes, last_find: ObjPlan | None) -> ObjPlan:
             raise _Fail("E206", f"{kind.upper()} without WHERE refers to the FIND before it, "
                         "which must solve for the same variables", o.span)
         return ObjPlan(kind, qy, last_find.cls, last_find.props, last_find.unknowns,
-                       last_find.is_tuple)
+                       last_find.is_tuple, unknown_dims=last_find.unknown_dims)
     pats = [w.expr for w in o.where if isinstance(w, A.Holds) and isinstance(w.expr, A.Pattern)]
     if len(pats) != 1 or len(o.where) != 1:
         raise _Fail("E206", "an object query's WHERE is exactly one pattern `T{...}`", o.span,
@@ -436,7 +539,7 @@ def plan_query(qy: A.Query, cls: Classes, last_find: ObjPlan | None) -> ObjPlan:
             raise _Fail("E201", f"?{v.name} does not occur in WHERE", v.span)
     limit = o.limit if isinstance(o, A.Find) else None
     return ObjPlan(kind, qy, cls.defs[pat.cls], props, inst.unknowns, inst.is_tuple,
-                   limit=limit)
+                   limit=limit, unknown_dims=inst.unknown_dims)
 
 
 class _Instance:
@@ -446,6 +549,7 @@ class _Instance:
         self.cls, self.declared = cls, declared
         self.unknowns: dict[str, tuple[Var, ...]] = {}
         self.is_tuple: dict[str, bool] = {}
+        self.unknown_dims: dict[str, Dims] = {}      # ?x of a quantity type -> its dimension
         self.fresh = 0
 
     def pattern(self, p: A.Pattern, cdef: ClassDef) -> dict[str, Term]:
@@ -485,16 +589,21 @@ class _Instance:
                 vs = tuple(Var(f"Q_{e.name}_{f}") for f in rec)
                 self.unknowns[e.name], self.is_tuple[e.name] = vs, True
                 return _f("tuple", *vs)
-            if ty != REAL:
+            if ty != REAL and ty[0] not in QUANTITY_TYPES:
                 raise _Fail("E206", f"?{e.name} must stand for a number or a record", e.span)
+            if ty != REAL and QUANTITY_TYPES[str(ty[0])]:
+                self.unknown_dims[e.name] = QUANTITY_TYPES[str(ty[0])]
             self.unknowns[e.name], self.is_tuple[e.name] = (Var(f"Q_{e.name}"),), False
             return Var(f"Q_{e.name}")
-        if isinstance(e, A.Quantity):
+        q = e.arg if isinstance(e, A.Neg) and isinstance(e.arg, A.Quantity) else e
+        if isinstance(q, A.Quantity):
             if ty != REAL and (ty[0] not in QUANTITY_TYPES):
                 raise _Fail("E302", f"expected {ty[0]}, got a number", e.span)
-            return Num(e.value, e.dims)
-        if isinstance(e, A.Neg) and isinstance(e.arg, A.Quantity):
-            return Num(-e.arg.value, e.arg.dims)
+            need: Dims = () if ty == REAL else QUANTITY_TYPES[str(ty[0])]
+            if q.dims != need and not (q.value == 0 and not q.dims):
+                raise _Fail("E301", f"expected {ty[0]} ({dims_text(need) or 'a number'}), got "
+                            f"{dims_text(q.dims) or 'a number'}", e.span)
+            return _num(-q.value if q is not e else q.value, q.dims)
         if isinstance(e, A.SetLit) and ty[0] in ("Set", "List"):
             elem = ty[1]
             assert isinstance(elem, tuple)

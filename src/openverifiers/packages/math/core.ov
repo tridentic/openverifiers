@@ -1,10 +1,123 @@
-# math.core: the arithmetic every package can rely on.
+# math.core: algebra as theorems over the ordered field.
 #
-# Exact rational arithmetic, units, comparisons, intervals, abs/min/max and
-# equation solving are built into the language (docs/LANGUAGE.md, "Native
-# math"), so this package declares only shared vocabulary for now. Milestone 5
-# adds linear systems, divisibility, parity and induction schemas with tests.
-package math.core @0.1
+# Foundations (built in; listed by `ov audit`, never restated here): exact
+# rational arithmetic and comparison (the kernel), units, and z3's nonlinear
+# real arithmetic for unsat answers (z3_unsat in trust_base). Every class
+# below is a definition; every `theorem` is proven by `ov check`.
+package math.core @0.2
 
 predicate positive(x: Number) world closed
 predicate nonzero(x: Number) world closed
+
+# ---------------------------------------------------------------- quadratics
+
+# x is a root of a x^2 + b x + c with a != 0.
+fact type QuadraticRoot {
+  property a: Real
+  property b: Real
+  property c: Real
+  property x: Real
+  invariant leading: a != 0
+  invariant root: a * x * x + b * x + c = 0
+  # Completing the square: the quadratic formula, squared.
+  theorem completed_square: (2 * a * x + b) * (2 * a * x + b) = b * b - 4 * a * c
+  theorem real_root_discriminant: b * b - 4 * a * c >= 0
+}
+
+# Two distinct roots of the same quadratic.
+fact type QuadraticRoots {
+  property a: Real
+  property b: Real
+  property c: Real
+  property x1: Real
+  property x2: Real
+  invariant leading: a != 0
+  invariant root1: a * x1 * x1 + b * x1 + c = 0
+  invariant root2: a * x2 * x2 + b * x2 + c = 0
+  invariant distinct: x1 != x2
+  theorem vieta_sum: a * (x1 + x2) = -b
+  theorem vieta_product: a * x1 * x2 = c
+  theorem positive_discriminant: b * b - 4 * a * c > 0
+}
+
+# ---------------------------------------------------------------- inequalities
+
+fact type NonNegativePair {
+  property a: Real
+  property b: Real
+  invariant a_nonneg: a >= 0
+  invariant b_nonneg: b >= 0
+  # AM-GM for two numbers, squared: ((a + b) / 2)^2 >= a b.
+  theorem am_gm: (a + b) * (a + b) >= 4 * a * b
+  theorem am_gm_equality: (a + b) * (a + b) = 4 * a * b -> a = b
+}
+
+fact type RealPair {
+  property a: Real
+  property b: Real
+  theorem square_nonneg: (a - b) * (a - b) >= 0
+  theorem two_squares: a * a + b * b >= 2 * a * b
+}
+
+# ---------------------------------------------------------------- tests
+
+# (x - 3)^2 = 0: the double root.
+test quadratic_double_root {
+  scenario quadratic_double_root_s uses math.core { }
+  query FIND ?x WHERE QuadraticRoot{ a = 1, b = -6, c = 9, x = ?x }
+  expect PROVEN 3
+}
+
+test quadratic_no_real_root {
+  scenario quadratic_no_real_root_s uses math.core { }
+  query FIND ?x WHERE QuadraticRoot{ a = 1, b = 0, c = 1, x = ?x }
+  expect REFUTED
+}
+
+test quadratic_count_roots {
+  scenario quadratic_count_roots_s uses math.core { }
+  query COUNT ?x WHERE QuadraticRoot{ a = 2, b = -3, c = 1, x = ?x }
+  expect PROVEN 2
+}
+
+test quadratic_double_root_unique {
+  scenario quadratic_double_root_unique_s uses math.core { }
+  query PROVE UNIQUE ?x WHERE QuadraticRoot{ a = 1, b = -4, c = 4, x = ?x }
+  expect PROVEN
+}
+
+test vieta_no_counterexample {
+  scenario vieta_no_counterexample_s uses math.core { }
+  query COUNTEREXAMPLE QuadraticRoots.vieta_sum
+  expect PROVEN
+}
+
+test am_gm_no_counterexample {
+  scenario am_gm_no_counterexample_s uses math.core { }
+  query COUNTEREXAMPLE NonNegativePair.am_gm
+  expect PROVEN
+}
+
+test check_pair_nonnegative {
+  scenario check_pair_nonnegative_s uses math.core { }
+  query CHECK RealPair{ a = 3, b = 4 } IS NonNegativePair
+  expect PROVEN
+}
+
+test check_pair_negative {
+  scenario check_pair_negative_s uses math.core { }
+  query CHECK RealPair{ a = -1, b = 4 } IS NonNegativePair
+  expect REFUTED
+}
+
+test second_root_from_first {
+  scenario second_root_from_first_s uses math.core { }
+  query FIND ?y WHERE QuadraticRoots{ a = 1, b = -7, c = 10, x1 = 2, x2 = ?y }
+  expect PROVEN 5
+}
+
+test root_needs_leading_coefficient {
+  scenario root_needs_leading_coefficient_s uses math.core { }
+  query FIND ?x WHERE QuadraticRoot{ a = 0, b = 2, c = -4, x = ?x }
+  expect REFUTED
+}

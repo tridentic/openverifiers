@@ -71,6 +71,43 @@ class Poly:
         return Poly.make(d)
 
 
+def poly_deriv(p: Poly, v: str) -> Poly:
+    d: dict[Mono, Fraction] = {}
+    for m, c in p.terms:
+        e = dict(m)
+        k = e.pop(v, 0)
+        if k:
+            if k > 1:
+                e[v] = k - 1
+            mono = tuple(sorted(e.items()))
+            d[mono] = d.get(mono, Fraction(0)) + c * k
+    return Poly.make(d)
+
+
+def poly_integral(p: Poly, v: str) -> Poly:
+    """The antiderivative in v with no constant term (so its value at v = 0 is 0)."""
+    d: dict[Mono, Fraction] = {}
+    for m, c in p.terms:
+        e = dict(m)
+        k = e.get(v, 0) + 1
+        e[v] = k
+        mono = tuple(sorted(e.items()))
+        d[mono] = d.get(mono, Fraction(0)) + c / k
+    return Poly.make(d)
+
+
+def poly_subst(p: Poly, v: str, q: Poly) -> Poly:
+    out = Poly.const(Fraction(0))
+    for m, c in p.terms:
+        e = dict(m)
+        k = e.pop(v, 0)
+        term = Poly.make({tuple(sorted(e.items())): c})
+        for _ in range(k):
+            term = term * q
+        out = out + term
+    return out
+
+
 # ---------------------------------------------------------------- constraint formulas
 # ("true",) ("false",) ("atom", op, poly) with op in = != > >= meaning poly op 0,
 # ("and", parts) ("or", parts); parts are frozensets (merged) or tuples (kept).
@@ -244,6 +281,14 @@ class Expander:
             seq = _seq(self.value(a[0]))
             assert isinstance(k, Num)
             return seq[int(k.value)]
+        if f in ("f.integral", "f.deriv"):
+            var = a[1].value if isinstance(a[1], Str) else ""
+            tau = f"TAU_{var}_{len(self.env)}_{id(t) % 100000}"
+            inner = Expander({**self.props, var: Var(tau)}, self.symmetry)
+            inner.env = dict(self.env)
+            body = _num(inner.value(a[0]))
+            q = poly_integral(body.p, tau) if f == "f.integral" else poly_deriv(body.p, tau)
+            return SNum(poly_subst(q, tau, _num(self.value(self.props[var])).p))
         vals = [self.value(x) for x in a]
         if f == "f.idx":
             seq = _seq(vals[0])

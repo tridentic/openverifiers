@@ -198,3 +198,28 @@ milestone. Newest milestone first.
 - **No linear-system solving.** Each equation is solved for one slot, so
   `x + y = 10, x - y = 4` gives UNKNOWN, not x = 7
   (`mathematics/linear_system`). Planned for Milestone 5.
+
+## M-CAP library layer (2026-11-22)
+
+- **No trigonometric functions.**
+  - An angle is decided only against 0, 30, 45, 60, 90, 120, 135, 150 and
+    180 deg, through its exact cosine.
+  - So `sin` and `cos` of a general angle cannot be written: inclined planes
+    and projectiles at arbitrary angles are a language gap.
+- **No sums with a symbolic number of terms.** The sum of an arithmetic
+  progression with n terms needs induction or a sum operator, so it is not
+  stated yet.
+- **Distances are not arithmetic.** `dist(a, b) + dist(b, c)` is E405,
+  because square roots stay exact only when compared. Use `dist2`.
+- **Calculus covers polynomials in one property.** `integral(e, t)` and
+  `deriv(e, t)` need `e` polynomial in `t`. Non-polynomial integrands (1/t,
+  exponentials) are refused, and there are no numeric ODEs.
+- **Axiom ratios are far from the 0.25 target:** physics.mechanics 0.64,
+  math.geometry 0.68. Theorems will be added as exam problems need them, not
+  to move the ratio.
+- **The trusted code is at 1,470 of 1,500 lines** after adding exact
+  calculus to `raw/formula.py`. The next trusted addition needs the agreed
+  split: `raw/formula.py` as its own audited unit, capped at 400.
+- **Dependencies from `ov audit --dag` can be larger than minimal.** Each
+  deletion trial has a shorter time limit, and a premise is kept when the
+  trial times out. Never smaller than the real set.

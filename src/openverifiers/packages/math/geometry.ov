@@ -1,6 +1,9 @@
-# Plane geometry as concept classes. Each class is defined by its invariants;
-# each theorem is proven from them by `ov check` (the runner checks every class
-# declared in the file it is given). Points are exact rational pairs.
+# Plane geometry as concept classes. Foundations (built in): points as
+# coordinate pairs, dist (the distance formula), dist2 and angle (via the dot
+# product). The classes are definitions; the theorems (Pythagoras, the
+# parallelogram and rhombus properties, the section formula) are proven by
+# `ov check` (the runner checks every class declared in the file it is given).
+# Points are exact rational pairs.
 #
 # Theorems say "no ordering of the vertices that has the defining shape lacks
 # the property" (`none v in cycles(...)`). An `exists v in cycles(...)` theorem
@@ -85,6 +88,23 @@ fact type Circle {
 fact type OnCircle extends Circle {
   property p: Point
   invariant on: dist(p, center) = radius
+}
+
+# ---------------------------------------------------------------- coordinates
+
+# P divides AB internally in the ratio m : n (definition, by coordinates).
+fact type Section {
+  property A: Point
+  property B: Point
+  property P: Point
+  property m: Real
+  property n: Real
+  invariant positive_m: m > 0
+  invariant positive_n: n > 0
+  invariant section_x: (m + n) * P.x = n * A.x + m * B.x
+  invariant section_y: (m + n) * P.y = n * A.y + m * B.y
+  # The section formula: AP : PB = m : n (squared distances, so it stays exact).
+  theorem ratio: n * n * dist2(A, P) = m * m * dist2(P, B)
 }
 
 # ---------------------------------------------------------------- tests

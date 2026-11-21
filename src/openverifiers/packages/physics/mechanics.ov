@@ -1,13 +1,96 @@
-package physics.mechanics @0.1
+# physics.mechanics: Newton's laws as empirical axioms; kinematics from the
+# calculus definitions; everything else proven.
+#
+#   definitions  velocity and displacement as integrals (math.calculus)
+#   laws         Newton's second and third laws, uniform gravity near Earth
+#   theorems     SUVAT, work-energy, mechanical energy, momentum conservation
+#
+# Quantities are in base SI units inside the solver; dimensions are checked
+# when a class compiles. Motion is along one axis; signs give direction.
+package physics.mechanics @0.2
 import math.core
+import math.calculus
 
 type Body { mass: Mass, accel: Accel }
 type Surface
 predicate net_force(b: Body, F: Force) world open
 predicate frictionless(s: Surface) world open
 
-axiom newton2(b: Body, F: Force):
+# Newton's second law, as a rule over named bodies (scenarios with facts).
+law newton2(b: Body, F: Force):
   net_force(b, F) -> F = b.mass * b.accel
+
+# ---------------------------------------------------------------- kinematics
+
+# Constant acceleration a from time 0 to t: u and v are the velocities at 0
+# and t, s the displacement. Velocity is the integral of acceleration and
+# displacement the integral of velocity (definitions).
+fact type ConstantAcceleration {
+  property u: Velocity
+  property a: Accel
+  property t: Time
+  property v: Velocity
+  property s: Length
+  invariant elapsed: t >= 0
+  invariant velocity: v = u + integral(a, t)
+  invariant displacement: s = integral(u + integral(a, t), t)
+  theorem suvat_v: v = u + a * t
+  theorem suvat_s: s = u * t + a * t * t / 2
+  theorem suvat_timeless: v * v = u * u + 2 * a * s
+  theorem suvat_average: s = (u + v) * t / 2
+  theorem suvat_final: s = v * t - a * t * t / 2
+}
+
+# ---------------------------------------------------------------- dynamics
+
+# A body of mass m under a constant net force F along the axis.
+fact type ConstantForce extends ConstantAcceleration {
+  property m: Mass
+  property F: Force
+  invariant positive_mass: m > 0
+  law newton2: F = m * a
+  # Work-energy: the work F s equals the change in kinetic energy.
+  theorem work_energy: F * s = m * v * v / 2 - m * u * u / 2
+}
+
+# Vertical motion under gravity alone (up is positive): the net force is the
+# weight, -m g. h is the height gained (s).
+fact type UniformGravity extends ConstantForce {
+  property g: Accel
+  invariant g_positive: g > 0
+  law weight: F = -m * g
+  theorem free_fall_accel: a = -g
+  # Mechanical energy is conserved: kinetic + potential at t equals that at 0.
+  theorem energy_conservation: m * v * v / 2 + m * g * s = m * u * u / 2
+}
+
+# Two bodies that push on each other (and on nothing else) for a time dt with
+# constant forces: F on body 1, F2 on body 2.
+fact type TwoBodyInteraction {
+  property m1: Mass
+  property m2: Mass
+  property u1: Velocity
+  property u2: Velocity
+  property v1: Velocity
+  property v2: Velocity
+  property a1: Accel
+  property a2: Accel
+  property F: Force
+  property F2: Force
+  property dt: Time
+  invariant elapsed: dt >= 0
+  invariant positive_m1: m1 > 0
+  invariant positive_m2: m2 > 0
+  invariant velocity1: v1 = u1 + integral(a1, dt)
+  invariant velocity2: v2 = u2 + integral(a2, dt)
+  law newton2_1: F = m1 * a1
+  law newton2_2: F2 = m2 * a2
+  law newton3: F2 = -F
+  theorem momentum_conservation: m1 * u1 + m2 * u2 = m1 * v1 + m2 * v2
+  theorem impulse: m1 * (v1 - u1) = F * dt
+}
+
+# ---------------------------------------------------------------- tests
 
 test newton2_mass {
   scenario t uses physics.mechanics {
@@ -17,4 +100,60 @@ test newton2_mass {
   }
   query FIND ?m WHERE t.block.mass = ?m
   expect PROVEN 5 kg
+}
+
+test suvat_distance {
+  scenario suvat_distance_s uses physics.mechanics { }
+  query FIND ?s WHERE ConstantAcceleration{ u = 4 m/s, a = 2 m/s^2, t = 3 s, s = ?s }
+  expect PROVEN 21 m
+}
+
+test suvat_final_speed {
+  scenario suvat_final_speed_s uses physics.mechanics { }
+  query FIND ?v WHERE ConstantAcceleration{ u = 0 m/s, a = 3 m/s^2, t = 4 s, v = ?v }
+  expect PROVEN 12 m/s
+}
+
+# s = t^2 has the roots t = 4 s and t = -4 s; only t >= 0 is a time elapsed.
+test suvat_time_from_distance {
+  scenario suvat_time_from_distance_s uses physics.mechanics { }
+  query COUNT ?t WHERE ConstantAcceleration{ u = 0 m/s, a = 2 m/s^2, s = 16 m, t = ?t }
+  expect PROVEN 1
+}
+
+test braking_distance {
+  scenario braking_distance_s uses physics.mechanics { }
+  query FIND ?s WHERE ConstantAcceleration{ u = 20 m/s, v = 0 m/s, a = -5 m/s^2, s = ?s }
+  expect PROVEN 40 m
+}
+
+test force_from_motion {
+  scenario force_from_motion_s uses physics.mechanics { }
+  query FIND ?F WHERE ConstantForce{ m = 2 kg, u = 0 m/s, v = 6 m/s, t = 3 s, F = ?F }
+  expect PROVEN 4 N
+}
+
+test drop_speed {
+  scenario drop_speed_s uses physics.mechanics { }
+  query FIND ?v WHERE UniformGravity{ m = 1 kg, g = 10 m/s^2, u = 0 m/s, s = -5 m, v = ?v }
+  expect PROVEN -10 m/s
+}
+
+test recoil {
+  scenario recoil_s uses physics.mechanics { }
+  query FIND ?v2 WHERE TwoBodyInteraction{ m1 = 2 kg, m2 = 3 kg, u1 = 0 m/s, u2 = 0 m/s,
+                                           v1 = 6 m/s, v2 = ?v2 }
+  expect PROVEN -4 m/s
+}
+
+test work_energy_no_counterexample {
+  scenario work_energy_no_counterexample_s uses physics.mechanics { }
+  query COUNTEREXAMPLE ConstantForce.work_energy
+  expect PROVEN
+}
+
+test negative_mass_rejected {
+  scenario negative_mass_rejected_s uses physics.mechanics { }
+  query FIND ?a WHERE ConstantForce{ m = -2 kg, F = 4 N, a = ?a }
+  expect REFUTED
 }

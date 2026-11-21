@@ -236,6 +236,8 @@ class Axiom:
     head: tuple[Lit, ...]
     span: Span
     kind: str = "axiom"   # or "transformation"
+    #: for `ov audit`: foundation (`axiom`), law (`law`, empirical) or definition
+    basis: str = "foundation"
 
 
 @dataclass(frozen=True)
@@ -465,6 +467,8 @@ class Invariant:
     body: tuple[Formula, ...]
     span: Span
     theorem: bool = False
+    #: invariant (a definition) | law (empirical) | theorem | lemma (a helper theorem)
+    kind: str = "invariant"
 
 
 @dataclass(frozen=True)

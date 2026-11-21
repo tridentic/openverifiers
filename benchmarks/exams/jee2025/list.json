@@ -1,0 +1,531 @@
+{
+  "draw_rule": "benchmarks/exams/DRAW_RULE.md",
+  "n_per_subject": 32,
+  "step": 3,
+  "skips": [
+    {
+      "subject": "physics",
+      "position": 4,
+      "skipped": "paper 1 Q.4",
+      "reason": "Vernier-scale reading: the measurement data exist only in the two figures; reading them is the problem",
+      "replacement": "paper 1 Q.5 (next in order)"
+    }
+  ],
+  "notes": [
+    "Only a figure whose content is the problem itself is skipped. Chemical structure drawings are kept: a structure can be stated as a name, so it is transcribed at formalization and checked by the faithfulness reviewer.",
+    "No question text is stored in the repo (copyright). The originals are in the gitignored private/sources/jee/.",
+    "official_answer is copied from the official Final Answer Key; numeric ranges are the official accepted ranges."
+  ],
+  "problems": [
+    {
+      "id": "jee2025-phys-p1q1",
+      "subject": "physics",
+      "draw_position": 1,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "physics",
+        "question": 1,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "A",
+      "gold_provenance": "official_key",
+      "topic": "SHM: disk rolling inside a ring, restrained by a spring along the rim"
+    },
+    {
+      "id": "jee2025-phys-p1q5",
+      "subject": "physics",
+      "draw_position": 4,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "physics",
+        "question": 5,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_multi",
+      "official_answer": "B, D",
+      "gold_provenance": "official_key",
+      "topic": "electromagnetic induction: square loop entering a field region, magnetic braking"
+    },
+    {
+      "id": "jee2025-phys-p1q7",
+      "subject": "physics",
+      "draw_position": 7,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "physics",
+        "question": 7,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_multi",
+      "official_answer": "A, D",
+      "gold_provenance": "official_key",
+      "topic": "waves: reflection and transmission at junctions of strings of different density"
+    },
+    {
+      "id": "jee2025-phys-p1q10",
+      "subject": "physics",
+      "draw_position": 10,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "physics",
+        "question": 10,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "3",
+      "gold_provenance": "official_key",
+      "topic": "thermal radiation: black plates with radiation shields, power ratio"
+    },
+    {
+      "id": "jee2025-phys-p1q13",
+      "subject": "physics",
+      "draw_position": 13,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "physics",
+        "question": 13,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "72",
+      "gold_provenance": "official_key",
+      "topic": "modern physics: Bohr orbit electron and thermal neutron with equal de Broglie wavelength"
+    },
+    {
+      "id": "jee2025-phys-p1q16",
+      "subject": "physics",
+      "draw_position": 16,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "physics",
+        "question": 16,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "C",
+      "gold_provenance": "official_key",
+      "topic": "atomic physics: matching energy scalings with Z to phenomena"
+    },
+    {
+      "id": "jee2025-phys-p2q3",
+      "subject": "physics",
+      "draw_position": 19,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "physics",
+        "question": 3,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "C",
+      "gold_provenance": "official_key",
+      "topic": "rotational SHM: hinged rod with two springs, frequency ratio"
+    },
+    {
+      "id": "jee2025-phys-p2q6",
+      "subject": "physics",
+      "draw_position": 22,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "physics",
+        "question": 6,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "mcq_multi",
+      "official_answer": "A, B",
+      "gold_provenance": "official_key",
+      "topic": "optics: two concave mirrors and a glass slab, image on the source"
+    },
+    {
+      "id": "jee2025-phys-p2q9",
+      "subject": "physics",
+      "draw_position": 25,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "physics",
+        "question": 9,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "[1.65 to 1.67]",
+      "gold_provenance": "official_key",
+      "topic": "magnetism: rotating charged conducting sphere, magnetic moment to angular momentum"
+    },
+    {
+      "id": "jee2025-phys-p2q12",
+      "subject": "physics",
+      "draw_position": 28,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "physics",
+        "question": 12,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "[2.3 to 2.4]",
+      "gold_provenance": "official_key",
+      "topic": "gravitation: satellite periods, counter-rotating orbit seen from Earth"
+    },
+    {
+      "id": "jee2025-chem-p1q1",
+      "subject": "chemistry",
+      "draw_position": 1,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "chemistry",
+        "question": 1,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "A",
+      "gold_provenance": "official_key",
+      "topic": "inorganic: thermal decomposition products of ammonium nitrite and nitrate"
+    },
+    {
+      "id": "jee2025-chem-p1q4",
+      "subject": "chemistry",
+      "draw_position": 4,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "chemistry",
+        "question": 4,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "B",
+      "gold_provenance": "official_key",
+      "topic": "organic: most acidic C-H among drawn hydrocarbons (structures to transcribe)"
+    },
+    {
+      "id": "jee2025-chem-p1q7",
+      "subject": "chemistry",
+      "draw_position": 7,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "chemistry",
+        "question": 7,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_multi",
+      "official_answer": "B",
+      "gold_provenance": "official_key",
+      "topic": "organic: haloalkane sequence (HBr, Finkelstein, Swarts) bond and reactivity orders (structure to transcribe)"
+    },
+    {
+      "id": "jee2025-chem-p1q10",
+      "subject": "chemistry",
+      "draw_position": 10,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "chemistry",
+        "question": 10,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "[-7.2 to -7]",
+      "gold_provenance": "official_key",
+      "topic": "gases: van der Waals equation as a cubic in molar volume, coefficient ratio"
+    },
+    {
+      "id": "jee2025-chem-p1q13",
+      "subject": "chemistry",
+      "draw_position": 13,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "chemistry",
+        "question": 13,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "175",
+      "gold_provenance": "official_key",
+      "topic": "organic: multistep synthesis with yields, mass of product (structures to transcribe)"
+    },
+    {
+      "id": "jee2025-chem-p1q16",
+      "subject": "chemistry",
+      "draw_position": 16,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "chemistry",
+        "question": 16,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "B",
+      "gold_provenance": "official_key",
+      "topic": "biomolecules: matching compounds to qualitative tests (structures to transcribe)"
+    },
+    {
+      "id": "jee2025-chem-p2q3",
+      "subject": "chemistry",
+      "draw_position": 19,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "chemistry",
+        "question": 3,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "D",
+      "gold_provenance": "official_key",
+      "topic": "organic: products of reaction sequences, count of unsaturated carbons (structures to transcribe)"
+    },
+    {
+      "id": "jee2025-chem-p2q6",
+      "subject": "chemistry",
+      "draw_position": 22,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "chemistry",
+        "question": 6,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "mcq_multi",
+      "official_answer": "B, D",
+      "gold_provenance": "official_key",
+      "topic": "inorganic: phosphorus oxoacids with P-H bonds"
+    },
+    {
+      "id": "jee2025-chem-p2q9",
+      "subject": "chemistry",
+      "draw_position": 25,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "chemistry",
+        "question": 9,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "[10.85 to 11.1]",
+      "gold_provenance": "official_key",
+      "topic": "solid state: density of a ccp metal from edge length"
+    },
+    {
+      "id": "jee2025-chem-p2q12",
+      "subject": "chemistry",
+      "draw_position": 28,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "chemistry",
+        "question": 12,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "[4 to 4.25]",
+      "gold_provenance": "official_key",
+      "topic": "kinetics: error of the pseudo-first-order approximation at 40% conversion"
+    },
+    {
+      "id": "jee2025-math-p1q1",
+      "subject": "mathematics",
+      "draw_position": 1,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "mathematics",
+        "question": 1,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "C",
+      "gold_provenance": "official_key",
+      "topic": "algebra: coefficient in a difference of shifted quartics"
+    },
+    {
+      "id": "jee2025-math-p1q4",
+      "subject": "mathematics",
+      "draw_position": 4,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "mathematics",
+        "question": 4,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "C",
+      "gold_provenance": "official_key",
+      "topic": "matrices: integer orthogonal matrices commuting with a diagonal matrix (count)"
+    },
+    {
+      "id": "jee2025-math-p1q7",
+      "subject": "mathematics",
+      "draw_position": 7,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "mathematics",
+        "question": 7,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_multi",
+      "official_answer": "A, D",
+      "gold_provenance": "official_key",
+      "topic": "complex numbers: locus |z - z1| = 2|z - z2| (Apollonius circle)"
+    },
+    {
+      "id": "jee2025-math-p1q10",
+      "subject": "mathematics",
+      "draw_position": 10,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "mathematics",
+        "question": 10,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "762",
+      "gold_provenance": "official_key",
+      "topic": "combinatorics: seven-digit strings over {0,1,2} with a digit appearing exactly twice"
+    },
+    {
+      "id": "jee2025-math-p1q13",
+      "subject": "mathematics",
+      "draw_position": 13,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "mathematics",
+        "question": 13,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "2",
+      "gold_provenance": "official_key",
+      "topic": "differential equations: product of three first-order linear ODE solutions"
+    },
+    {
+      "id": "jee2025-math-p1q16",
+      "subject": "mathematics",
+      "draw_position": 16,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 1,
+        "subject": "mathematics",
+        "question": 16,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_1_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "A",
+      "gold_provenance": "official_key",
+      "topic": "vectors: cross-product system and a linear system in t (matching)"
+    },
+    {
+      "id": "jee2025-math-p2q3",
+      "subject": "mathematics",
+      "draw_position": 19,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "mathematics",
+        "question": 3,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "mcq_single",
+      "official_answer": "C",
+      "gold_provenance": "official_key",
+      "topic": "trigonometry: number of real solutions of an inverse-trig equation"
+    },
+    {
+      "id": "jee2025-math-p2q6",
+      "subject": "mathematics",
+      "draw_position": 22,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "mathematics",
+        "question": 6,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "mcq_multi",
+      "official_answer": "A, C",
+      "gold_provenance": "official_key",
+      "topic": "calculus/conics: locus of chord midpoints of a parabola by area, then an area"
+    },
+    {
+      "id": "jee2025-math-p2q9",
+      "subject": "mathematics",
+      "draw_position": 25,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "mathematics",
+        "question": 9,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "[0.7 to 0.8]",
+      "gold_provenance": "official_key",
+      "topic": "differential equations: homogeneous first-order ODE, value at e^2"
+    },
+    {
+      "id": "jee2025-math-p2q12",
+      "subject": "mathematics",
+      "draw_position": 28,
+      "source": {
+        "exam": "JEE (Advanced)",
+        "year": 2025,
+        "paper": 2,
+        "subject": "mathematics",
+        "question": 12,
+        "file": "JEE (Advanced) 2025, official Final Answer Key papers, jeeadv.ac.in/past_qps/2025_2_English.pdf"
+      },
+      "type": "numeric",
+      "official_answer": "-2",
+      "gold_provenance": "official_key",
+      "topic": "vectors: condition on alpha and beta for three vectors"
+    }
+  ]
+}

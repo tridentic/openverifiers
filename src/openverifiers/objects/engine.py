@@ -37,7 +37,7 @@ from .expand import (
     seq_items,
     translation_invariant,
 )
-from .solve import Result, solve
+from .solve import Result, small_scope, solve
 
 DEFAULT_LIMIT = {"find": 16, "unique": 2, "count": 64}
 
@@ -140,8 +140,9 @@ class _Run:
     def __init__(self, st: Settings, steps: list[str]) -> None:
         self.st, self.steps = st, steps
 
-    def solve(self, what: str, cons: list[CF], names: list[str]) -> Result:
-        r = solve(cons, names, self.st.timeout_ms)
+    def solve(self, what: str, cons: list[CF], names: list[str], *, seek: bool = False
+              ) -> Result:
+        r = solve(cons, names, self.st.timeout_ms, seek=seek)
         self.steps.append(f"solve [{r.via}] {what}: {r.status}"
                           + (f" ({r.reason})" if r.reason else ""))
         return r
@@ -206,7 +207,7 @@ def _answer(plan: ObjPlan, st: Settings) -> ObjAnswer:
         if plan.kind == "counterexample":
             assert plan.theorem is not None
             v, why, wit, names = theorem(plan.cls, plan.theorem, r, ans.steps,
-                                         plan.note or plan.props)
+                                         plan.note or plan.props, seek=True)
             # The verdict is the theorem's: REFUTED with the checked counterexample,
             # PROVEN when its negation is unsat, UNKNOWN otherwise.
             ans.witness, ans.names, ans.verdict, ans.reason = wit, names, v, why
@@ -228,7 +229,7 @@ def _search(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> ObjAnswer:
     while True:
         what = f"invariants of {plan.cls.name}" + (f" minus {len(blocks)} found" if blocks
                                                    else "")
-        res = r.solve(what, [base, *blocks], list(names))
+        res = r.solve(what, [base, *blocks], list(names), seek=True)
         if res.status == "unknown":
             ans.reason, ans.complete = res.reason, False
             break
@@ -251,7 +252,7 @@ def _search(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> ObjAnswer:
         ans.bindings.append(binding)
         if len(ans.bindings) >= limit:
             more = r.solve("for more solutions", [base, *blocks, _block(plan, binding)],
-                           list(names))
+                           list(names), seek=True)
             ans.complete = more.status == "unsat"
             if more.status == "sat":
                 ans.reason = "budget"
@@ -389,9 +390,13 @@ def _wlog(f: Term, gen: Mapping[str, Term]) -> tuple[str, str, Term, Term] | Non
 
 
 def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
-            gen: Mapping[str, Term] | str
+            gen: Mapping[str, Term] | str, *, seek: bool = False
             ) -> tuple[str, str, dict[str, Term] | None, tuple[str, ...]]:
-    """(PROVEN | REFUTED | UNKNOWN, reason, counterexample, ())."""
+    """(PROVEN | REFUTED | UNKNOWN, reason, counterexample, ()).
+
+    ``seek`` (COUNTEREXAMPLE): try small integer points before z3. Otherwise (a
+    theorem check) z3 goes first, and the small-scope search runs only if z3 can
+    neither prove nor refute it: never on a proof that succeeds."""
     if isinstance(gen, str):
         steps.append(f"no bounded instance: {gen}")
         return "UNKNOWN", "budget", None, ()
@@ -444,7 +449,12 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
         return "PROVEN", "", None, ()
     cons = _pin([or_(full)], gen, steps)
     what = f"invariants of {cls.name} and not {th[0]}"
-    res = r.solve(what, cons, list(names))
+    res = r.solve(what, cons, list(names), seek=seek)
+    if res.status == "unknown" and not seek:
+        fallback = small_scope(cons, list(names))
+        steps.append(f"solve [{fallback.via}] {what}: {fallback.status}")
+        if fallback.status == "sat":
+            res = fallback
     if res.status == "unsat":
         if r.confirm_unsat(what, cons, list(names)):
             return "PROVEN", "", None, ()
@@ -516,7 +526,8 @@ def _consistency(cls: ClassDef, gen: dict[str, Term], r: _Run, ans: ObjAnswer) -
         ans.steps.append(f"cannot expand: {e}")
         ans.reason = "plugin_unknown"
         return ans
-    res = r.solve(f"invariants of {cls.name}", _pin([cons], gen, ans.steps), list(names))
+    res = r.solve(f"invariants of {cls.name}", _pin([cons], gen, ans.steps), list(names),
+                  seek=True)
     if res.status == "sat" and res.model is not None:
         g = _ground(gen, res.model)
         if r.recheck(cls, g) == ():

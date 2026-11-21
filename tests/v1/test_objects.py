@@ -205,7 +205,8 @@ scenario s {
 
 
 def test_buggy_plugin_model_is_rejected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    def wrong(constraints: object, names: list[str], timeout_ms: int = 0) -> Result:
+    def wrong(constraints: object, names: list[str], timeout_ms: int = 0,
+              seek: bool = False) -> Result:
         return Result("sat", {n: Fraction(7) for n in names})   # (7, 7): not a square vertex
     monkeypatch.setattr(engine, "solve", wrong)
     res = run_file(SQUARE, files={str(SQUARE)})
@@ -444,3 +445,15 @@ def test_trust_base_and_strict() -> None:
     assert (s_th.verdict, s_th.reason, s_th.trust_base) == ("UNKNOWN", "plugin_unknown",
                                                              frozenset())
     assert strict.classes[1].verdict == "PROVEN"                  # a re-checked witness
+
+
+def test_small_scope_never_runs_on_a_successful_proof(geometry) -> None:  # type: ignore[no-untyped-def]
+    """Small-scope search is for things that may exist (FIND, consistency,
+    COUNTEREXAMPLE). A theorem check tries z3 first and falls back to it only when
+    z3 neither proves nor refutes."""
+    proven = [a for a in geometry.classes if a.kind == "theorem" and a.verdict == "PROVEN"]
+    assert proven
+    for a in proven:
+        assert not any("small-scope" in s for s in a.steps), a.title
+    finds = [a for a in geometry.objects if a.kind == "find" and a.bindings]
+    assert any(any("small-scope" in s for s in a.steps) for a in finds)

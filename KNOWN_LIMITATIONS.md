@@ -11,12 +11,14 @@ milestone. Newest milestone first.
   - an instance that has no rational solution (an equilateral triangle with
     two given rational vertices) is UNKNOWN(plugin_unknown);
   - a counterexample that lies on a curved variety may not be found. A
-    small-scope pass (integer coordinates in [-4, 4], before z3) now finds
+    small-scope pass (integer coordinates in [-4, 4], 200 ms budget) finds
     many of them: "a rhombus has equal diagonals" is REFUTED with
     (0,0), (1,2), (3,3), (2,1)-style witnesses. Counterexamples with no small
-    integer point still depend on z3. The pass costs up to 1 s per solve that
-    has no small solution (the `math.geometry` package went from about 3.6 s
-    to about 7 s).
+    integer point still depend on z3. The pass runs first only for searches
+    for something that may exist (FIND and its variants, class consistency,
+    COUNTEREXAMPLE). A theorem check runs z3 first and uses small-scope only
+    when z3 neither proves nor refutes, so it never runs on a proof that
+    succeeds.
 - **Unsat is trusted to z3, and says so.** UNIQUE, COUNT, theorem PROVEN and
   empty classes rest on unsat answers. These cannot be checked by
   substitution. They are re-solved in a fresh solver, as the brief allows,

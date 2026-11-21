@@ -97,17 +97,32 @@ def _split(cs: list[CF]) -> tuple[list[CF], list[CF]] | None:
     return sorted(parts, key=canon), [c for c in cs if c is not best[1]]
 
 
+SMALL_SCOPE_SECONDS = 0.2
+
+
+def small_scope(constraints: Sequence[CF], variables: Sequence[str] = ()) -> Result:
+    """Integer points in [-4, 4] only (Alloy-style). It never claims unsat: a miss is
+    UNKNOWN(budget)."""
+    found = smallscope.search(_conjuncts(constraints), variables, seconds=SMALL_SCOPE_SECONDS)
+    via = f"small-scope [-{smallscope.BOUND}, {smallscope.BOUND}]"
+    return Result("sat", found, via=via) if found is not None else Result(
+        "unknown", None, "budget", via=via)
+
+
 def solve(constraints: Sequence[CF], variables: Sequence[str] = (),
-          timeout_ms: int = 20_000) -> Result:
+          timeout_ms: int = 20_000, *, seek: bool = False) -> Result:
     """Solve the conjunction. Exists-disjunctions (one branch per ordering of a cycle,
     say) are split into separate, conjunctive problems: nonlinear search is far easier
-    on each branch than on the disjunction, and unsat needs every branch unsat."""
+    on each branch than on the disjunction, and unsat needs every branch unsat.
+
+    ``seek``: the caller is looking for something that may exist (FIND, consistency,
+    COUNTEREXAMPLE), so try small integer points first. It is off for proofs, where
+    the expected answer is unsat and the search could only waste time."""
     cs = _conjuncts(constraints)
-    # Small scope first (Alloy-style): integer points in [-4, 4]. Cheap, and it finds
-    # the rational witnesses that nonlinear search misses. It never claims unsat.
-    found = smallscope.search(cs, variables, seconds=min(1.0, timeout_ms / 10_000))
-    if found is not None:
-        return Result("sat", found, via=f"small-scope [-{smallscope.BOUND}, {smallscope.BOUND}]")
+    if seek:
+        r0 = small_scope(cs, variables)
+        if r0.status == "sat":
+            return r0
     deadline = time.monotonic() + 3 * timeout_ms / 1000
     # A quick pass over every branch first: a sat branch late in the order is found
     # without waiting for hard unsat branches before it to time out.

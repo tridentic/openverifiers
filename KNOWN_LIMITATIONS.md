@@ -184,3 +184,16 @@ milestone. Newest milestone first.
 - Should INCONSISTENT be scoped to queries whose proofs touch the conflict?
 - Should fact retraction become a label lookup by default (fact tokens), at
   the cost of larger labels?
+
+## Found by the first benchmark run (2026-11-21)
+
+- **FIND does not say what is missing.** An UNKNOWN FIND reports
+  `open_world` with no missing facts. PROVE reports the missing atoms.
+  Example: `physics/push_block` with `frictionless` retracted should say
+  "missing: mu, normal_force".
+- **A retracted assumption shows up as a missing `assume` atom.** It should
+  show as the statement itself (`reviewed(v2)` in
+  `agentic/deploy_checklist`).
+- **No linear-system solving.** Each equation is solved for one slot, so
+  `x + y = 10, x - y = 4` gives UNKNOWN, not x = 7
+  (`mathematics/linear_system`). Planned for Milestone 5.

@@ -111,3 +111,29 @@ def test_kernel_rejections_and_crashes_are_outcomes(tmp_path: Path,
     monkeypatch.setattr(bench_run, "run_file", boom(KeyError("k")))
     r = run_case(c, 0, Settings())
     assert not r["pass"] and r["outcome"]["error"] == ["crash:KeyError"]
+
+
+# Cases whose gold OV does not meet yet (step-2 report, 2026-11-21). Each is a
+# missing capability, not a wrong definite verdict. Fixing one means removing it
+# here; the gold is never edited to match.
+KNOWN_MISMATCHES = {
+    "agentic/deploy_checklist",      # retracted assumption reported as missing 'assume'
+    "mathematics/linear_system",     # no linear-system solving yet (M5)
+    "physics/push_block",            # FIND reports no missing facts (open_world)
+}
+
+
+def test_benchmark_suites_against_gold(tmp_path: Path) -> None:
+    """Golden test over benchmarks/: no crash, no false PROVEN or REFUTED, and the
+    failing set never grows."""
+    root = Path(__file__).resolve().parents[2] / "benchmarks"
+    main([str(root), "--out", str(tmp_path)])
+    rows = [json.loads(x) for x in (tmp_path / "results.jsonl").read_text().splitlines()]
+    assert len(rows) >= 36
+    assert not [r for r in rows if any(e.startswith("crash:")
+                                       for e in r["outcome"].get("error", []))]
+    [total] = [r for r in csv.DictReader((tmp_path / "summary.csv").open())
+               if r["suite"] == "all"]
+    assert total["false_proven"] == "0" and total["false_refuted"] == "0"
+    failing = {f"{r['suite']}/{r['case']}" for r in rows if not r["pass"]}
+    assert failing <= KNOWN_MISMATCHES, failing - KNOWN_MISMATCHES

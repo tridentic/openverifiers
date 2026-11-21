@@ -213,9 +213,16 @@ milestone. Newest milestone first.
   stated yet.
 - **Nested roots are compared, not computed.** √(2 + √3) can be compared
   by its square but not added; sqrt of an irrational is refused.
-- **Calculus covers polynomials in one property.** `integral(e, t)` and
-  `deriv(e, t)` need `e` polynomial in `t`. Non-polynomial integrands (1/t,
-  exponentials) are refused, and there are no numeric ODEs.
+- **Calculus is exact on polynomials, with the exp chain rule.**
+  - Integrals of exp, ln or sqrt of the variable are refused, and so are
+    derivatives of ln or sqrt of the variable.
+  - There are no numeric ODEs: a decay or RC solution is stated and proven
+    by differentiating it.
+- **Numeric mode solves only explicit definitions.** Each unknown needs an
+  invariant `p = E` in which E uses known values. Solving `N0 exp(-k t) = N`
+  for t needs the class to state `t = ln(N0 / N) / k`.
+- **Classes with exp, ln or pi cannot show consistency.** Their consistency
+  check is UNKNOWN: the witness search cannot pick transcendental values.
 - **Axiom ratios are far from the 0.25 target:** physics.mechanics 0.64,
   math.geometry 0.68. Theorems will be added as exam problems need them, not
   to move the ratio.

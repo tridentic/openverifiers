@@ -316,3 +316,116 @@ def test_non_special_angles_need_given_values(tmp_path: Path) -> None:
     with pytest.raises(OVError) as e:
         run(src, tmp_path, "trig.ov")
     assert "E405" in e.value.render() and "Angle{ cos = 4/5, sin = 3/5 }" in e.value.render()
+
+
+# ---------------------------------------------------------------- exp, ln, pi, intervals
+
+
+def test_interval_functions_enclose_the_true_values() -> None:
+    import math
+
+    from openverifiers.raw import interval as I
+    one = I.Iv.of(Fraction(1))
+    for iv, true in ((I.exp(one), math.e), (I.ln(I.Iv.of(Fraction(2))), math.log(2)),
+                     (I.pi(), math.pi), (I.sin(one), math.sin(1)), (I.cos(one), math.cos(1)),
+                     (I.sqrt(I.Iv.of(Fraction(2))), math.sqrt(2)),
+                     (I.exp(I.Iv.of(Fraction(-30))), math.exp(-30))):
+        assert iv.lo <= Fraction(true) <= iv.hi or abs(float(iv.lo) - true) < 1e-15
+        assert iv.width() < Fraction(1, 10**40)
+    assert I.ln(I.exp(I.Iv.of(Fraction(3, 7)))).lo <= Fraction(3, 7) <= \
+        I.ln(I.exp(I.Iv.of(Fraction(3, 7)))).hi
+    with pytest.raises(I.IntervalError):
+        I.ln(I.Iv.of(Fraction(0)))
+    assert I.decide("<", I.Iv.of(Fraction(1)), I.Iv.of(Fraction(2))) is True
+    assert I.decide("=", I.Iv(Fraction(1), Fraction(2)), I.Iv.of(Fraction(3, 2))) is None
+
+
+def test_numeric_answers_in_three_domains() -> None:
+    f = Path(__file__).parent / "transcendental.ov"
+    res = run_file(f, files={str(f)})
+    decay, half, circ = res.objects
+    import math
+    for a, true in ((decay, 1000 * math.exp(-0.5)), (half, math.log(2) / 0.05),
+                    (circ, 2 * math.pi)):
+        assert a.verdict == "PROVEN" and a.trust_base == {"kernel"}
+        v = next(iter(a.bindings[0].values()))
+        assert isinstance(v, Compound)
+        lo, hi = (x.value for x in v.args if isinstance(x, Num))
+        assert lo <= Fraction(true) <= hi or abs(float(lo) - true) < 1e-9
+    theorems = {a.title: a.verdict for a in res.classes if a.kind == "theorem"}
+    assert theorems["theorem Decay.rate_law"] == "PROVEN"      # by differentiating
+
+
+def test_numeric_check_refuses_unsound_shapes() -> None:
+    from openverifiers.raw.numeric import failing_numeric
+    iv = Compound("f.iv", (n(1), n(2)))
+
+    def eq(a: Compound | Num, b: Compound | Num) -> Compound:
+        return Compound("f.cmp", (Str("="), a, b))
+    exp1 = Compound("f.exp", (n(1),))
+    one_def = ClassDef("C", ("x",), (("C.d", eq(p("x"), exp1)),), ())
+    assert failing_numeric(one_def, {"x": Compound("f.iv", (n(2), n(3)))}) == ()     # e in [2,3]
+    assert failing_numeric(one_def, {"x": iv}) == ("C.d",)                         # e not in [1,2]
+    two_defs = ClassDef("C", ("x",), (("C.a", eq(p("x"), exp1)), ("C.b", eq(p("x"), n(3)))), ())
+    with pytest.raises(Unsupported):            # a second equation on x is not a definition
+        failing_numeric(two_defs, {"x": Compound("f.iv", (n(2), n(3)))})
+    cyc = ClassDef("C", ("x", "y"), (("C.a", eq(p("x"), p("y"))), ("C.b", eq(p("y"), exp1))), ())
+    with pytest.raises(Unsupported):            # x defined from y before y is defined
+        failing_numeric(cyc, {"x": iv, "y": iv})
+
+
+def test_calculus_never_treats_a_non_polynomial_as_constant(tmp_path: Path) -> None:
+    """integral(sqrt(t)) treated as sqrt(t) * t would prove a false theorem."""
+    res = run("""package probe.bad
+fact type Bad {
+  property t: Real
+  invariant pos: t > 0
+  theorem wrong_integral: integral(sqrt(t), t) = sqrt(t) * t
+  theorem wrong_derivative: deriv(exp(2 * t), t) = exp(2 * t)
+}
+""", tmp_path, "bad.ov")
+    verdicts = {a.title: a.verdict for a in res.classes if a.kind == "theorem"}
+    assert verdicts["theorem Bad.wrong_integral"] != "PROVEN"
+    assert verdicts["theorem Bad.wrong_derivative"] != "PROVEN"
+
+
+def test_tolerance_is_a_real_statement(tmp_path: Path) -> None:
+    src = (Path(__file__).parent / "transcendental.ov").read_text().replace(
+        "scenario e1 uses probe.exp {", "scenario e1 uses probe.exp {\n  tolerance 0.000001")
+    res = run(src, tmp_path, "t.ov")
+    assert all(a.verdict == "PROVEN" for a in res.objects)
+    assert all(a.plan is not None and a.plan.tolerance == Fraction(1, 10**6)
+               for a in res.objects)
+
+
+def test_audit_checks_definitions_are_conservative(tmp_path: Path) -> None:
+    from openverifiers.audit import audit
+    f = tmp_path / "defs.ov"
+    f.write_text("""package probe.defs
+type Thing
+predicate p(x: Thing) world closed
+predicate q(x: Thing) world closed
+predicate r(x: Thing) world closed
+definition good(x: Thing): p(x) -> q(x)
+definition loop(x: Thing): r(x), p(x) -> r(x)
+fact type K {
+  property a: Real
+  property b: Real
+  property c: Real
+  invariant pos: a > 0
+  invariant b_def: b = 2 * a
+  invariant c_one: c = a + 1
+  invariant c_two: c = b - 1
+  theorem t: b > a
+}
+""")
+    rep = audit(f)
+    kinds = {a.name: (a.kind, a.note) for a in rep.axioms}
+    assert kinds["good"] == ("definition", "")
+    assert kinds["loop"][0] == "axiom" and "recursive" in kinds["loop"][1]
+    assert kinds["K.b_def"] == ("definition", "")
+    assert "constrains existing symbols" in kinds["K.pos"][1]          # strict reading only
+    assert "defined more than once" in kinds["K.c_one"][1]
+    # claim ratio: foundation 1 + axiom 1 (loop) over those + 1 theorem
+    assert rep.claim_ratio == 2 / 3
+    assert rep.strict_claim_ratio > rep.claim_ratio

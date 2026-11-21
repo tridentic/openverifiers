@@ -39,7 +39,7 @@ from .objects.compile import generic
 from .objects.engine import ObjAnswer, Settings, _Run, check_classes, theorem
 from .raw.formula import ClassDef, Unsupported
 from .raw.program import Span
-from .raw.terms import Compound, Term
+from .raw.terms import Compound, Str, Term
 
 USAGE = "usage: ov audit PACKAGE|FILE [--dag THEOREM ...] [--json]"
 
@@ -64,10 +64,11 @@ FOUNDATIONS = {
 @dataclass
 class Item:
     name: str
-    kind: str                  # foundation | law | definition | theorem
+    kind: str                  # foundation | law | definition | axiom | theorem
     status: str = ""           # theorems: PROVEN | REFUTED | UNPROVEN
     trust: list[str] = field(default_factory=list)
     where: str = ""
+    note: str = ""             # why a declared definition was reclassified as an axiom
 
 
 @dataclass
@@ -82,6 +83,23 @@ class Report:
     def ratio(self) -> float:
         n = len(self.axioms) + len(self.theorems)
         return len(self.axioms) / n if n else 0.0
+
+    @property
+    def claim_ratio(self) -> float:
+        """(foundation + law + axiom) / (those + theorems): conservative definitions add
+        no trust, so they are left out (CTO, M-CAP item 3)."""
+        claims = sum(a.kind in ("foundation", "law", "axiom") for a in self.axioms)
+        n = claims + len(self.theorems)
+        return claims / n if n else 0.0
+
+    @property
+    def strict_claim_ratio(self) -> float:
+        """As claim_ratio, but a class invariant counts as a definition only when it is
+        `p = E` defining one property non-circularly."""
+        claims = sum(a.kind in ("foundation", "law", "axiom") or bool(a.note)
+                     for a in self.axioms)
+        n = claims + len(self.theorems)
+        return claims / n if n else 0.0
 
     def counts(self) -> dict[str, int]:
         out: dict[str, int] = {}
@@ -116,9 +134,20 @@ def audit(path: Path, dag: Sequence[str] = (), st: Settings | None = None) -> Re
     mod = env.main
     pkg = mod.package.name if mod.package else "<main>"
     axioms: list[Item] = []
+    heads: dict[str, int] = {}
+    for it in mod.items:
+        if isinstance(it, A.Axiom):
+            for h in it.head:
+                for name in _lit_preds(h):
+                    heads[name] = heads.get(name, 0) + 1
     for it in mod.items:
         if isinstance(it, A.Axiom) and it.kind == "axiom":
-            axioms.append(Item(it.name, it.basis, where=f"{Path(file).name}:{it.span.line}"))
+            item = Item(it.name, it.basis, where=f"{Path(file).name}:{it.span.line}")
+            if it.basis == "definition":
+                why = _rule_not_conservative(it, heads)
+                if why:
+                    item.kind, item.note = "axiom", why
+            axioms.append(item)
         elif isinstance(it, A.Axiom):           # a transformation: a defined step
             axioms.append(Item(it.name, "definition", where=f"{Path(file).name}:{it.span.line}"))
     mine = _own_classes(env, file)
@@ -131,10 +160,17 @@ def audit(path: Path, dag: Sequence[str] = (), st: Settings | None = None) -> Re
         for n, f in (*cd.invariants, *cd.theorems):
             if n.split(".")[0] == c:
                 _functors(f, used)
-        for n, _ in cd.invariants:
+        defs = _definition_targets(cd)
+        for n, f in cd.invariants:
             if n.split(".")[0] == c:
-                kind = "law" if objs.kinds.get(n) == "law" else "definition"
-                axioms.append(Item(n, kind, where=_where(objs.spans.get(n))))
+                item = Item(n, "law" if objs.kinds.get(n) == "law" else "definition",
+                            where=_where(objs.spans.get(n)))
+                if item.kind == "definition":
+                    # Conservative at the class level: the class is a new symbol defined by
+                    # its invariants over its own properties (non-circular: E406). The
+                    # stricter per-equation reading is kept as a note and a second ratio.
+                    item.note = _not_conservative(n, f, defs)
+                axioms.append(item)
     founds = sorted({FOUNDATIONS[f] for f in used if f in FOUNDATIONS})
     axioms = [Item(f, "foundation", where="built in") for f in founds] + axioms
     checks = check_classes(objs, set(mine), st) if mine else []
@@ -151,6 +187,81 @@ def audit(path: Path, dag: Sequence[str] = (), st: Settings | None = None) -> Re
     for name in dag:
         rep.dags[name] = _dag(env, name, status, st, set())
     return rep
+
+
+def _lit_preds(x: object) -> set[str]:
+    out: set[str] = set()
+    if isinstance(x, A.Call):
+        out.add(x.fn)
+    if isinstance(x, tuple):
+        for i in x:
+            out |= _lit_preds(i)
+    elif hasattr(x, "__dataclass_fields__"):
+        for f in x.__dataclass_fields__:
+            if f != "span":
+                out |= _lit_preds(getattr(x, f))
+    return out
+
+
+def _rule_not_conservative(it: A.Axiom, heads: dict[str, int]) -> str:
+    """A `definition` rule is conservative when each predicate it concludes is
+    concluded by no other rule and does not occur in its own body (non-recursive)."""
+    hp = set().union(*(_lit_preds(h) for h in it.head)) if it.head else set()
+    if any(heads.get(p, 0) > 1 for p in hp):
+        return "its predicate is concluded by more than one rule"
+    if hp & _lit_preds(it.body):
+        return "recursive: it uses the predicate it defines"
+    return ""
+
+
+def _target(f: Term) -> tuple[str, Term] | None:
+    """`p = E` with p a property: (p, E)."""
+    if isinstance(f, Compound) and f.functor == "f.cmp" and f.args[0] == Str("="):
+        lhs = f.args[1]
+        if isinstance(lhs, Compound) and lhs.functor == "f.p" and isinstance(lhs.args[0], Str):
+            return lhs.args[0].value, f.args[2]
+    return None
+
+
+def _definition_targets(cd: ClassDef) -> dict[str, list[tuple[str, Term]]]:
+    out: dict[str, list[tuple[str, Term]]] = {}
+    for n, f in cd.invariants:
+        t = _target(f)
+        if t is not None:
+            out.setdefault(t[0], []).append((n, t[1]))
+    return out
+
+
+def _not_conservative(name: str, f: Term, defs: dict[str, list[tuple[str, Term]]]) -> str:
+    """A class invariant is a conservative definition when it is `p = E` for a property
+    p that no other invariant defines and that E does not depend on, even through other
+    definitions (non-circular). Anything else constrains existing symbols: an axiom."""
+    t = _target(f)
+    if t is None:
+        return "not of the form `property = expression`: it constrains existing symbols"
+    p, e = t
+    if len(defs.get(p, [])) > 1:
+        return f"{p} is defined more than once"
+    seen: set[str] = set()
+    todo = list(_props(e))
+    while todo:
+        q = todo.pop()
+        if q == p:
+            return f"circular: {p} depends on itself"
+        if q in seen:
+            continue
+        seen.add(q)
+        for _, e2 in defs.get(q, []):
+            todo += list(_props(e2))
+    return ""
+
+
+def _props(t: Term) -> set[str]:
+    if isinstance(t, Compound):
+        if t.functor == "f.p" and isinstance(t.args[0], Str):
+            return {t.args[0].value}
+        return {x for a in t.args for x in _props(a)}
+    return set()
 
 
 def _where(sp: Span | None) -> str:
@@ -238,9 +349,12 @@ def render(rep: Report) -> str:
     c = rep.counts()
     out = [f"package {rep.package}  ({rep.file})", "",
            f"axioms: {len(rep.axioms)}  (foundation {c.get('foundation', 0)}, "
-           f"law {c.get('law', 0)}, definition {c.get('definition', 0)})"]
+           f"law {c.get('law', 0)}, axiom {c.get('axiom', 0)}, "
+           f"conservative definition {c.get('definition', 0)})"]
     for a in rep.axioms:
-        out.append(f"  {a.kind:<10} {a.name}  {a.where}")
+        note = f"  [strict reading: an axiom, {a.note}]" if a.note and a.kind == "definition" \
+            else f"  [declared a definition, not conservative: {a.note}]" if a.note else ""
+        out.append(f"  {a.kind:<10} {a.name}  {a.where}{note}")
     proven = sum(t.status == "PROVEN" for t in rep.theorems)
     out += ["", f"theorems: {len(rep.theorems)}  (PROVEN {proven}, "
             f"UNPROVEN {sum(t.status == 'UNPROVEN' for t in rep.theorems)}, "
@@ -249,8 +363,13 @@ def render(rep: Report) -> str:
         trust = "  trust {" + ", ".join(t.trust) + "}" if t.trust else ""
         mark = "" if t.status == "PROVEN" else "  <- not usable as a lemma"
         out.append(f"  {t.status:<9} {t.name}{trust}  {t.where}{mark}")
+    claims = sum(a.kind in ("foundation", "law", "axiom") for a in rep.axioms)
     out += ["", f"axiom ratio: {len(rep.axioms)} / ({len(rep.axioms)} + {len(rep.theorems)})"
-            f" = {rep.ratio:.2f}"]
+            f" = {rep.ratio:.2f}",
+            f"claim ratio: {claims} / ({claims} + {len(rep.theorems)}) = {rep.claim_ratio:.2f}"
+            "  (foundations, laws and non-conservative axioms; definitions add no trust)",
+            f"strict claim ratio: {rep.strict_claim_ratio:.2f}  (a class invariant counts as a "
+            "definition only if it is `p = E` defining one property)"]
     for name, d in rep.dags.items():
         out += ["", f"dependencies of {name}:"]
         out += _tree(d, "  ")
@@ -298,6 +417,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
     if as_json:
         print(json.dumps({"package": rep.package, "ratio": round(rep.ratio, 3),
+                          "claim_ratio": round(rep.claim_ratio, 3),
+                          "strict_claim_ratio": round(rep.strict_claim_ratio, 3),
                           "axioms": [a.__dict__ for a in rep.axioms],
                           "theorems": [t.__dict__ for t in rep.theorems],
                           "dags": rep.dags}, indent=2))

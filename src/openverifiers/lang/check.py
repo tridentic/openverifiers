@@ -91,6 +91,8 @@ class ScenarioInfo:
     entities: dict[str, EntInfo] = field(default_factory=dict)
     unknowns: dict[str, Ty] = field(default_factory=dict)
     test: str | None = None
+    #: `tolerance x`: numeric answers must be enclosed within a relative half-width x
+    tolerance: Fraction | None = None
 
 
 @dataclass
@@ -470,9 +472,10 @@ class _Checker:
             elif isinstance(st, A.Query):
                 self.query(st, info)
             elif isinstance(st, A.Tolerance):
-                # Parsed but not implemented: accepting it silently would be a hidden default.
-                self.err("E207", "`tolerance` is not supported yet", st.span,
-                         "all arithmetic is exact; floats arrive with the plugins (Milestone 2)")
+                if not 0 < st.value < 1:
+                    self.err("E206", "tolerance is a relative half-width between 0 and 1",
+                             st.span, "e.g. `tolerance 0.001` for 0.1 %")
+                info.tolerance = st.value
 
     def gen_use(self, g: A.GenUse, info: ScenarioInfo, sc: Scope) -> None:
         src = g.source
@@ -499,6 +502,8 @@ class _Checker:
             except ObjFail as e:
                 self.env.diags.append(e.d)
                 return
+            if info is not None and info.tolerance is not None:
+                plan.tolerance = info.tolerance
             self.env.objects.plans[qy.span] = plan
             if plan.kind == "find":
                 self.last_find = plan

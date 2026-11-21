@@ -209,6 +209,77 @@ SVal = SNum | SSeq | SRoot | SAngle
 #: the unique d with d^2 = X and d >= 0, so the solver may add that definition
 #: globally (even when the root sits under a negation): see ``root_definitions``.
 ROOTS: dict[str, Poly] = {}
+#: exp(u) used in a formula: variable name -> u. Defined by e > 0 (and e = 1 when
+#: u = 0); otherwise an opaque positive number, so a proof that holds for every
+#: positive value holds for the true one.
+EXPS: dict[str, Poly] = {}
+#: ln(u): variable name -> u, defined by exp(L) = u with u > 0.
+LOGS: dict[str, Poly] = {}
+
+
+def _atom_name(kind: str, x: Poly) -> str:
+    return f"{kind}_" + hashlib.sha1(repr(x.terms).encode()).hexdigest()[:12]
+
+
+def exp_var(x: Poly) -> SNum:
+    if x.constant() == 0:
+        return SNum(Poly.const(Fraction(1)))
+    name = _atom_name("EXP", x)
+    EXPS[name] = x
+    return SNum(Poly.var(name))
+
+
+def log_var(x: Poly) -> SNum:
+    if x.constant() == 1:
+        return SNum(Poly.const(Fraction(0)))
+    name = _atom_name("LN", x)
+    LOGS[name] = x
+    exp_var(Poly.var(name))                      # exp(ln u) = u, defined below
+    return SNum(Poly.var(name))
+
+
+def _depends(v: str, tau: str, seen: frozenset[str] = frozenset()) -> bool:
+    """Whether the solver variable v (possibly an atom) depends on tau."""
+    if v == tau:
+        return True
+    arg = ROOTS.get(v) or EXPS.get(v) or LOGS.get(v)
+    if arg is None or v in seen:
+        return False
+    return any(_depends(w, tau, seen | {v}) for m, _ in arg.terms for w, _ in m)
+
+
+def calculus(p: Poly, tau: str, integral: bool) -> Poly:
+    """The integral (from 0) or derivative in tau of p, where p may contain atoms.
+    Atoms that depend on tau: refused for integrals; for derivatives, exp(u) follows
+    the chain rule (d exp(u) = exp(u) u'), and any other is refused. Treating such an
+    atom as a constant would be unsound."""
+    atoms = {v for m, _ in p.terms for v, _ in m if v != tau and _depends(v, tau)}
+    if not atoms:
+        return poly_integral(p, tau) if integral else poly_deriv(p, tau)
+    if integral or any(a not in EXPS for a in atoms):
+        raise Unsupported("calculus of a non-polynomial in the variable (sqrt, ln, exp)")
+    out = poly_deriv(p, tau)                     # the polynomial part
+    for a in atoms:                              # + d p / d a * exp(u) * u'
+        out = out + poly_deriv(p, a) * Poly.var(a) * calculus(EXPS[a], tau, False)
+    return out
+
+
+def subst_atoms(p: Poly, tau: str, val: Poly) -> Poly:
+    """p with tau replaced by val, inside atoms too: exp(u(tau)) becomes exp(u(val))."""
+    out = p
+    for v in sorted({w for m, _ in p.terms for w, _ in m}):
+        if v == tau or not _depends(v, tau):
+            continue
+        if v in EXPS:
+            new = exp_var(subst_atoms(EXPS[v], tau, val)).p
+        elif v in ROOTS:
+            new = root_var(subst_atoms(ROOTS[v], tau, val)).p
+        elif v in LOGS:
+            new = log_var(subst_atoms(LOGS[v], tau, val)).p
+        else:
+            continue
+        out = poly_subst(out, v, new)
+    return poly_subst(out, tau, val)
 
 
 def root_var(x: Poly) -> SNum:
@@ -224,12 +295,29 @@ def root_var(x: Poly) -> SNum:
 
 
 def root_definitions(names: Iterable[str]) -> list[CF]:
-    """d^2 = X and d >= 0 for every root variable among ``names``."""
-    out = []
-    for n in names:
-        if n in ROOTS:
-            d = Poly.var(n)
-            out += [atom("=", d * d - ROOTS[n]), atom(">=", d)]
+    """The defining constraints of the atoms among ``names`` (and of atoms those
+    mention): d^2 = X, d >= 0 for roots; e > 0 for exp; exp(L) = u, u > 0 for ln."""
+    out: list[CF] = []
+    todo, done = list(names), set()
+    while todo:
+        n = todo.pop()
+        if n in done:
+            continue
+        done.add(n)
+        v = Poly.var(n)
+        if n == "PI":                     # pi in [3.14159265358979, 3.14159265358980]
+            out += [atom(">", v - Poly.const(Fraction(314159265358979, 10**14))),
+                    atom("<", v - Poly.const(Fraction(314159265358980, 10**14)))]
+        elif n in ROOTS:
+            out += [atom("=", v * v - ROOTS[n]), atom(">=", v)]
+            todo += [w for m, _ in ROOTS[n].terms for w, _ in m]
+        elif n in EXPS:
+            out.append(atom(">", v))
+            todo += [w for m, _ in EXPS[n].terms for w, _ in m]
+        elif n in LOGS:
+            e = _atom_name("EXP", v)
+            out += [atom("=", Poly.var(e) - LOGS[n]), atom(">", LOGS[n])]
+            todo += [e, *(w for m, _ in LOGS[n].terms for w, _ in m)]
     return out
 
 
@@ -324,8 +412,8 @@ class Expander:
             self.fresh_tau += 1
             tau = f"TAU_{self.fresh_tau}"
             body = _num(self.value(subst(a[0], a[1], Var(tau))))
-            q = poly_integral(body.p, tau) if f == "f.integral" else poly_deriv(body.p, tau)
-            return SNum(poly_subst(q, tau, _num(self.value(a[2])).p))
+            q = calculus(body.p, tau, f == "f.integral")
+            return SNum(subst_atoms(q, tau, _num(self.value(a[2])).p))
         vals = [self.value(x) for x in a]
         if f == "f.idx":
             seq = _seq(vals[0])
@@ -340,6 +428,12 @@ class Expander:
         if f == "f.sqrt":
             x = _num(vals[0])
             return root_var(x.p)
+        if f == "f.pi":
+            return SNum(Poly.var("PI"))
+        if f == "f.exp":
+            return exp_var(_num(vals[0]).p)
+        if f == "f.ln":
+            return log_var(_num(vals[0]).p)
         if f == "f.dist2":
             d = _diff(_point(vals[0]), _point(vals[1]))
             return SNum(_dot(d, d))

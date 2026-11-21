@@ -1,0 +1,36 @@
+package probe.exp
+
+# physics: radioactive decay. The solution is defined; that it solves the
+# rate law dN/dt = -lambda N is a theorem, proven by differentiating it.
+fact type Decay {
+  property N0: Real
+  property k: Real
+  property t: Real
+  property N: Real
+  invariant pos: N0 > 0
+  invariant law: N = N0 * exp(-k * t)
+  theorem rate_law: deriv(N0 * exp(-k * t), t) = -k * (N0 * exp(-k * t))
+  theorem positive: N > 0
+}
+
+# chemistry: first-order kinetics, the half-life
+fact type FirstOrder {
+  property k: Real
+  property half: Real
+  invariant pos: k > 0
+  invariant half_life: half = ln(2) / k
+}
+
+# mathematics: a circle's circumference
+fact type Circle2 {
+  property r: Real
+  property c: Real
+  invariant pos: r > 0
+  invariant circ: c = 2 * pi * r
+}
+
+scenario e1 uses probe.exp {
+  query FIND ?N WHERE Decay{ N0 = 1000, k = 1/10, t = 5, N = ?N }
+  query FIND ?h WHERE FirstOrder{ k = 1/20, half = ?h }
+  query FIND ?c WHERE Circle2{ r = 1, c = ?c }
+}

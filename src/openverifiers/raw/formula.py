@@ -37,6 +37,7 @@ from dataclasses import dataclass
 from fractions import Fraction
 from itertools import combinations, permutations
 
+from . import interval as I
 from .builtins import ARITH, apply_op
 from .surd import Surd, SurdError
 from .terms import Compound, Num, Str, Term, make_dims, order_key
@@ -76,7 +77,15 @@ class _Angle:
     norms: Surd              # |u|^2 * |w|^2
 
 
-Value = Term | Surd | _Root | _Angle
+Value = Term | Surd | _Root | _Angle | I.Iv
+
+
+def _iv(v: Value) -> I.Iv:
+    if isinstance(v, I.Iv):
+        return v
+    if isinstance(v, Surd):
+        return I.from_surd(v.terms)
+    return I.Iv.of(_rat(v))
 
 
 def _surd(v: Value) -> Surd:
@@ -272,6 +281,8 @@ class _Eval:
             return self._exact(lambda: _value(sum(
                 (Surd.sqrt(_rat(vals[i])) * Surd.of(_rat(vals[i + 1]))
                  for i in range(0, len(vals), 2)), Surd.of(Fraction(0)))))
+        if f in ("f.exp", "f.ln", "f.pi", "f.iv") or any(isinstance(v, I.Iv) for v in vals):
+            return self._numeric(f, vals)
         if f in ARITH and any(isinstance(v, Surd) for v in vals):
             return self._exact(lambda: _surd_op(f, vals))
         if f == "f.dist2":
@@ -287,6 +298,30 @@ class _Eval:
                 raise Unsupported(f"arithmetic failed: {t}")
             return r
         raise Unsupported(f"cannot evaluate {f}")
+
+    @staticmethod
+    def _numeric(f: str, vals: list[Value]) -> Value:
+        """Rigorous interval arithmetic (exp, ln, pi, stored intervals, mixed arithmetic)."""
+        try:
+            if f == "f.iv":
+                return I.Iv(_rat(vals[0]), _rat(vals[1]))
+            if f == "f.pi":
+                return I.pi()
+            xs = [_iv(v) for v in vals]
+            if f in ("f.exp", "f.ln"):
+                return (I.exp if f == "f.exp" else I.ln)(xs[0])
+            if f == "-" and len(xs) == 1:
+                return -xs[0]
+            if f == "^" and isinstance(vals[1], Num) and vals[1].value.denominator == 1 \
+                    and vals[1].value >= 0:
+                return xs[0].power(int(vals[1].value))
+            ops = {"+": I.Iv.__add__, "-": I.Iv.__sub__, "*": I.Iv.__mul__,
+                   "/": I.Iv.__truediv__}
+            if f in ops and len(xs) == 2:
+                return ops[f](xs[0], xs[1])
+        except (I.IntervalError, SurdError) as e:
+            raise Unsupported(str(e)) from None
+        raise Unsupported(f"no interval form for {f}")
 
     def _calculus(self, f: str, a: tuple[Term, ...]) -> Num:
         """Exact: sample the polynomial at x = 0..degree, recover its coefficients,
@@ -318,6 +353,8 @@ class _Eval:
     def _term(v: Value) -> Term:
         if isinstance(v, _Angle | _Root):
             raise Unsupported("an angle or nested root cannot be stored in a collection")
+        if isinstance(v, I.Iv):
+            return Compound("f.iv", (Num(v.lo), Num(v.hi)))
         return _term_of(v) if isinstance(v, Surd) else v
 
     def coll(self, t: Term) -> Iterator[Term]:
@@ -406,6 +443,11 @@ def _surd_op(f: str, vals: list[Value]) -> Value:
 def compare(op: str, a: Value, b: Value) -> bool:
     if op not in ("=", "!=", "<", "<=", ">", ">="):
         raise Unsupported(f"unknown comparison {op}")
+    if isinstance(a, I.Iv) or isinstance(b, I.Iv):     # decided only when separated
+        d = I.decide(op, _iv(a), _iv(b))
+        if d is None:
+            raise Unsupported("the intervals overlap: not decided numerically")
+        return d
     if isinstance(a, Num | Surd) and isinstance(b, _Angle | _Root):
         flip = {"<": ">", "<=": ">=", ">": "<", ">=": "<="}
         return compare(flip.get(op, op), b, a)

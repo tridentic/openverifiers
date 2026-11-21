@@ -20,7 +20,9 @@ from dataclasses import dataclass, field, replace
 from fractions import Fraction
 
 from ..lang.units import show_quantity
-from ..raw.formula import DEG, ClassDef, Unsupported, failing, holds
+from ..raw.formula import DEG, ClassDef, Unsupported, _Eval, failing, holds
+from ..raw.interval import Iv
+from ..raw.numeric import failing_numeric
 from ..raw.surd import Surd
 from ..raw.terms import Compound, Num, Str, Term, Var, substitute
 from .compile import Classes, ObjPlan, conj, generic, size_invariants
@@ -151,6 +153,11 @@ def show(t: Term) -> str:
     if isinstance(t, Num):
         v = t.value
         return str(v.numerator) if v.denominator == 1 else f"{v.numerator}/{v.denominator}"
+    if isinstance(t, Compound) and t.functor == "f.iv" and len(t.args) == 2:
+        lo, hi = (x for x in t.args if isinstance(x, Num))
+        mid, half = float((lo.value + hi.value) / 2), float((hi.value - lo.value) / 2)
+        unit = show_quantity(Fraction(1), lo.dims).removeprefix("1") if lo.dims else ""
+        return f"{mid:.10g}{unit} (± {half:.1e})"
     if isinstance(t, Compound) and t.functor == "f.surd":
         nums = [x.value for x in t.args if isinstance(x, Num)]
         parts = []
@@ -251,11 +258,91 @@ def _answer(plan: ObjPlan, st: Settings) -> ObjAnswer:
             # PROVEN when its negation is unsat, UNKNOWN otherwise.
             ans.witness, ans.names, ans.verdict, ans.reason = wit, names, v, why
             return ans
+        if _transcendental(plan.cls) and plan.kind in ("find", "unique") \
+                and _numeric(plan, r, ans):
+            return ans
         return _search(plan, r, ans)
     except Unsupported as e:
         ans.steps.append(f"cannot expand: {e}")
         ans.reason = "plugin_unknown"
         return ans
+
+
+def _numeric(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> bool:
+    """Numeric mode, for classes exact solving cannot settle (exp, ln, pi):
+    each unknown property gets its value from its definition `p = E`, in invariant
+    order, either exact or a rigorous interval. raw.numeric re-checks the whole
+    instance, and enforces one definition per interval property, used in order.
+    True when it answered."""
+    props = dict(plan.props)
+    unknown = {k for k, v in props.items() if isinstance(v, Var)}
+    if not unknown or any(isinstance(v, Compound) and _has_var(v) for v in props.values()):
+        return False
+    for _, f in plan.cls.invariants:
+        if not (isinstance(f, Compound) and f.functor == "f.cmp" and f.args[0] == Str("=")):
+            continue
+        lhs = f.args[1]
+        key = lhs.args[0].value if isinstance(lhs, Compound) and lhs.functor == "f.p" \
+            and isinstance(lhs.args[0], Str) else None
+        if key not in unknown:
+            continue
+        try:
+            v = _Eval({k: x for k, x in props.items() if k not in unknown}).expr(f.args[2])
+        except Unsupported:
+            continue
+        if isinstance(v, Surd):
+            props[key] = term_of(v)
+        elif isinstance(v, Iv):
+            props[key] = Compound("f.iv", (Num(v.lo), Num(v.hi)))
+        elif isinstance(v, Num):
+            props[key] = v
+        else:
+            continue
+        unknown.discard(key)
+    if unknown:
+        return False
+    try:
+        bad = failing_numeric(plan.cls, props)
+    except Unsupported as e:
+        r.steps.append(f"numeric re-check [checker]: cannot decide ({e})")
+        return False
+    r.steps.append("numeric [checker]: each unknown from its definition, enclosed exactly or "
+                   "by a rigorous interval: " + ("every invariant holds" if not bad
+                                                 else "fails " + ", ".join(bad)))
+    if bad:
+        ans.verdict, ans.names = "REFUTED", bad
+        return True
+    binding: dict[str, Term] = {}
+    for q, coords in plan.unknowns.items():
+        name = next(k for k, v in plan.props.items() if v == coords[0])
+        val = props[name]
+        dims = plan.unknown_dims.get(q, ())
+        if isinstance(val, Compound) and val.functor == "f.iv" and dims:
+            val = Compound("f.iv", tuple(Num(x.value, dims) for x in val.args
+                                         if isinstance(x, Num)))
+        elif isinstance(val, Num) and dims:
+            val = Num(val.value, dims)
+        binding[q] = val
+        if isinstance(val, Compound) and val.functor == "f.iv":
+            lo, hi = (x.value for x in val.args if isinstance(x, Num))
+            tol = plan.tolerance if plan.tolerance is not None else Fraction(1, 10**12)
+            if (hi - lo) / 2 > tol * max(abs(lo), abs(hi)):
+                r.steps.append(f"?{q}: the enclosure is wider than the tolerance {tol}")
+                ans.reason, ans.complete = "precision", False
+                return True
+    ans.bindings, ans.verdict, ans.complete = [binding], "PROVEN", True
+    return True
+
+
+def _transcendental(cls: ClassDef) -> bool:
+    def go(t: Term) -> bool:
+        return isinstance(t, Compound) and (t.functor in ("f.exp", "f.ln", "f.pi")
+                                            or any(go(a) for a in t.args))
+    return any(go(f) for _, f in cls.invariants)
+
+
+def _has_var(t: Term) -> bool:
+    return isinstance(t, Var) or (isinstance(t, Compound) and any(_has_var(a) for a in t.args))
 
 
 def _search(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> ObjAnswer:
@@ -579,7 +666,12 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                 ta.reductions = proven[same[0]][1] | {"inherit"}
             else:
                 used: set[str] = set()
-                v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps), ta.steps, gen, used=used)
+                try:
+                    v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps), ta.steps, gen,
+                                             used=used)
+                except Unsupported as e:
+                    ta.steps.append(f"cannot expand: {e}")
+                    v, why, wit = "UNKNOWN", "plugin_unknown", None
                 lemmas = tuple((n, f) for n, (f, _) in proven.items()
                                if n.split(".")[0] in (*classes.ancestors[name], name))
                 if v == "UNKNOWN" and lemmas and not isinstance(gen, str):
@@ -589,8 +681,11 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                         n for n, _ in lemmas))
                     used2: set[str] = set()
                     with_lemmas = replace(cls, invariants=(*cls.invariants, *lemmas))
-                    v2, why2, wit2, _ = theorem(with_lemmas, th, _Run(st, ta.steps), ta.steps,
-                                                gen, used=used2)
+                    try:
+                        v2, why2, wit2, _ = theorem(with_lemmas, th, _Run(st, ta.steps),
+                                                    ta.steps, gen, used=used2)
+                    except Unsupported:
+                        v2, why2, wit2 = "UNKNOWN", "plugin_unknown", None
                     if v2 != "UNKNOWN":
                         v, why, wit, used = v2, why2, wit2, used2
                         ta.lemmas = tuple(n for n, _ in lemmas)

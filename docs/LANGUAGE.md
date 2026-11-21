@@ -507,6 +507,32 @@ the foundation axiom cos² + sin² = 1. `sin(theta)` and `cos(theta)` read it.
   `theta = Angle{ cos = 4/5, sin = 3/5 }`.
 - `tan` is not provided: write `sin(x) = t * cos(x)`.
 
+**exp, ln, pi and numeric answers.** `exp(x)` and `ln(x)` (x dimensionless) and
+`pi` may appear in class formulas.
+- **In proofs,** each is an opaque positive number, so a theorem proven for
+  every such value holds for the true one:
+  - `exp(u)` is an atom `e` with `e > 0`;
+  - `ln(u)` is `L` with `exp(L) = u` and `u > 0`;
+  - pi is bounded between 3.14159265358979 and 3.14159265358980.
+- **Derivatives** follow the chain rule for `exp`: `deriv(N0 * exp(-k * t), t)`
+  proves the rate law by differentiating the solution. Integrating, or
+  differentiating `sqrt` or `ln` of the variable, is refused: treating them as
+  constants would be unsound.
+- **A FIND the exact solver cannot settle** is answered in numeric mode.
+  1. Each unknown takes its value from its definition `p = E`, in invariant
+     order.
+  2. The trusted checker (`raw/numeric.py`) encloses `E` with rigorous
+     interval arithmetic (`raw/interval.py`: Taylor series with remainder
+     bounds, outward rounding). It accepts only:
+     - one definition per interval property;
+     - definitions that use earlier ones;
+     - all other invariants decided strictly.
+  3. `PROVEN ?N = 606.5306597 (± 1.8e-56)` then means the true value lies in
+     that interval.
+- **`tolerance x`** in a scenario bounds that relative half-width. The default
+  is 1e-12. A wider enclosure is UNKNOWN(precision). `tolerance` used to be
+  E207.
+
 `physics.mechanics` defines velocity and displacement this way and proves
 SUVAT from them:
 

@@ -157,7 +157,11 @@ def solve(constraints: Sequence[CF], variables: Sequence[str] = (),
     roots = root_definitions(sorted(used))
     if roots:
         cs = _conjuncts([*cs, *roots])
-        variables = [*variables, *(n for n in sorted(used) if n.startswith("ROOT_"))]
+        extra: set[str] = set()
+        for c in roots:
+            _vars_of(c, extra)
+        variables = [*variables, *(n for n in sorted(used | extra)
+                                   if n == "PI" or n.startswith(("ROOT_", "EXP_", "LN_")))]
     if seek:
         r0 = small_scope(cs, variables)
         if r0.status == "sat":

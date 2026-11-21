@@ -29,7 +29,7 @@ Ty = tuple[object, ...]
 REAL: Ty = ("Real",)
 GENERATORS = {"cycles": 1, "orderings": 1, "pairs": 1, "subsets": 2}
 FUNCS = {"count": 1, "dist": 2, "dist2": 2, "angle": 3, "abs": 1, "min": 2, "max": 2,
-         "sqrt": 1}
+         "sqrt": 1, "exp": 1, "ln": 1}
 #: In classes, an Angle is the record (cos, sin) with the foundation axiom
 #: cos^2 + sin^2 = 1 (one per Angle property). sin and cos read its fields; the
 #: special angles (0, 30, 45, 60, 90, 120, 135, 150, 180 deg) have exact values.
@@ -344,7 +344,9 @@ class _Formula:
         if isinstance(e, A.Call) and e.fn in ("abs", "min", "max"):
             ds = [self.dims(x) for x in e.args]
             return ds[0] if ds and all(d == ds[0] for d in ds) else None
-        if isinstance(e, A.Call) and e.fn in ("count", "sin", "cos"):
+        if isinstance(e, A.Call) and e.fn in ("count", "sin", "cos", "exp", "ln"):
+            return ()
+        if isinstance(e, A.Name) and e.name == "pi" and e.name not in self.props:
             return ()
         if isinstance(e, A.Call) and e.fn in ("dist", "dist2") and e.args:
             pty = self._ty(e.args[0])
@@ -477,6 +479,8 @@ class _Formula:
                 return _f("p", Str(e.name)), self.props[e.name]
             if e.name in self.derived:
                 return go(self.derived[e.name])
+            if e.name == "pi":
+                return _f("pi"), REAL
             raise _Fail("E201", f"unknown name '{e.name}' in a class formula", e.span,
                         "use a property, a derived property or a bound variable")
         if isinstance(e, A.Index):
@@ -510,7 +514,10 @@ class _Formula:
             if len(e.args) != FUNCS[e.fn]:
                 raise _Fail("E205", f"{e.fn} takes {FUNCS[e.fn]} argument(s)", e.span)
             args = [go(a)[0] for a in e.args]
-            name = e.fn if e.fn in ("count", "dist", "dist2", "angle", "sqrt") else None
+            name = e.fn if e.fn in ("count", "dist", "dist2", "angle", "sqrt", "exp",
+                                    "ln") else None
+            if e.fn in ("exp", "ln") and self.dims(e.args[0]) not in ((), None):
+                raise _Fail("E301", f"{e.fn} needs a dimensionless argument", e.args[0].span)
             return (_f(name, *args) if name else Compound(e.fn, tuple(args))), REAL
         if isinstance(e, A.Call) and e.fn in GENERATORS:
             return self.coll(e)
@@ -583,6 +590,7 @@ class ObjPlan:
     unknowns: dict[str, tuple[Var, ...]] = field(default_factory=dict)  # ?x -> coordinates
     is_tuple: dict[str, bool] = field(default_factory=dict)
     unknown_dims: dict[str, Dims] = field(default_factory=dict)     # ?x -> unit, for display
+    tolerance: Fraction | None = None          # the scenario's `tolerance` (numeric mode)
     theorem: tuple[str, Term] | None = None
     limit: int | None = None
     note: str = ""                              # why there is no bounded instance

@@ -1,0 +1,1355 @@
+{"seed": 0, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 0, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 0, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 0, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 0, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 1, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 1, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 1, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 1, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 2, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 2, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 2, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 2, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 3, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 3, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 3, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 3, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 4, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 4, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 4, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 4, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 5, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 5, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 5, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 5, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 6, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 6, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 6, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 6, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 6, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 7, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 7, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 7, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 7, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 7, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 8, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 8, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 8, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 8, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 8, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 9, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 9, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 9, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 9, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 10, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 10, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 10, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 10, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 10, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 11, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 11, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 11, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 11, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 12, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 12, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 12, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 12, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 13, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 13, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 13, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 13, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 14, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 14, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 14, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 14, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 14, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 15, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 15, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 15, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 15, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 16, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 16, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 16, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 16, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 17, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 17, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 17, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 17, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 17, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 18, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 18, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 18, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 18, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 18, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 19, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 19, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 19, "check": "theorem A.t1", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 19, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 19, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 20, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 20, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 20, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 20, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 21, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 21, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 21, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 21, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 21, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 22, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 22, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 22, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 22, "check": "theorem B.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 23, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 23, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 23, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 23, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 24, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 24, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 24, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 24, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 24, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 25, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 25, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 25, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 25, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 26, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 26, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 26, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 26, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 27, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 27, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 27, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 27, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 27, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 28, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 28, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 28, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 28, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 28, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 29, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 29, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 29, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 29, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 29, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 30, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 30, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 30, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 30, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 31, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 31, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 31, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 31, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:drop_implied", "red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 32, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 32, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 32, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 32, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 33, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 33, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 33, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 33, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 33, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 34, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 34, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 34, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 34, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 35, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 35, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 35, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 35, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 35, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 36, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 36, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 36, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 36, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 37, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 37, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 37, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 37, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 37, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 38, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 38, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 38, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 38, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 39, "check": "class A is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 39, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 39, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 39, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 40, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 40, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 40, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 40, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 40, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 41, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 41, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 41, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 41, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 42, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 42, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 42, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 42, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 42, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 43, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 43, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 43, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 43, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 43, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 44, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 44, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 44, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 44, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 44, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 45, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 45, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 45, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 45, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 46, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 46, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 46, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 46, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 47, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 47, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 47, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 47, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 47, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 48, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 48, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 48, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 48, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 48, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 49, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 49, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 49, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 49, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 50, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 50, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 50, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 50, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 51, "check": "class A is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 51, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 51, "check": "theorem A.t1", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 51, "check": "class B is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 51, "check": "theorem B.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 52, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 52, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 52, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 52, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 52, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 53, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 53, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 53, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 53, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 54, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 54, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 54, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 54, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 54, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 55, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 55, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 55, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 55, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 56, "check": "class A is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 56, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 56, "check": "class B is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 56, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:translate", "z3_unsat"]}
+{"seed": 57, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 57, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 57, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 57, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 57, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 58, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 58, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 58, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 58, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 59, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 59, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 59, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 59, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 59, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 60, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 60, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 60, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 60, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 61, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 61, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 61, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 61, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 62, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 62, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 62, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 62, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 63, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 63, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 63, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 63, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 63, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 64, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 64, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 64, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 64, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 64, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 65, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 65, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 65, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 65, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 65, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 66, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 66, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 66, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 66, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 67, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 67, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 67, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 67, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 67, "check": "theorem B.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 68, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 68, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 68, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 68, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 69, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 69, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 69, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 69, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 70, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 70, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 70, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 70, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 70, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 71, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 71, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 71, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 71, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 71, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 72, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 72, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 72, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 72, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 72, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 73, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 73, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 73, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 73, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 73, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 74, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 74, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 74, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 74, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 74, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 75, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 75, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 75, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 75, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 76, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 76, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 76, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 76, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 77, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 77, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 77, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 77, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 78, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 78, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 78, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 78, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 78, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 79, "check": "class A is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 79, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 79, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 79, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 80, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 80, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 80, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 80, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 81, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 81, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 81, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 81, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 81, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 82, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 82, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 82, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 82, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 82, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 83, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 83, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 83, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 83, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 84, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 84, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 84, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 84, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 84, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 85, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 85, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 85, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 85, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 86, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 86, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 86, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 86, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 86, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 87, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 87, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 87, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 87, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 88, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 88, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 88, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 88, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 88, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 89, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 89, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 89, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 89, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 90, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 90, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 90, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:drop_implied", "red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 90, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 90, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 91, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 91, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 91, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 91, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 92, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 92, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 92, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 92, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 93, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 93, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 93, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 93, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 94, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 94, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 94, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 94, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 94, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 95, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 95, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 95, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 95, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 96, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 96, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 96, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 96, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 96, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 97, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 97, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 97, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 97, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 97, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 98, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 98, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 98, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 98, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 98, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 99, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 99, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 99, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 99, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 99, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 100, "check": "class A is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 100, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 100, "check": "class B is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 100, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 101, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 101, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 101, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 101, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 101, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 102, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 102, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 102, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 102, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 103, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 103, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 103, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 103, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 103, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 104, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 104, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 104, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 104, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 105, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 105, "check": "theorem A.t0", "on": "REFUTED", "off": "UNKNOWN", "on_trust": ["kernel"]}
+{"seed": 105, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 105, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 106, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 106, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 106, "check": "theorem A.t1", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 106, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 106, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 107, "check": "class A is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 107, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 107, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 107, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 108, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 108, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 108, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 108, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 108, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 109, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 109, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 109, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 109, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 109, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 110, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 110, "check": "theorem A.t0", "on": "REFUTED", "off": "UNKNOWN", "on_trust": ["kernel"]}
+{"seed": 110, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 110, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 110, "check": "theorem B.t0", "on": "REFUTED", "off": "UNKNOWN", "on_trust": ["kernel"]}
+{"seed": 111, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 111, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 111, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 111, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 112, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 112, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 112, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 112, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 112, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 113, "check": "class A is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 113, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 113, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 113, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 114, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 114, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 114, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 114, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 114, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 115, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 115, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 115, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 115, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 116, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 116, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 116, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 116, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 117, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 117, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 117, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 117, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 118, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 118, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 118, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 118, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 118, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 119, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 119, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 119, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 119, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 119, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 120, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 120, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 120, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 120, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 120, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 121, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 121, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 121, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 121, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 121, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 122, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 122, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 122, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 122, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 122, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 123, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 123, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 123, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 123, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 123, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 124, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 124, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 124, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 124, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 125, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 125, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 125, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 125, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 125, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 126, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 126, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 126, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 126, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 126, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 127, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 127, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 127, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 127, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 127, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 128, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 128, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 128, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 128, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 129, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 129, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 129, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 129, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 129, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 130, "check": "class A is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 130, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 130, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 130, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 131, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 131, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 131, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 131, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 131, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 132, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 132, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 132, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 132, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 132, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 133, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 133, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 133, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 133, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 134, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 134, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 134, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 134, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 134, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 135, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 135, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 135, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 135, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 135, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 136, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 136, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 136, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 136, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 137, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 137, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 137, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 137, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 137, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 138, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 138, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 138, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 138, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 139, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 139, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 139, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 139, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 140, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 140, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 140, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 140, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 140, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 141, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 141, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 141, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 141, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 141, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 142, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 142, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 142, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 142, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 142, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 143, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 143, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 143, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 143, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 144, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 144, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 144, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 144, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 144, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 145, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 145, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 145, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 145, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 145, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 146, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 146, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 146, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 146, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 146, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 147, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 147, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 147, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 147, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 147, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 148, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 148, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 148, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 148, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 149, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 149, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 149, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 149, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 149, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 150, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 150, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 150, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 150, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 150, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 151, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 151, "check": "theorem A.t0", "on": "REFUTED", "off": "UNKNOWN", "on_trust": ["kernel"]}
+{"seed": 151, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 151, "check": "theorem B.t0", "on": "REFUTED", "off": "UNKNOWN", "on_trust": ["kernel"]}
+{"seed": 152, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 152, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 152, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 152, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 153, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 153, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 153, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 153, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 154, "check": "class A is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 154, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 154, "check": "class B is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 154, "check": "theorem B.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 155, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 155, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 155, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 155, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 156, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 156, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 156, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 156, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 156, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 157, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 157, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 157, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 157, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 158, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 158, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 158, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 158, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 159, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 159, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 159, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 159, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 159, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 160, "check": "class A is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 160, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:drop_implied", "red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 160, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 160, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 160, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:drop_implied", "red:fix_order", "red:inherit", "red:translate", "z3_unsat"]}
+{"seed": 161, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 161, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 161, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 161, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 161, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 162, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 162, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 162, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 162, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 163, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 163, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 163, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 163, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 164, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 164, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 164, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 164, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 164, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 165, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 165, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 165, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 165, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 165, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 166, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 166, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 166, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 166, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 167, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 167, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 167, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 167, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 167, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 168, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 168, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 168, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 168, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 169, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 169, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 169, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 169, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 170, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 170, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 170, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 170, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 171, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 171, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 171, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 171, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 171, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 172, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 172, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 172, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 172, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 173, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 173, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 173, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 173, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 174, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 174, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 174, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 174, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 175, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 175, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 175, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 175, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 176, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 176, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 176, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 176, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 177, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 177, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 177, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 177, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 178, "check": "class A is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 178, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 178, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 178, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 178, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 179, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 179, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 179, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 179, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 180, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 180, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 180, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 180, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 181, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 181, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 181, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 181, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 181, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 182, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 182, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 182, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 182, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 182, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 183, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 183, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 183, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 183, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 184, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 184, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 184, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 184, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 185, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 185, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 185, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 185, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 186, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 186, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 186, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 186, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 187, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 187, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 187, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 187, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 188, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 188, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 188, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 188, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 188, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 189, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 189, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 189, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 189, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 190, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 190, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 190, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 190, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 190, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 191, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 191, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 191, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 191, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 192, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 192, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 192, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 192, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 192, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 193, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 193, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 193, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 193, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 193, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 194, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 194, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 194, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 194, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 195, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 195, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 195, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 195, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 196, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 196, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 196, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 196, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 196, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 197, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 197, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 197, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 197, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 198, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 198, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 198, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 198, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 199, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 199, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 199, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 199, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 199, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 200, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 200, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 200, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 200, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 201, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 201, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 201, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 201, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 202, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 202, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 202, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 202, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 203, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 203, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 203, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 203, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 203, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 204, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 204, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 204, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 204, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 205, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 205, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 205, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 205, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 206, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 206, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 206, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 206, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 206, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 207, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 207, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 207, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 207, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 208, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 208, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 208, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 208, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 208, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 209, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 209, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 209, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 209, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 209, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 210, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 210, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 210, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 210, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 210, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 211, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 211, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 211, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 211, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 211, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 212, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 212, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 212, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 212, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 213, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 213, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 213, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 213, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 213, "check": "theorem B.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 214, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 214, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 214, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 214, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 215, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 215, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 215, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 215, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 215, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 216, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 216, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 216, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 216, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 216, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 217, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 217, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 217, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 217, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 218, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 218, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 218, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 218, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 219, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 219, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 219, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 219, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 220, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 220, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 220, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 220, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 220, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 221, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 221, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 221, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 221, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 221, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 222, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 222, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 222, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 222, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 222, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 223, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 223, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 223, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 223, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 223, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 224, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 224, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 224, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 224, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 224, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 225, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 225, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 225, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 225, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 226, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 226, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 226, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 226, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 227, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 227, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 227, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 227, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 227, "check": "theorem B.t0", "on": "UNKNOWN", "off": "REFUTED", "on_trust": []}
+{"seed": 228, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 228, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 228, "check": "theorem A.t1", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 228, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 228, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 229, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 229, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 229, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 229, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 229, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 230, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 230, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 230, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 230, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 230, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 231, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 231, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 231, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 231, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 231, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 232, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 232, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 232, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 232, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 233, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 233, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 233, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 233, "check": "theorem B.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 234, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 234, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 234, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 234, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 234, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 235, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 235, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 235, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 235, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 236, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 236, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 236, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 236, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 236, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 237, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 237, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 237, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 237, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 238, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 238, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 238, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 238, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 238, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 239, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 239, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 239, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 239, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 240, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 240, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 240, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 240, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 240, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 241, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 241, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 241, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 241, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 241, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 242, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 242, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 242, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 242, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 242, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 243, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 243, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 243, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 243, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 244, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 244, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 244, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 244, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 244, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 245, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 245, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 245, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 245, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 245, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:drop_implied", "red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 246, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 246, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 246, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 246, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 247, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 247, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 247, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 247, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 247, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 248, "check": "class A is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 248, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 248, "check": "theorem A.t1", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 248, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 248, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 249, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 249, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 249, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 249, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 249, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 250, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 250, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 250, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 250, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 250, "check": "theorem B.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 251, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 251, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 251, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 251, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 252, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 252, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 252, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:drop_implied", "red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 252, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 252, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 253, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 253, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 253, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 253, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 253, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 254, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 254, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 254, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 254, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 254, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 255, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 255, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 255, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 255, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 255, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 256, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 256, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 256, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 256, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 256, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 257, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 257, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 257, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 257, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 258, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 258, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 258, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 258, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 258, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 259, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 259, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 259, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 259, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 259, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 260, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 260, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 260, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 260, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 260, "check": "theorem B.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 261, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 261, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 261, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 261, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 262, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 262, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 262, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 262, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 263, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 263, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 263, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 263, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 264, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 264, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 264, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 264, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 264, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 265, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 265, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 265, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 265, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 266, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 266, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 266, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 266, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 266, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 267, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 267, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 267, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 267, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 267, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 268, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 268, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 268, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 268, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 268, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 269, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 269, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 269, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 269, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 270, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 270, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 270, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 270, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 270, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 271, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 271, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 271, "check": "theorem A.t1", "on": "REFUTED", "off": "UNKNOWN", "on_trust": ["kernel"]}
+{"seed": 271, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 271, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 272, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 272, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 272, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 272, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 273, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 273, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 273, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 273, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 273, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 274, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 274, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 274, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 274, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 274, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 275, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 275, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 275, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 275, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 276, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 276, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 276, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 276, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 277, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 277, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 277, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 277, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 278, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 278, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 278, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 278, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 278, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 279, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 279, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 279, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 279, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 279, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 280, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 280, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 280, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 280, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 281, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 281, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 281, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 281, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 282, "check": "class A is consistent", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 282, "check": "theorem A.t0", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 282, "check": "theorem A.t1", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 282, "check": "class B is consistent", "on": "INCONSISTENT", "off": "INCONSISTENT", "on_trust": ["z3_unsat"]}
+{"seed": 282, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:drop_implied", "red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 283, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 283, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 283, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 283, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 283, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 284, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 284, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 284, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 284, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 285, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 285, "check": "theorem A.t0", "on": "REFUTED", "off": "UNKNOWN", "on_trust": ["kernel"]}
+{"seed": 285, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 285, "check": "theorem B.t0", "on": "REFUTED", "off": "UNKNOWN", "on_trust": ["kernel"]}
+{"seed": 286, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 286, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 286, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 286, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 286, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 287, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 287, "check": "theorem A.t0", "on": "UNKNOWN", "off": "REFUTED", "on_trust": []}
+{"seed": 287, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 287, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:drop_implied", "red:fix_order", "red:translate", "z3_unsat"]}
+{"seed": 288, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 288, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 288, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 288, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 289, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 289, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 289, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 289, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 290, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 290, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 290, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 290, "check": "theorem B.t0", "on": "UNKNOWN", "off": "REFUTED", "on_trust": []}
+{"seed": 291, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 291, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 291, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 291, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 291, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 292, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 292, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 292, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 292, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 293, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 293, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 293, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 293, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 293, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 294, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 294, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 294, "check": "theorem A.t1", "on": "UNKNOWN", "off": "UNKNOWN", "on_trust": []}
+{"seed": 294, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 294, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 295, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 295, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 295, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 295, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 296, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 296, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 296, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 296, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 297, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 297, "check": "theorem A.t0", "on": "PROVEN", "off": "UNKNOWN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 297, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 297, "check": "theorem B.t0", "on": "PROVEN", "off": "UNKNOWN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 298, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 298, "check": "theorem A.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 298, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 298, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 298, "check": "theorem B.t0", "on": "PROVEN", "off": "PROVEN", "on_trust": ["red:fix_order", "red:inherit", "red:no_invariants", "red:translate", "z3_unsat"]}
+{"seed": 299, "check": "class A is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 299, "check": "theorem A.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 299, "check": "theorem A.t1", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}
+{"seed": 299, "check": "class B is consistent", "on": "PROVEN", "off": "PROVEN", "on_trust": ["kernel"]}
+{"seed": 299, "check": "theorem B.t0", "on": "REFUTED", "off": "REFUTED", "on_trust": ["kernel"]}

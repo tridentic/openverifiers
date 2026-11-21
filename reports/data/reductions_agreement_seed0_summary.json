@@ -1,0 +1,18 @@
+{
+  "cases": 300,
+  "rejected_cases": 0,
+  "checks": 1355,
+  "definite_both": 1307,
+  "conflicts": 0,
+  "unknown_only_disagreements": 13,
+  "on_unknown_off_definite": 3,
+  "off_unknown_on_definite": 10,
+  "reductions_seen": [
+    "red:drop_implied",
+    "red:fix_order",
+    "red:inherit",
+    "red:no_invariants",
+    "red:translate"
+  ],
+  "seconds": 1409.4
+}

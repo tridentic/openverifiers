@@ -49,3 +49,23 @@ jobs:
           pip install -e ".[dev]"
       - name: Timing limits (10k facts < 5 s, q11 < 1 s, ov check p95 < 300 ms)
         run: python -m pytest -q -m bench
+
+  # Gold may only change with a human's approval trailer; new benchmark gold must be
+  # committed alone, before results. See src/openverifiers/bench/gold_gate.py.
+  gold-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Gold-diff gate
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            BASE=$(git rev-parse HEAD~1)
+          fi
+          PYTHONPATH=src python -m openverifiers.bench.gold_gate "$BASE" HEAD

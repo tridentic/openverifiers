@@ -393,8 +393,11 @@ invariants that conflict.
 `#print axioms`: `kernel` (the trusted evaluator re-checked an instance, or
 the checker accepted a rule trace) and `z3_unsat` (an unsat answer only the
 solver vouches for: UNIQUE, COUNT, a class with no instance, a proven
-theorem). `ov run --strict` turns every verdict that rests on `z3_unsat` into
-UNKNOWN(plugin_unknown). A FIND keeps its re-checked bindings but no longer
+theorem). A proven theorem also lists the solver reductions its unsat was
+computed under, as `red:fix_order`, `red:no_invariants`, `red:drop_implied`,
+`red:translate` and `red:inherit` (docs/SEMANTICS.md §7). `--no-reductions`
+turns them all off. `ov run --strict` turns every verdict that rests on
+`z3_unsat` into UNKNOWN(plugin_unknown). A FIND keeps its re-checked bindings but no longer
 claims the list is complete. Under `--strict`, W201 becomes error E208.
 
 ### Class checks

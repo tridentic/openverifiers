@@ -85,6 +85,7 @@ module = [
     "openverifiers.kernel", "openverifiers.kernel.*",
     "openverifiers.checker", "openverifiers.checker.*",
     "openverifiers.objects", "openverifiers.objects.*",
+    "openverifiers.bench", "openverifiers.bench.*",
     "openverifiers.m1.kernel", "openverifiers.m1.kernel.*",
 ]
 strict = true

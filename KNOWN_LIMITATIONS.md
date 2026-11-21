@@ -26,6 +26,17 @@ milestone. Newest milestone first.
   and `--strict` turns them into UNKNOWN. An independent unsat certificate
   (e.g. a Positivstellensatz witness) is open; a cvc5 cross-check is planned
   as an optional extra.
+- **Theorem-proving reductions are trusted assumptions.** Five rewrites
+  (fix ordering, invariant-free negation, drop implied invariants,
+  translation pinning, inheritance) shrink the unsat problem. They are argued
+  sound in docs/SEMANTICS.md §7 and tested on random cases, not checked.
+  Each one used is listed in `trust_base` as `red:<name>`, and
+  `--no-reductions` turns them off (much slower: `math.geometry` takes
+  about 5 minutes instead of 3.5 s).
+- **The object path is not mutation-tested.** Object-layer steps (solve,
+  re-check, block, unsat, reductions) are text in the answer, not OVTrace
+  records, so no checker reads them and no mutation test covers them.
+  Geometry results carry this label until they do (Condition B).
 - **Theorems need bounded collections.** The generic instance takes each
   collection's size from a `count(p) = n` invariant. Otherwise the theorem is
   UNPROVEN.

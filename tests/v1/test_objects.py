@@ -436,7 +436,9 @@ def test_trust_base_and_strict() -> None:
     assert find.trust_base == {"kernel"} and find.complete
     assert unique.trust_base == {"kernel", "z3_unsat"}
     th = res.classes[-1]
-    assert th.verdict == "PROVEN" and th.trust_base == {"z3_unsat"}
+    # Condition A: the reductions the unsat was computed under are listed too.
+    assert th.verdict == "PROVEN" and th.trust_base == {
+        "z3_unsat", "red:fix_order", "red:no_invariants", "red:translate"}
     strict = run_file(SQUARE, files={str(SQUARE)}, settings=Settings(strict=True))
     s_find, s_unique = strict.objects
     assert s_find.verdict == "PROVEN" and not s_find.complete     # bindings are kernel-checked
@@ -457,3 +459,46 @@ def test_small_scope_never_runs_on_a_successful_proof(geometry) -> None:  # type
         assert not any("small-scope" in s for s in a.steps), a.title
     finds = [a for a in geometry.objects if a.kind == "find" and a.bindings]
     assert any(any("small-scope" in s for s in a.steps) for a in finds)
+
+
+def test_trust_base_lists_the_reductions() -> None:
+    on = run_file(SQUARE, files={str(SQUARE)}).classes
+    th = next(a for a in on if a.kind == "theorem")
+    assert th.verdict == "PROVEN"
+    assert {"z3_unsat", "red:fix_order", "red:translate"} <= th.trust_base
+    # Kernel-checked answers (consistency witnesses) list no reductions.
+    assert all(not any(t.startswith("red:") for t in a.trust_base)
+               for a in on if a.kind == "consistency")
+    strict = run_file(SQUARE, files={str(SQUARE)}, settings=Settings(strict=True)).classes
+    assert next(a for a in strict if a.kind == "theorem").verdict == "UNKNOWN"
+
+
+def test_inherited_theorem_lists_inherit_and_the_ancestor_reductions(geometry) -> None:  # type: ignore[no-untyped-def]
+    inherited = [a for a in geometry.classes if any(s.startswith("inherited") for s in a.steps)]
+    assert inherited
+    for a in inherited:
+        assert "red:inherit" in a.trust_base and "z3_unsat" in a.trust_base
+
+
+def test_no_reductions_flag_turns_every_reduction_off(tmp_path: Path) -> None:
+    from openverifiers.bench.reductions import case
+    for seed in range(4):
+        p = tmp_path / f"c{seed}.ov"
+        p.write_text(case(seed))
+        res = run_file(p, files={str(p)}, settings=Settings(reductions=False))
+        for a in res.classes:
+            assert not a.reductions and not any(t.startswith("red:") for t in a.trust_base)
+            assert not any(s.startswith(("symmetry:", "implied", "inherited")) for s in a.steps)
+
+
+def test_reductions_never_change_a_definite_verdict(tmp_path: Path) -> None:
+    """Condition A, a fixed-seed sample. The full run is
+    `python -m openverifiers.bench.reductions` (reported in the step-2 report)."""
+    from openverifiers.bench.reductions import run_case
+    checks = 0
+    for seed in range(10):
+        out = run_case(seed, on_ms=3_000, off_ms=10_000, workdir=tmp_path)
+        assert not isinstance(out, str), out
+        checks += len(out)
+        assert not [o for o in out if o.conflict], out
+    assert checks >= 30

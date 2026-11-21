@@ -37,7 +37,8 @@ checker.
 | rule queries | `{kernel}` |
 | FIND with bindings, UNIQUE refuted by two witnesses, CHECK, a refuted theorem, a consistent class | `{kernel}`: an instance was re-checked exactly |
 | UNIQUE proven, COUNT | `{kernel, z3_unsat}` |
-| FIND with no solution, a proven theorem, an empty class (INCONSISTENT) | `{z3_unsat}` |
+| FIND with no solution, an empty class (INCONSISTENT) | `{z3_unsat}` |
+| a proven theorem (or COUNTEREXAMPLE with none) | `{z3_unsat}` plus the `red:*` reductions used, e.g. `{z3_unsat, red:fix_order, red:translate}` (SEMANTICS §7) |
 | UNKNOWN | `{}` |
 
 `ov run --strict` makes every verdict whose trust base contains `z3_unsat`

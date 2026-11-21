@@ -60,6 +60,10 @@ class ObjAnswer:
     #: evaluator re-checked an instance) and/or "z3_unsat" (an unsat answer that only
     #: the solver vouches for). Empty for UNKNOWN.
     trust_base: frozenset[str] = frozenset()
+    #: Solver-side reductions the unsat answers were computed under (see
+    #: docs/SEMANTICS.md §8). Listed in trust_base as ``red:<name>`` when the verdict
+    #: rests on z3_unsat; a kernel-checked instance needs none of them.
+    reductions: frozenset[str] = frozenset()
     kind: str = ""                                 # find unique count check counterexample
                                                    # consistency theorem
 
@@ -70,6 +74,9 @@ class Settings:
     timeout_ms: int = 20_000
     #: Verdicts resting on an unchecked solver unsat become UNKNOWN(plugin_unknown).
     strict: bool = False
+    #: The theorem-proving reductions (fix_order, no_invariants, drop_implied,
+    #: translate, inherit). Off: every unsat is computed on the full problem.
+    reductions: bool = True
 
 
 KERNEL, Z3_UNSAT = "kernel", "z3_unsat"
@@ -95,6 +102,8 @@ def settle(ans: ObjAnswer, st: Settings) -> ObjAnswer:
         base = {KERNEL, Z3_UNSAT} if ans.bindings else {Z3_UNSAT}
     else:
         base = {KERNEL}
+    if Z3_UNSAT in base:
+        base |= {f"red:{x}" for x in ans.reductions}
     ans.trust_base = frozenset(base)
     if st.strict and k == "find" and v == "PROVEN" and ans.complete:
         ans.complete = False                       # "no more solutions" is solver unsat
@@ -206,8 +215,10 @@ def _answer(plan: ObjPlan, st: Settings) -> ObjAnswer:
             return ans
         if plan.kind == "counterexample":
             assert plan.theorem is not None
+            used: set[str] = set()
             v, why, wit, names = theorem(plan.cls, plan.theorem, r, ans.steps,
-                                         plan.note or plan.props, seek=True)
+                                         plan.note or plan.props, seek=True, used=used)
+            ans.reductions = frozenset(used)
             # The verdict is the theorem's: REFUTED with the checked counterexample,
             # PROVEN when its negation is unsat, UNKNOWN otherwise.
             ans.witness, ans.names, ans.verdict, ans.reason = wit, names, v, why
@@ -330,15 +341,20 @@ def _coordinate_groups(gen: Mapping[str, Term]) -> list[list[str]]:
     return [g for _, g in sorted(groups.items())]
 
 
-def _pin(cons: list[CF], gen: Mapping[str, Term], steps: list[str]) -> list[CF]:
+def _pin(cons: list[CF], gen: Mapping[str, Term], steps: list[str], st: Settings,
+         used: set[str] | None = None) -> list[CF]:
     """Translation symmetry: pin one point to 0 in each coordinate that every constraint
     is invariant under shifting. Checked exactly on the polynomials, so it loses no model."""
+    if not st.reductions:
+        return cons
     pins = []
     for g in _coordinate_groups(gen):
         if len(g) > 1 and translation_invariant(cons, set(g)):
             pins.append(atom("=", Poly.var(g[0])))
             steps.append(f"symmetry: every constraint is invariant under shifting "
                          f"{', '.join(g)} together, so {g[0]} = 0")
+    if pins and used is not None:
+        used.add("translate")
     return [*cons, *pins]
 
 
@@ -390,13 +406,17 @@ def _wlog(f: Term, gen: Mapping[str, Term]) -> tuple[str, str, Term, Term] | Non
 
 
 def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
-            gen: Mapping[str, Term] | str, *, seek: bool = False
+            gen: Mapping[str, Term] | str, *, seek: bool = False,
+            used: set[str] | None = None
             ) -> tuple[str, str, dict[str, Term] | None, tuple[str, ...]]:
     """(PROVEN | REFUTED | UNKNOWN, reason, counterexample, ()).
 
     ``seek`` (COUNTEREXAMPLE): try small integer points before z3. Otherwise (a
     theorem check) z3 goes first, and the small-scope search runs only if z3 can
-    neither prove nor refute it: never on a proof that succeeds."""
+    neither prove nor refute it: never on a proof that succeeds.
+
+    ``used`` receives the reductions the returned verdict's unsat rests on."""
+    used = set() if used is None else used
     if isinstance(gen, str):
         steps.append(f"no bounded instance: {gen}")
         return "UNKNOWN", "budget", None, ()
@@ -404,7 +424,8 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
     for v in gen.values():
         _vars(v, names)
     st = r.st
-    wlog = _wlog(th[1], gen) if st.symmetry else None
+    wlog = _wlog(th[1], gen) if st.symmetry and st.reductions else None
+    fixed = False
     full, alone = [], []
     dropped: set[str] = set()
     for p, cond in cases(gen, st.symmetry):
@@ -416,6 +437,7 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
             # The vertices are fresh, interchangeable unknowns and these are all distinct,
             # so a counterexample's ordering can be taken to be the listed order.
             var, _, body, coll = wlog
+            fixed = True
             order = SSeq("list", seq_items(ex.value(p[wlog[1]])))
             ex.env[var] = order
             bad = ex.formula(body)
@@ -433,7 +455,7 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
             invs_cf = [c for _, c in invs]
         full.append(and_([cond, *invs_cf, bad]))
         alone.append(and_([cond, bad]))
-    if wlog is not None:
+    if fixed and wlog is not None:
         steps.append(f"symmetry: the counterexample's ordering of {wlog[1]} is fixed (its "
                      "elements are interchangeable unknowns)")
     if dropped:
@@ -441,13 +463,18 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
                      + ", ".join(sorted(dropped)))
     # Cheap first: if the theorem's negation is unsat even without the invariants,
     # the theorem holds for every instance (a stronger, sound result).
-    quick = Settings(st.symmetry, max(1, st.timeout_ms // 10))
-    what0 = f"not {th[0]} (without the invariants)"
-    alone_c = _pin([or_(alone)], gen, steps)
-    res0 = _Run(quick, steps).solve(what0, alone_c, list(names))
-    if res0.status == "unsat" and r.confirm_unsat(what0, alone_c, list(names)):
-        return "PROVEN", "", None, ()
-    cons = _pin([or_(full)], gen, steps)
+    common = {"fix_order"} if fixed else set()
+    if st.reductions:
+        quick = Settings(st.symmetry, max(1, st.timeout_ms // 10))
+        what0 = f"not {th[0]} (without the invariants)"
+        u0 = {*common, "no_invariants"}
+        alone_c = _pin([or_(alone)], gen, steps, st, u0)
+        res0 = _Run(quick, steps).solve(what0, alone_c, list(names))
+        if res0.status == "unsat" and r.confirm_unsat(what0, alone_c, list(names)):
+            used |= u0
+            return "PROVEN", "", None, ()
+    used |= common | ({"drop_implied"} if dropped else set())
+    cons = _pin([or_(full)], gen, steps, st, used)
     what = f"invariants of {cls.name} and not {th[0]}"
     res = r.solve(what, cons, list(names), seek=seek)
     if res.status == "unknown" and not seek:
@@ -479,7 +506,7 @@ def check_classes(classes: Classes, only: set[str] | None = None,
     """`ov check` for classes: consistency of the invariants, then every theorem."""
     st = st or Settings()
     out = []
-    proven: dict[str, Term] = {}
+    proven: dict[str, tuple[Term, frozenset[str]]] = {}
     for name, cls in classes.defs.items():
         if only is not None and name not in only:
             continue
@@ -497,8 +524,8 @@ def check_classes(classes: Classes, only: set[str] | None = None,
         out.append(settle(ans, st))
         for th in cls.theorems:
             ta = ObjAnswer(f"theorem {th[0]}", "UNKNOWN", kind="theorem")
-            same = [n for n in proven if n.split(".")[0] in classes.ancestors[name]
-                    and proven[n] == th[1]]
+            same = [n for n in proven if st.reductions
+                    and n.split(".")[0] in classes.ancestors[name] and proven[n][0] == th[1]]
             if same:
                 # Every invariant of an ancestor is an invariant here (the class is a subset),
                 # so a theorem the ancestor proved, word for word, holds here too.
@@ -506,12 +533,15 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                                 f"{name} includes every invariant of "
                                 f"{same[0].split('.')[0]}")
                 ta.verdict = "PROVEN"
+                ta.reductions = proven[same[0]][1] | {"inherit"}
             else:
-                v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps), ta.steps, gen)
+                used: set[str] = set()
+                v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps), ta.steps, gen, used=used)
                 ta.verdict, ta.reason, ta.witness = v, why, wit
+                ta.reductions = frozenset(used)
             settle(ta, st)
             if ta.verdict == "PROVEN":
-                proven[th[0]] = th[1]
+                proven[th[0]] = (th[1], ta.reductions)
             out.append(ta)
     return out
 
@@ -526,7 +556,7 @@ def _consistency(cls: ClassDef, gen: dict[str, Term], r: _Run, ans: ObjAnswer) -
         ans.steps.append(f"cannot expand: {e}")
         ans.reason = "plugin_unknown"
         return ans
-    res = r.solve(f"invariants of {cls.name}", _pin([cons], gen, ans.steps), list(names),
+    res = r.solve(f"invariants of {cls.name}", _pin([cons], gen, ans.steps, r.st), list(names),
                   seek=True)
     if res.status == "sat" and res.model is not None:
         g = _ground(gen, res.model)

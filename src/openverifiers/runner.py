@@ -336,14 +336,16 @@ def summary(res: FileResult) -> str:
     return (f"{res.env.main.file}: {'FAIL' if bad else 'ok'} "
             f"({len(res.runs)} scenario(s), {len(res.answers) + len(res.objects)} queries, "
             f"{len(exp) - len(res.failed)}/{len(exp)} expectations, "
-            f"{len(res.classes) - len(res.class_errors)}/{len(res.classes)} class checks)")
+            f"class checks: {sum(a.verdict == 'PROVEN' for a in res.classes)} proven, "
+            f"{sum(a.verdict == 'UNKNOWN' for a in res.classes)} unknown, "
+            f"{len(res.class_errors)} failed)")
 
 
 def main(argv: Sequence[str] | None = None, *, check: bool = False) -> int:
     """`ov run` (full output) or, with check=True, `ov check` (one line per file)."""
     args = list(sys.argv[1:] if argv is None else argv)
     verbose = "--verbose" in args
-    settings = Settings(strict="--strict" in args)
+    settings = Settings(strict="--strict" in args, reductions="--no-reductions" not in args)
     paths = [a for a in args if not a.startswith("--")]
     if not paths:
         print(f"usage: ov {'check' if check else 'run'} FILE.ov [FILE.ov ...] "

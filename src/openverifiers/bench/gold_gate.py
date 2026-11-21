@@ -4,7 +4,8 @@
 
 Gold is what verdicts are judged against:
 
-- ``benchmarks/**/expected.json`` (benchmark gold);
+- ``benchmarks/**/expected.json`` (benchmark gold) and ``review.json`` (the
+  faithfulness reviewer's expected verdicts);
 - ``laws/**``;
 - in ``src/openverifiers/packages/**/*.ov``, every ``expect`` line (package tests
   are gold too) and every ``theorem`` line (the prover may not weaken targets).
@@ -33,7 +34,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 TRAILER = "Gold-Change-Approved-By"
-GOLD_FILES = ("benchmarks/**/expected.json", "laws/**")
+GOLD_FILES = ("benchmarks/**/expected.json", "benchmarks/**/review.json", "laws/**")
 GOLD_LINES = ("src/openverifiers/packages/**/*.ov",)
 GOLD_LINE = re.compile(r"^\s*(expect|theorem)\b")
 NOT_HUMAN = re.compile(r"claude|anthropic|\bbot\b|\[bot\]|gpt|copilot|codex", re.I)

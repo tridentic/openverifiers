@@ -185,9 +185,10 @@ fact type Cloud {
     assert "UNPROVEN" in render(res)
 
 
-def test_irrational_models_are_not_reported(tmp_path: Path) -> None:
-    # No equilateral triangle has rational vertices: z3's model is algebraic, so no
-    # instance can be re-checked exactly. The answer is UNKNOWN, never a rounded point.
+def test_irrational_models_are_exact_never_rounded(tmp_path: Path) -> None:
+    # No equilateral triangle has rational vertices: z3's model is algebraic. It used to
+    # be UNKNOWN; a degree-2 algebraic number is now an exact surd that the evaluator
+    # re-checks, so the answer is the exact point, never a rounded one.
     src = POINT + """
 fact type Equilateral {
   property vertices: Set<Point>
@@ -196,12 +197,13 @@ fact type Equilateral {
 }
 scenario s {
   query FIND ?p: Point WHERE Equilateral{ vertices = {(0,0), (2,0), ?p} }
-  expect UNKNOWN
 }
 """
     res = run(src, tmp_path)
-    assert res.objects[0].verdict == "UNKNOWN" and res.objects[0].reason == "plugin_unknown"
-    assert not res.objects[0].bindings and not res.failed
+    from openverifiers.objects.engine import show
+    a = res.objects[0]
+    assert a.verdict == "PROVEN" and a.complete
+    assert sorted(show(b["p"]) for b in a.bindings) == ["(1, -√3)", "(1, √3)"]
 
 
 def test_buggy_plugin_model_is_rejected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -232,8 +234,10 @@ def test_evaluator_is_exact() -> None:
     def cmp(op: str, a: object, b: object) -> Compound:
         return Compound("f.cmp", (Str(op), a, b))  # type: ignore[arg-type]
     two = Num(Fraction(2))
-    with pytest.raises(Unsupported):
-        holds(cmp("=", Compound("*", (dist, dist)), two), {})  # arithmetic on a root
+    # Roots are exact surds now: sqrt 2 * sqrt 2 = 2, exactly (it used to be refused).
+    assert holds(cmp("=", Compound("*", (dist, dist)), two), {})
+    with pytest.raises(Unsupported):                            # a nested root is refused
+        holds(cmp("=", Compound("f.sqrt", (Compound("f.sqrt", (two,)),)), two), {})
     assert holds(cmp(">", dist, Num(Fraction(-1))), {})
     assert holds(cmp("<", dist, Num(Fraction(3, 2))), {})       # sqrt 2 < 1.5
     assert not holds(cmp("<", dist, Num(Fraction(7, 5))), {})    # sqrt 2 > 1.4
@@ -272,7 +276,7 @@ def test_lowering_classes_is_deterministic() -> None:
     (POINT + "fact type T { property v: Set<Point> invariant a: exists w in cycles(v): "
      "angle(w[0], w[1], w[2]) = 37 deg }", [("E405", 2, 74)]),
     (POINT + "fact type T { property v: Set<Point> invariant a: exists w in cycles(v): "
-     "dist(w[0], w[1]) = 2 m }", [("E405", 2, 74)]),
+     "dist(w[0], w[1]) = 2 m }", [("E301", 2, 74)]),    # was E405; dist is arithmetic now
     ("fact type A extends B { }\nfact type B extends A { }", [("E406", 2, 1)]),
     ("fact type A extends Nope { }", [("E201", 1, 1)]),
     (POINT + "fact type T { property v: Set<Point> invariant a: exists w in cycles(v): "
@@ -350,7 +354,7 @@ def test_evaluator_generators_and_rejections() -> None:
         c("f.cmp", Str("="), c("f.count", n(1)), n(1)),                   # not a collection
         c("f.cmp", Str("="), c("f.dist", n(1), pt(0, 0)), n(1)),          # not a point
         c("f.cmp", Str("="), c("f.dist", pt(0, 0), c("f.tuple", n(1), n(2), n(3))), n(1)),
-        c("f.cmp", Str("="), c("f.set", c("f.dist", pt(0, 0), pt(1, 1))), n(1)),
+        c("f.cmp", Str("="), c("f.set", c("f.angle", pt(0, 0), pt(1, 1), pt(1, 0))), n(1)),
         c("f.cmp", Str("="), c("+", n(1), Num(Fraction(1), deg)), n(1)),  # arithmetic fails
         c("f.cmp", Str("="), c("foo", n(1)), n(1)),
         c("f.cmp", Str("<"), c("f.dist", pt(0, 0), pt(1, 0)), Num(Fraction(1), deg)),
@@ -396,7 +400,6 @@ def test_rhombus_false_theorem(tmp_path: Path) -> None:
     res = run(RHOMBUS_FALSE, tmp_path, Settings(timeout_ms=3000))
     (th,) = [a for a in res.classes if a.title.startswith("theorem")]
     assert th.verdict == "REFUTED" and th.witness is not None
-    assert any("small-scope" in st and st.endswith("sat") for st in th.steps)
     cls = load(tmp_path / "t.ov").objects.defs["Rhombus"]
     assert failing(cls, th.witness) == () and not holds(cls.theorems[0][1], th.witness)
 

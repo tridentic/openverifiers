@@ -201,16 +201,18 @@ milestone. Newest milestone first.
 
 ## M-CAP library layer (2026-11-22)
 
-- **No trigonometric functions.**
-  - An angle is decided only against 0, 30, 45, 60, 90, 120, 135, 150 and
-    180 deg, through its exact cosine.
-  - So `sin` and `cos` of a general angle cannot be written: inclined planes
-    and projectiles at arbitrary angles are a language gap.
+- **Trigonometry is symbolic or exact-special only.** An `Angle` is
+  (cos, sin) with cos² + sin² = 1.
+  - It is exact at the special angles, or from the problem's given values.
+  - A general angle in degrees (37 deg without its sine given) is refused
+    (E405) until the interval mode lands.
+  - Answers with a square root print without their unit (`10√3`, not
+    `10√3 N`).
 - **No sums with a symbolic number of terms.** The sum of an arithmetic
   progression with n terms needs induction or a sum operator, so it is not
   stated yet.
-- **Distances are not arithmetic.** `dist(a, b) + dist(b, c)` is E405,
-  because square roots stay exact only when compared. Use `dist2`.
+- **Nested roots are compared, not computed.** √(2 + √3) can be compared
+  by its square but not added; sqrt of an irrational is refused.
 - **Calculus covers polynomials in one property.** `integral(e, t)` and
   `deriv(e, t)` need `e` polynomial in `t`. Non-polynomial integrands (1/t,
   exponentials) are refused, and there are no numeric ODEs.

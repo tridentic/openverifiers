@@ -15,8 +15,9 @@ from fractions import Fraction
 
 import z3
 
+from ..raw.surd import Surd, SurdError
 from . import smallscope
-from .expand import CF, Poly
+from .expand import CF, Poly, root_definitions
 
 SEEDS = (0, 1, 2, 3)
 #: Added to every z3 random seed. ``ov bench --seeds N`` runs each case under
@@ -37,7 +38,7 @@ def seed_base(base: int) -> Iterator[None]:
 @dataclass(frozen=True)
 class Result:
     status: str                                  # sat | unsat | unknown
-    model: dict[str, Fraction] | None = None
+    model: dict[str, Fraction | Surd] | None = None
     reason: str = ""                             # for unknown: budget | plugin_unknown
     via: str = "z3"                              # z3 | small-scope
 
@@ -124,8 +125,20 @@ def small_scope(constraints: Sequence[CF], variables: Sequence[str] = ()) -> Res
     found = smallscope.search(_conjuncts(constraints), variables,
                               max_nodes=SMALL_SCOPE_NODES, seconds=SMALL_SCOPE_CAP_SECONDS)
     via = f"small-scope [-{smallscope.BOUND}, {smallscope.BOUND}]"
-    return Result("sat", found, via=via) if found is not None else Result(
+    return Result("sat", dict(found), via=via) if found is not None else Result(
         "unknown", None, "budget", via=via)
+
+
+def _vars_of(f: CF, out: set[str]) -> None:
+    if f[0] == "atom":
+        p = f[2]
+        assert isinstance(p, Poly)
+        out.update(v for m, _ in p.terms for v, _ in m)
+    elif f[0] in ("and", "or"):
+        parts = f[1]
+        assert isinstance(parts, (frozenset, tuple))
+        for x in parts:
+            _vars_of(x, out)
 
 
 def solve(constraints: Sequence[CF], variables: Sequence[str] = (),
@@ -138,6 +151,13 @@ def solve(constraints: Sequence[CF], variables: Sequence[str] = (),
     COUNTEREXAMPLE), so try small integer points first. It is off for proofs, where
     the expected answer is unsat and the search could only waste time."""
     cs = _conjuncts(constraints)
+    used: set[str] = set()
+    for c in cs:
+        _vars_of(c, used)
+    roots = root_definitions(sorted(used))
+    if roots:
+        cs = _conjuncts([*cs, *roots])
+        variables = [*variables, *(n for n in sorted(used) if n.startswith("ROOT_"))]
     if seek:
         r0 = small_scope(cs, variables)
         if r0.status == "sat":
@@ -186,13 +206,37 @@ def _solve(cs: list[CF], variables: list[str], timeout_ms: int, deadline: float,
         return Result("unknown", reason="budget" if "timeout" in why or "canceled" in why
                       else "plugin_unknown")
     m = s.model()
-    out: dict[str, Fraction] = {}
+    out: dict[str, Fraction | Surd] = {}
     for name, v in vs.items():
         val = m.eval(v, model_completion=True)
-        if not z3.is_rational_value(val):
-            return Result("unknown", reason="plugin_unknown")   # algebraic: not exact
-        out[name] = Fraction(val.numerator_as_long(), val.denominator_as_long())
+        if z3.is_rational_value(val):
+            out[name] = Fraction(val.numerator_as_long(), val.denominator_as_long())
+            continue
+        q = _quadratic_surd(val) if z3.is_algebraic_value(val) else None
+        if q is None:
+            return Result("unknown", reason="plugin_unknown")   # not exact in our fragment
+        out[name] = q
     return Result("sat", out)
+
+
+def _quadratic_surd(val: z3.AlgebraicNumRef) -> Surd | None:
+    """An algebraic number of degree 2 as an exact surd (the evaluator re-checks it)."""
+    coeffs = [z3.simplify(c) for c in val.poly()]
+    if len(coeffs) != 3 or not all(z3.is_rational_value(c) for c in coeffs):
+        return None
+    c0, c1, c2 = (Fraction(c.numerator_as_long(), c.denominator_as_long()) for c in coeffs)
+    disc = c1 * c1 - 4 * c2 * c0
+    if c2 == 0 or disc < 0:
+        return None
+    try:
+        root = Surd.sqrt(disc)
+    except SurdError:
+        return None
+    lo, hi = (Surd.of(-c1) - root) * Surd.of(1 / (2 * c2)), \
+        (Surd.of(-c1) + root) * Surd.of(1 / (2 * c2))
+    if c2 < 0:
+        lo, hi = hi, lo
+    return lo if val.index() == 1 else hi
 
 
 def variables(f: CF, out: set[str] | None = None) -> set[str]:

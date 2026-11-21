@@ -132,7 +132,7 @@ def test_checker_does_not_import_untrusted_modules() -> None:
 
 
 def test_trusted_modules_use_only_stdlib_and_raw() -> None:
-    allowed = {"__future__", "collections", "dataclasses", "fractions", "json", "re",
+    allowed = {"__future__", "collections", "dataclasses", "fractions", "json", "math", "re",
                "itertools", "functools", "typing", "hashlib"}
     for d in ("raw", "checker"):
         for f in (ROOT / "src" / "openverifiers" / d).rglob("*.py"):

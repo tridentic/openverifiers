@@ -21,6 +21,7 @@ from fractions import Fraction
 
 from ..lang.units import show_quantity
 from ..raw.formula import DEG, ClassDef, Unsupported, failing, holds
+from ..raw.surd import Surd
 from ..raw.terms import Compound, Num, Str, Term, Var, substitute
 from .compile import Classes, ObjPlan, conj, generic, size_invariants
 from .expand import (
@@ -126,8 +127,21 @@ def _vars(t: Term, out: dict[str, None]) -> None:
             _vars(a, out)
 
 
-def _ground(props: Mapping[str, Term], model: Mapping[str, Fraction]) -> dict[str, Term]:
-    s = {k: Num(v) for k, v in model.items()}
+def term_of(v: Fraction | Surd) -> Term:
+    """A solver value as a term: a rational, or f.surd(k1, c1, k2, c2, ...) for
+    c1 sqrt(k1) + c2 sqrt(k2) + ... (exact; the evaluator re-checks it)."""
+    if isinstance(v, Fraction):
+        return Num(v)
+    r = v.rational()
+    if r is not None:
+        return Num(r)
+    return Compound("f.surd", tuple(x for k, c in v.terms
+                                    for x in (Num(Fraction(k)), Num(c))))
+
+
+def _ground(props: Mapping[str, Term], model: Mapping[str, Fraction | Surd]
+            ) -> dict[str, Term]:
+    s = {k: term_of(v) for k, v in model.items()}
     return {k: substitute(v, s) for k, v in props.items()}
 
 
@@ -137,6 +151,14 @@ def show(t: Term) -> str:
     if isinstance(t, Num):
         v = t.value
         return str(v.numerator) if v.denominator == 1 else f"{v.numerator}/{v.denominator}"
+    if isinstance(t, Compound) and t.functor == "f.surd":
+        nums = [x.value for x in t.args if isinstance(x, Num)]
+        parts = []
+        for rad, coef in zip(nums[0::2], nums[1::2], strict=True):
+            cs = show(Num(coef))
+            lead = "" if coef == 1 else "-" if coef == -1 else cs
+            parts.append(cs if rad == 1 else f"{lead}√{rad}")
+        return " + ".join(parts).replace("+ -", "- ")
     if isinstance(t, Compound) and t.functor == "f.tuple":
         return "(" + ", ".join(show(a) for a in t.args) + ")"
     if isinstance(t, Compound) and t.functor in ("f.set", "f.list"):
@@ -261,7 +283,7 @@ def _search(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> ObjAnswer:
             ans.steps.append("the solver's model is rejected")
             ans.reason, ans.complete = "plugin_unknown", False
             break
-        model = {k: Num(v) for k, v in res.model.items()}
+        model = {k: term_of(v) for k, v in res.model.items()}
         binding: dict[str, Term] = {}
         for q, coords in plan.unknowns.items():
             vals = tuple(model[c.name] for c in coords)
@@ -286,10 +308,21 @@ def _block(plan: ObjPlan, binding: Mapping[str, Term]) -> CF:
     parts = []
     for q, coords in plan.unknowns.items():
         v = binding[q]
-        vals = v.args if isinstance(v, Compound) else (v,)
+        vals = v.args if isinstance(v, Compound) and v.functor == "f.tuple" else (v,)
         for c, x in zip(coords, vals, strict=True):
-            assert isinstance(x, Num)
-            parts.append(atom("!=", Poly.var(c.name) - Poly.const(x.value)))
+            if isinstance(x, Num):
+                parts.append(atom("!=", Poly.var(c.name) - Poly.const(x.value)))
+                continue
+            # x = a + b sqrt(k): exclude it alone, not its conjugate a - b sqrt(k).
+            assert isinstance(x, Compound) and x.functor == "f.surd"
+            nums = [y.value for y in x.args if isinstance(y, Num)]
+            terms = dict(zip(nums[0::2], nums[1::2], strict=True))
+            a = terms.pop(Fraction(1), Fraction(0))
+            assert len(terms) == 1, "a model value has one square root"
+            (k, b), = terms.items()
+            p = Poly.var(c.name) - Poly.const(a)
+            parts.append(atom("!=", p * p - Poly.const(b * b * k)))
+            parts.append(atom("<=" if b > 0 else ">=", p))
     return or_(parts)
 
 
@@ -502,9 +535,10 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
     failed = r.recheck(cls, g)
     try:
         violated = failed == () and not holds(th[1], g)
-    except Unsupported:
-        violated = False
-    steps.append(f"re-check [checker] {th[0]} on it: " + ("fails" if violated else "holds"))
+        said = "fails" if violated else "holds"
+    except Unsupported as e:
+        violated, said = False, f"cannot decide ({e})"
+    steps.append(f"re-check [checker] {th[0]} on it: {said}")
     if violated:
         return "REFUTED", "", g, ()
     return "UNKNOWN", "plugin_unknown", None, ()

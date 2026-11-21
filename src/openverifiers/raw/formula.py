@@ -32,12 +32,13 @@ Trusted code.
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass
 from fractions import Fraction
 from itertools import combinations, permutations
 
 from .builtins import ARITH, apply_op
+from .surd import Surd, SurdError
 from .terms import Compound, Num, Str, Term, make_dims, order_key
 
 DEG = make_dims({"deg": 1})
@@ -63,18 +64,36 @@ class ClassDef:
 
 @dataclass(frozen=True, slots=True)
 class _Root:
-    """The non-negative square root of ``sq``."""
+    """The non-negative square root of an irrational surd (a nested radical): only
+    compared, by its square."""
 
-    sq: Fraction
+    sq: Surd
 
 
 @dataclass(frozen=True, slots=True)
 class _Angle:
-    dot: Fraction
-    norms: Fraction          # |u|^2 * |w|^2
+    dot: Surd
+    norms: Surd              # |u|^2 * |w|^2
 
 
-Value = Term | _Root | _Angle
+Value = Term | Surd | _Root | _Angle
+
+
+def _surd(v: Value) -> Surd:
+    """A dimensionless number as a surd; Unsupported for anything else."""
+    if isinstance(v, Surd):
+        return v
+    if isinstance(v, Num) and not v.dims:
+        return Surd.of(v.value)
+    raise Unsupported(f"not a plain number: {v}")
+
+
+def _value(s: Surd) -> Value:
+    r = s.rational()
+    return Num(r) if r is not None else s
+
+
+_SURD_OPS = {"+": Surd.__add__, "-": Surd.__sub__, "*": Surd.__mul__}
 
 
 def make_set(items: list[Term]) -> Compound:
@@ -88,21 +107,44 @@ def _seq(v: Value) -> tuple[Term, ...]:
     raise Unsupported(f"not a collection: {v}")
 
 
-def _point(v: Value) -> tuple[Fraction, ...]:
-    if isinstance(v, Compound) and v.functor == "f.tuple" and all(
-            isinstance(a, Num) and not a.dims for a in v.args):
-        return tuple(a.value for a in v.args if isinstance(a, Num))
+def _coord(a: Term) -> Surd:
+    if isinstance(a, Num) and not a.dims:
+        return Surd.of(a.value)
+    if isinstance(a, Compound) and a.functor == "f.surd" and len(a.args) % 2 == 0 \
+            and all(isinstance(x, Num) and not x.dims for x in a.args):
+        nums = [x.value for x in a.args if isinstance(x, Num)]
+        out = Surd.of(Fraction(0))
+        for k, c in zip(nums[0::2], nums[1::2], strict=True):
+            out = out + Surd.sqrt(k) * Surd.of(c)
+        return out
+    raise Unsupported(f"not a coordinate: {a}")
+
+
+def _point(v: Value) -> tuple[Surd, ...]:
+    if isinstance(v, Compound) and v.functor == "f.tuple":
+        try:
+            return tuple(_coord(a) for a in v.args)
+        except SurdError as e:
+            raise Unsupported(str(e)) from None
     raise Unsupported(f"not a point: {v}")
 
 
-def _sub(a: tuple[Fraction, ...], b: tuple[Fraction, ...]) -> tuple[Fraction, ...]:
+def _sub(a: tuple[Surd, ...], b: tuple[Surd, ...]) -> tuple[Surd, ...]:
     if len(a) != len(b):
         raise Unsupported("points of different dimension")
     return tuple(x - y for x, y in zip(a, b, strict=True))
 
 
-def _dot(a: tuple[Fraction, ...], b: tuple[Fraction, ...]) -> Fraction:
-    return sum((x * y for x, y in zip(a, b, strict=True)), Fraction(0))
+def _dot(a: tuple[Surd, ...], b: tuple[Surd, ...]) -> Surd:
+    return sum((x * y for x, y in zip(a, b, strict=True)), Surd.of(Fraction(0)))
+
+
+def _term_of(s: Surd) -> Term:
+    r = s.rational()
+    if r is not None:
+        return Num(r)
+    return Compound("f.surd", tuple(x for k, c in s.terms for x in (Num(Fraction(k)),
+                                                                       Num(c))))
 
 
 def subst(t: Term, x: Term, val: Term) -> Term:
@@ -192,7 +234,7 @@ class _Eval:
             if key not in table:
                 raise Unsupported(f"unbound {key}")
             # Bound variables hold values; properties hold expressions to evaluate.
-            return table[key] if f == "f.v" else self.expr(table[key])
+            return _stored(table[key]) if f == "f.v" else self.expr(table[key])
         if f in ("f.integral", "f.deriv"):
             return self._calculus(f, a)
         vals = [self.expr(x) for x in a] if f not in ("f.at",) else []
@@ -205,24 +247,40 @@ class _Eval:
             seq = _seq(self.expr(a[0]))
             if not isinstance(k, Num) or not 0 <= k.value < len(seq) or k.value.denominator != 1:
                 raise Unsupported("bad component index")
-            return seq[int(k.value)]
+            return _stored(seq[int(k.value)])
         if f == "f.idx":
             seq, i = _seq(vals[0]), vals[1]
             if not seq or not isinstance(i, Num) or i.value.denominator != 1:
                 raise Unsupported("bad index")
-            return seq[int(i.value) % len(seq)]
+            return _stored(seq[int(i.value) % len(seq)])
         if f == "f.count":
             return Num(Fraction(len(_seq(vals[0]))))
         if f == "f.dist":
             d = _sub(_point(vals[0]), _point(vals[1]))
-            return _Root(_dot(d, d))
+            sq = self._exact(lambda: _dot(d, d))
+            assert isinstance(sq, Surd)
+            q = sq.rational()
+            if q is None:
+                return _Root(sq)
+            return self._exact(lambda: _value(Surd.sqrt(q)))
+        if f == "f.sqrt":
+            x = vals[0]
+            if not isinstance(x, Num) or x.dims:
+                raise Unsupported("sqrt of something other than a rational number")
+            return self._exact(lambda: _value(Surd.sqrt(x.value)))
+        if f == "f.surd":                     # a solver value: sqrt(k1) c1 + sqrt(k2) c2 ...
+            return self._exact(lambda: _value(sum(
+                (Surd.sqrt(_rat(vals[i])) * Surd.of(_rat(vals[i + 1]))
+                 for i in range(0, len(vals), 2)), Surd.of(Fraction(0)))))
+        if f in ARITH and any(isinstance(v, Surd) for v in vals):
+            return self._exact(lambda: _surd_op(f, vals))
         if f == "f.dist2":
             d = _sub(_point(vals[0]), _point(vals[1]))
-            return Num(_dot(d, d))
+            return self._exact(lambda: _value(_dot(d, d)))
         if f == "f.angle":
             u = _sub(_point(vals[0]), _point(vals[1]))
             w = _sub(_point(vals[2]), _point(vals[1]))
-            return _Angle(_dot(u, w), _dot(u, u) * _dot(w, w))
+            return self._exact(lambda: _Angle(_dot(u, w), _dot(u, u) * _dot(w, w)))
         if f in ARITH and all(isinstance(v, Num) for v in vals):
             r = apply_op(f, [v for v in vals if isinstance(v, Num)])
             if r is None:
@@ -250,10 +308,17 @@ class _Eval:
         return Num(sum((k * c[k] * x.value ** (k - 1) for k in range(1, len(c))), Fraction(0)))
 
     @staticmethod
+    def _exact(fn: Callable[[], Value]) -> Value:
+        try:
+            return fn()
+        except SurdError as e:
+            raise Unsupported(str(e)) from None
+
+    @staticmethod
     def _term(v: Value) -> Term:
-        if isinstance(v, _Root | _Angle):
-            raise Unsupported("a distance or angle cannot be stored in a collection")
-        return v
+        if isinstance(v, _Angle | _Root):
+            raise Unsupported("an angle or nested root cannot be stored in a collection")
+        return _term_of(v) if isinstance(v, Surd) else v
 
     def coll(self, t: Term) -> Iterator[Term]:
         if isinstance(t, Compound) and t.functor in ("f.cycles", "f.orderings", "f.pairs"):
@@ -305,28 +370,73 @@ def _ordered(op: str, x: Fraction, y: Fraction) -> bool:
             ">": x > y, ">=": x >= y}[op]
 
 
+def _stored(t: Term) -> Value:
+    """A value read out of a tuple, list or binding: an exact surd term becomes a Surd."""
+    if isinstance(t, Compound) and t.functor == "f.surd":
+        try:
+            return _value(_coord(t))
+        except SurdError as e:
+            raise Unsupported(str(e)) from None
+    return t
+
+
+def _rat(v: Value) -> Fraction:
+    if isinstance(v, Num) and not v.dims:
+        return v.value
+    raise Unsupported(f"not a rational number: {v}")
+
+
+def _surd_op(f: str, vals: list[Value]) -> Value:
+    xs = [_surd(v) for v in vals]
+    if f == "-" and len(xs) == 1:
+        return _value(-xs[0])
+    if f in _SURD_OPS and len(xs) == 2:
+        return _value(_SURD_OPS[f](xs[0], xs[1]))
+    if f == "/" and len(xs) == 2:
+        return _value(xs[0] * xs[1].inverse())
+    if f == "^" and len(xs) == 2 and (k := xs[1].rational()) is not None \
+            and k.denominator == 1 and k >= 0:
+        out = Surd.of(Fraction(1))
+        for _ in range(int(k)):
+            out = out * xs[0]
+        return _value(out)
+    raise Unsupported(f"cannot apply {f} to square roots")
+
+
 def compare(op: str, a: Value, b: Value) -> bool:
     if op not in ("=", "!=", "<", "<=", ">", ">="):
         raise Unsupported(f"unknown comparison {op}")
-    if isinstance(a, Num) and isinstance(b, _Root | _Angle):
+    if isinstance(a, Num | Surd) and isinstance(b, _Angle | _Root):
         flip = {"<": ">", "<=": ">=", ">": "<", ">=": "<="}
         return compare(flip.get(op, op), b, a)
-    if isinstance(a, _Root):
-        if isinstance(b, _Root):
-            return _ordered(op, a.sq, b.sq)
-        if isinstance(b, Num) and not b.dims:
-            if b.value < 0:
+    if isinstance(a, _Root):               # both sides >= 0: compare the squares
+        try:
+            if isinstance(b, _Root):
+                return compare(op, a.sq, b.sq)
+            c = _surd(b)
+            if c.sign() < 0:
                 return op in ("!=", ">", ">=")
-            return _ordered(op, a.sq, b.value * b.value)
-        raise Unsupported("a distance compared with a non-constant")
+            return compare(op, a.sq, c * c)
+        except SurdError as e:
+            raise Unsupported(str(e)) from None
+    if isinstance(a, Surd) or isinstance(b, Surd):
+        try:
+            s = (_surd(a) - _surd(b)).sign()
+        except SurdError as e:
+            raise Unsupported(str(e)) from None
+        return {"=": s == 0, "!=": s != 0, "<": s < 0, "<=": s <= 0,
+                ">": s > 0, ">=": s >= 0}[op]
     if isinstance(a, _Angle):
         if op not in ("=", "!=") or not isinstance(b, Num) or b.dims != DEG \
                 or b.value not in COS2:
             raise Unsupported("angles compare by = or != with 0, 30, 45, 60, 90, 120, 135, "
                               "150 or 180 deg")
         sign, c2 = COS2[int(b.value)]
-        s = (a.dot > 0) - (a.dot < 0)
-        eq = a.norms > 0 and s == sign and a.dot * a.dot == c2 * a.norms
+        try:
+            eq = a.norms.sign() > 0 and a.dot.sign() == sign \
+                and (a.dot * a.dot - Surd.of(c2) * a.norms).sign() == 0
+        except SurdError as e:
+            raise Unsupported(str(e)) from None
         return eq if op == "=" else not eq
     if isinstance(a, Num) and isinstance(b, Num):
         if a.dims != b.dims:

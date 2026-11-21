@@ -28,7 +28,13 @@ if TYPE_CHECKING:
 Ty = tuple[object, ...]
 REAL: Ty = ("Real",)
 GENERATORS = {"cycles": 1, "orderings": 1, "pairs": 1, "subsets": 2}
-FUNCS = {"count": 1, "dist": 2, "dist2": 2, "angle": 3, "abs": 1, "min": 2, "max": 2}
+FUNCS = {"count": 1, "dist": 2, "dist2": 2, "angle": 3, "abs": 1, "min": 2, "max": 2,
+         "sqrt": 1}
+#: In classes, an Angle is the record (cos, sin) with the foundation axiom
+#: cos^2 + sin^2 = 1 (one per Angle property). sin and cos read its fields; the
+#: special angles (0, 30, 45, 60, 90, 120, 135, 150, 180 deg) have exact values.
+ANGLE = "Angle"
+TRIG = {"cos": 0, "sin": 1}
 #: calculus on polynomials (math.calculus): integral(e, t) = the integral of e from 0 to
 #: t; deriv(e, t) = de/dt. t must be a numeric property.
 CALCULUS = {"integral", "deriv"}
@@ -99,6 +105,8 @@ def ty_of(e: A.TyExpr, cls: Classes, env: Env) -> Ty:
         return (e.name, ty_of(e.args[0], cls, env))
     if e.args:
         raise _Fail("E205", f"{e.name} takes no type arguments", e.span)
+    if e.name == ANGLE:
+        return (ANGLE,)
     if e.name in QUANTITY_TYPES:
         return (e.name,) if QUANTITY_TYPES[e.name] else REAL
     if e.name in cls.records:
@@ -116,6 +124,9 @@ def compile_classes(env: Env, decls: dict[str, A.FactType]) -> Classes:
         for n, fs in records(env).items()})
     for n, fs in records(env).items():
         cls.record_types[n] = {f: _quantity_ty(env.types[n].fields[f][0]) for f in fs}
+    cls.records[ANGLE] = ("cos", "sin")
+    cls.record_types[ANGLE] = {"cos": REAL, "sin": REAL}
+    cls.field_dims[ANGLE] = {"cos": (), "sin": ()}
     order: list[str] = []
     state: dict[str, int] = {}
 
@@ -216,6 +227,7 @@ def _compile_class(d: A.FactType, decls: dict[str, A.FactType], cls: Classes, en
                     m.body, m.span)))
             elif isinstance(m, A.Prop):
                 invariants += _component_invariants(d.name, m, props[m.name], cls)
+                invariants += _angle_invariants(d.name, m.name, props[m.name])
     for m in d.members:
         if isinstance(m, A.Invariant):
             cls.kinds[f"{d.name}.{m.name}"] = m.kind
@@ -241,6 +253,24 @@ def _compile_class(d: A.FactType, decls: dict[str, A.FactType], cls: Classes, en
     cls.record_types[d.name] = dict(props)
     cls.field_dims[d.name] = {p: QUANTITY_TYPES.get(str(t[0]), ()) for p, t in props.items()
                               if t == REAL or str(t[0]) in QUANTITY_TYPES}
+
+
+def _unit_circle(x: Term) -> Term:
+    c, s = _f("at", x, Num(Fraction(0))), _f("at", x, Num(Fraction(1)))
+    return _f("cmp", Str("="), Compound("+", (Compound("*", (c, c)), Compound("*", (s, s)))),
+              Num(Fraction(1)))
+
+
+def _angle_invariants(owner: str, prop: str, ty: Ty) -> list[tuple[str, Term]]:
+    """The foundation axiom cos^2 + sin^2 = 1 for an Angle property (or each element
+    of a Set/List of angles), named Angle.unit@Owner.prop."""
+    tag = f"{ANGLE}.unit@{owner}.{prop}"
+    if ty == (ANGLE,):
+        return [(tag, _unit_circle(_f("p", Str(prop))))]
+    if ty[0] in ("Set", "List") and len(ty) > 1 and ty[1] == (ANGLE,):
+        var = f"__{prop}"
+        return [(tag, _f("forall", Str(var), _f("p", Str(prop)), _unit_circle(_f("v", Str(var)))))]
+    return []
 
 
 def _component_invariants(owner: str, m: A.Prop, ty: Ty, cls: Classes
@@ -314,8 +344,18 @@ class _Formula:
         if isinstance(e, A.Call) and e.fn in ("abs", "min", "max"):
             ds = [self.dims(x) for x in e.args]
             return ds[0] if ds and all(d == ds[0] for d in ds) else None
-        if isinstance(e, A.Call) and e.fn == "count":
+        if isinstance(e, A.Call) and e.fn in ("count", "sin", "cos"):
             return ()
+        if isinstance(e, A.Call) and e.fn in ("dist", "dist2") and e.args:
+            pty = self._ty(e.args[0])
+            fd = self.cls.field_dims.get(str(pty[0])) if pty else None
+            if not fd:
+                return None
+            d0 = next(iter(fd.values()))
+            return d0 if e.fn == "dist" else _dmul(d0, d0)
+        if isinstance(e, A.Call) and e.fn == "sqrt" and e.args:
+            d1 = self.dims(e.args[0])
+            return None if d1 is None else make_dims({n: k / 2 for n, k in d1})
         if isinstance(e, A.Call) and e.fn in CALCULUS and len(e.args) == 2:
             body, var = self.dims(e.args[0]), self.dims(e.args[1])
             if body is None or var is None:
@@ -401,12 +441,6 @@ class _Formula:
                                 "0, 30, 45, 60, 90, 120, 135, 150 or 180 deg", span,
                                 "these are the angles whose cosine squared is rational, "
                                 "so the check stays exact")
-            if isinstance(x, A.Call) and x.fn == "dist" and (
-                    (isinstance(y, A.Quantity) and y.dims) or (isinstance(y, A.BinOp)
-                    and _has_dist(y))):
-                raise _Fail("E405", "a distance can only be compared with another distance or "
-                            "a number", span, "use dist2 (the squared distance) for "
-                            "arithmetic, e.g. `dist2(a, b) = dist2(b, c) + dist2(a, c)`")
             if isinstance(x, A.Quantity) and x.dims == DEG and not (
                     isinstance(y, A.Call) and y.fn == "angle"):
                 raise _Fail("E301", "an angle in degrees compared with something that is not "
@@ -476,10 +510,20 @@ class _Formula:
             if len(e.args) != FUNCS[e.fn]:
                 raise _Fail("E205", f"{e.fn} takes {FUNCS[e.fn]} argument(s)", e.span)
             args = [go(a)[0] for a in e.args]
-            name = e.fn if e.fn in ("count", "dist", "dist2", "angle") else None
+            name = e.fn if e.fn in ("count", "dist", "dist2", "angle", "sqrt") else None
             return (_f(name, *args) if name else Compound(e.fn, tuple(args))), REAL
         if isinstance(e, A.Call) and e.fn in GENERATORS:
             return self.coll(e)
+        if isinstance(e, A.Call) and e.fn in TRIG:
+            if len(e.args) != 1:
+                raise _Fail("E205", f"{e.fn} takes one Angle", e.span)
+            arg, aty = go(e.args[0])
+            if aty != (ANGLE,):
+                raise _Fail("E302", f"{e.fn} needs an Angle property, got {_show_ty(aty)}",
+                            e.args[0].span, "declare it `property theta: Angle`")
+            return _f("at", arg, Num(Fraction(TRIG[e.fn]))), REAL
+        if isinstance(e, A.Call) and e.fn == "tan":
+            raise _Fail("E206", "tan is not available: write sin(x) = t * cos(x)", e.span)
         if isinstance(e, A.Call) and e.fn in CALCULUS:
             if len(e.args) != 2:
                 raise _Fail("E205", f"{e.fn} takes an expression and a property", e.span)
@@ -663,6 +707,11 @@ class _Instance:
                 self.unknown_dims[e.name] = QUANTITY_TYPES[str(ty[0])]
             self.unknowns[e.name], self.is_tuple[e.name] = (Var(f"Q_{e.name}"),), False
             return Var(f"Q_{e.name}")
+        folded = _fold(e)
+        if folded is not None and not isinstance(e, A.Quantity):
+            e = folded
+        if ty == (ANGLE,) and isinstance(e, A.Quantity) and e.dims == DEG:
+            return _special_angle(e)
         if isinstance(e, A.Interval) and ty[0] == "List":      # [a, b] as a 2-element list
             e = A.SetLit((e.lo, e.hi), e.span)
         q = e.arg if isinstance(e, A.Neg) and isinstance(e.arg, A.Quantity) else e
@@ -694,6 +743,52 @@ class _Instance:
                                  else self.fresh_value(ft.get(f, REAL), f"{e.cls}_{f}")
                                  for f in rec))
         raise _Fail("E302", f"expected a value of type {_show_ty(ty)}", e.span)
+
+
+def _fold(e: A.Expr) -> A.Quantity | None:
+    """A constant arithmetic expression (4/5, -3/2 m/s) as one quantity, or None."""
+    if isinstance(e, A.Quantity):
+        return e
+    if isinstance(e, A.Neg):
+        x = _fold(e.arg)
+        return A.Quantity(-x.value, x.dims, "-" + x.text, e.span) if x else None
+    if isinstance(e, A.BinOp) and e.op in ("+", "-", "*", "/"):
+        a, b = _fold(e.left), _fold(e.right)
+        if a is None or b is None:
+            return None
+        if e.op in ("+", "-"):
+            if a.dims != b.dims:
+                return None
+            return A.Quantity(a.value + b.value if e.op == "+" else a.value - b.value, a.dims,
+                              f"{a.text} {e.op} {b.text}", e.span)
+        if e.op == "/" and b.value == 0:
+            return None
+        return A.Quantity(a.value * b.value if e.op == "*" else a.value / b.value,
+                          _dmul(a.dims, b.dims, 1 if e.op == "*" else -1),
+                          f"{a.text} {e.op} {b.text}", e.span)
+    return None
+
+
+def _special_angle(e: A.Quantity) -> Term:
+    """An angle given in degrees, as its exact (cos, sin): only the special angles,
+    whose cosine squared is rational, have exact values."""
+    if e.value.denominator != 1 or int(e.value) not in COS2:
+        raise _Fail("E405", f"{e.value} deg has no exact cosine and sine", e.span,
+                    "give the problem's values, e.g. Angle{ cos = 4/5, sin = 3/5 }, "
+                    "or one of 0, 30, 45, 60, 90, 120, 135, 150, 180 deg")
+    sign, c2 = COS2[int(e.value)]
+    return _f("tuple", _sqrt_term(c2, sign), _sqrt_term(1 - c2, 1))
+
+
+def _sqrt_term(x: Fraction, sign: int) -> Term:
+    """sign * sqrt(x) as an exact term (a rational, or f.surd(k, c))."""
+    from ..raw.surd import Surd
+    r = Surd.sqrt(x)
+    q = r.rational()
+    if q is not None:
+        return Num(sign * q)
+    (k, c), = r.terms
+    return _f("surd", Num(Fraction(k)), Num(sign * c))
 
 
 def _show_ty(t: Ty) -> str:

@@ -1,0 +1,48 @@
+package probe.trig
+type Point { x: Real, y: Real }
+
+# physics: a block at rest on a rough incline
+fact type Incline {
+  property m: Mass
+  property g: Accel
+  property theta: Angle
+  property N: Force
+  property f: Force
+  invariant pos: m > 0
+  law normal: N = m * g * cos(theta)
+  law static: f = m * g * sin(theta)
+  theorem pythagorean_forces: N * N + f * f = m * m * g * g
+}
+
+# mathematics: angle addition as a definition; double-angle formulas as theorems
+fact type AngleSum {
+  property a: Angle
+  property b: Angle
+  property c: Angle
+  invariant cos_sum: cos(c) = cos(a) * cos(b) - sin(a) * sin(b)
+  invariant sin_sum: sin(c) = sin(a) * cos(b) + cos(a) * sin(b)
+}
+fact type DoubleAngle extends AngleSum {
+  invariant same: cos(a) = cos(b)
+  invariant same_s: sin(a) = sin(b)
+  theorem double_cos: cos(c) = 2 * cos(a) * cos(a) - 1
+  theorem double_sin: sin(c) = 2 * sin(a) * cos(a)
+}
+
+# geometry: the law of cosines, with the angle at A defined by the dot product
+fact type TriangleAngle {
+  property A: Point
+  property B: Point
+  property C: Point
+  property at_a: Angle
+  invariant proper: dist2(A, B) > 0
+  invariant proper2: dist2(A, C) > 0
+  invariant angle_def: dist(A, B) * dist(A, C) * cos(at_a) = (B.x - A.x) * (C.x - A.x) + (B.y - A.y) * (C.y - A.y)
+  theorem law_of_cosines: dist2(B, C) = dist2(A, B) + dist2(A, C) - 2 * dist(A, B) * dist(A, C) * cos(at_a)
+}
+
+scenario trig1 uses probe.trig {
+  query FIND ?N WHERE Incline{ m = 2 kg, g = 10 m/s^2, theta = Angle{ cos = 4/5, sin = 3/5 }, N = ?N }
+  query FIND ?N WHERE Incline{ m = 2 kg, g = 10 m/s^2, theta = 30 deg, N = ?N }
+  query FIND ?c WHERE DoubleAngle{ a = 60 deg, b = 60 deg, c = ?c }
+}

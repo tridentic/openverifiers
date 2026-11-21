@@ -1,0 +1,30 @@
+package probe.surd
+type Point { x: Real, y: Real }
+fact type Root2 {
+  property x: Real
+  invariant sq: x * x = 2
+}
+fact type Seg {
+  property A: Point
+  property B: Point
+  property P: Point
+  property m: Real
+  property n: Real
+  invariant pm: m > 0
+  invariant pn: n > 0
+  invariant sx: (m + n) * P.x = n * A.x + m * B.x
+  invariant sy: (m + n) * P.y = n * A.y + m * B.y
+  theorem on_segment: dist(A, P) + dist(P, B) = dist(A, B)
+}
+fact type Diag {
+  property s: Real
+  property d: Real
+  invariant pos: s > 0
+  invariant diag: d = sqrt(2) * s
+  theorem sq: d * d = 2 * s * s
+}
+scenario sur uses probe.surd {
+  query COUNT ?x WHERE Root2{ x = ?x }
+  query FIND ?d WHERE Diag{ s = 3, d = ?d }
+  query CHECK Seg{ A = (0,0), B = (3,6), P = (1,2), m = 1, n = 2 } IS Seg
+}

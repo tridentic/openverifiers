@@ -488,6 +488,25 @@ every component instance.
 - In calculus, the variable may be a component's property: `integral(a, t)`
   inside `ConstantForce` stays exact when the body is `b1`.
 
+**Exact square roots.** `dist`, `sqrt(x)` (x rational) and solver answers that
+are degree-2 algebraic numbers are exact surds: sums of rational multiples of
+√k, with k squarefree.
+- Arithmetic and equality are exact: different squarefree roots are linearly
+  independent over the rationals.
+- The sign is found by tightening bounds until they exclude 0.
+- Examples: `x * x = 2` gives `x = ±√2`. The equilateral-triangle vertex is
+  `(1, √3)`. `dist(A, P) + dist(P, B) = dist(A, B)` is proven for the section
+  point.
+- A nested root (√(2 + √3)) is compared only, by its square.
+
+**Trigonometry (symbolic).** `property theta: Angle` is the pair (cos, sin) with
+the foundation axiom cos² + sin² = 1. `sin(theta)` and `cos(theta)` read it.
+- In a pattern, `theta = 30 deg` is exact at the special angles: 0, 30, 45,
+  60, 90, 120, 135, 150 and 180 deg.
+- Other angles take the problem's given values:
+  `theta = Angle{ cos = 4/5, sin = 3/5 }`.
+- `tan` is not provided: write `sin(x) = t * cos(x)`.
+
 `physics.mechanics` defines velocity and displacement this way and proves
 SUVAT from them:
 

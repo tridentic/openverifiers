@@ -248,3 +248,71 @@ def test_component_invariants_are_checked_by_the_evaluator(tmp_path: Path) -> No
     # definition, instantiated for b2, catches it.
     assert check.verdict == "REFUTED"
     assert check.names == ("ConstantAcceleration.displacement@Pair.b2",)
+
+
+# ---------------------------------------------------------------- exact square roots
+
+
+def test_surd_arithmetic_is_exact() -> None:
+    from openverifiers.raw.surd import Surd, SurdError
+    r2, r8 = Surd.sqrt(Fraction(2)), Surd.sqrt(Fraction(8))
+    assert r8 == Surd.of(Fraction(2)) * r2                       # sqrt 8 = 2 sqrt 2
+    assert (r2 * r2).rational() == 2
+    assert Surd.sqrt(Fraction(9, 4)).rational() == Fraction(3, 2)
+    assert (Surd.sqrt(Fraction(3)) + r2).sign() == 1
+    assert (Surd.sqrt(Fraction(3)) - r2 - Surd.of(Fraction(1, 3))).sign() == -1  # -0.0155
+    assert (r2 - Surd.of(Fraction(141421, 100000))).sign() == 1                # sqrt 2 > 1.41421
+    assert (r2 - Surd.of(Fraction(141422, 100000))).sign() == -1
+    assert (r2 - r2).sign() == 0
+    with pytest.raises(SurdError):
+        Surd.sqrt(Fraction(-1))
+    with pytest.raises(SurdError):
+        Surd.sqrt(Fraction(1_000_003 * 1_000_033))                # refuses, never guesses
+
+
+def test_surd_answers_and_distance_sums() -> None:
+    f = Path(__file__).parent / "surds.ov"
+    res = run_file(f, files={str(f)})
+    from openverifiers.objects.engine import show
+    count, diag, seg = res.objects
+    assert count.count == 2 and sorted(show(b["x"]) for b in count.bindings) == ["-√2", "√2"]
+    assert show(diag.bindings[0]["d"]) == "3√2"
+    assert seg.verdict == "PROVEN"
+    verdicts = {a.title: a.verdict for a in res.classes}
+    assert verdicts["theorem Seg.on_segment"] == "PROVEN"
+
+
+def test_evaluator_rejects_a_wrong_surd() -> None:
+    from openverifiers.raw.formula import holds
+    d = Compound("f.surd", (n(2), n(3)))                          # 3 sqrt 2
+    inv = Compound("f.cmp", (Str("="), p("d"), Compound("*", (Compound("f.sqrt", (n(2),)),
+                                                              p("s")))))
+    assert holds(inv, {"d": d, "s": n(3)})
+    assert not holds(inv, {"d": Compound("f.surd", (n(2), n(4))), "s": n(3)})
+
+
+# ---------------------------------------------------------------- trigonometry (symbolic)
+
+
+def test_trig_in_three_domains() -> None:
+    """Angle = (cos, sin) with cos^2 + sin^2 = 1; exact at the special angles."""
+    f = Path(__file__).parent / "trig.ov"
+    res = run_file(f, files={str(f)})
+    from openverifiers.objects.engine import show
+    given, special, double = res.objects
+    assert show(given.bindings[0]["N"]) == "16 N"          # physics, sin 37 = 3/5 given
+    assert show(special.bindings[0]["N"]) == "10√3"        # physics, 30 deg exact
+    assert show(double.bindings[0]["c"]) == "(-1/2, 1/2√3)"  # math: 2 x 60 deg = 120 deg
+    proven = {a.title for a in res.classes if a.verdict == "PROVEN"}
+    assert {"theorem Incline.pythagorean_forces", "theorem DoubleAngle.double_cos",
+            "theorem DoubleAngle.double_sin", "theorem TriangleAngle.law_of_cosines"} <= proven
+    names = [n for n, _ in res.env.objects.defs["Incline"].invariants]
+    assert "Angle.unit@Incline.theta" in names              # the foundation axiom
+
+
+def test_non_special_angles_need_given_values(tmp_path: Path) -> None:
+    src = (Path(__file__).parent / "trig.ov").read_text().replace("theta = 30 deg",
+                                                                  "theta = 37 deg")
+    with pytest.raises(OVError) as e:
+        run(src, tmp_path, "trig.ov")
+    assert "E405" in e.value.render() and "Angle{ cos = 4/5, sin = 3/5 }" in e.value.render()

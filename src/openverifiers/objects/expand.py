@@ -13,10 +13,12 @@ into one. ``symmetry=False`` keeps every ordering, for the ablation test.
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from fractions import Fraction
 from itertools import combinations, permutations
+from math import isqrt
 
 from ..raw.formula import COS2, DEG, Unsupported, subst
 from ..raw.terms import Compound, Dims, Num, Str, Term, Var
@@ -203,7 +205,37 @@ class SAngle:
 SVal = SNum | SSeq | SRoot | SAngle
 
 
+#: Square roots used in arithmetic: variable name -> its radicand. A root r of X is
+#: the unique d with d^2 = X and d >= 0, so the solver may add that definition
+#: globally (even when the root sits under a negation): see ``root_definitions``.
+ROOTS: dict[str, Poly] = {}
+
+
+def root_var(x: Poly) -> SNum:
+    """sqrt(x) as a solver variable, defined by ROOTS."""
+    c = x.constant()
+    if c is not None and c >= 0:
+        n, d = isqrt(c.numerator), isqrt(c.denominator)
+        if n * n == c.numerator and d * d == c.denominator:
+            return SNum(Poly.const(Fraction(n, d)))
+    name = "ROOT_" + hashlib.sha1(repr(x.terms).encode()).hexdigest()[:12]
+    ROOTS[name] = x
+    return SNum(Poly.var(name))
+
+
+def root_definitions(names: Iterable[str]) -> list[CF]:
+    """d^2 = X and d >= 0 for every root variable among ``names``."""
+    out = []
+    for n in names:
+        if n in ROOTS:
+            d = Poly.var(n)
+            out += [atom("=", d * d - ROOTS[n]), atom(">=", d)]
+    return out
+
+
 def _num(v: SVal) -> SNum:
+    if isinstance(v, SRoot):               # a distance used in arithmetic
+        return root_var(v.sq)
     if not isinstance(v, SNum):
         raise Unsupported(f"expected a number, got {type(v).__name__}")
     return v
@@ -282,6 +314,12 @@ class Expander:
             seq = _seq(self.value(a[0]))
             assert isinstance(k, Num)
             return seq[int(k.value)]
+        if f == "f.surd":                  # c1 sqrt(k1) + ...: each root a defined variable
+            nums = [x.value for x in a if isinstance(x, Num)]
+            out = Poly.const(Fraction(0))
+            for rad, coef in zip(nums[0::2], nums[1::2], strict=True):
+                out = out + root_var(Poly.const(rad)).p.scale(coef)
+            return SNum(out)
         if f in ("f.integral", "f.deriv"):
             self.fresh_tau += 1
             tau = f"TAU_{self.fresh_tau}"
@@ -299,6 +337,9 @@ class Expander:
         if f == "f.dist":
             d = _diff(_point(vals[0]), _point(vals[1]))
             return SRoot(_dot(d, d))
+        if f == "f.sqrt":
+            x = _num(vals[0])
+            return root_var(x.p)
         if f == "f.dist2":
             d = _diff(_point(vals[0]), _point(vals[1]))
             return SNum(_dot(d, d))

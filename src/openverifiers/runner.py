@@ -330,7 +330,8 @@ def _atom(a: Atom, lw: Lowered) -> str:
 
 def summary(res: FileResult) -> str:
     """One line for `ov check`: what was checked and what failed."""
-    exp = [a for a in (*res.answers, *res.objects) if a.expect_ok is not None]
+    both: list[Answer | ObjAnswer] = [*res.answers, *res.objects]
+    exp = [a for a in both if a.expect_ok is not None]
     bad = len(res.failed) + len(res.class_errors)
     return (f"{res.env.main.file}: {'FAIL' if bad else 'ok'} "
             f"({len(res.runs)} scenario(s), {len(res.answers) + len(res.objects)} queries, "

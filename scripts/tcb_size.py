@@ -18,6 +18,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1] / "src" / "openverifiers"
 TRUSTED = ["raw", "checker", "state/hash.py", "state/load.py"]
 LIMIT = 1500
+#: The object layer's exact evaluator is its own audited unit (CTO decision, change
+#: order v1.1 and M-CAP item 4), with its own cap, outside the main count.
+UNITS = {"raw/formula.py": 400}
 
 
 def trusted_files() -> list[Path]:
@@ -28,7 +31,7 @@ def trusted_files() -> list[Path]:
             out += sorted(p.rglob("*.py"))
         elif p.exists():
             out.append(p)
-    return out
+    return [p for p in out if str(p.relative_to(ROOT)) not in UNITS]
 
 
 def code_lines(path: Path) -> int:
@@ -57,7 +60,12 @@ def main() -> int:
         raw += len(f.read_text().splitlines())
         print(f"{n:5d}  {f.relative_to(ROOT)}")
     print(f"{total:5d}  trusted code lines (limit {LIMIT}); {raw} physical lines incl. docs")
-    return 0 if total <= LIMIT else 1
+    ok = total <= LIMIT
+    for unit, cap in UNITS.items():
+        n = code_lines(ROOT / unit)
+        print(f"{n:5d}  {unit}: its own audited unit (limit {cap})")
+        ok = ok and n <= cap
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

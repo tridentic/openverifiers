@@ -90,6 +90,19 @@ fact type TwoBodyInteraction {
   theorem impulse: m1 * (v1 - u1) = F * dt
 }
 
+# The same interaction by composition: each body is a ConstantForce (its
+# kinematics and Newton's second law come with it); only Newton's third law and
+# the shared time are new. TwoBodyInteraction above restates the definitions;
+# retiring it needs an approved gold change (its theorem lines are gold).
+fact type BodyPair {
+  property b1: ConstantForce
+  property b2: ConstantForce
+  invariant same_time: b1.t = b2.t
+  law newton3: b2.F = -b1.F
+  theorem momentum: b1.m * b1.u + b2.m * b2.u = b1.m * b1.v + b2.m * b2.v
+  theorem impulse_balance: b1.m * (b1.v - b1.u) = -(b2.m * (b2.v - b2.u))
+}
+
 # ---------------------------------------------------------------- tests
 
 test newton2_mass {
@@ -156,4 +169,11 @@ test negative_mass_rejected {
   scenario negative_mass_rejected_s uses physics.mechanics { }
   query FIND ?a WHERE ConstantForce{ m = -2 kg, F = 4 N, a = ?a }
   expect REFUTED
+}
+
+test recoil_by_composition {
+  scenario recoil_by_composition_s uses physics.mechanics { }
+  query FIND ?v WHERE BodyPair{ b1 = ConstantForce{ m = 2 kg, u = 0 m/s, v = 6 m/s },
+                                b2 = ConstantForce{ m = 3 kg, u = 0 m/s, v = ?v } }
+  expect PROVEN -4 m/s
 }

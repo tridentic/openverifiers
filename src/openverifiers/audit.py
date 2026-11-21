@@ -188,7 +188,7 @@ def _dag(env: Env, name: str, status: dict[str, ObjAnswer], st: Settings,
         return node
     seen.add(name)
     try:
-        gen = generic(cd, objs.prop_types[cname], objs.records)
+        gen = generic(cd, objs.prop_types[cname], objs.records, objs.record_types)
     except Unsupported as e:
         node["error"] = str(e)
         return node

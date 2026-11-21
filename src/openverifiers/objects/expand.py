@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from fractions import Fraction
 from itertools import combinations, permutations
 
-from ..raw.formula import COS2, DEG, Unsupported
+from ..raw.formula import COS2, DEG, Unsupported, subst
 from ..raw.terms import Compound, Dims, Num, Str, Term, Var
 
 Mono = tuple[tuple[str, int], ...]
@@ -257,6 +257,7 @@ class Expander:
     def __init__(self, props: Mapping[str, Term], symmetry: bool = True) -> None:
         self.props, self.symmetry = props, symmetry
         self.env: dict[str, SVal] = {}
+        self.fresh_tau = 0
 
     def value(self, t: Term) -> SVal:
         if isinstance(t, Num):
@@ -282,13 +283,11 @@ class Expander:
             assert isinstance(k, Num)
             return seq[int(k.value)]
         if f in ("f.integral", "f.deriv"):
-            var = a[1].value if isinstance(a[1], Str) else ""
-            tau = f"TAU_{var}_{len(self.env)}_{id(t) % 100000}"
-            inner = Expander({**self.props, var: Var(tau)}, self.symmetry)
-            inner.env = dict(self.env)
-            body = _num(inner.value(a[0]))
+            self.fresh_tau += 1
+            tau = f"TAU_{self.fresh_tau}"
+            body = _num(self.value(subst(a[0], a[1], Var(tau))))
             q = poly_integral(body.p, tau) if f == "f.integral" else poly_deriv(body.p, tau)
-            return SNum(poly_subst(q, tau, _num(self.value(self.props[var])).p))
+            return SNum(poly_subst(q, tau, _num(self.value(a[2])).p))
         vals = [self.value(x) for x in a]
         if f == "f.idx":
             seq = _seq(vals[0])

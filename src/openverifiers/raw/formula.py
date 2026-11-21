@@ -16,8 +16,9 @@ Expression terms::
     f.at(E, k) (tuple component), + - * / ^ abs min max, f.count(C),
     f.dist(P, P), f.dist2(P, P) (squared), f.angle(P, P, P), f.cycles(C), f.orderings(C),
     f.subsets(C, k), f.pairs(C),
-    f.integral(E, "t") (the integral of E from 0 to property t's value, in t),
-    f.deriv(E, "t") (dE/dt at t's value); E must be a polynomial in t
+    f.integral(E, X, U) (the integral of E in the variable X from 0 to U's value),
+    f.deriv(E, X, U) (dE/dX at X = U); X is a variable designator (f.p("t") or a
+    component's f.at(..)), and E must be a polynomial in it
 
 The evaluator here re-checks every instance any solver proposes. It is exact:
 ``dist`` values are kept as square roots of rationals and compared by
@@ -104,17 +105,32 @@ def _dot(a: tuple[Fraction, ...], b: tuple[Fraction, ...]) -> Fraction:
     return sum((x * y for x, y in zip(a, b, strict=True)), Fraction(0))
 
 
-def _degree(t: Term, var: str) -> int:
-    """An upper bound on t's degree as a polynomial in property ``var``; Unsupported if
+def subst(t: Term, x: Term, val: Term) -> Term:
+    """t with the variable designator x replaced by val. An inner integral or
+    derivative in x binds x: only its upper limit is substituted."""
+    if t == x:
+        return val
+    if isinstance(t, Compound):
+        if t.functor in ("f.integral", "f.deriv") and t.args[1] == x:
+            return Compound(t.functor, (t.args[0], x, subst(t.args[2], x, val)))
+        return Compound(t.functor, tuple(subst(a, x, val) for a in t.args))
+    return t
+
+
+def _degree(t: Term, x: Term) -> int:
+    """An upper bound on t's degree as a polynomial in the variable x; Unsupported if
     t is not polynomial in it."""
-    if not isinstance(t, Compound):
+    if t == x:
+        return 1
+    if not isinstance(t, Compound) or not _mentions(t, x):
         return 0
     f, a = t.functor, t.args
-    if f == "f.p":
-        return 1 if a[0] == Str(var) else 0
-    if f in ("f.v", "f.tuple", "f.list", "f.set") or not _mentions(t, var):
-        return 0
-    ds = [_degree(x, var) for x in a if not isinstance(x, Str)]
+    if f in ("f.integral", "f.deriv"):
+        if a[1] == x and a[2] == x:              # bound in x, evaluated at x
+            d = _degree(a[0], x)
+            return d + 1 if f == "f.integral" else max(d - 1, 0)
+        raise Unsupported(f"nested calculus in {x} with another variable or limit")
+    ds = [_degree(y, x) for y in a]
     if f in ("+", "-"):
         return max(ds)
     if f == "*":
@@ -123,17 +139,11 @@ def _degree(t: Term, var: str) -> int:
         return ds[0]
     if f == "^" and isinstance(a[1], Num) and a[1].value.denominator == 1 and a[1].value >= 0:
         return ds[0] * int(a[1].value)
-    if f in ("f.integral", "f.deriv"):
-        own = a[1] == Str(var)
-        return ds[0] + 1 if own and f == "f.integral" else max(ds[0] - 1, 0) if own else ds[0]
-    raise Unsupported(f"{f} is not polynomial in {var}")
+    raise Unsupported(f"{f} is not polynomial in {x}")
 
 
-def _mentions(t: Term, var: str) -> bool:
-    if isinstance(t, Compound):        # integral(e, t) and deriv(e, t) depend on t's value
-        return (t.functor in ("f.p", "f.integral", "f.deriv") and Str(var) in t.args) or any(
-            _mentions(x, var) for x in t.args)
-    return False
+def _mentions(t: Term, x: Term) -> bool:
+    return t == x or (isinstance(t, Compound) and any(_mentions(y, x) for y in t.args))
 
 
 def _coefficients(ys: list[Fraction]) -> list[Fraction]:
@@ -221,20 +231,18 @@ class _Eval:
         raise Unsupported(f"cannot evaluate {f}")
 
     def _calculus(self, f: str, a: tuple[Term, ...]) -> Num:
-        """Exact: sample the polynomial at 0..degree, recover its coefficients, then
-        integrate from 0 (or differentiate) and evaluate at the property's value."""
-        var = a[1].value if isinstance(a[1], Str) else ""
-        x = self.expr(Compound("f.p", (Str(var),)))
+        """Exact: sample the polynomial at x = 0..degree, recover its coefficients,
+        then integrate from 0 (or differentiate) and evaluate at the upper limit."""
+        body, var, upper = a
+        x = self.expr(upper)
         ys = []
-        for i in range(_degree(a[0], var) + 1):
-            e = _Eval({**self.props, var: Num(Fraction(i))})
-            e.env = self.env
-            y = e.expr(a[0])
+        for i in range(_degree(body, var) + 1):
+            y = self.expr(subst(body, var, Num(Fraction(i))))
             if not isinstance(y, Num) or y.dims:
                 raise Unsupported("integral or derivative of a non-number")
             ys.append(y.value)
         if not isinstance(x, Num) or x.dims:
-            raise Unsupported(f"{var} is not a number")
+            raise Unsupported(f"the limit {upper} is not a number")
         c = _coefficients(ys)
         if f == "f.integral":
             return Num(sum((c[k] * x.value ** (k + 1) / (k + 1) for k in range(len(c))),

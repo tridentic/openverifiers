@@ -61,6 +61,8 @@ class Classes:
     field_dims: dict[str, dict[str, Dims]] = field(default_factory=dict)
     #: qualified member -> invariant (a definition) | law | theorem | lemma, for audit
     kinds: dict[str, str] = field(default_factory=dict)
+    #: record type (Point, or a class used as a property type) -> field -> type
+    record_types: dict[str, dict[str, Ty]] = field(default_factory=dict)
 
 
 def _num(value: Fraction, dims: Dims) -> Num:
@@ -112,6 +114,8 @@ def compile_classes(env: Env, decls: dict[str, A.FactType]) -> Classes:
     cls = Classes(records=records(env), field_dims={
         n: {f: QUANTITY_TYPES[env.types[n].fields[f][0]] for f in fs}
         for n, fs in records(env).items()})
+    for n, fs in records(env).items():
+        cls.record_types[n] = {f: _quantity_ty(env.types[n].fields[f][0]) for f in fs}
     order: list[str] = []
     state: dict[str, int] = {}
 
@@ -126,6 +130,11 @@ def compile_classes(env: Env, decls: dict[str, A.FactType]) -> Classes:
             if p not in decls:
                 raise _Fail("E201", f"unknown parent class '{p}'", decls[n].span)
             visit(p, decls[n].span)
+        for m in decls[n].members:          # classes used as property types come first
+            if isinstance(m, A.Prop):
+                for c in _ty_names(m.ty):
+                    if c in decls and c != n:
+                        visit(c, m.span)
         state[n] = 2
         order.append(n)
 
@@ -143,6 +152,24 @@ def compile_classes(env: Env, decls: dict[str, A.FactType]) -> Classes:
         except _Fail as e:
             env.diags.append(e.d)
     return cls
+
+
+def _quantity_ty(name: str) -> Ty:
+    return (name,) if QUANTITY_TYPES.get(name) else REAL
+
+
+def _ty_names(e: A.TyExpr) -> list[str]:
+    return [e.name, *(n for a in e.args for n in _ty_names(a))]
+
+
+def _component(f: Term, base: Term, index: dict[str, int]) -> Term:
+    """A component class's formula, about the component instance ``base``: each
+    property reference f.p(x) becomes f.at(base, index of x)."""
+    if isinstance(f, Compound):
+        if f.functor == "f.p" and isinstance(f.args[0], Str) and f.args[0].value in index:
+            return Compound("f.at", (base, Num(Fraction(index[f.args[0].value]))))
+        return Compound(f.functor, tuple(_component(a, base, index) for a in f.args))
+    return f
 
 
 def _ancestors(n: str, decls: dict[str, A.FactType]) -> list[str]:
@@ -179,13 +206,16 @@ def _compile_class(d: A.FactType, decls: dict[str, A.FactType], cls: Classes, en
     cls.spans[d.name] = d.span
     cls.ancestors[d.name] = tuple(_ancestors(d.name, decls)[:-1])
     for c in _ancestors(d.name, decls):
+        if c != d.name:          # an ancestor's invariants, its components' included
+            invariants += [x for x in cls.defs[c].invariants
+                           if x[0].startswith(f"{c}.") or f"@{c}." in x[0]]
+            continue
         for m in decls[c].members:
             if isinstance(m, A.Invariant) and not m.theorem:
-                if c == d.name:
-                    invariants.append((f"{c}.{m.name}", _Formula(cls, props, derived).body(
-                        m.body, m.span)))
-                else:
-                    invariants += [x for x in cls.defs[c].invariants if x[0] == f"{c}.{m.name}"]
+                invariants.append((f"{c}.{m.name}", _Formula(cls, props, derived).body(
+                    m.body, m.span)))
+            elif isinstance(m, A.Prop):
+                invariants += _component_invariants(d.name, m, props[m.name], cls)
     for m in d.members:
         if isinstance(m, A.Invariant):
             cls.kinds[f"{d.name}.{m.name}"] = m.kind
@@ -206,6 +236,37 @@ def _compile_class(d: A.FactType, decls: dict[str, A.FactType], cls: Classes, en
         elif isinstance(m, A.Invariant):
             cls.spans[f"{d.name}.{m.name}"] = m.span
     cls.defs[d.name] = ClassDef(d.name, tuple(props), tuple(invariants), tuple(theorems))
+    # A compiled class can be a property type of later classes: a record of its props.
+    cls.records[d.name] = tuple(props)
+    cls.record_types[d.name] = dict(props)
+    cls.field_dims[d.name] = {p: QUANTITY_TYPES.get(str(t[0]), ()) for p, t in props.items()
+                              if t == REAL or str(t[0]) in QUANTITY_TYPES}
+
+
+def _component_invariants(owner: str, m: A.Prop, ty: Ty, cls: Classes
+                          ) -> list[tuple[str, Term]]:
+    """A property typed by a class (or a Set/List of one) carries that class's
+    invariants, per instance: named ``Comp.inv@Owner.prop`` so audit counts them under
+    the component, not as new definitions of the owner."""
+    elem = ty[1] if ty[0] in ("Set", "List") and len(ty) > 1 else ty
+    assert isinstance(elem, tuple)
+    comp = cls.defs.get(str(elem[0]))
+    if comp is None:
+        return []
+    index = {p: i for i, p in enumerate(comp.props)}
+    out: list[tuple[str, Term]] = []
+    for name, f in comp.invariants:
+        tag = f"{name}@{owner}.{m.name}"
+        try:
+            if elem is ty:
+                out.append((tag, _component(f, _f("p", Str(m.name)), index)))
+            else:
+                var = f"__{m.name}"
+                out.append((tag, _f("forall", Str(var), _f("p", Str(m.name)),
+                                    _component(f, _f("v", Str(var)), index))))
+        except Unsupported as e:
+            raise _Fail("E207", f"component '{m.name}': {e}", m.span) from None
+    return out
 
 
 class _Formula:
@@ -399,7 +460,8 @@ class _Formula:
             rec = self.cls.records.get(str(ty[0]))
             if rec is None or e.name not in rec:
                 raise _Fail("E204", f"unknown field '{e.name}'", e.span)
-            return _f("at", obj, Num(Fraction(rec.index(e.name)))), REAL
+            fty = self.cls.record_types.get(str(ty[0]), {}).get(e.name, REAL)
+            return _f("at", obj, Num(Fraction(rec.index(e.name)))), fty
         if isinstance(e, A.BinOp):
             (lt, _), (rt, _) = go(e.left), go(e.right)
             return Compound(e.op, (lt, rt)), REAL
@@ -427,7 +489,8 @@ class _Formula:
                 raise _Fail("E206", f"{e.fn}'s second argument must be a numeric property",
                             v.span, f"e.g. {e.fn}(a, t) with t: Time")
             self.dims(e)            # checks the body's dimensions
-            return _f(e.fn, go(e.args[0])[0], Str(v.name)), REAL
+            x = _f("p", Str(v.name))
+            return _f(e.fn, go(e.args[0])[0], x, x), REAL
         if isinstance(e, A.Call):
             raise _Fail("E201", f"unknown function '{e.fn}' in a class formula", e.span,
                         "class formulas use count, dist, dist2, angle, abs, min, max and the "
@@ -498,7 +561,7 @@ def plan_query(qy: A.Query, cls: Classes, last_find: ObjPlan | None) -> ObjPlan:
             raise _Fail("E201", f"unknown theorem '{o.theorem}'", o.span,
                         "name it as Class.theorem")
         try:
-            gen = generic(cdef, cls.prop_types[cname], cls.records)
+            gen = generic(cdef, cls.prop_types[cname], cls.records, cls.record_types)
         except Unsupported as e:
             gen = str(e)
         if isinstance(gen, str):
@@ -573,7 +636,12 @@ class _Instance:
         self.fresh += 1
         rec = self.cls.records.get(str(ty[0]))
         if rec is not None:
-            return _f("tuple", *(Var(f"U{self.fresh}_{base}_{f}") for f in rec))
+            ft = self.cls.record_types.get(str(ty[0]), {})
+            return _f("tuple", *(self.fresh_value(ft.get(f, REAL), f"{base}_{f}")
+                                 for f in rec))
+        if ty[0] in ("Set", "List"):
+            raise _Fail("E206", f"a {ty[0]} inside a component needs its value in the pattern",
+                        Span("", 0, 0, 0, 0))
         return Var(f"U{self.fresh}_{base}")
 
     def value(self, e: A.Expr, ty: Ty) -> Term:
@@ -595,6 +663,8 @@ class _Instance:
                 self.unknown_dims[e.name] = QUANTITY_TYPES[str(ty[0])]
             self.unknowns[e.name], self.is_tuple[e.name] = (Var(f"Q_{e.name}"),), False
             return Var(f"Q_{e.name}")
+        if isinstance(e, A.Interval) and ty[0] == "List":      # [a, b] as a 2-element list
+            e = A.SetLit((e.lo, e.hi), e.span)
         q = e.arg if isinstance(e, A.Neg) and isinstance(e.arg, A.Quantity) else e
         if isinstance(q, A.Quantity):
             if ty != REAL and (ty[0] not in QUANTITY_TYPES):
@@ -609,17 +679,20 @@ class _Instance:
             assert isinstance(elem, tuple)
             return _f("set" if ty[0] == "Set" else "list", *(self.value(x, elem) for x in e.items))
         rec = self.cls.records.get(str(ty[0]))
+        ft = self.cls.record_types.get(str(ty[0]), {})
         if isinstance(e, A.TupleLit) and rec is not None:
             if len(e.items) != len(rec):
                 raise _Fail("E205", f"{ty[0]} has {len(rec)} fields", e.span)
-            return _f("tuple", *(self.value(x, REAL) for x in e.items))
+            return _f("tuple", *(self.value(x, ft.get(f, REAL))
+                                 for x, f in zip(e.items, rec, strict=True)))
         if isinstance(e, A.Pattern) and rec is not None and e.cls == ty[0]:
             given = dict(e.fields)
             for f in given:
                 if f not in rec:
                     raise _Fail("E204", f"'{e.cls}' has no field '{f}'", e.span)
-            return _f("tuple", *(self.value(given[f], REAL) if f in given
-                                 else self.fresh_value(REAL, f"{e.cls}_{f}") for f in rec))
+            return _f("tuple", *(self.value(given[f], ft.get(f, REAL)) if f in given
+                                 else self.fresh_value(ft.get(f, REAL), f"{e.cls}_{f}")
+                                 for f in rec))
         raise _Fail("E302", f"expected a value of type {_show_ty(ty)}", e.span)
 
 
@@ -663,18 +736,23 @@ def _size_full(cls: ClassDef, prop: str) -> tuple[int, str] | None:
     return None
 
 
-def generic(cls: ClassDef, types: Mapping[str, Ty], records: Mapping[str, tuple[str, ...]]
+def generic(cls: ClassDef, types: Mapping[str, Ty], records: Mapping[str, tuple[str, ...]],
+            record_types: Mapping[str, Mapping[str, Ty]] | None = None
             ) -> dict[str, Term] | str:
-    """An instance with an unknown in every slot, or why there is none."""
+    """An instance with an unknown in every slot, or why there is none. Record fields
+    (a Point's coordinates, a component class's properties) get unknowns too."""
     out: dict[str, Term] = {}
     k = 0
+    rtypes = record_types or {}
 
     def fresh(ty: Ty, base: str) -> Term:
         nonlocal k
         k += 1
         rec = records.get(str(ty[0]))
         if rec is not None:
-            return Compound("f.tuple", tuple(Var(f"G{k}_{base}_{f}") for f in rec))
+            ft = rtypes.get(str(ty[0]), {})
+            return Compound("f.tuple", tuple(fresh(ft.get(f, REAL), f"{base}_{f}")
+                                             for f in rec))
         if ty[0] in ("Set", "List"):
             raise Unsupported("nested collections")
         return Var(f"G{k}_{base}")

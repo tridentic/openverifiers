@@ -520,7 +520,7 @@ def check_classes(classes: Classes, only: set[str] | None = None,
         if only is not None and name not in only:
             continue
         try:
-            gen = generic(cls, classes.prop_types[name], classes.records)
+            gen = generic(cls, classes.prop_types[name], classes.records, classes.record_types)
         except Unsupported as e:
             gen = str(e)
         ans = ObjAnswer(f"class {name} is consistent", "UNKNOWN", kind="consistency")

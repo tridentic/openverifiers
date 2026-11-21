@@ -35,18 +35,18 @@ def ev(term: Compound, **props: int) -> Num:
 def test_integral_and_derivative_are_exact() -> None:
     t, a, u = p("t"), p("a"), p("u")
     # integral(a, t) at t = 3 with a = 2: 6
-    assert ev(Compound("f.integral", (a, Str("t"))), a=2, t=3).value == 6
+    assert ev(Compound("f.integral", (a, p("t"), p("t"))), a=2, t=3).value == 6
     # integral(u + integral(a, t), t) = u t + a t^2 / 2 = 4*3 + 9 = 21
-    inner = Compound("f.integral", (a, Str("t")))
-    outer = Compound("f.integral", (Compound("+", (u, inner)), Str("t")))
+    inner = Compound("f.integral", (a, p("t"), p("t")))
+    outer = Compound("f.integral", (Compound("+", (u, inner)), p("t"), p("t")))
     assert ev(outer, a=2, t=3, u=4).value == 21
     # deriv(t^3, t) at t = 5: 75; deriv(7, t) = 0
     cube = Compound("*", (t, Compound("*", (t, t))))
-    assert ev(Compound("f.deriv", (cube, Str("t"))), t=5).value == 75
-    assert ev(Compound("f.deriv", (n(7), Str("t"))), t=5).value == 0
+    assert ev(Compound("f.deriv", (cube, p("t"), p("t"))), t=5).value == 75
+    assert ev(Compound("f.deriv", (n(7), p("t"), p("t"))), t=5).value == 0
     # fractions stay exact: integral(t^2) at 1/2 = 1/24
     sq = Compound("*", (t, t))
-    v = _Eval({"t": Num(Fraction(1, 2))}).expr(Compound("f.integral", (sq, Str("t"))))
+    v = _Eval({"t": Num(Fraction(1, 2))}).expr(Compound("f.integral", (sq, p("t"), p("t"))))
     assert isinstance(v, Num) and v.value == Fraction(1, 24)
 
 
@@ -55,7 +55,7 @@ def test_calculus_rejects_what_is_not_a_polynomial_in_the_variable() -> None:
     for body in (Compound("/", (n(1), t)), Compound("abs", (t,)),
                  Compound("f.dist", (Compound("f.tuple", (t, t)), Compound("f.tuple", (t, t))))):
         with pytest.raises(Unsupported):
-            ev(Compound("f.integral", (body, Str("t"))), t=2)
+            ev(Compound("f.integral", (body, p("t"), p("t"))), t=2)
 
 
 def test_coefficients_recover_the_polynomial() -> None:
@@ -66,8 +66,8 @@ def test_coefficients_recover_the_polynomial() -> None:
 
 def test_checker_rejects_a_wrong_displacement() -> None:
     a, u = p("a"), p("u")
-    s = Compound("f.integral", (Compound("+", (u, Compound("f.integral", (a, Str("t"))))),
-                                Str("t")))
+    s = Compound("f.integral", (Compound("+", (u, Compound("f.integral", (a, p("t"), p("t"))))),
+                                p("t"), p("t")))
     inv = Compound("f.cmp", (Str("="), p("s"), s))
     cls = ClassDef("K", ("u", "a", "t", "s"), (("K.disp", inv),), ())
     good = {"u": n(4), "a": n(2), "t": n(3), "s": n(21)}
@@ -211,3 +211,40 @@ def test_suvat_is_proven_from_the_integral_definitions() -> None:
         return {str(x["name"])} if not kids else {n for k in kids for n in leaves(k)}
     assert leaves(d) <= {"ConstantAcceleration.velocity", "ConstantAcceleration.displacement",
                          "ConstantAcceleration.elapsed"}
+
+
+# ---------------------------------------------------------------- class composition
+
+
+def test_composition_in_three_domains() -> None:
+    """A property typed by a class carries that class's invariants, per instance."""
+    f = Path(__file__).parent / "composition.ov"
+    res = run_file(f, files={str(f)})
+    from openverifiers.objects.engine import show
+    pair, mix, refund = res.objects
+    assert pair.verdict == "PROVEN" and show(pair.bindings[0]["v"]) == "-4 m/s"     # physics
+    assert mix.verdict == "PROVEN" and show(mix.bindings[0]["n"]) == "2 mol"        # chemistry
+    assert refund.verdict == "REFUTED" and refund.names == ("Refund.within",)       # agentic
+    proven = {a.title for a in res.classes if a.verdict == "PROVEN"}
+    assert {"theorem Pair.momentum", "theorem Mixture.total_positive_if_masses",
+            "theorem Refund.limit_positive"} <= proven
+    # Component invariants are named after the component, so audit does not count
+    # them as new definitions of the owner.
+    names = [n for n, _ in res.env.objects.defs["Pair"].invariants]
+    assert "ConstantAcceleration.velocity@Pair.b1" in names
+    assert "ConstantForce.newton2@Pair.b2" in names
+
+
+def test_component_invariants_are_checked_by_the_evaluator(tmp_path: Path) -> None:
+    """A wrong component value is rejected by the trusted evaluator, not the solver."""
+    src = (Path(__file__).parent / "composition.ov").read_text()
+    src = src.replace("  query FIND ?v WHERE Pair", "  query CHECK Pair{ b1 = ConstantForce{ "
+                      "m = 2 kg, u = 0 m/s, v = 4 m/s, a = 2 m/s^2, t = 2 s, s = 4 m, F = 4 N },"
+                      " b2 = ConstantForce{ m = 4 kg, u = 0 m/s, v = -2 m/s, a = -1 m/s^2, "
+                      "t = 2 s, s = -3 m, F = -4 N } } IS Pair\n  query FIND ?v WHERE Pair", 1)
+    res = run(src, tmp_path, "comp.ov")
+    check = res.objects[0]
+    # Everything holds except b2's displacement (-2 m, not -3 m): the component's own
+    # definition, instantiated for b2, catches it.
+    assert check.verdict == "REFUTED"
+    assert check.names == ("ConstantAcceleration.displacement@Pair.b2",)

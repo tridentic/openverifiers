@@ -1,0 +1,47 @@
+# Class composition in three domains (physics, chemistry, agentic), for test_mcap.
+package probe.comp
+import physics.mechanics
+
+# physics: two bodies, each a ConstantForce, pushing on each other
+fact type Pair {
+  property b1: ConstantForce
+  property b2: ConstantForce
+  invariant same_time: b1.t = b2.t
+  law newton3: b2.F = -b1.F
+  theorem momentum: b1.m * b1.u + b2.m * b2.u = b1.m * b1.v + b2.m * b2.v
+}
+
+# chemistry: a sample defined by mass, molar mass and moles
+fact type Sample {
+  property m: Mass
+  property M: MolarMass
+  property n: Amount
+  invariant positive_M: M > 0
+  invariant moles: m = n * M
+}
+fact type Mixture {
+  property parts: List<Sample>
+  property total: Amount
+  invariant two: count(parts) = 2
+  invariant sum: total = parts[0].n + parts[1].n
+  theorem total_positive_if_masses: parts[0].m > 0 -> parts[1].m > 0 -> total > 0
+}
+
+# agentic: a refund approved by someone with a limit
+fact type Approver {
+  property limit: Money
+  invariant nonneg: limit >= 0
+}
+fact type Refund {
+  property amount: Money
+  property approver: Approver
+  invariant within: amount <= approver.limit
+  invariant positive: amount > 0
+  theorem limit_positive: approver.limit > 0
+}
+
+scenario comp1 uses probe.comp {
+  query FIND ?v WHERE Pair{ b1 = ConstantForce{ m = 2 kg, u = 0 m/s, v = 6 m/s }, b2 = ConstantForce{ m = 3 kg, u = 0 m/s, v = ?v } }
+  query FIND ?n WHERE Mixture{ parts = {Sample{ m = 18 g, M = 18 g/mol }, Sample{ m = 32 g, M = 32 g/mol }}, total = ?n }
+  query CHECK Refund{ amount = 600 USD, approver = Approver{ limit = 500 USD } } IS Refund
+}

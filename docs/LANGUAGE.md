@@ -472,6 +472,22 @@ package uses:
     differentiates.
   - The units are those of `e` times (or divided by) those of `t`.
 
+**Composition.** A property may be typed by another class, or be a `Set` or
+`List` of one:
+- `property b1: ConstantForce`;
+- `property parts: List<Sample>` with `count(parts) = 2`.
+
+Its value is a record of that class's properties. Fields are read with `.`
+(`b1.v`, `parts[0].n`) and given in patterns
+(`b1 = ConstantForce{ m = 2 kg, v = ?v }`). The class's invariants hold for
+every component instance.
+- They are added to the owner, named `Comp.inv@Owner.prop`, so `ov audit`
+  counts them under the component, not as new definitions.
+- A wrong component value is rejected by the trusted evaluator, naming the
+  instantiated invariant.
+- In calculus, the variable may be a component's property: `integral(a, t)`
+  inside `ConstantForce` stays exact when the body is `b1`.
+
 `physics.mechanics` defines velocity and displacement this way and proves
 SUVAT from them:
 

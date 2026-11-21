@@ -29,3 +29,6 @@ web/.env*
 *.ovpl.ir.coverage
 .coverage
 bench-out/
+
+# Exam sources (copyrighted originals): never committed
+private/

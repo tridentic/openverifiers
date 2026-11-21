@@ -84,3 +84,11 @@ def test_bench_usage_errors(tmp_path: Path) -> None:
     assert main([str(tmp_path)]) == 2                    # no cases
     assert main(["--seeds"]) == 2
     assert main(["--frob"]) == 2
+
+
+def test_values_compare_as_quantities() -> None:
+    from openverifiers.bench.run import value_text
+    assert value_text("500 g") == value_text("0.5 kg")
+    assert value_text("4 m/s^2") == value_text("4 m/s^2")
+    assert value_text("(3, 5)") == "(3, 5)" and value_text("2-chloropentane") == "2-chloropentane"
+    assert value_text("5 kg") != value_text("5 g")

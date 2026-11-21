@@ -33,16 +33,19 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import statistics
 import sys
 import time
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
 from ..checker import Inconsistent, Proven, Refuted, Unknown
 from ..lang.errors import OVError
+from ..lang.units import parse_unit, show_quantity
 from ..objects.engine import ObjAnswer, Settings, show
 from ..objects.solve import seed_base
 from ..runner import Answer, FileResult, _show, run_file
@@ -103,7 +106,25 @@ def outcome(res: FileResult) -> dict[str, Any]:
 # ---------------------------------------------------------------- comparing with gold
 
 
-def _norm(x: Any) -> Any:
+_QTY = re.compile(r"(-?\d+(?:\.\d+)?(?:/\d+)?)\s+([A-Za-zΩ][A-Za-z0-9Ω/^*·-]*)")
+
+
+def _qty(m: re.Match[str]) -> str:
+    """One quantity in canonical display form: '500 g' -> '0.5 kg', '4 m/s^2' kept."""
+    u = parse_unit(m.group(2))
+    if u is None:
+        return m.group(0)
+    return show_quantity(Fraction(m.group(1)) * u[0], u[1])
+
+
+def value_text(v: str) -> str:
+    """A rendered value with every quantity in canonical form and spacing normalised."""
+    return " ".join(_QTY.sub(_qty, v).split())
+
+
+def _norm(x: Any, f: str = "") -> Any:
+    if f == "values" and isinstance(x, list):
+        return sorted(value_text(str(v)) for v in x)
     return sorted(x) if isinstance(x, list) else x
 
 
@@ -122,7 +143,7 @@ def compare(gold: dict[str, Any], got: dict[str, Any]) -> list[str]:
             out.append(f"q{i + 1}: gold is for '{g['query']}', the file has '{o['query']}'")
             continue
         for f in FIELDS:
-            if f in g and _norm(g[f]) != _norm(o.get(f)):
+            if f in g and _norm(g[f], f) != _norm(o.get(f), f):
                 out.append(f"q{i + 1} {f}: gold {g[f]}, got {o.get(f)}")
     have = {c["check"]: c for c in got["classes"]}
     for g in gold.get("classes", []):

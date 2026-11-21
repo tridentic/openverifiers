@@ -58,6 +58,8 @@ fail_under = 95
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = ["bench: wall-clock limits; run only in the uninstrumented CI bench job"]
+addopts = "-m 'not bench'"
 
 [tool.ruff]
 target-version = "py311"

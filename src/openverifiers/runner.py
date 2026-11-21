@@ -328,13 +328,25 @@ def _atom(a: Atom, lw: Lowered) -> str:
         f"{'not ' if a.neg else ''}{a.pred}"
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def summary(res: FileResult) -> str:
+    """One line for `ov check`: what was checked and what failed."""
+    exp = [a for a in (*res.answers, *res.objects) if a.expect_ok is not None]
+    bad = len(res.failed) + len(res.class_errors)
+    return (f"{res.env.main.file}: {'FAIL' if bad else 'ok'} "
+            f"({len(res.runs)} scenario(s), {len(res.answers) + len(res.objects)} queries, "
+            f"{len(exp) - len(res.failed)}/{len(exp)} expectations, "
+            f"{len(res.classes) - len(res.class_errors)}/{len(res.classes)} class checks)")
+
+
+def main(argv: Sequence[str] | None = None, *, check: bool = False) -> int:
+    """`ov run` (full output) or, with check=True, `ov check` (one line per file)."""
     args = list(sys.argv[1:] if argv is None else argv)
     verbose = "--verbose" in args
     settings = Settings(strict="--strict" in args)
     paths = [a for a in args if not a.startswith("--")]
     if not paths:
-        print("usage: ov run FILE.ov [FILE.ov ...] [--verbose] [--strict]", file=sys.stderr)
+        print(f"usage: ov {'check' if check else 'run'} FILE.ov [FILE.ov ...] "
+              "[--verbose] [--strict]", file=sys.stderr)
         return 2
     code = 0
     for p in paths:
@@ -344,7 +356,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(e.render(), file=sys.stderr)
             code = 1
             continue
-        print(render(res, verbose))
+        print(summary(res) if check else render(res, verbose))
+        if check and verbose:
+            for a in (*res.failed, *res.class_errors):
+                print(f"  {a.verdict}: {getattr(a, 'title', '')} {a.expect_msg}".rstrip())
         if res.failed or res.class_errors:
             code = 1
     return code

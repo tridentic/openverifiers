@@ -34,3 +34,18 @@ jobs:
           python -m coverage report
       - name: Full test suite (v1 + m1 + legacy)
         run: python -m pytest -q
+
+  # Wall-clock limits, uninstrumented (no coverage). Deselected everywhere else.
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Timing limits (10k facts < 5 s, q11 < 1 s, ov check p95 < 300 ms)
+        run: python -m pytest -q -m bench

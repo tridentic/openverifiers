@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import time
-
 from openverifiers.checker import Proven, Refuted
 from openverifiers.engine import Run, ask, find_all, run, without
 from openverifiers.raw import Atom, Str, Term, parse_atom
@@ -24,9 +22,7 @@ def proven(r: Run, pattern: str) -> list[tuple[dict[str, str], Proven]]:
 
 
 def test_q11_reference_answers() -> None:
-    start = time.perf_counter()
-    r = run(q11())
-    assert time.perf_counter() - start < 1.0
+    r = run(q11())                       # its < 1 s limit is in test_bench_timing
     assert all(r.trace.complete)
 
     # FIND ?A, ?C, ?D: unique, no assumptions

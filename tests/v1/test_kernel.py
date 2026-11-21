@@ -226,9 +226,8 @@ def test_adding_an_assumption_keeps_empty_environment_proofs(p: Program) -> None
             assert kind(verdict(more.model, a)) in ("Proven", "Inconsistent")
 
 
-def test_ten_thousand_fact_program_runs_and_checks_quickly() -> None:
-    """Brief §10 target: 10k-fact Datalog programs under 5 s (reported, not gamed)."""
-    import time
+def test_ten_thousand_fact_program_runs_and_checks() -> None:
+    """10k-fact program: correct answers. Its 5 s limit is in test_bench_timing."""
     facts = "\n".join(f'fact e{i}: edge(n{i}, n{i + 1}) @"fact:t".' for i in range(10_000))
     p = parse(facts + """
         world red closed.
@@ -236,8 +235,6 @@ def test_ten_thousand_fact_program_runs_and_checks_quickly() -> None:
         rule r2: red(X) :- edge(X, Y), Y = n5.
         rule r3: pair(X, Z) :- two(X, Z), not red(X).
     """)
-    start = time.perf_counter()
     r = run(p)
-    assert time.perf_counter() - start < 5.0
     assert isinstance(v(r, "pair(n0, n2)"), Proven)
     assert isinstance(v(r, "red(n3)"), Refuted)

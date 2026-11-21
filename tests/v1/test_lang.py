@@ -419,6 +419,17 @@ def test_ov_cli(capsys: pytest.CaptureFixture[str]) -> None:
     assert ov(["run", str(ROOT / "examples/physics/newton2.ov")]) == 0
     out = capsys.readouterr().out
     assert "PROVEN  m = 5 kg  assumptions {}  trust {kernel}" in out
+    assert ov(["check", str(ROOT / "examples/physics/newton2.ov")]) == 0
+    assert "newton2.ov: ok (1 scenario(s), 1 queries, 1/1 expectations" in capsys.readouterr().out
+    bad = ROOT / "tests/v1/_bad_expect.ov"
+    src = (ROOT / "examples/physics/newton2.ov").read_text()
+    src = src.replace("expect", "expect REFUTED #", 1)
+    bad.write_text(src)
+    try:
+        assert ov(["check", str(bad)]) == 1
+        assert ": FAIL (" in capsys.readouterr().out
+    finally:
+        bad.unlink()
     assert ov(["frobnicate"]) == 2
     assert ov([]) == 2
     assert ov(["--help"]) == 0

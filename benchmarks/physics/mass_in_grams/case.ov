@@ -1,0 +1,12 @@
+# Units: a 3 N net force giving 6 m/s^2 means m = 0.5 kg, which is 500 g.
+package bench.mass_in_grams
+import physics.mechanics
+
+test mass_in_grams {
+  scenario mass_in_grams_s uses physics.mechanics {
+    entity puck: Body
+    fact net_force(puck, 3 N)
+    fact puck.accel = 6 m/s^2
+    query FIND ?m WHERE puck.mass = ?m
+  }
+}

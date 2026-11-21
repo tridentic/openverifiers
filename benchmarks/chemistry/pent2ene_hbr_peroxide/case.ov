@@ -1,0 +1,7 @@
+# Peroxide HBr on pent-2-ene: both alkene carbons carry one H, so neither
+# regiochemistry is favoured and there is no single major product.
+import chem.organic
+
+scenario pent2ene_hbr_peroxide_s uses chem.organic {
+  query PROVE has_single_major(add(pent-2-ene, HBr, peroxide))
+}

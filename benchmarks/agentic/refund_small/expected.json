@@ -1,0 +1,14 @@
+{
+  "suite": "agentic",
+  "case": "refund_small",
+  "tag": "standard",
+  "why": "300 USD <= 500 USD.",
+  "queries": [
+    {
+      "query": "PROVE allowed(r1)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "the small-refund rule applies."
+    }
+  ]
+}

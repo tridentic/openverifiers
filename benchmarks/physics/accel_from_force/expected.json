@@ -1,0 +1,17 @@
+{
+  "suite": "physics",
+  "case": "accel_from_force",
+  "tag": "standard",
+  "why": "F = m a with F = 20 N and m = 4 kg gives a = 5 m/s^2.",
+  "queries": [
+    {
+      "query": "FIND ?a WHERE cart.accel = ?a",
+      "verdict": "PROVEN",
+      "values": [
+        "5 m/s^2"
+      ],
+      "assumptions": [],
+      "why": "20 N / 4 kg = 5 m/s^2; no assumptions are involved."
+    }
+  ]
+}

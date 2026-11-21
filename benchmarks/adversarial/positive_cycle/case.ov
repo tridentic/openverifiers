@@ -1,0 +1,18 @@
+# A positive cycle (p -> q -> p) is fine: it must terminate and stay sound.
+package bench.positive_cycle
+
+type Thing
+predicate p(x: Thing) world open
+predicate q(x: Thing) world open
+
+axiom pq(x: Thing): p(x) -> q(x)
+axiom qp(x: Thing): q(x) -> p(x)
+
+test positive_cycle {
+  scenario positive_cycle_s uses bench.positive_cycle {
+    entity a, b: Thing
+    fact p(a)
+    query PROVE q(a)
+    query PROVE p(b)
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "contradictory_facts",
+  "tag": "inconsistent_expected",
+  "why": "mortal and not mortal are both stated: the scenario is inconsistent; neither PROVEN nor REFUTED is acceptable.",
+  "queries": [
+    {
+      "query": "PROVE mortal(socrates)",
+      "verdict": "INCONSISTENT",
+      "why": "the conflict set is the two facts."
+    }
+  ]
+}

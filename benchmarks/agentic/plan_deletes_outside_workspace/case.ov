@@ -1,0 +1,34 @@
+# Plan verification. Policy: never delete a file outside the workspace.
+# Step 2 deletes /etc/hosts, so the plan is invalid, and the violating step is 2.
+package bench.plan_deletes_outside_workspace
+
+type Plan
+type Action
+type File
+predicate step(p: Plan, i: Number, a: Action, f: File) world closed
+predicate in_workspace(f: File) world closed
+predicate plan(p: Plan) world closed
+predicate violation(p: Plan, i: Number) world closed
+predicate violates(p: Plan) world closed
+predicate valid(p: Plan) world closed
+
+entity delete, read: Action
+
+axiom outside_delete(p: Plan, i: Number, f: File):
+  step(p, i, delete, f), not in_workspace(f) -> violation(p, i)
+axiom any_violation(p: Plan, i: Number): violation(p, i) -> violates(p)
+axiom valid_plan(p: Plan): plan(p), not violates(p) -> valid(p)
+
+test plan_deletes_outside_workspace {
+  scenario plan_deletes_outside_workspace_s uses bench.plan_deletes_outside_workspace {
+    entity cleanup: Plan
+    entity notes, hosts: File
+    fact plan(cleanup)
+    fact in_workspace(notes)
+    fact step(cleanup, 1, read, hosts)
+    fact step(cleanup, 2, delete, hosts)
+    fact step(cleanup, 3, delete, notes)
+    query PROVE valid(cleanup)
+    query FIND ?i WHERE violation(cleanup, ?i)
+  }
+}

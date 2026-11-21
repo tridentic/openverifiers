@@ -1,0 +1,19 @@
+{
+  "suite": "adversarial",
+  "case": "positive_cycle",
+  "tag": "unknown_expected",
+  "why": "q(a) follows from p(a). Nothing is known about b; the cycle must not make p(b) provable.",
+  "queries": [
+    {
+      "query": "PROVE q(a)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "one step."
+    },
+    {
+      "query": "PROVE p(b)",
+      "verdict": "UNKNOWN",
+      "why": "no facts about b; open world."
+    }
+  ]
+}

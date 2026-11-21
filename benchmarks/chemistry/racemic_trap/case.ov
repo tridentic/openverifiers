@@ -1,0 +1,8 @@
+# The racemic-mixture trap: HCN on 2-methylpropanal creates a stereocentre
+# (H, CN, OH, isopropyl), yet the product is not optically active.
+import chem.organic
+
+scenario racemic_trap_s uses chem.organic {
+  query PROVE stereocentre(add(2-methylpropanal, HCN))
+  query PROVE optically_active(add(2-methylpropanal, HCN))
+}

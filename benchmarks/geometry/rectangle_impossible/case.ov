@@ -1,0 +1,6 @@
+# Three collinear points cannot be three vertices of a rectangle.
+import math.geometry
+
+scenario rectangle_impossible_bs uses math.geometry {
+  query FIND ?p: Point WHERE Rectangle{ vertices = {(0,0), (1,0), (3,0), ?p} }
+}

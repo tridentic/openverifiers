@@ -1,0 +1,16 @@
+{
+  "suite": "mathematics",
+  "case": "linear_system",
+  "tag": "standard",
+  "why": "adding the equations: 2x = 14, x = 7 (then y = 3). The answer is determined; a verifier that cannot solve systems should say UNKNOWN, but the gold is the true value.",
+  "queries": [
+    {
+      "query": "FIND ?x WHERE x.val = ?x",
+      "verdict": "PROVEN",
+      "values": [
+        "7"
+      ],
+      "why": "x = (10 + 4) / 2 = 7."
+    }
+  ]
+}

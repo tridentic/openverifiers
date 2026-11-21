@@ -1,0 +1,20 @@
+# Deployment checklist: tests must pass and the release must be reviewed. The
+# review is only assumed; retracting it leaves the decision open.
+package bench.deploy_checklist
+
+type Release
+predicate tests_passed(r: Release) world open
+predicate reviewed(r: Release) world open
+predicate can_deploy(r: Release) world open
+
+axiom checklist(r: Release): tests_passed(r), reviewed(r) -> can_deploy(r)
+
+test deploy_checklist {
+  scenario deploy_checklist_s uses bench.deploy_checklist {
+    entity v2: Release
+    fact tests_passed(v2)
+    assume review_signed: reviewed(v2)
+    query PROVE can_deploy(v2)
+    query WHAT IF RETRACT reviewed(v2) THEN PROVE can_deploy(v2)
+  }
+}

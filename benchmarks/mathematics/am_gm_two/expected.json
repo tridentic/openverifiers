@@ -1,0 +1,20 @@
+{
+  "suite": "mathematics",
+  "case": "am_gm_two",
+  "tag": "standard",
+  "why": "a^2 + b^2 - 2ab = (a - b)^2 >= 0 for all reals.",
+  "queries": [
+    {
+      "query": "COUNTEREXAMPLE RealPair.am_gm",
+      "verdict": "PROVEN",
+      "why": "no counterexample exists; COUNTEREXAMPLE returns the theorem's verdict."
+    }
+  ],
+  "classes": [
+    {
+      "check": "theorem RealPair.am_gm",
+      "verdict": "PROVEN",
+      "why": "(a - b)^2 >= 0."
+    }
+  ]
+}

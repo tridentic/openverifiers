@@ -1,0 +1,7 @@
+# Three points and a parallelogram: each of the three can be opposite the
+# missing vertex, so there are three completions.
+import math.geometry
+
+scenario parallelogram_count_bs uses math.geometry {
+  query COUNT ?p WHERE Parallelogram{ vertices = {(0,0), (4,0), (1,2), ?p} }
+}

@@ -1,0 +1,12 @@
+# A unit trap: an acceleration field given a velocity (m/s instead of m/s^2).
+package bench.unit_trap_velocity
+import physics.mechanics
+
+test unit_trap_velocity {
+  scenario unit_trap_velocity_s uses physics.mechanics {
+    entity ball: Body
+    fact net_force(ball, 6 N)
+    fact ball.accel = 3 m/s
+    query FIND ?m WHERE ball.mass = ?m
+  }
+}

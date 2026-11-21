@@ -1,0 +1,14 @@
+# A false conjecture ("freshman's dream"): (a + b)^2 = a^2 + b^2 for positive reals.
+package bench.false_conjecture
+
+fact type PositivePair {
+  property a: Real
+  property b: Real
+  invariant pos_a: a > 0
+  invariant pos_b: b > 0
+  theorem freshman: (a + b) * (a + b) = a * a + b * b
+}
+
+scenario false_conjecture_s uses bench.false_conjecture {
+  query COUNTEREXAMPLE PositivePair.freshman
+}

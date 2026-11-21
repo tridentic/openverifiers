@@ -1,0 +1,18 @@
+{
+  "suite": "chemistry",
+  "case": "racemic_trap",
+  "tag": "standard",
+  "why": "a stereocentre does not imply optical activity: an achiral planar carbonyl is attacked equally from both faces, giving a racemic mixture.",
+  "queries": [
+    {
+      "query": "PROVE stereocentre(add(2-methylpropanal, HCN))",
+      "verdict": "PROVEN",
+      "why": "the new carbon carries H, CN, OH and isopropyl: four different groups."
+    },
+    {
+      "query": "PROVE optically_active(add(2-methylpropanal, HCN))",
+      "verdict": "REFUTED",
+      "why": "2-methylpropanal is achiral, so the product is racemic and not optically active."
+    }
+  ]
+}

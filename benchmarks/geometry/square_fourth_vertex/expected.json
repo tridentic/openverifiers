@@ -1,0 +1,21 @@
+{
+  "suite": "geometry",
+  "case": "square_fourth_vertex",
+  "tag": "standard",
+  "why": "(0,0), (2,0), (2,2) are three corners of the square with side 2; the fourth is (0,2). (0,0)-(2,2) is a diagonal, so no other completion exists.",
+  "queries": [
+    {
+      "query": "FIND ?p: Point WHERE Square{ vertices = {(0,0), (2,0), (2,2), ?p} }",
+      "verdict": "PROVEN",
+      "values": [
+        "(0, 2)"
+      ],
+      "why": "the missing corner."
+    },
+    {
+      "query": "PROVE UNIQUE ?p",
+      "verdict": "PROVEN",
+      "why": "the right angle at (2,0) fixes which points are adjacent; only (0,2) works."
+    }
+  ]
+}

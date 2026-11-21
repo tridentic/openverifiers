@@ -1,0 +1,17 @@
+# Negation through recursion: q holds if q does not hold. No stratification
+# exists, so the program must be rejected.
+package bench.non_stratifiable
+
+type Thing
+predicate r(x: Thing) world closed
+predicate q(x: Thing) world closed
+
+axiom paradox(x: Thing): r(x), not q(x) -> q(x)
+
+test non_stratifiable {
+  scenario non_stratifiable_s uses bench.non_stratifiable {
+    entity a: Thing
+    fact r(a)
+    query PROVE q(a)
+  }
+}

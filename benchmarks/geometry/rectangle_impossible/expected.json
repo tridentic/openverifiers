@@ -1,0 +1,13 @@
+{
+  "suite": "geometry",
+  "case": "rectangle_impossible",
+  "tag": "standard",
+  "why": "any three vertices of a rectangle form a right triangle, so they are never collinear. No ?p exists.",
+  "queries": [
+    {
+      "query": "FIND ?p: Point WHERE Rectangle{ vertices = {(0,0), (1,0), (3,0), ?p} }",
+      "verdict": "REFUTED",
+      "why": "no fourth point works."
+    }
+  ]
+}

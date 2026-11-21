@@ -1,0 +1,12 @@
+# Newton's second law solved for acceleration: a = F / m = 20 N / 4 kg.
+package bench.accel_from_force
+import physics.mechanics
+
+test accel_from_force {
+  scenario accel_from_force_s uses physics.mechanics {
+    entity cart: Body
+    fact net_force(cart, 20 N)
+    fact cart.mass = 4 kg
+    query FIND ?a WHERE cart.accel = ?a
+  }
+}

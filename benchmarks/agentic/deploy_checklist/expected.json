@@ -1,0 +1,25 @@
+{
+  "suite": "agentic",
+  "case": "deploy_checklist",
+  "tag": "needs_assumption",
+  "why": "both checklist items hold only if the review assumption does.",
+  "queries": [
+    {
+      "query": "PROVE can_deploy(v2)",
+      "verdict": "PROVEN",
+      "assumptions": [
+        "review_signed"
+      ],
+      "why": "tests passed (fact) and reviewed (assumed)."
+    },
+    {
+      "query": "WHAT IF RETRACT reviewed(v2) THEN PROVE can_deploy(v2)",
+      "verdict": "UNKNOWN",
+      "reason": "missing_facts",
+      "missing": [
+        "reviewed"
+      ],
+      "why": "the review is the missing fact; open world, so unknown rather than false."
+    }
+  ]
+}

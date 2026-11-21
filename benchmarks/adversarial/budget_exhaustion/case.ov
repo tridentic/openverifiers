@@ -1,0 +1,18 @@
+# An infinite model: node(a), node(wrap(a)), node(wrap(wrap(a))), ... Evaluation
+# must stop at its budget and then refuse closed-world conclusions it cannot
+# justify, answering UNKNOWN(budget) rather than guessing.
+package bench.budget_exhaustion
+
+type T
+function wrap(x: T) -> T
+predicate node(x: T) world closed
+
+axiom grow(x: T): node(x) -> node(wrap(x))
+
+test budget_exhaustion {
+  scenario budget_exhaustion_s uses bench.budget_exhaustion {
+    entity a, b: T
+    fact node(a)
+    query PROVE node(b)
+  }
+}

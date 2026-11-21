@@ -1,0 +1,14 @@
+# A deliberately false theorem: "a rectangle's diagonals are perpendicular"
+# (true only for squares). `ov check` must refute it with a counterexample.
+package bench.false_theorem_rectangle
+import math.geometry
+
+fact type PerpRectangle extends Rectangle {
+  theorem perp_diagonals: none v in cycles(vertices):
+    all i: angle(v[i-1], v[i], v[i+1]) = 90 deg
+    (v[2].x - v[0].x) * (v[3].x - v[1].x) + (v[2].y - v[0].y) * (v[3].y - v[1].y) != 0
+}
+
+scenario false_theorem_rectangle_s uses bench.false_theorem_rectangle {
+  query COUNTEREXAMPLE PerpRectangle.perp_diagonals
+}

@@ -1,0 +1,19 @@
+{
+  "suite": "mathematics",
+  "case": "closed_world_inequality",
+  "tag": "standard",
+  "why": "7 > 5 holds; 3 > 5 does not, and big is closed-world, so big(three) is false.",
+  "queries": [
+    {
+      "query": "PROVE big(seven)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "7 > 5."
+    },
+    {
+      "query": "PROVE big(three)",
+      "verdict": "REFUTED",
+      "why": "3 > 5 is false and big has no other rule; closed world makes it false."
+    }
+  ]
+}

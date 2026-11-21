@@ -1,0 +1,14 @@
+{
+  "suite": "agentic",
+  "case": "refund_manager_approved",
+  "tag": "standard",
+  "why": "the large-refund rule applies with the manager's approval.",
+  "queries": [
+    {
+      "query": "PROVE allowed(r3)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "800 USD > 500 USD and approved(r3, manager)."
+    }
+  ]
+}

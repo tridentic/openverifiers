@@ -1,0 +1,13 @@
+# The stated mass disagrees with the law: 12 N / 3 m/s^2 = 4 kg, but 5 kg is stated.
+package bench.contradictory_mass
+import physics.mechanics
+
+test contradictory_mass {
+  scenario contradictory_mass_s uses physics.mechanics {
+    entity crate: Body
+    fact net_force(crate, 12 N)
+    fact crate.accel = 3 m/s^2
+    fact crate.mass = 5 kg
+    query FIND ?m WHERE crate.mass = ?m
+  }
+}

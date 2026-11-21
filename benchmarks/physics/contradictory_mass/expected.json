@@ -1,0 +1,13 @@
+{
+  "suite": "physics",
+  "case": "contradictory_mass",
+  "tag": "inconsistent_expected",
+  "why": "Newton's law derives 4 kg; the stated 5 kg contradicts it. The scenario is inconsistent and must be reported so, not answered with either value.",
+  "queries": [
+    {
+      "query": "FIND ?m WHERE crate.mass = ?m",
+      "verdict": "INCONSISTENT",
+      "why": "mass is functional: 4 kg (derived) and 5 kg (stated) clash."
+    }
+  ]
+}

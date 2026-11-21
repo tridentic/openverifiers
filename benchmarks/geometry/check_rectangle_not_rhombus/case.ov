@@ -1,0 +1,7 @@
+# A 3 x 1 rectangle is a rectangle and not a rhombus.
+import math.geometry
+
+scenario check_rectangle_not_rhombus_bs uses math.geometry {
+  query CHECK Quadrilateral{ vertices = {(0,0), (3,0), (3,1), (0,1)} } IS Rectangle
+  query CHECK Quadrilateral{ vertices = {(0,0), (3,0), (3,1), (0,1)} } IS Rhombus
+}

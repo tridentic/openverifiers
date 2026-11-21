@@ -1,0 +1,14 @@
+{
+  "suite": "chemistry",
+  "case": "ozonolysis_2m2b",
+  "tag": "standard",
+  "why": "O3/Zn cleaves C=C; each alkene carbon becomes C=O with its two groups: (CH3)2C=O and CH3CH=O.",
+  "queries": [
+    {
+      "query": "PROVE ozonolysis(2-methylbut-2-ene, propanone, ethanal)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "propanone from the (CH3)2C end, ethanal from the CH(CH3) end."
+    }
+  ]
+}

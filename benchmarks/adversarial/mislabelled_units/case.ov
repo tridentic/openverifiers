@@ -1,0 +1,12 @@
+# A mass given in newtons: a mislabelled unit.
+package bench.mislabelled_units
+import physics.mechanics
+
+test mislabelled_units {
+  scenario mislabelled_units_s uses physics.mechanics {
+    entity box: Body
+    fact box.mass = 5 N
+    fact box.accel = 2 m/s^2
+    query PROVE net_force(box, 10 N)
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "suite": "chemistry",
+  "case": "pent2ene_hbr_peroxide",
+  "tag": "standard",
+  "why": "CH3CH=CHCH2CH3: each alkene carbon has one H; the radical addition gives a mixture of 2- and 3-bromopentane.",
+  "queries": [
+    {
+      "query": "PROVE has_single_major(add(pent-2-ene, HBr, peroxide))",
+      "verdict": "REFUTED",
+      "why": "equal H counts on both carbons: no single major."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "suite": "logic",
+  "case": "open_vs_closed",
+  "tag": "unknown_expected",
+  "why": "nothing is stated about the visitor. Closed world: not registered. Open world: unknown.",
+  "queries": [
+    {
+      "query": "PROVE registered(visitor)",
+      "verdict": "REFUTED",
+      "why": "closed-world predicate with no derivation."
+    },
+    {
+      "query": "PROVE seen(visitor)",
+      "verdict": "UNKNOWN",
+      "why": "open-world predicate: absence of evidence is not evidence of absence."
+    }
+  ]
+}

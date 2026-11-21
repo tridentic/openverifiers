@@ -1,0 +1,26 @@
+# A ProofWriter-style chain of depth 5: p1 -> p2 -> p3 -> p4 -> p5 -> p6.
+package bench.chain_depth_5
+
+type Thing
+predicate p1(x: Thing) world open
+predicate p2(x: Thing) world open
+predicate p3(x: Thing) world open
+predicate p4(x: Thing) world open
+predicate p5(x: Thing) world open
+predicate p6(x: Thing) world open
+
+axiom r1(x: Thing): p1(x) -> p2(x)
+axiom r2(x: Thing): p2(x) -> p3(x)
+axiom r3(x: Thing): p3(x) -> p4(x)
+axiom r4(x: Thing): p4(x) -> p5(x)
+axiom r5(x: Thing): p5(x) -> p6(x)
+
+test chain_depth_5 {
+  scenario chain_depth_5_s uses bench.chain_depth_5 {
+    entity anne, bob: Thing
+    fact p1(anne)
+    fact p3(bob)
+    query PROVE p6(anne)
+    query PROVE p2(bob)
+  }
+}

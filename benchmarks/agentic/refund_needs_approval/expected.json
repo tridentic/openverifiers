@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "refund_needs_approval",
+  "tag": "standard",
+  "why": "800 USD > 500 USD and the only approval is a clerk's, not a manager's. allowed is closed-world.",
+  "queries": [
+    {
+      "query": "PROVE allowed(r2)",
+      "verdict": "REFUTED",
+      "why": "neither rule applies; closed world."
+    }
+  ]
+}

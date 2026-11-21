@@ -1,0 +1,14 @@
+# Directly contradictory facts.
+package bench.contradictory_facts
+
+type Thing
+predicate mortal(x: Thing) world open
+
+test contradictory_facts {
+  scenario contradictory_facts_s uses bench.contradictory_facts {
+    entity socrates: Thing
+    fact mortal(socrates)
+    fact not mortal(socrates)
+    query PROVE mortal(socrates)
+  }
+}

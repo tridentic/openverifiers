@@ -1,0 +1,16 @@
+# Barbara: all men are mortal; Socrates is a man; so Socrates is mortal.
+package bench.syllogism
+
+type Thing
+predicate man(x: Thing) world open
+predicate mortal(x: Thing) world open
+
+axiom men_are_mortal(x: Thing): man(x) -> mortal(x)
+
+test syllogism {
+  scenario syllogism_s uses bench.syllogism {
+    entity socrates: Thing
+    fact man(socrates)
+    query PROVE mortal(socrates)
+  }
+}

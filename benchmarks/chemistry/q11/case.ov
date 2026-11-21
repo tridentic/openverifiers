@@ -1,0 +1,18 @@
+# HSC q11 (brief §3.6), as in examples/chem/q11.ov. Disclosure: OV has run on
+# that example since M1, so this case's gold cannot predate every OV run; it is
+# the brief's gold, derived by hand.
+import chem.organic
+
+scenario bench_q11 uses chem.organic {
+  generator A, B from isomers(C5H10)
+  fact   ozonolysis(A) -> {C, D}
+  fact   not tautomerizes(D)
+  fact   grignard_alcohol(C) = tertiary
+  fact   2-chloropentane in add(B, HCl)
+  assume single_major: has_single_major(add(B, HBr, peroxide))
+
+  query FIND ?A, ?C, ?D
+  query FIND ?p WHERE major(add(B, HBr, peroxide)) = ?p
+  query PROVE optically_active(add(C, HCN))
+  query WHAT IF RETRACT not tautomerizes(D) THEN FIND ?A
+}

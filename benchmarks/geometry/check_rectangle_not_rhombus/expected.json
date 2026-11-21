@@ -1,0 +1,18 @@
+{
+  "suite": "geometry",
+  "case": "check_rectangle_not_rhombus",
+  "tag": "standard",
+  "why": "four right angles and bisecting diagonals; sides 3 and 1 differ, so not a rhombus.",
+  "queries": [
+    {
+      "query": "CHECK Quadrilateral{ vertices = {(0,0), (3,0), (3,1), (0,1)} } IS Rectangle",
+      "verdict": "PROVEN",
+      "why": "all angles 90 deg."
+    },
+    {
+      "query": "CHECK Quadrilateral{ vertices = {(0,0), (3,0), (3,1), (0,1)} } IS Rhombus",
+      "verdict": "REFUTED",
+      "why": "no ordering has four equal sides."
+    }
+  ]
+}

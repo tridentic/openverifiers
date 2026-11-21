@@ -1,0 +1,20 @@
+# A 300 USD refund is within the 500 USD limit.
+package bench.refund_small
+
+type Role
+type Request { amount: Money }
+predicate approved(r: Request, by: Role) world closed
+predicate allowed(r: Request) world closed
+entity manager, clerk: Role
+
+# Policy: refunds up to 500 USD are allowed; larger ones need a manager's approval.
+axiom small_refund(r: Request): r.amount <= 500 USD -> allowed(r)
+axiom approved_refund(r: Request): r.amount > 500 USD, approved(r, manager) -> allowed(r)
+
+test refund_small {
+  scenario refund_small_s uses bench.refund_small {
+    entity r1: Request
+    fact r1.amount = 300 USD
+    query PROVE allowed(r1)
+  }
+}

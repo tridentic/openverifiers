@@ -1,0 +1,9 @@
+{
+  "suite": "physics",
+  "case": "unit_trap_velocity",
+  "tag": "unit_error",
+  "why": "Body.accel has type Accel (m/s^2); 3 m/s is a velocity. The file must be rejected with a dimension mismatch (E301), never silently computed.",
+  "error": [
+    "E301"
+  ]
+}

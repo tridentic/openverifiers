@@ -1,0 +1,25 @@
+{
+  "suite": "geometry",
+  "case": "false_theorem_rectangle",
+  "tag": "standard",
+  "why": "the 2 x 1 rectangle (0,0), (2,0), (2,1), (0,1) has diagonals (2,1) and (-2,1), dot product -3 != 0.",
+  "queries": [
+    {
+      "query": "COUNTEREXAMPLE PerpRectangle.perp_diagonals",
+      "verdict": "REFUTED",
+      "why": "any non-square rectangle."
+    }
+  ],
+  "classes": [
+    {
+      "check": "class PerpRectangle is consistent",
+      "verdict": "PROVEN",
+      "why": "any rectangle."
+    },
+    {
+      "check": "theorem PerpRectangle.perp_diagonals",
+      "verdict": "REFUTED",
+      "why": "a non-square rectangle is a counterexample."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "suite": "adversarial",
+  "case": "budget_exhaustion",
+  "tag": "budget",
+  "why": "the closure is infinite, so the stratum of node is never complete; a closed-world NO for node(b) needs a complete stratum. The honest answer under a budget is UNKNOWN(budget).",
+  "queries": [
+    {
+      "query": "PROVE node(b)",
+      "verdict": "UNKNOWN",
+      "reason": "budget",
+      "why": "the budget cut the stratum; REFUTED would be unjustified."
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+# Ethanal (CH3CHO) has alpha hydrogens on the methyl group, so it shows
+# keto-enol tautomerism.
+import chem.organic
+
+scenario ethanal_tautomerizes_s uses chem.organic {
+  query PROVE tautomerizes(ethanal)
+}

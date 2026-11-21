@@ -1,0 +1,20 @@
+# Transitive closure: ancestors through three generations (closed world).
+package bench.ancestors
+
+type Person
+predicate parent(x: Person, y: Person) world closed
+predicate ancestor(x: Person, y: Person) world closed
+
+axiom base(x, y: Person): parent(x, y) -> ancestor(x, y)
+axiom step(x, y, z: Person): parent(x, y), ancestor(y, z) -> ancestor(x, z)
+
+test ancestors {
+  scenario ancestors_s uses bench.ancestors {
+    entity ada, ben, cy, dee: Person
+    fact parent(ada, ben)
+    fact parent(ben, cy)
+    fact parent(cy, dee)
+    query PROVE ancestor(ada, dee)
+    query PROVE ancestor(dee, ada)
+  }
+}

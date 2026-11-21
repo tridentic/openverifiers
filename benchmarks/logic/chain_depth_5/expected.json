@@ -1,0 +1,19 @@
+{
+  "suite": "logic",
+  "case": "chain_depth_5",
+  "tag": "unknown_expected",
+  "why": "anne reaches p6 in five steps; bob enters the chain at p3, and nothing derives p2(bob) (rules are not reversible).",
+  "queries": [
+    {
+      "query": "PROVE p6(anne)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "five rule applications."
+    },
+    {
+      "query": "PROVE p2(bob)",
+      "verdict": "UNKNOWN",
+      "why": "open world; p3(bob) does not imply p2(bob)."
+    }
+  ]
+}

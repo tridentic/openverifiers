@@ -1,0 +1,17 @@
+{
+  "suite": "physics",
+  "case": "mass_in_grams",
+  "tag": "standard",
+  "why": "m = F / a = 3 N / 6 m/s^2 = 0.5 kg = 500 g (values compare as quantities).",
+  "queries": [
+    {
+      "query": "FIND ?m WHERE puck.mass = ?m",
+      "verdict": "PROVEN",
+      "values": [
+        "500 g"
+      ],
+      "assumptions": [],
+      "why": "3 / 6 = 1/2 kg exactly."
+    }
+  ]
+}

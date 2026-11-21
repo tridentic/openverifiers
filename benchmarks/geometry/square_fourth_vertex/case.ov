@@ -1,0 +1,7 @@
+# Three corners of an axis-aligned square; the fourth is forced.
+import math.geometry
+
+scenario square_fourth_vertex_bs uses math.geometry {
+  query FIND ?p: Point WHERE Square{ vertices = {(0,0), (2,0), (2,2), ?p} }
+  query PROVE UNIQUE ?p
+}

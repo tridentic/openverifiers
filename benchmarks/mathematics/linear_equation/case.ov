@@ -1,0 +1,15 @@
+# Solve 3x + 4 = 19: x = 5.
+package bench.linear_equation
+
+type Var { val: Number }
+predicate problem(v: Var) world open
+
+axiom equation(v: Var): problem(v) -> 3 * v.val + 4 = 19
+
+test linear_equation {
+  scenario linear_equation_s uses bench.linear_equation {
+    entity x: Var
+    fact problem(x)
+    query FIND ?x WHERE x.val = ?x
+  }
+}

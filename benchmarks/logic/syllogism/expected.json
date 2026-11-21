@@ -1,0 +1,14 @@
+{
+  "suite": "logic",
+  "case": "syllogism",
+  "tag": "standard",
+  "why": "modus ponens on the universal rule.",
+  "queries": [
+    {
+      "query": "PROVE mortal(socrates)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "man(socrates) and man(x) -> mortal(x)."
+    }
+  ]
+}

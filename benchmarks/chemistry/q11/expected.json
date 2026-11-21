@@ -1,0 +1,42 @@
+{
+  "suite": "chemistry",
+  "case": "q11",
+  "tag": "needs_assumption",
+  "why": "Brief §3.6 reference answers.",
+  "queries": [
+    {
+      "query": "FIND ?A, ?C, ?D",
+      "verdict": "PROVEN",
+      "values": [
+        "2-methylbut-1-ene, butanone, methanal"
+      ],
+      "assumptions": [],
+      "why": "C gives a tertiary alcohol, so C is a ketone; D does not tautomerize, so D has no alpha-H: methanal. The only C5H10 alkene cleaving to a ketone + methanal is 2-methylbut-1-ene, giving butanone."
+    },
+    {
+      "query": "FIND ?p WHERE major(add(B, HBr, peroxide)) = ?p",
+      "verdict": "PROVEN",
+      "values": [
+        "1-bromopentane"
+      ],
+      "assumptions": [
+        "single_major"
+      ],
+      "why": "2-chloropentane from HCl: B is pent-1-ene or pent-2-ene. Peroxide HBr on pent-2-ene has no single major product, so under single_major B is pent-1-ene: anti-Markovnikov gives 1-bromopentane."
+    },
+    {
+      "query": "PROVE optically_active(add(C, HCN))",
+      "verdict": "REFUTED",
+      "why": "butanone + HCN has a stereocentre (Me != Et) but attack on the planar carbonyl is equal from both faces: racemic, not optically active."
+    },
+    {
+      "query": "WHAT IF RETRACT not tautomerizes(D) THEN FIND ?A",
+      "verdict": "UNKNOWN",
+      "values": [
+        "2-methylbut-1-ene",
+        "2-methylbut-2-ene"
+      ],
+      "why": "without the tautomerism fact D may be ethanal: 2-methylbut-2-ene cleaves to propanone (a ketone, tertiary alcohol) + ethanal. Two candidates remain."
+    }
+  ]
+}

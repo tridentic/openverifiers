@@ -1,0 +1,13 @@
+{
+  "suite": "physics",
+  "case": "missing_accel",
+  "tag": "unknown_expected",
+  "why": "F = m a with only F known is under-determined; a correct verifier must not guess.",
+  "queries": [
+    {
+      "query": "FIND ?m WHERE sled.mass = ?m",
+      "verdict": "UNKNOWN",
+      "why": "the acceleration is missing, so no mass follows."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# Only the net force is known. Newton's second law has two unknowns (mass and
+# acceleration), so the mass cannot be determined.
+package bench.missing_accel
+import physics.mechanics
+
+test missing_accel {
+  scenario missing_accel_s uses physics.mechanics {
+    entity sled: Body
+    fact net_force(sled, 10 N)
+    query FIND ?m WHERE sled.mass = ?m
+  }
+}

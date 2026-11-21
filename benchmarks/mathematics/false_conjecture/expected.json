@@ -1,0 +1,25 @@
+{
+  "suite": "mathematics",
+  "case": "false_conjecture",
+  "tag": "standard",
+  "why": "(a + b)^2 = a^2 + 2ab + b^2, and 2ab > 0 for positive a, b; a = b = 1 gives 4 != 2. Must come back REFUTED with a counterexample.",
+  "queries": [
+    {
+      "query": "COUNTEREXAMPLE PositivePair.freshman",
+      "verdict": "REFUTED",
+      "why": "any positive pair is a counterexample."
+    }
+  ],
+  "classes": [
+    {
+      "check": "class PositivePair is consistent",
+      "verdict": "PROVEN",
+      "why": "a = b = 1."
+    },
+    {
+      "check": "theorem PositivePair.freshman",
+      "verdict": "REFUTED",
+      "why": "a = b = 1: 4 != 2."
+    }
+  ]
+}

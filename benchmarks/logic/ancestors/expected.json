@@ -1,0 +1,19 @@
+{
+  "suite": "logic",
+  "case": "ancestors",
+  "tag": "standard",
+  "why": "ada -> ben -> cy -> dee. The reverse is not derivable, and ancestor is closed-world.",
+  "queries": [
+    {
+      "query": "PROVE ancestor(ada, dee)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "three parent links."
+    },
+    {
+      "query": "PROVE ancestor(dee, ada)",
+      "verdict": "REFUTED",
+      "why": "closed world, no derivation."
+    }
+  ]
+}

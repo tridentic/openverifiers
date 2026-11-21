@@ -1,0 +1,14 @@
+{
+  "suite": "chemistry",
+  "case": "ethanal_tautomerizes",
+  "tag": "standard",
+  "why": "an H on the carbon next to C=O (the CH3) allows the enol form.",
+  "queries": [
+    {
+      "query": "PROVE tautomerizes(ethanal)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "ethanal has three alpha-H."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# AM-GM for two reals, in polynomial form: a^2 + b^2 >= 2ab.
+package bench.am_gm_two
+
+fact type RealPair {
+  property a: Real
+  property b: Real
+  theorem am_gm: a * a + b * b >= 2 * a * b
+}
+
+scenario am_gm_two_s uses bench.am_gm_two {
+  query COUNTEREXAMPLE RealPair.am_gm
+}

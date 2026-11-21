@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "non_stratifiable",
+  "tag": "adversarial",
+  "why": "q depends negatively on itself (closed-world not); the program has no stratified model and must be rejected.",
+  "error": [
+    "not_stratifiable"
+  ]
+}

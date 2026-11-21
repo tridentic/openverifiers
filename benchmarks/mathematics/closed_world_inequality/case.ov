@@ -1,0 +1,17 @@
+# "big" is defined (closed world) as having a value above 5.
+package bench.closed_world_inequality
+
+type Var { val: Number }
+predicate big(v: Var) world closed
+
+axiom big_def(v: Var): v.val > 5 -> big(v)
+
+test closed_world_inequality {
+  scenario closed_world_inequality_s uses bench.closed_world_inequality {
+    entity seven, three: Var
+    fact seven.val = 7
+    fact three.val = 3
+    query PROVE big(seven)
+    query PROVE big(three)
+  }
+}

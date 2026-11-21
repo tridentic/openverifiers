@@ -1,0 +1,21 @@
+# 800 USD with a manager's approval: allowed.
+package bench.refund_manager_approved
+
+type Role
+type Request { amount: Money }
+predicate approved(r: Request, by: Role) world closed
+predicate allowed(r: Request) world closed
+entity manager, clerk: Role
+
+# Policy: refunds up to 500 USD are allowed; larger ones need a manager's approval.
+axiom small_refund(r: Request): r.amount <= 500 USD -> allowed(r)
+axiom approved_refund(r: Request): r.amount > 500 USD, approved(r, manager) -> allowed(r)
+
+test refund_manager_approved {
+  scenario refund_manager_approved_s uses bench.refund_manager_approved {
+    entity r3: Request
+    fact r3.amount = 800 USD
+    fact approved(r3, manager)
+    query PROVE allowed(r3)
+  }
+}

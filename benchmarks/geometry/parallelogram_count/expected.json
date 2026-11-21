@@ -1,0 +1,16 @@
+{
+  "suite": "geometry",
+  "case": "parallelogram_count",
+  "tag": "standard",
+  "why": "the fourth vertex is a + b - c for each choice of c: (5,2), (-3,2), (3,-2).",
+  "queries": [
+    {
+      "query": "COUNT ?p WHERE Parallelogram{ vertices = {(0,0), (4,0), (1,2), ?p} }",
+      "verdict": "PROVEN",
+      "values": [
+        "3"
+      ],
+      "why": "three distinct completions."
+    }
+  ]
+}

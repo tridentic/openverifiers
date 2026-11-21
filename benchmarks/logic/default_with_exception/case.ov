@@ -1,0 +1,20 @@
+# Default reasoning with a closed-world exception: birds fly unless abnormal.
+package bench.default_with_exception
+
+type Animal
+predicate bird(x: Animal) world open
+predicate abnormal(x: Animal) world closed
+predicate flies(x: Animal) world open
+
+axiom birds_fly(x: Animal): bird(x), not abnormal(x) -> flies(x)
+
+test default_with_exception {
+  scenario default_with_exception_s uses bench.default_with_exception {
+    entity tweety, pingu: Animal
+    fact bird(tweety)
+    fact bird(pingu)
+    fact abnormal(pingu)
+    query PROVE flies(tweety)
+    query PROVE flies(pingu)
+  }
+}

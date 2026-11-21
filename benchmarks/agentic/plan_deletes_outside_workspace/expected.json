@@ -1,0 +1,21 @@
+{
+  "suite": "agentic",
+  "case": "plan_deletes_outside_workspace",
+  "tag": "standard",
+  "why": "deleting hosts (not in the workspace) at step 2 violates the policy; step 1 only reads it, step 3 deletes a workspace file.",
+  "queries": [
+    {
+      "query": "PROVE valid(cleanup)",
+      "verdict": "REFUTED",
+      "why": "the plan has a violation."
+    },
+    {
+      "query": "FIND ?i WHERE violation(cleanup, ?i)",
+      "verdict": "PROVEN",
+      "values": [
+        "2"
+      ],
+      "why": "only step 2 deletes outside the workspace."
+    }
+  ]
+}

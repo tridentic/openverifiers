@@ -1,0 +1,19 @@
+{
+  "suite": "logic",
+  "case": "default_with_exception",
+  "tag": "unknown_expected",
+  "why": "tweety is a bird not known to be abnormal: flies. pingu is abnormal: the default does not apply, and flies is open-world, so it is unknown (not false).",
+  "queries": [
+    {
+      "query": "PROVE flies(tweety)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "bird(tweety) and abnormal(tweety) is not derivable (closed world)."
+    },
+    {
+      "query": "PROVE flies(pingu)",
+      "verdict": "UNKNOWN",
+      "why": "the only rule is blocked; open world gives no negative conclusion."
+    }
+  ]
+}

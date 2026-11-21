@@ -1,0 +1,17 @@
+{
+  "suite": "mathematics",
+  "case": "linear_equation",
+  "tag": "standard",
+  "why": "3x = 15, x = 5.",
+  "queries": [
+    {
+      "query": "FIND ?x WHERE x.val = ?x",
+      "verdict": "PROVEN",
+      "values": [
+        "5"
+      ],
+      "assumptions": [],
+      "why": "(19 - 4) / 3 = 5."
+    }
+  ]
+}

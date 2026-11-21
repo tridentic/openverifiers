@@ -1,0 +1,15 @@
+# The same missing fact under the two world policies: a closed-world predicate
+# is false when not derivable; an open-world one is unknown.
+package bench.open_vs_closed
+
+type Thing
+predicate registered(x: Thing) world closed
+predicate seen(x: Thing) world open
+
+test open_vs_closed {
+  scenario open_vs_closed_s uses bench.open_vs_closed {
+    entity visitor: Thing
+    query PROVE registered(visitor)
+    query PROVE seen(visitor)
+  }
+}

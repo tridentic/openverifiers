@@ -1,0 +1,16 @@
+# A 2x2 linear system: x + y = 10 and x - y = 4, so x = 7 and y = 3.
+package bench.linear_system
+
+type Var { val: Number }
+predicate system(x: Var, y: Var) world open
+
+axiom sum(x, y: Var): system(x, y) -> x.val + y.val = 10
+axiom difference(x, y: Var): system(x, y) -> x.val - y.val = 4
+
+test linear_system {
+  scenario linear_system_s uses bench.linear_system {
+    entity x, y: Var
+    fact system(x, y)
+    query FIND ?x WHERE x.val = ?x
+  }
+}

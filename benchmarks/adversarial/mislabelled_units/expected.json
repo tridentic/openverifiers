@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "mislabelled_units",
+  "tag": "unit_error",
+  "why": "Body.mass is a Mass; 5 N is a Force. Must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

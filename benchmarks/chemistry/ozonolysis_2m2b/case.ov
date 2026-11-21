@@ -1,0 +1,6 @@
+# Ozonolysis of 2-methylbut-2-ene, (CH3)2C=CH(CH3): propanone and ethanal.
+import chem.organic
+
+scenario ozonolysis_2m2b_s uses chem.organic {
+  query PROVE ozonolysis(2-methylbut-2-ene, propanone, ethanal)
+}

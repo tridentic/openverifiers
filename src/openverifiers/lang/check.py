@@ -197,6 +197,21 @@ def load(path: str | Path, *, source: str | None = None,
     return env
 
 
+#: Parsed packages, keyed by (file, source text). A Module is immutable, so sharing
+#: one between loads is safe; an edited file has new text and is parsed again.
+_PARSED: dict[tuple[str, str], A.Module] = {}
+
+
+def _parse_cached(text: str, file: str) -> A.Module:
+    key = (file, text)
+    mod = _PARSED.get(key)
+    if mod is None:
+        if len(_PARSED) > 256:
+            _PARSED.clear()
+        mod = _PARSED[key] = parse(text, file)
+    return mod
+
+
 def _refs(mod: A.Module) -> list[tuple[str, Span]]:
     out = [(i.name, i.span) for i in mod.items if isinstance(i, A.ImportPkg)]
     for sc in _all_scenarios(mod):
@@ -223,7 +238,7 @@ def _load_deps(env: Env, mod: A.Module, roots: tuple[Path, ...]) -> None:
                                             f"looked for {'/'.join(name.split('.'))}.ov next "
                                             "to the file and in the standard library"))
                 continue
-            sub = parse(found.read_text(encoding="utf-8"), str(found))
+            sub = _parse_cached(found.read_text(encoding="utf-8"), str(found))
             if sub.package is None or sub.package.name != name:
                 env.diags.append(Diagnostic("E203", f"{found} does not declare `package {name}`",
                                             span))

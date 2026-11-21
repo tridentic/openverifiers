@@ -117,7 +117,6 @@ def test_kernel_rejections_and_crashes_are_outcomes(tmp_path: Path,
 # missing capability, not a wrong definite verdict. Fixing one means removing it
 # here; the gold is never edited to match.
 KNOWN_MISMATCHES = {
-    "agentic/deploy_checklist",      # retracted assumption reported as missing 'assume'
     "mathematics/linear_system",     # no linear-system solving yet (M5)
     "physics/push_block",            # FIND reports no missing facts (open_world)
 }

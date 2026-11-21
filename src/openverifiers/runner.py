@@ -23,7 +23,7 @@ from .lang import ast as A
 from .lang.check import Env, load
 from .lang.errors import Diagnostic, OVError
 from .lang.units import show_quantity
-from .lower.lower import Lowered, QueryPlan, _Ctx, _value, lower, term
+from .lower.lower import Lowered, QueryPlan, _Ctx, _value, is_hidden, lower, term
 from .objects.engine import ObjAnswer, Settings, check_classes, show
 from .objects.engine import answer as obj_answer
 from .raw.program import Atom
@@ -50,7 +50,7 @@ class Answer:
     def assumptions(self) -> frozenset[tuple[str, bool]]:
         v = self.detail
         if isinstance(v, (Proven, Refuted)):
-            return v.assumptions
+            return frozenset(x for x in v.assumptions if not is_hidden(x[0]))
         return frozenset()
 
 
@@ -221,7 +221,17 @@ def _show(t: Term, lw: Lowered) -> str:
 
 
 def _assumptions(env: frozenset[tuple[str, bool]]) -> str:
-    return "{" + ", ".join(("" if s else "not ") + n for n, s in sorted(env)) + "}"
+    return "{" + ", ".join(("" if s else "not ") + n for n, s in sorted(env)
+                           if not is_hidden(n)) + "}"
+
+
+def missing_text(a: Atom, lw: Lowered) -> str:
+    """A missing-facts entry: `assume(n)` / `retract(n)` shown as n's statement."""
+    if a.pred in ("assume", "retract") and a.args and isinstance(a.args[0], Sym):
+        info = lw.assumption_info.get(a.args[0].name)
+        if info is not None:
+            return f"{'' if a.pred == 'assume' else 'not '}{info[0]}"
+    return _atom(a, lw)
 
 
 def render(res: FileResult, verbose: bool = False) -> str:
@@ -305,7 +315,8 @@ def _line(a: Answer, lw: Lowered) -> str:
     for n, cs in a.candidates.items():
         parts.append(f"{n} in {{{', '.join(_show(c, lw) for c in cs)}}}")
     if v.missing:
-        parts.append("missing: " + "; ".join(", ".join(str(x) for x in m) for m in v.missing[:3]))
+        parts.append("missing: " + "; ".join(", ".join(missing_text(x, lw) for x in m)
+                                             for m in v.missing[:3]))
     return "  ".join(parts)
 
 

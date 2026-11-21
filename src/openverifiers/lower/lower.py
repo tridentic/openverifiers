@@ -90,6 +90,37 @@ class Lowered:
     #: object-layer queries (patterns, UNIQUE, COUNT, CHECK, COUNTEREXAMPLE), answered by
     #: ``objects.engine`` rather than by evaluating the program
     objects: list[tuple[A.Query, A.Expect | None, str | None]] = field(default_factory=list)
+    #: assumption name -> (its statement's text, the predicates it states). Covers
+    #: declared assumptions and the hidden ones that make a fact retractable.
+    assumption_info: dict[str, tuple[str, frozenset[str]]] = field(default_factory=dict)
+
+
+#: Prefix of the hidden assumption that labels a fact some WHAT IF RETRACTs. The fact
+#: is lowered as an assumption that is active by default, so the kernel's labels
+#: answer "without this fact" with no second evaluation. Hidden names are never
+#: shown as assumptions of an answer.
+HIDDEN = "fact#"
+
+
+def is_hidden(name: str) -> bool:
+    return name.startswith(HIDDEN)
+
+
+def _lit_preds(x: object, env: Env) -> set[str]:
+    """Predicate names a statement mentions (calls of declared predicates, fields)."""
+    out: set[str] = set()
+    if isinstance(x, A.Call) and x.fn in env.preds:
+        out.add(x.fn)
+    if isinstance(x, A.Field):
+        out.add(x.name)
+    if isinstance(x, tuple):
+        for i in x:
+            out |= _lit_preds(i, env)
+    elif hasattr(x, "__dataclass_fields__"):
+        for f in x.__dataclass_fields__:
+            if f != "span":
+                out |= _lit_preds(getattr(x, f), env)
+    return out
 
 
 class _Fail(Exception):
@@ -516,8 +547,11 @@ def _arrow_call(lit: A.Arrow) -> A.Call:
 
 
 class _Lowering:
-    def __init__(self, env: Env, info: ScenarioInfo) -> None:
+    def __init__(self, env: Env, info: ScenarioInfo,
+                 retracted: frozenset[object] = frozenset()) -> None:
         self.env, self.info = env, info
+        self.retracted = retracted          # shapes of the facts some WHAT IF retracts
+        self.assumption_info: dict[str, tuple[str, frozenset[str]]] = {}
         self.scn = info.decl.name
         self.facts: list[Fact] = []
         self.rules: list[Rule] = []
@@ -679,7 +713,7 @@ class _Lowering:
     # ------------------------------------------------------------ scenario
     def scenario(self) -> None:
         info, env = self.info, self.env
-        stmts = _stmts(env, info.decl)
+        stmts = [self.hide(st) for st in _stmts(env, info.decl)]
         known: set[str] = set()
         binders: list[tuple[list[str], list[Literal], A.FactStmt | A.GenUse]] = []
         constraints: list[tuple[A.FactStmt | A.AssumeStmt, list[str]]] = []
@@ -717,6 +751,22 @@ class _Lowering:
                 else:
                     self.known_fact(st)
         self.unknowns(binders, constraints)
+
+    def hide(self, st: A.Stmt) -> A.Stmt:
+        """A fact some WHAT IF retracts becomes a hidden, default-active assumption."""
+        if isinstance(st, A.AssumeStmt):
+            self.note(st.name, st)
+        if isinstance(st, A.FactStmt) and _shape(st.lit) in self.retracted and not (
+                isinstance(st.lit, A.Arrow) and _unknowns_in(st.lit, self.info)):
+            name = f"{HIDDEN}{self.scn}.L{st.span.line}C{st.span.col}"
+            self.note(name, st)
+            return A.AssumeStmt(name, st.lit, st.confidence, st.source, st.span)
+        return st
+
+    def note(self, name: str, st: A.FactStmt | A.AssumeStmt) -> None:
+        lines = self.env.sources().get(st.span.file, "").splitlines()
+        text = lines[st.span.line - 1].strip() if 0 < st.span.line <= len(lines) else name
+        self.assumption_info[name] = (text, frozenset(_lit_preds(st.lit, self.env)))
 
     def known_fact(self, st: A.FactStmt | A.AssumeStmt) -> None:
         env, info = self.env, self.info
@@ -926,6 +976,14 @@ def _unknowns_in(x: object, info: ScenarioInfo) -> list[str]:
     return out
 
 
+def _changes_of(o: object) -> list[A.Retract | A.AssumeName]:
+    out: list[A.Retract | A.AssumeName] = []
+    while isinstance(o, A.WhatIf):
+        out.extend(o.changes)
+        o = o.then
+    return out
+
+
 def _stmts(env: Env, s: A.Scenario) -> list[A.Stmt]:
     base = _stmts(env, env.scenarios[s.extends].decl) if s.extends else []
     return [x for x in base if not isinstance(x, (A.Query, A.Expect))] + list(s.stmts)
@@ -957,7 +1015,9 @@ def lower(env: Env, files: set[str] | None = None) -> list[Lowered]:
     for name, info in env.scenarios.items():
         if info.decl.span.file not in files:
             continue
-        lw = _Lowering(env, info)
+        retracted = frozenset(_shape(c.lit) for qy, _, _ in plans.get(name, [])
+                              for c in _changes_of(qy.q) if isinstance(c, A.Retract))
+        lw = _Lowering(env, info, retracted)
         try:
             lw.packages()
             lw.scenario()
@@ -973,7 +1033,7 @@ def lower(env: Env, files: set[str] | None = None) -> list[Lowered]:
         prog = lw.program()
         errors.extend(_unsafe(prog, info.decl.span))
         out.append(Lowered(name, prog, lw.queries, _display(env, info), lw.candidates, lw.meta,
-                           objs))
+                           objs, lw.assumption_info))
     if errors:
         raise OVError(errors, env.sources())
     return out

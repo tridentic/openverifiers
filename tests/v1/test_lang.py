@@ -433,3 +433,27 @@ def test_ov_cli(capsys: pytest.CaptureFixture[str]) -> None:
     assert ov(["frobnicate"]) == 2
     assert ov([]) == 2
     assert ov(["--help"]) == 0
+
+
+def test_what_if_retract_uses_labels_not_a_rerun() -> None:
+    """A retracted fact is lowered as a hidden, default-active assumption, so WHAT IF
+    RETRACT is a context change (no second evaluation), and the hidden name is never
+    shown as an assumption of an answer."""
+    from openverifiers.runner import render, run_file
+    res = run_file(ROOT / "examples/chem/q11.ov")
+    plans = [q for lw in res.lowered for q in lw.queries]
+    assert all(not q.retract_items for q in plans)
+    [hidden] = [n for q in plans for n in q.retract_assumptions]
+    assert hidden.startswith("fact#")
+    out = render(res)
+    assert "fact#" not in out
+    assert "A in {2-methylbut-1-ene, 2-methylbut-2-ene}" in out
+    assert "PROVEN  p = 1-bromopentane  assumptions {single_major}" in out
+
+
+def test_missing_assumption_is_shown_as_its_statement() -> None:
+    from openverifiers.runner import render, run_file
+    p = ROOT / "benchmarks/agentic/deploy_checklist/case.ov"
+    out = render(run_file(p, files={str(p)}))
+    assert "missing: assume reviewed_ok" not in out
+    assert "missing: assume review_signed: reviewed(v2)" in out

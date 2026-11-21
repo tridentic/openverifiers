@@ -49,8 +49,11 @@ from ..checker import Inconsistent, Proven, Refuted, Unknown
 from ..kernel.strata import NotStratifiable
 from ..lang.errors import OVError
 from ..lang.units import parse_unit, show_quantity
+from ..lower.lower import Lowered, is_hidden
 from ..objects.engine import ObjAnswer, Settings, show
 from ..objects.solve import seed_base
+from ..raw.program import Atom
+from ..raw.terms import Sym
 from ..runner import Answer, FileResult, _show, run_file
 
 USAGE = ("usage: ov bench [DIR] [--suite NAME] [--case NAME] [--seeds N] [--out DIR] "
@@ -73,13 +76,23 @@ def _rule(a: Answer, res: FileResult) -> dict[str, Any]:
     elif a.candidates:
         out["values"] = sorted(_show(t, lw) for c in a.candidates.values() for t in c)
     if isinstance(v, (Proven, Refuted)):
-        out["assumptions"] = sorted(n if s else f"not {n}" for n, s in v.assumptions)
+        out["assumptions"] = sorted(n if s else f"not {n}" for n, s in v.assumptions
+                                    if not is_hidden(n))
     if isinstance(v, Unknown):
         out["reason"] = v.reason
-        out["missing"] = sorted({x.pred for alt in v.missing for x in alt})
+        out["missing"] = sorted({p for alt in v.missing for x in alt for p in _preds(x, lw)})
     if isinstance(v, Inconsistent):
         out["names"] = sorted(v.conflict_set)
     return out
+
+
+def _preds(a: Atom, lw: Lowered) -> frozenset[str]:
+    """The predicates a missing-facts entry stands for (an assumption: its statement's)."""
+    if a.pred in ("assume", "retract") and a.args and isinstance(a.args[0], Sym):
+        info = lw.assumption_info.get(a.args[0].name)
+        if info is not None:
+            return info[1]
+    return frozenset({a.pred})
 
 
 def _obj(a: ObjAnswer) -> dict[str, Any]:

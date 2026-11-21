@@ -28,3 +28,4 @@ web/.env*
 # KDScript compiled outputs (regenerate via kdscript branch tooling)
 *.ovpl.ir.coverage
 .coverage
+bench-out/

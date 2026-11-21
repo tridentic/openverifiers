@@ -8,7 +8,8 @@ re-solves it in a fresh solver, as the brief allows for unsat cores.
 from __future__ import annotations
 
 import time
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
 from fractions import Fraction
 
@@ -18,6 +19,19 @@ from . import smallscope
 from .expand import CF, Poly
 
 SEEDS = (0, 1, 2, 3)
+#: Added to every z3 random seed. ``ov bench --seeds N`` runs each case under
+#: N bases to measure solver variance; the default 0 keeps runs reproducible.
+SEED_BASE = 0
+
+
+@contextmanager
+def seed_base(base: int) -> Iterator[None]:
+    global SEED_BASE
+    old, SEED_BASE = SEED_BASE, base
+    try:
+        yield
+    finally:
+        SEED_BASE = old
 
 
 @dataclass(frozen=True)
@@ -155,7 +169,7 @@ def _solve(cs: list[CF], variables: list[str], timeout_ms: int, deadline: float,
         left = int((deadline - time.monotonic()) * 1000)
         s = z3.SolverFor("QF_NRA")
         s.set("timeout", max(1, min(timeout_ms // len(SEEDS), left)))
-        s.set("random_seed", seed)
+        s.set("random_seed", SEED_BASE + seed)
         s.add(*goal)
         r = s.check()
         if r != z3.unknown or i == len(SEEDS) - 1 or left <= 0:

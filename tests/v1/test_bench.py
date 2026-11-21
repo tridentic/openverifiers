@@ -1,0 +1,86 @@
+"""`ov bench`: discovery, gold comparison, outputs (on a throwaway benchmarks dir)."""
+
+from __future__ import annotations
+
+import csv
+import json
+from pathlib import Path
+
+import pytest
+
+from openverifiers.bench.run import compare, main
+
+CASE = """package benchx.n2
+import physics.mechanics
+
+test n2 {{
+  scenario {scn} uses physics.mechanics {{
+    entity cart: Body
+    fact net_force(cart, 12 N)
+    fact cart.accel = 3 m/s^2
+  }}
+  query FIND ?m WHERE {scn}.cart.mass = ?m
+}}
+"""
+
+
+def make(root: Path, suite: str, name: str, src: str, gold: dict[str, object]) -> None:
+    d = root / suite / name
+    d.mkdir(parents=True)
+    (d / "case.ov").write_text(src)
+    (d / "expected.json").write_text(json.dumps(gold))
+
+
+def query(scn: str) -> str:
+    return f"FIND ?m WHERE {scn}.cart.mass = ?m"
+
+
+@pytest.fixture
+def bench(tmp_path: Path) -> Path:
+    root = tmp_path / "benchmarks"
+    make(root, "physics", "right", CASE.format(scn="bx_right"), {
+        "queries": [{"query": query("bx_right"), "verdict": "PROVEN", "values": ["4 kg"],
+                     "assumptions": []}]})
+    make(root, "physics", "wrong", CASE.format(scn="bx_wrong"), {
+        "queries": [{"query": query("bx_wrong"), "verdict": "PROVEN", "values": ["5 kg"]}]})
+    make(root, "adversarial", "unit_trap",
+         CASE.format(scn="bx_unit").replace("12 N", "12 m"), {"error": ["E301"]})
+    return root
+
+
+def test_bench_compares_with_gold_and_writes_outputs(bench: Path, tmp_path: Path,
+                                                     capsys: pytest.CaptureFixture[str]) -> None:
+    out = tmp_path / "out"
+    assert main([str(bench), "--seeds", "2", "--out", str(out)]) == 1   # one case fails
+    printed = capsys.readouterr().out
+    assert "ok   physics/right" in printed and "ok   adversarial/unit_trap" in printed
+    assert "FAIL physics/wrong" in printed and "q1 values: gold ['5 kg'], got ['4 kg']" in printed
+    rows = [json.loads(x) for x in (out / "results.jsonl").read_text().splitlines()]
+    assert len(rows) == 6 and {r["seed"] for r in rows} == {0, 1}
+    summary = {r["suite"]: r for r in csv.DictReader((out / "summary.csv").open())}
+    assert summary["all"]["cases"] == "3" and summary["all"]["passed"] == "2"
+    assert summary["all"]["false_proven"] == "0" and summary["all"]["seed_varied_cases"] == "0"
+    assert "## Mismatches (seed 0)" in (out / "summary.md").read_text()
+
+
+def test_gold_is_never_matched_to_a_different_query() -> None:
+    gold = {"queries": [{"query": "FIND ?x", "verdict": "PROVEN"}]}
+    got = {"queries": [{"query": "FIND ?y", "verdict": "PROVEN"}], "classes": []}
+    [m] = compare(gold, got)
+    assert "gold is for 'FIND ?x'" in m
+
+
+def test_false_proven_is_counted(tmp_path: Path) -> None:
+    root = tmp_path / "b"
+    make(root, "physics", "c", CASE.format(scn="bx_fp"), {
+        "queries": [{"query": query("bx_fp"), "verdict": "UNKNOWN"}]})
+    out = tmp_path / "o"
+    assert main([str(root), "--out", str(out)]) == 1
+    [row] = [r for r in csv.DictReader((out / "summary.csv").open()) if r["suite"] == "all"]
+    assert row["false_proven"] == "1" and row["unknown_recall"] == "0.0"
+
+
+def test_bench_usage_errors(tmp_path: Path) -> None:
+    assert main([str(tmp_path)]) == 2                    # no cases
+    assert main(["--seeds"]) == 2
+    assert main(["--frob"]) == 2

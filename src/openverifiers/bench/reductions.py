@@ -27,7 +27,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ..objects.engine import Settings
-from ..runner import run_file  # first: it loads lang before objects
+from ..runner import run_file
 
 POINT = "type Point { x: Real, y: Real }\n"
 

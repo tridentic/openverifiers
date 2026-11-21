@@ -61,7 +61,7 @@ class ObjAnswer:
     #: the solver vouches for). Empty for UNKNOWN.
     trust_base: frozenset[str] = frozenset()
     #: Solver-side reductions the unsat answers were computed under (see
-    #: docs/SEMANTICS.md §8). Listed in trust_base as ``red:<name>`` when the verdict
+    #: docs/SEMANTICS.md §7). Listed in trust_base as ``red:<name>`` when the verdict
     #: rests on z3_unsat; a kernel-checked instance needs none of them.
     reductions: frozenset[str] = frozenset()
     kind: str = ""                                 # find unique count check counterexample

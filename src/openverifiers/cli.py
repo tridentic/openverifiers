@@ -2,6 +2,8 @@
 
     ov run FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions]
     ov check FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions]
+    ov bench [DIR] [--suite NAME] [--case NAME] [--seeds N] [--out DIR] [--strict]
+             [--no-reductions]
 
 ``run`` checks, lowers and evaluates each file, answers its queries, checks its
 ``expect`` lines and its classes' theorems, and exits 1 if any expectation
@@ -10,10 +12,10 @@ fails, any theorem is refuted, any class is empty, or the file has errors.
 use it in loops and hooks. ``--strict`` turns verdicts that rest on an unchecked solver unsat into
 UNKNOWN(plugin_unknown) and undeclared types (W201) into errors.
 ``--no-reductions`` turns off the theorem-proving reductions (docs/SEMANTICS.md
-§8), so every unsat is computed on the full problem; slower, for ablation.
+§7), so every unsat is computed on the full problem; slower, for ablation.
 
 The pre-v1 step verifier's CLI is ``ov-m1``. More subcommands arrive with
-their milestones (``bench`` in step 2; M3: ``lower``, ``query``; ``gate``; ``explain``).
+their milestones (M3: ``lower``, ``query``; ``gate``; ``explain``).
 """
 
 from __future__ import annotations
@@ -23,7 +25,8 @@ from collections.abc import Sequence
 
 from . import runner
 
-USAGE = "usage: ov run|check FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions]"
+USAGE = ("usage: ov run|check FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions]\n"
+         "       ov bench [DIR] [--suite NAME] [--seeds N] [--out DIR]")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -36,6 +39,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         return runner.main(rest)
     if cmd == "check":
         return runner.main(rest, check=True)
+    if cmd == "bench":
+        from .bench.run import main as bench
+        return bench(rest)
     print(f"ov: unknown command '{cmd}'\n{USAGE}", file=sys.stderr)
     return 2
 

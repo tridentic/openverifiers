@@ -92,3 +92,22 @@ def test_values_compare_as_quantities() -> None:
     assert value_text("4 m/s^2") == value_text("4 m/s^2")
     assert value_text("(3, 5)") == "(3, 5)" and value_text("2-chloropentane") == "2-chloropentane"
     assert value_text("5 kg") != value_text("5 g")
+
+
+def test_kernel_rejections_and_crashes_are_outcomes(tmp_path: Path,
+                                                   monkeypatch: pytest.MonkeyPatch) -> None:
+    from openverifiers.bench import run as bench_run
+    from openverifiers.bench.run import Case, run_case
+    from openverifiers.kernel.strata import NotStratifiable
+    from openverifiers.objects.engine import Settings
+
+    def boom(exc: Exception):  # type: ignore[no-untyped-def]
+        def f(*a: object, **k: object) -> None:
+            raise exc
+        return f
+    c = Case("adversarial", "x", tmp_path / "case.ov", {"error": ["not_stratifiable"]})
+    monkeypatch.setattr(bench_run, "run_file", boom(NotStratifiable(["p", "p"], "r1")))
+    assert run_case(c, 0, Settings())["pass"]
+    monkeypatch.setattr(bench_run, "run_file", boom(KeyError("k")))
+    r = run_case(c, 0, Settings())
+    assert not r["pass"] and r["outcome"]["error"] == ["crash:KeyError"]

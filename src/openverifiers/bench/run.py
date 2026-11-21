@@ -20,7 +20,9 @@ Queries are matched in file order and their text is checked, so a gold entry
 can never silently attach to a different query. Only the fields gold gives are
 compared: ``values`` as a set of rendered values, ``assumptions`` and
 ``missing`` (predicate names) as sets, ``reason`` exactly. A case whose gold
-has ``error`` must fail to load with exactly those codes.
+has ``error`` must fail to load with exactly those codes: OV error codes
+(``E301``), ``not_stratifiable`` when the kernel rejects the program, and
+``crash:<Exception>`` for anything else (a crash never matches gold).
 
 Each case runs once per seed (z3 seed base ``100 * seed``). Outputs in ``--out``
 (default ``bench-out``): ``results.jsonl`` (one row per case and seed),
@@ -44,6 +46,7 @@ from pathlib import Path
 from typing import Any
 
 from ..checker import Inconsistent, Proven, Refuted, Unknown
+from ..kernel.strata import NotStratifiable
 from ..lang.errors import OVError
 from ..lang.units import parse_unit, show_quantity
 from ..objects.engine import ObjAnswer, Settings, show
@@ -183,6 +186,10 @@ def run_case(c: Case, seed: int, st: Settings) -> dict[str, Any]:
             got = outcome(run_file(c.path, files={str(c.path)}, settings=st))
     except OVError as e:
         got = {"error": sorted({d.code for d in e.diagnostics if not d.warning})}
+    except NotStratifiable:
+        got = {"error": ["not_stratifiable"]}         # the kernel rejects the program
+    except Exception as e:                            # a crash is recorded, never gold
+        got = {"error": [f"crash:{type(e).__name__}"], "message": str(e)[:300]}
     seconds = time.perf_counter() - start
     bad = compare(c.gold, got)
     return {"suite": c.suite, "case": c.name, "tag": c.gold.get("tag", ""), "seed": seed,

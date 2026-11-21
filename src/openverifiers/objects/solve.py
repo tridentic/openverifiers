@@ -111,13 +111,18 @@ def _split(cs: list[CF]) -> tuple[list[CF], list[CF]] | None:
     return sorted(parts, key=canon), [c for c in cs if c is not best[1]]
 
 
-SMALL_SCOPE_SECONDS = 0.2
+#: The small-scope budget is a node count, so its answer does not depend on the
+#: machine: about 200 ms here (8k-130k nodes/s depending on the constraints). The
+#: wall-clock cap is only a backstop for pathological constraint sets.
+SMALL_SCOPE_NODES = 10_000
+SMALL_SCOPE_CAP_SECONDS = 2.0
 
 
 def small_scope(constraints: Sequence[CF], variables: Sequence[str] = ()) -> Result:
     """Integer points in [-4, 4] only (Alloy-style). It never claims unsat: a miss is
     UNKNOWN(budget)."""
-    found = smallscope.search(_conjuncts(constraints), variables, seconds=SMALL_SCOPE_SECONDS)
+    found = smallscope.search(_conjuncts(constraints), variables,
+                              max_nodes=SMALL_SCOPE_NODES, seconds=SMALL_SCOPE_CAP_SECONDS)
     via = f"small-scope [-{smallscope.BOUND}, {smallscope.BOUND}]"
     return Result("sat", found, via=via) if found is not None else Result(
         "unknown", None, "budget", via=via)

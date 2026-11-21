@@ -11,7 +11,8 @@ milestone. Newest milestone first.
   - an instance that has no rational solution (an equilateral triangle with
     two given rational vertices) is UNKNOWN(plugin_unknown);
   - a counterexample that lies on a curved variety may not be found. A
-    small-scope pass (integer coordinates in [-4, 4], 200 ms budget) finds
+    small-scope pass (integer coordinates in [-4, 4], a 10,000-node budget, about
+    200 ms here; a node count, so the answer does not depend on machine speed) finds
     many of them: "a rhombus has equal diagonals" is REFUTED with
     (0,0), (1,2), (3,3), (2,1)-style witnesses. Counterexamples with no small
     integer point still depend on z3. The pass runs first only for searches

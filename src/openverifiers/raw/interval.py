@@ -97,6 +97,8 @@ def _mag(x: Iv) -> Fraction:
 
 def exp(x: Iv) -> Iv:
     """e^x: halve x until |x| <= 1/2, sum the series, then square back."""
+    if _mag(x) > 4096:
+        raise IntervalError("exp of an argument above 4096 in magnitude")
     m = 0
     while _mag(x) > Fraction(1, 2):
         x = x * Iv.of(Fraction(1, 2))

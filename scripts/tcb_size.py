@@ -21,6 +21,12 @@ LIMIT = 1500
 #: The object layer's exact evaluator is its own audited unit (CTO decision, change
 #: order v1.1 and M-CAP item 4), with its own cap, outside the main count.
 UNITS = {"raw/formula.py": 400}
+#: The exact-arithmetic unit (CTO decision D-021, W1): surds, intervals, numeric
+#: checks, polynomial normal form and certificate checking, cap 450.
+EXACT = ["raw/surd.py", "raw/interval.py", "raw/numeric.py", "raw/certificate.py"]
+EXACT_LIMIT = 450
+#: All trusted code, every unit together (W1).
+TOTAL_LIMIT = 2000
 
 
 def trusted_files() -> list[Path]:
@@ -31,7 +37,8 @@ def trusted_files() -> list[Path]:
             out += sorted(p.rglob("*.py"))
         elif p.exists():
             out.append(p)
-    return [p for p in out if str(p.relative_to(ROOT)) not in UNITS]
+    return [p for p in out if str(p.relative_to(ROOT)) not in UNITS
+            and str(p.relative_to(ROOT)) not in EXACT]
 
 
 def code_lines(path: Path) -> int:
@@ -61,11 +68,16 @@ def main() -> int:
         print(f"{n:5d}  {f.relative_to(ROOT)}")
     print(f"{total:5d}  trusted code lines (limit {LIMIT}); {raw} physical lines incl. docs")
     ok = total <= LIMIT
+    grand = total
     for unit, cap in UNITS.items():
         n = code_lines(ROOT / unit)
         print(f"{n:5d}  {unit}: its own audited unit (limit {cap})")
-        ok = ok and n <= cap
-    return 0 if ok else 1
+        ok, grand = ok and n <= cap, grand + n
+    exact = sum(code_lines(ROOT / f) for f in EXACT)
+    print(f"{exact:5d}  exact-arithmetic unit: {', '.join(EXACT)} (limit {EXACT_LIMIT})")
+    grand += exact
+    print(f"{grand:5d}  all trusted code (limit {TOTAL_LIMIT})")
+    return 0 if ok and exact <= EXACT_LIMIT and grand <= TOTAL_LIMIT else 1
 
 
 if __name__ == "__main__":

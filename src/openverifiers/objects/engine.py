@@ -20,11 +20,13 @@ from dataclasses import dataclass, field, replace
 from fractions import Fraction
 
 from ..lang.units import show_quantity
+from ..raw.certificate import check
 from ..raw.formula import DEG, ClassDef, Unsupported, _Eval, failing, holds
 from ..raw.interval import Iv
 from ..raw.numeric import failing_numeric
 from ..raw.surd import Surd
 from ..raw.terms import Compound, Num, Str, Term, Var, substitute
+from .certify import comparisons, find
 from .compile import Classes, ObjPlan, conj, generic, size_invariants
 from .expand import (
     CF,
@@ -71,6 +73,9 @@ class ObjAnswer:
     #: proven theorems this proof used as hypotheses (a theorem check that z3 could not
     #: settle from the invariants alone is retried with them)
     lemmas: tuple[str, ...] = ()
+    #: the verdict is proven by a certificate the trusted checker (raw/certificate.py)
+    #: verified: its trust base is {kernel}, and --strict keeps it
+    certified: bool = False
     kind: str = ""                                 # find unique count check counterexample
                                                    # consistency theorem
 
@@ -98,7 +103,7 @@ def settle(ans: ObjAnswer, st: Settings) -> ObjAnswer:
     elif k in ("check", "consistency") and v == "PROVEN":
         base = {KERNEL}
     elif k in ("theorem", "counterexample"):
-        base = {KERNEL} if v == "REFUTED" else {Z3_UNSAT}
+        base = {KERNEL} if v == "REFUTED" or ans.certified else {Z3_UNSAT}
     elif k == "consistency":                       # INCONSISTENT: the invariants are unsat
         base = {Z3_UNSAT}
     elif k in ("find", "unique"):
@@ -109,7 +114,7 @@ def settle(ans: ObjAnswer, st: Settings) -> ObjAnswer:
         base = {KERNEL, Z3_UNSAT} if ans.bindings else {Z3_UNSAT}
     else:
         base = {KERNEL}
-    if Z3_UNSAT in base:
+    if Z3_UNSAT in base and not ans.certified:
         base |= {f"red:{x}" for x in ans.reductions}
     ans.trust_base = frozenset(base)
     if st.strict and k == "find" and v == "PROVEN" and ans.complete:
@@ -257,6 +262,7 @@ def _answer(plan: ObjPlan, st: Settings) -> ObjAnswer:
             # The verdict is the theorem's: REFUTED with the checked counterexample,
             # PROVEN when its negation is unsat, UNKNOWN otherwise.
             ans.witness, ans.names, ans.verdict, ans.reason = wit, names, v, why
+            certify(ans, plan.cls, plan.theorem, {})
             return ans
         if _transcendental(plan.cls) and plan.kind in ("find", "unique") \
                 and _numeric(plan, r, ans):
@@ -631,12 +637,50 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
     return "UNKNOWN", "plugin_unknown", None, ()
 
 
+def certify(ans: ObjAnswer, cls: ClassDef, th: tuple[str, Term],
+            lemmas: Mapping[str, Term]) -> None:
+    """Try to prove the theorem by a certificate (untrusted search in objects.certify,
+    checked by the trusted raw.certificate). On success the verdict is PROVEN with
+    trust {kernel}. A counterexample the evaluator confirmed is never overridden: a
+    conflict means a bug, so it is reported, not resolved."""
+    goals = comparisons(th[1], th[0])
+    if not goals or len(goals) != _conjuncts_of(th[1]):
+        return                                   # a part is not a plain comparison
+    hyps: dict[str, Term] = {}
+    for n, inv in cls.invariants:
+        hyps.update(comparisons(inv, n))
+    for n, f in lemmas.items():
+        hyps.update(comparisons(f, f"lemma:{n}"))
+    certs = []
+    for _, g in goals:
+        c = find(g, hyps)
+        if c is None or not check(g, hyps, c):
+            return
+        certs.append(c)
+    if ans.verdict == "REFUTED":
+        ans.steps.append("BUG: a certificate proves a theorem the evaluator refuted")
+        ans.verdict, ans.reason = "UNKNOWN", "plugin_unknown"
+        return
+    used = sorted({n for c in certs for n, _ in c.coeffs} | {n for c in certs
+                                                              for n in c.factors})
+    ans.steps.append("certificate [kernel: raw/certificate.py]: exact normal form of "
+                     "multiplier * (lhs - rhs) - ideal part - squares is 0"
+                     + (f"; hypotheses used: {', '.join(used)}" if used else
+                        "; an identity"))
+    ans.verdict, ans.reason, ans.certified = "PROVEN", "", True
+
+
+def _conjuncts_of(f: Term) -> int:
+    return len(f.args) if isinstance(f, Compound) and f.functor == "f.and" else 1
+
+
 def check_classes(classes: Classes, only: set[str] | None = None,
                   st: Settings | None = None) -> list[ObjAnswer]:
     """`ov check` for classes: consistency of the invariants, then every theorem."""
     st = st or Settings()
     out = []
     proven: dict[str, tuple[Term, frozenset[str]]] = {}
+    certified: dict[str, Term] = {}
     for name, cls in classes.defs.items():
         if only is not None and name not in only:
             continue
@@ -693,9 +737,14 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                             used |= proven[n][1]
                 ta.verdict, ta.reason, ta.witness = v, why, wit
                 ta.reductions = frozenset(used)
+            if not ta.certified:
+                certify(ta, cls, th, {n: f for n, f in certified.items()
+                                      if n.split(".")[0] in (*classes.ancestors[name], name)})
             settle(ta, st)
             if ta.verdict == "PROVEN":
                 proven[th[0]] = (th[1], ta.reductions)
+            if ta.certified:
+                certified[th[0]] = th[1]
             out.append(ta)
     return out
 

@@ -27,7 +27,7 @@ drawn problems need.
 - **Count.** Stop at 10 per subject. If the year runs out, continue with the
   previous year's papers by the same rule.
 
-**HSC and A-level** (from the folder Arjo provides):
+**HSC and A-level** (from the folder the founder provides):
 - **Papers.** Order the provided papers by year (newest first), then by paper
   number.
 - **Rule.** Apply the same rule per subject, with 15 per subject for HSC and
@@ -39,9 +39,9 @@ drawn problems need.
 - **JEE and A-level:** the official answer key or mark scheme
   (`gold_provenance: official_key`).
 - **HSC:** two independent solutions (`gold_provenance: dual_independent`).
-  1. Arjo, by hand.
+  1. The founder, by hand.
   2. A separate Claude session with no repo access and no OV.
 
-  When they agree, that is gold. When they disagree, Arjo resolves it with a
+  When they agree, that is gold. When they disagree, the founder resolves it with a
   teacher.
 - **Gold is committed before OV runs on the problem** (the gold gate).

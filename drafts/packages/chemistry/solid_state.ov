@@ -1,4 +1,4 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by Arjo. Loaded only by
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
 # `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
 #
 # chemistry.solid_state: the density of a crystal from one unit cell.

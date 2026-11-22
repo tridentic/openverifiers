@@ -51,7 +51,7 @@ def test_unapproved_package_expect_edit_is_rejected(repo: Path) -> None:
     base = git(repo, "rev-parse", "HEAD")
     commit(repo, {PKG: "test a {\n  query PROVE p\n  expect REFUTED\n}\n"}, "flip it")
     [m] = messages(repo, base)
-    assert "without a human 'Gold-Change-Approved-By:'" in m and "expect PROVEN" in m
+    assert "without a 'Gold-Change-Approved-By: <approver>'" in m and "expect PROVEN" in m
 
 
 def test_unapproved_benchmark_gold_edit_or_delete_is_rejected(repo: Path) -> None:
@@ -78,6 +78,10 @@ def test_approved_edit_passes_and_ai_approvers_do_not(repo: Path) -> None:
     base = git(repo, "rev-parse", "HEAD")
     commit(repo, {PKG: "test a {\n  query PROVE p\n  expect UNKNOWN\n}\n"},
            "flip again\n\nGold-Change-Approved-By: A. Reviewer")
+    assert len(messages(repo, base)) == 1                   # not a listed approver
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {PKG: "test a {\n  query PROVE p\n  expect PROVEN\n}\n"},
+           f"flip back\n\nGold-Change-Approved-By: {OK}")
     assert messages(repo, base) == []
     assert approved_by("x\n\nGold-Change-Approved-By: dependabot[bot]") is None
     assert approved_by("x\n\nGold-Change-Approved-By: ") is None
@@ -111,6 +115,7 @@ def test_cli_exit_codes(repo: Path, monkeypatch: pytest.MonkeyPatch,
 # ---------------------------------------------------------------- the meaning gate (MP-DOL)
 
 LIB = "src/openverifiers/packages/math/m.ov"
+OK = "founder (reply to packet 1a2b3c4)"
 CLASS = """package math.m
 fact type K {
   property a: Real
@@ -124,11 +129,11 @@ test k { scenario k_s uses math.m { } }
 
 
 def test_meaning_gate_rejects_unapproved_meaning_changes(repo: Path) -> None:
-    commit(repo, {LIB: CLASS}, "add class\n\nMeaning-Approved-By: Arjo")
+    commit(repo, {LIB: CLASS}, f"add class\n\nMeaning-Approved-By: {OK}")
     base = git(repo, "rev-parse", "HEAD")
     commit(repo, {LIB: CLASS.replace("a > 0", "a >= 0")}, "weaken an invariant")
     [m] = messages(repo, base)
-    assert "Meaning-Approved-By: Arjo" in m and "- invariant pos: a > 0" in m
+    assert "Meaning-Approved-By: <approver>" in m and "- invariant pos: a > 0" in m
     assert "+ invariant pos: a >= 0" in m
 
 
@@ -140,21 +145,53 @@ def test_meaning_gate_covers_new_statements_and_continuations(repo: Path) -> Non
     assert "lemma helper" not in ms[0]                      # lemmas are free (MP-DOL)
     base = git(repo, "rev-parse", "HEAD")
     multi = CLASS.replace("  invariant pos: a > 0\n", "  invariant pos:\n    a > 0\n")
-    commit(repo, {LIB: multi}, "reflow\n\nMeaning-Approved-By: Arjo")
+    commit(repo, {LIB: multi}, f"reflow\n\nMeaning-Approved-By: {OK}")
     base = git(repo, "rev-parse", "HEAD")
     commit(repo, {LIB: multi.replace("    a > 0\n", "    a > 1\n")}, "edit a continuation")
     [m] = messages(repo, base)
     assert "+ a > 1" in m
 
 
-def test_meaning_gate_ignores_tests_lemmas_and_accepts_arjo_only(repo: Path) -> None:
-    commit(repo, {LIB: CLASS}, "add\n\nMeaning-Approved-By: Arjo")
+def test_meaning_gate_ignores_tests_lemmas_and_accepts_the_founder_only(repo: Path) -> None:
+    commit(repo, {LIB: CLASS}, f"add\n\nMeaning-Approved-By: {OK}")
     base = git(repo, "rev-parse", "HEAD")
     commit(repo, {LIB: CLASS.replace("b >= a", "b >= a - 1").replace("k_s", "k_t")},
            "lemma and test only")
     assert messages(repo, base) == []
     base = git(repo, "rev-parse", "HEAD")
     commit(repo, {LIB: CLASS.replace("theorem big: b > a", "theorem big: b > 2 * a")},
-           "x\n\nMeaning-Approved-By: Claude\nGold-Change-Approved-By: Arjo")
-    [m] = messages(repo, base)                              # only Arjo approves meaning
-    assert "Meaning-Approved-By: Arjo" in m
+           f"x\n\nMeaning-Approved-By: Claude\nGold-Change-Approved-By: {OK}")
+    [m] = messages(repo, base)                    # only the founder approves meaning
+    assert "Meaning-Approved-By: <approver>" in m
+
+
+def test_approvers_file_is_read_from_the_parent_and_is_gold(repo: Path) -> None:
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {"APPROVERS": "# roles\nfounder\n"}, "the default, written down")
+    assert messages(repo, base) == []                       # same roles: no change
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {"APPROVERS": "founder\nmallory\n"}, "add an approver")
+    [m] = messages(repo, base)                              # APPROVERS is gold
+    assert "APPROVERS" in m
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {LIB: CLASS}, "self-approve\n\nMeaning-Approved-By: mallory")
+    assert messages(repo, base) == []                       # the parent lists mallory
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {"APPROVERS": "founder\n", LIB: CLASS.replace("a > 0", "a > 1")},
+           "drop mallory and approve\n\nMeaning-Approved-By: mallory\n"
+           "Gold-Change-Approved-By: mallory")
+    assert messages(repo, base) == []                       # parent still lists mallory
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {LIB: CLASS}, "x\n\nMeaning-Approved-By: mallory")
+    assert len(messages(repo, base)) == 1                   # now only the founder
+
+
+def test_meaning_gate_covers_package_files_anywhere_but_drafts(repo: Path) -> None:
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {"benchmarks/physics/c1/lib.ov": "package sneaky\n" + CLASS,
+                  "drafts/packages/math/d.ov": "package math.d\n" + CLASS,
+                  "benchmarks/physics/c9/case.ov": "package bench.c9\n" + CLASS,
+                  "tests/v1/fixture.ov": "package probe\n" + CLASS}, "libraries")
+    [m] = messages(repo, base)
+    assert "benchmarks/physics/c1/lib.ov" in m
+    assert "drafts/" not in m and "c9/case.ov" not in m and "fixture.ov" not in m

@@ -90,7 +90,7 @@ class Settings:
     #: translate, inherit). Off: every unsat is computed on the full problem.
     reductions: bool = True
     #: Also load draft packages from drafts/packages/: library lines an AI drafted
-    #: that Arjo has not approved (MP-DOL). Never under --strict. Results that use
+    #: that the founder has not approved (MP-DOL). Never under --strict. Results that use
     #: them are provisional (FileResult.draft_packages lists them).
     drafts: bool = False
 

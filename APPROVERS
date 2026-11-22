@@ -1,0 +1,6 @@
+# Who may approve gold and meaning changes (MASTERPLAN.md §9, D-024).
+# One role per line. A trailer approves when its value starts with a role:
+#   Meaning-Approved-By: founder (reply to packet <hash>)
+#   Gold-Change-Approved-By: founder (reply to packet <hash>)
+# The gate reads this file from the parent commit; changing it is a gold change.
+founder

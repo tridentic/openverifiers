@@ -1,0 +1,25 @@
+# JEE (Advanced) 2025, paper 2, physics Q9 (see list.json). Formalization only.
+#
+# A conducting solid sphere of radius R and mass M carries charge Q and spins
+# at uniform angular speed omega about an axis through its centre. The ratio of
+# the magnitudes of its magnetic dipole moment and its angular momentum about
+# that axis is alpha Q / (2 M). Asked: alpha.
+# Reading: on a conductor the charge sits on the surface, so the charge is a
+# uniformly charged spherical shell of radius R (by symmetry) while the mass is
+# a uniform solid sphere. Charges are taken positive (magnitudes are asked).
+package bench.jee2025_phys_p2q9
+import physics.electromagnetism
+
+fact type ChargedConductingSphere {
+  property surface_charge: SpinningChargedShell
+  property body: SpinningSolidSphere
+  property alpha: Real
+  invariant one_sphere: surface_charge.R = body.R surface_charge.omega = body.omega
+  invariant charged: surface_charge.charge > 0
+  invariant asked: surface_charge.moment * 2 * body.mass
+                     = alpha * surface_charge.charge * body.spin
+}
+
+scenario jee2025_phys_p2q9 uses bench.jee2025_phys_p2q9 {
+  query PROVE UNIQUE ?a WHERE ChargedConductingSphere{ alpha = ?a }
+}

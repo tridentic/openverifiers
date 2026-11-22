@@ -1,0 +1,26 @@
+# JEE (Advanced) 2025, paper 2, mathematics Q12 (see list.json). Formalization only.
+#
+# x = i + 2j + 3k, y = 2i + 3j + k, z = 3i + j + 2k. For distinct positive reals
+# alpha and beta: X = alpha x + beta y - z, Y = alpha y + beta z - x,
+# Z = alpha z + beta x - y. X, Y and Z lie in a plane. Asked: alpha + beta - 3.
+# Reading: the givens are stated as written; nothing is interpreted.
+package bench.jee2025_math_p2q12
+import math.vectors
+
+fact type CoplanarCombinations extends CoplanarTriple {
+  property alpha: Real
+  property beta: Real
+  property asked: Real
+  invariant distinct_positive: alpha > 0 beta > 0 alpha != beta
+  invariant X: ux = alpha * 1 + beta * 2 - 3 uy = alpha * 2 + beta * 3 - 1
+               uz = alpha * 3 + beta * 1 - 2
+  invariant Y: vx = alpha * 2 + beta * 3 - 1 vy = alpha * 3 + beta * 1 - 2
+               vz = alpha * 1 + beta * 2 - 3
+  invariant Z: wx = alpha * 3 + beta * 1 - 2 wy = alpha * 1 + beta * 2 - 3
+               wz = alpha * 2 + beta * 3 - 1
+  invariant asked_value: asked = alpha + beta - 3
+}
+
+scenario jee2025_math_p2q12 uses bench.jee2025_math_p2q12 {
+  query PROVE UNIQUE ?s WHERE CoplanarCombinations{ asked = ?s }
+}

@@ -1,0 +1,31 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by Arjo. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# chemistry.kinetics: rate laws in a closed vessel at constant volume.
+package chemistry.kinetics @0.1-draft
+
+# A + R -> products, first order in each reactant: rate = k [A][R]. With 1:1
+# stoichiometry, after the reaction has advanced by x (concentration units)
+# [A] = [A]0 - x and [R] = [R]0 - x.
+fact type SecondOrderAR {
+  property k: "m^3/mol/s"
+  property a0: Molarity
+  property r0: Molarity
+  property x: Molarity
+  property a: Molarity
+  property r: Molarity
+  property rate: "mol/m^3/s"
+  invariant positive: k > 0 a0 > 0 r0 > 0
+  invariant advance: a = a0 - x r = r0 - x
+  invariant possible: x >= 0 a >= 0 r >= 0
+  invariant rate_law: rate = k * a * r
+}
+
+# The pseudo-first-order approximation: [R] is taken to stay at [R]0, so the
+# rate is approximated by k' [A] with k' = k [R]0.
+fact type PseudoFirstOrder extends SecondOrderAR {
+  property k1: "s^-1"
+  property approx_rate: "mol/m^3/s"
+  invariant pseudo_constant: k1 = k * r0
+  invariant approximation: approx_rate = k1 * a
+}

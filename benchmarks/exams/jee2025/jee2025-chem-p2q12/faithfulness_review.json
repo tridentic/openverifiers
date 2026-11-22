@@ -1,0 +1,12 @@
+{
+  "reviewer": "Claude subagent, gold-blind (saw only the question text, the case, answer.json and the imported libraries)",
+  "date": "2026-11-23",
+  "verdict": "faithful_with_notes",
+  "issues": [
+    "Relative error read as (approx - true)/true x 100, the standard choice; the question does not fix the denominator or sign.",
+    "'40% complete' read as 40% of A (limiting reactant) consumed: the standard reading."
+  ],
+  "library_issues": [
+    "SecondOrderAR assumes 1:1 stoichiometry and constant volume; both fit A + R -> product."
+  ]
+}

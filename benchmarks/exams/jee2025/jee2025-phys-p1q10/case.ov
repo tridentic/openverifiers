@@ -1,0 +1,28 @@
+# JEE (Advanced) 2025, paper 1, physics Q10 (see list.json). Formalization only.
+#
+# Identical black plates P (at TP) and Q (at TQ < TP) in vacuum transfer W0 per
+# unit area. Two more identical plates are put between them; heat moves only
+# between neighbours. In the steady state the transfer per unit area from P to
+# Q is WS. Asked: W0 / WS.
+# Reading: in the steady state each inserted plate gains no net power, so the
+# three gaps carry the same flux, and WS is that flux. TP and TQ are kept.
+package bench.jee2025_phys_p1q10
+import physics.thermal
+
+fact type FourPlates {
+  property direct: BlackGap
+  property g1: BlackGap
+  property g2: BlackGap
+  property g3: BlackGap
+  property ratio: Real
+  invariant identical: g1.sigma = direct.sigma g2.sigma = direct.sigma g3.sigma = direct.sigma
+  invariant ends_kept: g1.hot = direct.hot g3.cold = direct.cold
+  invariant in_a_row: g1.cold = g2.hot g2.cold = g3.hot
+  invariant steady_state: g1.flux = g2.flux g2.flux = g3.flux
+  invariant q_colder: direct.cold < direct.hot
+  invariant asked: ratio * g1.flux = direct.flux
+}
+
+scenario jee2025_phys_p1q10 uses bench.jee2025_phys_p1q10 {
+  query PROVE UNIQUE ?r WHERE FourPlates{ ratio = ?r }
+}

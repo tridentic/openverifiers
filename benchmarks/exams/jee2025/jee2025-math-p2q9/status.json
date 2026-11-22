@@ -1,0 +1,4 @@
+{
+  "category": "language",
+  "note": "Homogeneous first-order ODE with y(1) = 0, value at e^2: OV does not solve differential equations."
+}

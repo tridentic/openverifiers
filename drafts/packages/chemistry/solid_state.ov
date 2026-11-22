@@ -1,0 +1,29 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by Arjo. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# chemistry.solid_state: the density of a crystal from one unit cell.
+package chemistry.solid_state @0.1-draft
+
+# A cubic unit cell of edge a holding z formula units of molar mass M. The
+# cell's mass is z M / N_A and its volume a^3 (the definition of density
+# applied to one cell, which repeats to fill the crystal).
+fact type CubicCell {
+  property z: Real
+  property molar_mass: MolarMass
+  property avogadro: "mol^-1"
+  property edge: Length
+  property density: Density
+  invariant positive: edge > 0 avogadro > 0 molar_mass > 0
+  invariant cell_density: density * avogadro * edge * edge * edge = z * molar_mass
+}
+
+# Cubic close packing is the face-centred cubic lattice: an atom at each of the
+# 8 corners (each shared by 8 cells) and at each of the 6 face centres (each
+# shared by 2 cells).
+fact type CcpCell extends CubicCell {
+  property corners: Real
+  property faces: Real
+  invariant fcc_sites: corners = 8 faces = 6
+  invariant shared_count: z = corners / 8 + faces / 2
+  theorem four_per_cell: z = 4
+}

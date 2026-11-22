@@ -1,0 +1,39 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by Arjo. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# chemistry.gases: equations of state for one mole of gas.
+package chemistry.gases @0.1-draft
+
+# A van der Waals gas: pressure p, molar volume vm, temperature temp.
+fact type VanDerWaalsGas {
+  property p: Pressure
+  property vm: "m^3/mol"
+  property temp: Temperature
+  property R: "J/mol/K"
+  property a: "Pa*m^6/mol^2"
+  property b: "m^3/mol"
+  invariant positive: p > 0 temp > 0 R > 0 a > 0 b > 0
+  invariant excluded_volume: vm > b
+  law van_der_waals: (p + a / (vm * vm)) * (vm - b) = R * temp
+  # Multiplied through by vm^2: vm is a root of a cubic.
+  theorem cubic_in_vm: (p * vm * vm + a) * (vm - b) = R * temp * vm * vm
+}
+
+# The cubic whose roots are the molar volumes: c3 V^3 + c2 V^2 + c1 V + c0, with
+# V a free variable. Its coefficients are defined; that it is vm^2 times the
+# van der Waals equation is a theorem (an identity in V).
+fact type VanDerWaalsCubic {
+  property p: Pressure
+  property temp: Temperature
+  property R: "J/mol/K"
+  property a: "Pa*m^6/mol^2"
+  property b: "m^3/mol"
+  property V: "m^3/mol"
+  property c3: Pressure
+  property c2: "J/mol"
+  property c1: "Pa*m^6/mol^2"
+  property c0: "Pa*m^9/mol^3"
+  invariant coefficients: c3 = p c2 = -(p * b + R * temp) c1 = a c0 = -(a * b)
+  theorem expansion: (p * V * V + a) * (V - b) - R * temp * V * V
+                       = c3 * V * V * V + c2 * V * V + c1 * V + c0
+}

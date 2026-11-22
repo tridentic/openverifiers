@@ -1,0 +1,19 @@
+# JEE (Advanced) 2025, paper 1, chemistry Q10 (see list.json). Formalization only.
+#
+# The van der Waals equation written as a cubic in the molar volume Vm. Given
+# a = 6.0 dm^6 atm mol^-2, b = 0.060 dm^3 mol^-1, T = 300 K, p = 300 atm and
+# R = 0.082 dm^3 atm mol^-1 K^-1. Asked: (coefficient of Vm^2) / (coefficient of
+# Vm), in mol dm^-3.
+# Reading: the givens are stated as written; nothing is interpreted.
+package bench.jee2025_chem_p1q10
+import chemistry.gases
+
+fact type CoefficientRatio extends VanDerWaalsCubic {
+  property ratio: Molarity
+  invariant asked: ratio * c1 = c2
+}
+
+scenario jee2025_chem_p1q10 uses bench.jee2025_chem_p1q10 {
+  query FIND ?r WHERE CoefficientRatio{ p = 300 atm, temp = 300 K, a = 6.0 L^2*atm/mol^2,
+                                        b = 0.060 L/mol, R = 0.082 L*atm/mol/K, ratio = ?r }
+}

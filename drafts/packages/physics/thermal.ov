@@ -1,0 +1,18 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by Arjo. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# physics.thermal: heat transfer by radiation.
+package physics.thermal @0.1-draft
+
+# Two large parallel black surfaces facing each other across vacuum, at absolute
+# temperatures hot and cold: the net power per unit area radiated from the hot
+# one to the cold one (Stefan-Boltzmann law for black bodies).
+fact type BlackGap {
+  property sigma: "W/m^2/K^4"
+  property hot: Temperature
+  property cold: Temperature
+  property flux: "W/m^2"
+  invariant constant_positive: sigma > 0
+  invariant absolute: hot >= 0 cold >= 0
+  law stefan_boltzmann: flux = sigma * (hot ^ 4 - cold ^ 4)
+}

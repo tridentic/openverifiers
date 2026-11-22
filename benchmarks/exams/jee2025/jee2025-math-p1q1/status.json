@@ -1,0 +1,4 @@
+{
+  "category": "language",
+  "note": "The hypothesis is 'f(x) != g(x) for every real x'; OV has no quantifier over the reals (only over collections), so the step 'a cubic always has a real root, so a3 = b3' cannot be stated."
+}

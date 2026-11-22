@@ -1,0 +1,11 @@
+{
+  "reviewer": "Claude subagent, gold-blind (saw only the question text, the case, answer.json and the imported libraries)",
+  "date": "2026-11-23",
+  "verdict": "faithful_with_notes",
+  "issues": [
+    "'Circle with centre c' read as 'all points of S equidistant from c': necessary, not sufficient (also true if S is empty or a single point); nonemptiness and positive radius are not checked.",
+    "Radius options C/D are checked only about the centre of (A), so they rely on (A) holding; a centre-independent radius check would be cleaner.",
+    "Squared distances for z1 = (1,2), z2 = (0,3) with factor 4 are correct; the answer map is correct."
+  ],
+  "library_issues": []
+}

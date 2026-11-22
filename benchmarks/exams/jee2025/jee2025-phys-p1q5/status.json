@@ -1,0 +1,4 @@
+{
+  "category": "language",
+  "note": "Magnetic braking: the options need the solution of dv/dt = -K v (and of the entering phase); OV can check a given solution with deriv but cannot derive one, and the stopping-before-entering question needs it."
+}

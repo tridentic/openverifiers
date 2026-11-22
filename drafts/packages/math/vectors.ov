@@ -1,0 +1,29 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by Arjo. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# math.vectors: vectors in three dimensions, by components.
+package math.vectors @0.1-draft
+
+# The scalar triple product u . (v x w) of three vectors.
+fact type Triple {
+  property ux: Real
+  property uy: Real
+  property uz: Real
+  property vx: Real
+  property vy: Real
+  property vz: Real
+  property wx: Real
+  property wy: Real
+  property wz: Real
+  property triple: Real
+  invariant scalar_triple: triple = ux * (vy * wz - vz * wy) - uy * (vx * wz - vz * wx)
+                                    + uz * (vx * wy - vy * wx)
+  theorem cyclic: triple = vx * (wy * uz - wz * uy) - vy * (wx * uz - wz * ux)
+                           + vz * (wx * uy - wy * ux)
+}
+
+# Three vectors lie in a plane (are linearly dependent) exactly when their
+# scalar triple product is zero.
+fact type CoplanarTriple extends Triple {
+  invariant coplanar: triple = 0
+}

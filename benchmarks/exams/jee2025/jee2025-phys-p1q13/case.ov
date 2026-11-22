@@ -1,0 +1,27 @@
+# JEE (Advanced) 2025, paper 1, physics Q13 (see list.json). Formalization only.
+#
+# An electron in the n = 3 orbit of a hydrogen-like atom of atomic number Z. At
+# temperature T a neutron with thermal energy kB T has the same de Broglie
+# wavelength as that electron. Given T = Z^2 h^2 / (alpha pi^2 a0^2 mN kB),
+# asked: alpha.
+# Reading: the givens are stated as written; nothing is interpreted.
+package bench.jee2025_phys_p1q13
+import physics.quantum
+
+fact type EqualWavelengths {
+  property electron: BohrOrbit
+  property neutron: SlowParticle
+  property kB: "J/K"
+  property T: Temperature
+  property alpha: Real
+  invariant third_orbit: electron.n = 3
+  invariant same_h: neutron.h = electron.h
+  invariant thermal: kB > 0 T > 0 neutron.energy = kB * T
+  invariant same_wavelength: neutron.wavelength = electron.wavelength
+  invariant given_form: T * alpha * pi * pi * electron.a0 * electron.a0 * neutron.m * kB
+                          = electron.Z * electron.Z * electron.h * electron.h
+}
+
+scenario jee2025_phys_p1q13 uses bench.jee2025_phys_p1q13 {
+  query PROVE UNIQUE ?a WHERE EqualWavelengths{ alpha = ?a }
+}

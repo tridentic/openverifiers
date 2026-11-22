@@ -1,0 +1,30 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by Arjo. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# physics.electromagnetism: charges at rest and in rotation.
+package physics.electromagnetism @0.1-draft
+
+# A spherical shell of radius R carrying charge Q spread uniformly over its
+# surface, spinning at angular speed omega about a diameter, has magnetic
+# dipole moment Q omega R^2 / 3 (the sum of its current rings; stated, not
+# derived here: OV has no surface integrals).
+fact type SpinningChargedShell {
+  property charge: Charge
+  property R: Length
+  property omega: Frequency
+  property moment: "A*m^2"
+  invariant positive: R > 0 omega > 0
+  law shell_moment: 3 * moment = charge * omega * R * R
+}
+
+# A uniform solid sphere of mass M and radius R spinning at omega about a
+# diameter has angular momentum (2/5) M R^2 omega (moment of inertia 2/5 M R^2;
+# stated, not derived here: OV has no volume integrals).
+fact type SpinningSolidSphere {
+  property mass: Mass
+  property R: Length
+  property omega: Frequency
+  property spin: "kg*m^2/s"
+  invariant positive: mass > 0 R > 0 omega > 0
+  law sphere_spin: 5 * spin = 2 * mass * R * R * omega
+}

@@ -1,0 +1,11 @@
+{
+  "reviewer": "Claude subagent, gold-blind (saw only the question text, the case, answer.json and the imported libraries)",
+  "date": "2026-11-23",
+  "verdict": "faithful",
+  "issues": [
+    "'Thermal energy kB T' read as kinetic energy = kB T: the standard reading; the given T formula is encoded exactly."
+  ],
+  "library_issues": [
+    "Bohr r = n^2 a0/Z, L = nh/2pi, de Broglie lambda p = h, p^2 = 2mE all correct; standing_wave consistent."
+  ]
+}

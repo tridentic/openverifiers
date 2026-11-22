@@ -1,0 +1,34 @@
+# JEE (Advanced) 2025, paper 2, physics Q3 (see list.json). Formalization only.
+#
+# A uniform rod of length l hinged at its lower end O, held upright between two
+# walls by two massless springs of the same constant k. Setup 1: springs at the
+# midpoint and at the top end; setup 2: both springs at the midpoint. Small
+# angular oscillations, no gravity. Asked: f1 / f2.
+# Reading (from the text; the figures only show it): the springs are
+# horizontal, so each acts perpendicular to the upright rod; the rod (and its
+# moment of inertia about O) is the same in both setups.
+package bench.jee2025_phys_p2q3
+import physics.rotation
+
+fact type TwoSetups {
+  property rod_length: Length
+  property one: AngularOscillator
+  property two: AngularOscillator
+  property s1_mid: SpringOnLever
+  property s1_top: SpringOnLever
+  property s2_mid_a: SpringOnLever
+  property s2_mid_b: SpringOnLever
+  property ratio: Real
+  invariant same_rod: two.inertia = one.inertia rod_length > 0
+  invariant same_springs: s1_top.k = s1_mid.k s2_mid_a.k = s1_mid.k s2_mid_b.k = s1_mid.k
+  invariant setup_one: s1_mid.d * 2 = rod_length s1_top.d = rod_length
+                       one.kappa = s1_mid.kappa + s1_top.kappa
+  invariant setup_two: s2_mid_a.d * 2 = rod_length s2_mid_b.d * 2 = rod_length
+                       two.kappa = s2_mid_a.kappa + s2_mid_b.kappa
+  # f = omega / (2 pi), so the ratio of frequencies is the ratio of omegas.
+  invariant asked: ratio * two.omega = one.omega
+}
+
+scenario jee2025_phys_p2q3 uses bench.jee2025_phys_p2q3 {
+  query PROVE UNIQUE ?r WHERE TwoSetups{ ratio = ?r }
+}

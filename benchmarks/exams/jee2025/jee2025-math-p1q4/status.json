@@ -1,0 +1,4 @@
+{
+  "category": "language",
+  "note": "Counts 3x3 integer matrices Q with Q^-1 = Q^T commuting with diag(2,2,3) (16): OV has no integer-valued properties or matrices; restricting entries to {-1, 0, 1} would hide a step of the solution."
+}

@@ -1,0 +1,12 @@
+{
+  "reviewer": "Claude subagent, gold-blind (saw only the question text, the case, answer.json and the imported libraries)",
+  "date": "2026-11-23",
+  "verdict": "faithful_with_notes",
+  "issues": [
+    "Key step: 'conducting' means all charge on the surface (uniform shell) while the mass is a uniform solid sphere; physically correct and standard, but it is the problem's real work, so a human should confirm it.",
+    "mu * 2M = alpha Q L encodes mu/L = alpha Q/(2M) correctly; Q > 0 fine since magnitudes are asked."
+  ],
+  "library_issues": [
+    "Shell moment Q omega R^2/3 and solid sphere L = (2/5) M R^2 omega are correct; both stated, not derived."
+  ]
+}

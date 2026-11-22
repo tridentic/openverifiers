@@ -1,0 +1,20 @@
+# JEE (Advanced) 2025, paper 2, chemistry Q12 (see list.json). Formalization only.
+#
+# A + R -> product with measured rate k[A][R]; initially [R]0 = 10 [A]0. Treated
+# as pseudo-first-order with k[R] = k' constant. Asked: the relative error (in %)
+# in the rate caused by this assumption when the reaction is 40 % complete.
+# Reading: "40 % complete" is 40 % of A (the limiting reactant) consumed; the
+# relative error is (approximate - true) / true, in percent.
+package bench.jee2025_chem_p2q12
+import chemistry.kinetics
+
+fact type FortyPercent extends PseudoFirstOrder {
+  property error_percent: Real
+  invariant tenfold: r0 = 10 * a0
+  invariant forty_percent: x = 4 / 10 * a0
+  invariant relative_error: error_percent * rate = 100 * (approx_rate - rate)
+}
+
+scenario jee2025_chem_p2q12 uses bench.jee2025_chem_p2q12 {
+  query PROVE UNIQUE ?e WHERE FortyPercent{ error_percent = ?e }
+}

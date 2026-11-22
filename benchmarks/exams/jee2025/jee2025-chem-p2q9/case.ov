@@ -1,0 +1,15 @@
+# JEE (Advanced) 2025, paper 2, chemistry Q9 (see list.json). No question text is
+# stored; this is the formalization only.
+#
+# A metal crystallises in a cubic close packed lattice with edge length 400 pm.
+# Given: atomic mass 105.6 amu, Avogadro's constant 6 x 10^23 mol^-1. Asked: the
+# density in g cm^-3.
+# Transcription note: an atomic mass of 105.6 amu is a molar mass of 105.6 g/mol
+# (1 amu x N_A = 1 g/mol), and the given N_A is used, not the exact constant.
+package bench.jee2025_chem_p2q9
+import chemistry.solid_state
+
+scenario jee2025_chem_p2q9 uses chemistry.solid_state {
+  query FIND ?d WHERE CcpCell{ edge = 400 pm, molar_mass = 105.6 g/mol,
+                               avogadro = 6e23 mol^-1, density = ?d }
+}

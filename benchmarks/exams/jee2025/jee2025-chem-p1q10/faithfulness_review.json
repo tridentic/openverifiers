@@ -1,0 +1,10 @@
+{
+  "reviewer": "Claude subagent, gold-blind (saw only the question text, the case, answer.json and the imported libraries)",
+  "date": "2026-11-23",
+  "verdict": "faithful_with_notes",
+  "issues": [
+    "Ratio is signed: c2/c1 = -(pb+RT)/a is negative; this is the literal reading, but a key expecting a magnitude would differ in sign.",
+    "Normalising the cubic (monic or sign-flipped) leaves c2/c1 unchanged; units mol/dm^3 match."
+  ],
+  "library_issues": []
+}

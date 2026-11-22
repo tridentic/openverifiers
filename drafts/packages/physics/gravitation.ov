@@ -1,0 +1,16 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by Arjo. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# physics.gravitation: orbits.
+package physics.gravitation @0.1-draft
+
+# A circular orbit of radius r and period T around a central body. Kepler's
+# third law: T^2 is proportional to r^3, with the same constant (kepler =
+# G M / 4 pi^2) for every orbit around the same body.
+fact type CircularOrbit {
+  property kepler: "m^3/s^2"
+  property r: Length
+  property period: Time
+  invariant positive: kepler > 0 r > 0 period > 0
+  law kepler_third: period * period * kepler = r * r * r
+}

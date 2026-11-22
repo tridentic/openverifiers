@@ -1,0 +1,28 @@
+# JEE (Advanced) 2025, paper 2, physics Q12 (see list.json). Formalization only.
+#
+# A geostationary satellite orbits the earth above the equator at radius r1. A
+# second satellite orbits in the equatorial plane, opposite to the earth's
+# rotation, at radius r2 with r1 = 1.21 r2. The period of the second satellite
+# as measured from the geostationary one is 24/p hours. Asked: p.
+# Reading: a geostationary satellite has the earth's rotation period, taken as
+# 24 h (the problem's own 24). Seen from the first satellite, the second one's
+# angle changes at the sum of the two angular rates (opposite directions), so
+# 1 / T_seen = 1 / T1 + 1 / T2.
+package bench.jee2025_phys_p2q12
+import physics.gravitation
+
+fact type CounterRotating {
+  property geo: CircularOrbit
+  property second: CircularOrbit
+  property seen: Time
+  property p: Real
+  invariant same_earth: second.kepler = geo.kepler
+  invariant geostationary: geo.period = 24 h
+  invariant radii: geo.r = 1.21 * second.r
+  invariant relative_rates: seen * (geo.period + second.period) = geo.period * second.period
+  invariant asked: seen * p = 24 h
+}
+
+scenario jee2025_phys_p2q12 uses bench.jee2025_phys_p2q12 {
+  query PROVE UNIQUE ?p WHERE CounterRotating{ p = ?p }
+}

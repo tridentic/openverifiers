@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from openverifiers.checker import Proven, Refuted
 from openverifiers.engine import Run, ask, find_all, run, without
-from openverifiers.raw import Atom, Str, Term, parse_atom
+from openverifiers.raw import Atom, Str, Term
+from openverifiers.rawtext import parse_atom
 
 from .programs import q11
 

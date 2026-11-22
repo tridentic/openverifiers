@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from openverifiers.engine import run
-from openverifiers.raw import parse
+from openverifiers.rawtext import parse
 from openverifiers.runner import run_file
 
 from .programs import q11

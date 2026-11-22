@@ -19,16 +19,22 @@ The evaluator's trace is a *claim*. This module accepts it only if:
    With 2 this makes the model exactly the least labelled model, which is
    what closed-world negation and refutation rely on.
 
-The checker does not import the evaluator. Trusted code.
+The checker does not import the evaluator. Its input crosses the trust
+boundary as canonical JSON (``check_json``; W2.5): the program as one JSON
+document, the trace as JSON lines, both read with the standard library only.
+
+Trusted code.
 """
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterator
 from dataclasses import dataclass
 
 from ..raw import labels as L
 from ..raw.builtins import compare, evaluate
+from ..raw.canon import program_from_json
 from ..raw.labels import Env, Label
 from ..raw.program import (
     Assign,
@@ -44,7 +50,7 @@ from ..raw.program import (
     validate,
 )
 from ..raw.terms import Term, is_ground, match, substitute, variables
-from ..raw.trace import STEP_KINDS, NafRef, Step, Trace
+from ..raw.trace import STEP_KINDS, NafRef, Step, Trace, loads
 
 
 class TraceRejected(ValueError):
@@ -92,6 +98,11 @@ def _rule_vars(r: Rule) -> set[str]:
         else:
             out |= {*variables(lit.left), *variables(lit.right)}
     return out
+
+
+def check_json(program_json: str, trace_jsonl: str) -> CheckedModel:
+    """The trusted entry point: a program and its trace, both as canonical JSON."""
+    return check_trace(program_from_json(json.loads(program_json)), loads(trace_jsonl))
 
 
 def check_trace(program: Program, trace: Trace) -> CheckedModel:

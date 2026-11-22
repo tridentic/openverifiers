@@ -18,7 +18,7 @@ from openverifiers.objects.engine import Settings
 from openverifiers.objects.solve import Result
 from openverifiers.raw.formula import ClassDef, Unsupported, failing, holds
 from openverifiers.raw.terms import Compound, Num, Str
-from openverifiers.raw.text import dump_term, parse_term
+from openverifiers.rawtext import dump_term, parse_term
 from openverifiers.runner import render, run_file
 
 ROOT = Path(__file__).resolve().parents[2]

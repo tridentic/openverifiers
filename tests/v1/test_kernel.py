@@ -8,7 +8,8 @@ from hypothesis import HealthCheck, given, settings
 from openverifiers.checker import Inconsistent, Proven, Refuted, Unknown, verdict
 from openverifiers.engine import Run, ask, run, without
 from openverifiers.kernel import Budget, InvalidProgram, NotStratifiable, evaluate
-from openverifiers.raw import Atom, Program, Sym, parse, parse_atom
+from openverifiers.raw import Atom, Program, Sym
+from openverifiers.rawtext import parse, parse_atom
 
 from .programs import PENGUIN, REACH, programs
 

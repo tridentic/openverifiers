@@ -9,7 +9,8 @@ from pathlib import Path
 
 from openverifiers.checker import Proven
 from openverifiers.engine import ask, find_all, run, without
-from openverifiers.raw import Atom, Str, Term, parse, parse_atom
+from openverifiers.raw import Atom, Str, Term
+from openverifiers.rawtext import parse, parse_atom
 
 SRC = Path(__file__).resolve().parents[1] / "examples" / "raw" / "q11.rawov"
 

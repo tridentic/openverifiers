@@ -2,7 +2,8 @@
 
 A ``fact type`` lowers to a :class:`ClassDef`: property names, the named
 invariants (own and inherited) and the named theorems. Every formula is an
-ordinary RawOV term, so it prints and parses with ``raw.text``.
+ordinary RawOV term, so it prints and parses with ``openverifiers.rawtext`` and
+canonical JSON (``raw/canon.py``).
 
 Formula terms::
 

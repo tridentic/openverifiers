@@ -1,5 +1,9 @@
 """Glue: evaluate (untrusted) -> check (trusted) -> verdicts (trusted).
 
+The program and the evaluator's trace reach the checker only as canonical JSON
+text (W2.5): the checker re-reads both with the standard library, so what it
+checks is exactly what a stored trace file would say.
+
 Nothing reaches a caller unless the checker accepted the trace. The only
 untrusted thing added afterwards is UNKNOWN's ``missing`` frontier (which
 premises a derivation got stuck on), and each listed ground atom is
@@ -8,16 +12,18 @@ re-confirmed against the checked model before it is reported.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, replace
 
-from .checker import CheckedModel, Unknown, Verdict, check_trace, find, verdict
+from .checker import CheckedModel, Unknown, Verdict, check_json, find, verdict
 from .kernel.evaluate import Blocked, Budget, evaluate_full
 from .raw import labels as L
 from .raw.builtins import compare
 from .raw.builtins import evaluate as eval_expr
+from .raw.canon import program_to_json
 from .raw.program import Assign, Atom, Compare, Naf, Pos, Program, effective_body
 from .raw.terms import Term, is_ground, match, substitute
-from .raw.trace import Trace
+from .raw.trace import Trace, dumps
 
 
 @dataclass(frozen=True)
@@ -29,7 +35,8 @@ class Run:
 
 def run(program: Program, budget: Budget | None = None, *, naive: bool = False) -> Run:
     trace, blocked = evaluate_full(program, budget, naive=naive)
-    return Run(trace, check_trace(program, trace), tuple(blocked))
+    model = check_json(json.dumps(program_to_json(program), sort_keys=True), dumps(trace))
+    return Run(trace, model, tuple(blocked))
 
 
 def ask(r: Run, q: Atom, context: frozenset[str] | None = None) -> Verdict:

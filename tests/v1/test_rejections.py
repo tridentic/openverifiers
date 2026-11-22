@@ -14,17 +14,12 @@ from openverifiers.raw import (
     Compare,
     Num,
     Program,
-    RawSyntaxError,
     Rule,
     Span,
     Step,
     Sym,
     Trace,
     Var,
-    dump,
-    parse,
-    parse_atom,
-    parse_term,
     strata_violations,
     validate,
 )
@@ -32,6 +27,7 @@ from openverifiers.raw import labels as L
 from openverifiers.raw import trace as T
 from openverifiers.raw.builtins import compare
 from openverifiers.raw.builtins import evaluate as ev
+from openverifiers.rawtext import RawSyntaxError, dump, parse, parse_atom, parse_term
 
 PROG = parse("""
 world q closed.

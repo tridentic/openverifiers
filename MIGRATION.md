@@ -54,3 +54,11 @@ Nothing else breaks: `openverifiers.lang`, `openverifiers.lower`,
 | legacy hook path | `.claude/settings.json` ran `openverifiers/legacy/plugin/pre_tool_use.py` | `src/openverifiers/legacy/plugin/pre_tool_use.py` | none |
 | `ov` CLI | M1 commands | still M1 until v1 Milestone 3, then the v1 CLI (`run, check, lower, query, prove, bench, add, serve`). M1 commands move to `ov-m1` | scripts calling `ov check <case.json>` should switch to `ov-m1` once M3 lands |
 | license (planned, M7) | MIT | Apache-2.0, as requested by the v1 brief | none for users; contributors note the relicense |
+
+## W2.5: JSON-only traces (branch `v1`)
+
+| change | before | after | what to do |
+|---|---|---|---|
+| RawOV text parser left the trusted base | `openverifiers.raw.text`; `parse`, `dump`, `parse_atom`, `parse_term`, `dump_term`, `dump_atom`, `RawSyntaxError` exported from `openverifiers.raw` | `openverifiers.rawtext` (untrusted) | import them from `openverifiers.rawtext` |
+| OVTrace JSON | terms and atoms as RawOV text strings inside the JSON lines | canonical tagged JSON (`raw/canon.py`): `["sym", n]`, `["num", "p/q", dims]`, `{"pred", "args", "neg"}` | regenerate stored traces; old trace files are rejected |
+| checker entry point | `check_trace(program, trace)` on in-memory objects | also `check_json(program_json, trace_jsonl)`; the engine always goes through it | none |

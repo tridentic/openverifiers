@@ -121,6 +121,14 @@ The evaluator emits a trace: an ordered list of steps. A fired step records:
 - `prev`, the conclusion's previous step;
 - the conclusion's *cumulative* label after the firing.
 
+**Format (W2.5).** The checker reads its input only as canonical JSON with
+the standard library (`checker.check_json`): the program as one JSON document,
+the trace as JSON lines, terms as tagged arrays (`raw/canon.py`). Each value
+has exactly one encoding, and anything else is rejected. The engine passes
+every run through this form, so the checker checks what a stored trace file
+says. The RawOV text syntax (`openverifiers.rawtext`) is an untrusted
+convenience for writing programs by hand.
+
 The checker accepts the trace only if all of the following hold.
 
 1. **Valid strata.** The program is well-formed and the claimed strata satisfy

@@ -12,20 +12,16 @@ from hypothesis import strategies as st
 from openverifiers.raw import (
     Compound,
     Num,
-    RawSyntaxError,
     Str,
     Sym,
     Var,
-    dump,
-    dump_term,
     make_dims,
-    parse,
-    parse_term,
     validate,
 )
 from openverifiers.raw import labels as L
 from openverifiers.raw.builtins import compare, evaluate
 from openverifiers.raw.terms import order_key
+from openverifiers.rawtext import RawSyntaxError, dump, dump_term, parse, parse_term
 
 from .programs import PENGUIN, REACH, programs, q11
 

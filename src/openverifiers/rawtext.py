@@ -21,7 +21,8 @@
 Arithmetic is printed fully parenthesised, so printing is canonical. ``%``
 starts a comment.
 
-Trusted code.
+Untrusted (W2.5): a convenience for writing and reading programs by hand. The
+trusted path reads programs and traces only as canonical JSON (``raw/canon.py``).
 """
 
 from __future__ import annotations
@@ -30,8 +31,8 @@ import re
 from dataclasses import dataclass
 from fractions import Fraction
 
-from .builtins import COMPARISONS
-from .program import (
+from .raw.builtins import COMPARISONS
+from .raw.program import (
     Assign,
     Atom,
     Compare,
@@ -45,7 +46,7 @@ from .program import (
     Span,
     World,
 )
-from .terms import Compound, Num, Str, Sym, Term, Var, make_dims
+from .raw.terms import Compound, Num, Str, Sym, Term, Var, make_dims
 
 KEYWORDS = frozenset({"world", "fact", "rule", "domain", "span", "open", "closed", "complete",
                       "partial", "not", "neg", "is"})

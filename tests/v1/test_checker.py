@@ -14,8 +14,9 @@ from hypothesis import HealthCheck, given, settings
 
 from openverifiers.checker import TraceRejected, Unknown, check_trace, verdict
 from openverifiers.kernel import Budget, evaluate
-from openverifiers.raw import Program, parse
+from openverifiers.raw import Program
 from openverifiers.raw import trace as T
+from openverifiers.rawtext import parse
 
 from .mutations import mutants
 from .programs import NAT_SRC, PENGUIN, REACH, ROOT, programs, q11

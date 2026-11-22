@@ -17,8 +17,8 @@ from openverifiers.raw import (
     Sym,
     Var,
     World,
-    parse,
 )
+from openverifiers.rawtext import parse
 
 ROOT = Path(__file__).resolve().parents[2]
 Q11 = ROOT / "examples" / "raw" / "q11.rawov"

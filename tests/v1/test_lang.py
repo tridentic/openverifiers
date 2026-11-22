@@ -14,8 +14,9 @@ from openverifiers.lang.errors import OVError
 from openverifiers.lang.parser import parse
 from openverifiers.lang.units import parse_unit, show_quantity
 from openverifiers.lower.lower import lower
-from openverifiers.raw import Num, dump
-from openverifiers.raw import parse as raw_parse
+from openverifiers.raw import Num
+from openverifiers.rawtext import dump
+from openverifiers.rawtext import parse as raw_parse
 from openverifiers.runner import main, render, run_file
 
 ROOT = Path(__file__).resolve().parents[2]

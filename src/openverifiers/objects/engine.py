@@ -89,6 +89,10 @@ class Settings:
     #: The theorem-proving reductions (fix_order, no_invariants, drop_implied,
     #: translate, inherit). Off: every unsat is computed on the full problem.
     reductions: bool = True
+    #: Also load draft packages from drafts/packages/: library lines an AI drafted
+    #: that Arjo has not approved (MP-DOL). Never under --strict. Results that use
+    #: them are provisional (FileResult.draft_packages lists them).
+    drafts: bool = False
 
 
 KERNEL, Z3_UNSAT = "kernel", "z3_unsat"

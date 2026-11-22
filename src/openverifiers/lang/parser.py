@@ -263,6 +263,9 @@ class _ToAst(Transformer[Token, Any]):
         name, *args = xs
         return A.TyExpr(str(name), tuple(a for a in args if a is not None), self.sp(m))
 
+    def unit_ty(self, m: Any, xs: list[Any]) -> A.TyExpr:
+        return A.TyExpr(str(xs[0]), (), self.sp(m))       # the quotes mark a unit type
+
     def fseq(self, m: Any, xs: list[Any]) -> tuple[A.Formula, ...]:
         return tuple(xs)
 

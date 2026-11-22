@@ -20,7 +20,7 @@ from .checker.verdict import default_context
 from .engine import Run, ask, find_all, run, without
 from .kernel.evaluate import Budget
 from .lang import ast as A
-from .lang.check import Env, load
+from .lang.check import DRAFTS, Env, load
 from .lang.errors import Diagnostic, OVError
 from .lang.units import show_quantity
 from .lower.lower import Lowered, QueryPlan, _Ctx, _value, is_hidden, lower, term
@@ -64,6 +64,12 @@ class FileResult:
     classes: list[ObjAnswer] = field(default_factory=list)     # class and theorem checks
 
     @property
+    def draft_packages(self) -> list[str]:
+        """Packages loaded from drafts/: every result of this file is provisional."""
+        return sorted(n for n, m in self.env.modules.items()
+                      if Path(m.file).resolve().is_relative_to(DRAFTS))
+
+    @property
     def failed(self) -> list[Answer | ObjAnswer]:
         both: list[Answer | ObjAnswer] = [*self.answers, *self.objects]
         return [a for a in both if a.expect_ok is False]
@@ -76,7 +82,8 @@ class FileResult:
 
 def run_file(path: str | Path, *, source: str | None = None, budget: Budget | None = None,
              files: set[str] | None = None, settings: Settings | None = None) -> FileResult:
-    env = load(path, source=source)
+    drafts = settings is not None and settings.drafts and not settings.strict
+    env = load(path, source=source, search=(DRAFTS,) if drafts else ())
     if settings is not None and settings.strict:
         undeclared = [d for d in env.warnings if d.code == "W201"]
         if undeclared:
@@ -356,7 +363,12 @@ def main(argv: Sequence[str] | None = None, *, check: bool = False) -> int:
     """`ov run` (full output) or, with check=True, `ov check` (one line per file)."""
     args = list(sys.argv[1:] if argv is None else argv)
     verbose = "--verbose" in args
-    settings = Settings(strict="--strict" in args, reductions="--no-reductions" not in args)
+    settings = Settings(strict="--strict" in args, reductions="--no-reductions" not in args,
+                        drafts="--drafts" in args)
+    if settings.strict and settings.drafts:
+        print("ov: --drafts loads unapproved library lines; it cannot be combined with "
+              "--strict", file=sys.stderr)
+        return 2
     paths = [a for a in args if not a.startswith("--")]
     if not paths:
         print(f"usage: ov {'check' if check else 'run'} FILE.ov [FILE.ov ...] "
@@ -371,6 +383,9 @@ def main(argv: Sequence[str] | None = None, *, check: bool = False) -> int:
             code = 1
             continue
         print(summary(res) if check else render(res, verbose))
+        if res.draft_packages:
+            print("PROVISIONAL: uses unapproved draft packages "
+                  + ", ".join(res.draft_packages), file=sys.stderr)
         if check and verbose:
             for a in (*res.failed, *res.class_errors):
                 print(f"  {a.verdict}: {getattr(a, 'title', '')} {a.expect_msg}".rstrip())

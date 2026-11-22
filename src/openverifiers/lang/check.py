@@ -27,6 +27,9 @@ from .parser import parse
 from .units import QUANTITY_TYPES, dims_text
 
 STDLIB = Path(__file__).resolve().parents[1] / "packages"
+#: Unapproved library drafts (MP-DOL: AI drafts, humans own meaning). Searched only
+#: when asked (``ov run --drafts``); a checkout-only directory, not installed.
+DRAFTS = Path(__file__).resolve().parents[3] / "drafts" / "packages"
 BUILTINS = {"abs": 1, "min": 2, "max": 2, "canonical": 1}
 
 # A type: ("q", dims) quantity, ("e", name) entity sort, ("s",) string, ("any",).

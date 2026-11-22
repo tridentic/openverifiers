@@ -1,16 +1,20 @@
 """The ``ov`` command (v1).
 
-    ov run FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions]
+    ov run FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions] [--drafts]
     ov check FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions]
     ov bench [DIR] [--suite NAME] [--case NAME] [--seeds N] [--out DIR] [--strict]
              [--no-reductions]
     ov audit PACKAGE|FILE [--dag THEOREM ...] [--json]
+    ov exam [DIR] [--strict] [--drafts] [--json]
 
 ``run`` checks, lowers and evaluates each file, answers its queries, checks its
 ``expect`` lines and its classes' theorems, and exits 1 if any expectation
 fails, any theorem is refuted, any class is empty, or the file has errors.
 ``check`` does the same work and prints one line per file (pass/fail counts);
-use it in loops and hooks. ``--strict`` turns verdicts that rest on an unchecked solver unsat into
+use it in loops and hooks. ``--drafts`` also loads unapproved library drafts
+from ``drafts/packages/`` (never with ``--strict``); results that use them are
+marked PROVISIONAL. ``exam`` runs the drawn exam problems (W3).
+``--strict`` turns verdicts that rest on an unchecked solver unsat into
 UNKNOWN(plugin_unknown) and undeclared types (W201) into errors.
 ``--no-reductions`` turns off the theorem-proving reductions (docs/SEMANTICS.md
 §7), so every unsat is computed on the full problem; slower, for ablation.
@@ -43,6 +47,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     if cmd == "audit":
         from .audit import main as audit
         return audit(rest)
+    if cmd == "exam":
+        from .bench.exam import main as exam
+        return exam(rest)
     if cmd == "bench":
         from .bench.run import main as bench
         return bench(rest)

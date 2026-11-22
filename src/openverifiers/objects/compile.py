@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 
 from ..lang import ast as A
 from ..lang.errors import Diagnostic
-from ..lang.units import QUANTITY_TYPES, dims_text
+from ..lang.units import QUANTITY_TYPES, dims_text, parse_unit
 from ..raw.formula import COS2, DEG, ClassDef, Unsupported
 from ..raw.program import Span
 from ..raw.terms import Compound, Dims, Num, Str, Term, Var, make_dims
@@ -116,6 +116,14 @@ def ty_of(e: A.TyExpr, cls: Classes, env: Env) -> Ty:
         raise _Fail("E205", f"{e.name} takes no type arguments", e.span)
     if e.name == ANGLE:
         return (ANGLE,)
+    if e.name.startswith('"'):
+        # A unit type ("W/m^2/K^4"): a quantity type named by its unit. Registered once;
+        # the name determines the dimensions, so the table entry never changes.
+        u = parse_unit(e.name[1:-1])
+        if u is None:
+            raise _Fail("E201", f"unknown unit in the type {e.name}", e.span,
+                        "write the unit with known unit names, e.g. \"W/m^2/K^4\"")
+        QUANTITY_TYPES.setdefault(e.name, u[1])
     if e.name in QUANTITY_TYPES:
         return (e.name,) if QUANTITY_TYPES[e.name] else REAL
     if e.name in cls.records:

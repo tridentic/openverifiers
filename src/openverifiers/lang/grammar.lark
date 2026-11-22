@@ -54,6 +54,8 @@ fact_type: "fact" "type" NAME ["extends" NAME ("," NAME)*] "{" member* "}"
        | "lemma" NAME ":" fbody              -> lemma
        | "derived" NAME ":" tyexpr "=" expr  -> derived
 tyexpr: NAME ["<" tyexpr ("," tyexpr)* ">"]
+      | STRING                               -> unit_ty
+// A quoted unit is a quantity type of those dimensions: `property sigma: "W/m^2/K^4"`.
 // The conditions of a body are conjoined; `P -> Q` is an implication. A
 // quantifier over a collection runs to the end of the enclosing body, so it
 // comes last, and an implication belongs to the innermost such quantifier.

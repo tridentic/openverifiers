@@ -25,7 +25,8 @@ UNITS: dict[str, tuple[Fraction, Dims]] = {
     "kg": (_F(1), _d(kg=1)), "g": (_F(1, 1000), _d(kg=1)), "mg": (_F(1, 10**6), _d(kg=1)),
     "t": (_F(1000), _d(kg=1)),
     "m": (_F(1), _d(m=1)), "cm": (_F(1, 100), _d(m=1)), "mm": (_F(1, 1000), _d(m=1)),
-    "km": (_F(1000), _d(m=1)),
+    "km": (_F(1000), _d(m=1)), "dm": (_F(1, 10), _d(m=1)), "nm": (_F(1, 10**9), _d(m=1)),
+    "pm": (_F(1, 10**12), _d(m=1)),
     "s": (_F(1), _d(s=1)), "ms": (_F(1, 1000), _d(s=1)), "min": (_F(60), _d(s=1)),
     "h": (_F(3600), _d(s=1)),
     "A": (_F(1), _d(A=1)), "K": (_F(1), _d(K=1)), "mol": (_F(1), _d(mol=1)),
@@ -34,6 +35,7 @@ UNITS: dict[str, tuple[Fraction, Dims]] = {
     "kJ": (_F(1000), _d(kg=1, m=2, s=-2)),
     "W": (_F(1), _d(kg=1, m=2, s=-3)), "kW": (_F(1000), _d(kg=1, m=2, s=-3)),
     "Pa": (_F(1), _d(kg=1, m=-1, s=-2)), "kPa": (_F(1000), _d(kg=1, m=-1, s=-2)),
+    "atm": (_F(101325), _d(kg=1, m=-1, s=-2)),          # standard atmosphere, exact
     "C": (_F(1), _d(A=1, s=1)), "V": (_F(1), _d(kg=1, m=2, s=-3, A=-1)),
     "Ω": (_F(1), _d(kg=1, m=2, s=-3, A=-2)), "ohm": (_F(1), _d(kg=1, m=2, s=-3, A=-2)),
     "Hz": (_F(1), _d(s=-1)),
@@ -55,6 +57,7 @@ QUANTITY_TYPES: dict[str, Dims] = {
     "Charge": _d(A=1, s=1), "Voltage": _d(kg=1, m=2, s=-3, A=-1),
     "Resistance": _d(kg=1, m=2, s=-3, A=-2), "Frequency": _d(s=-1),
     "Molarity": _d(mol=1, m=-3), "MolarMass": _d(kg=1, mol=-1), "Money": _d(USD=1),
+    "Density": _d(kg=1, m=-3),
     "Real": (), "Angle": _d(deg=1),
 }
 

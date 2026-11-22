@@ -16,6 +16,7 @@ The search:
 
 from __future__ import annotations
 
+import hashlib
 import itertools
 import re
 from collections.abc import Mapping
@@ -45,7 +46,10 @@ def _vars(t: Term, out: dict[str, Term]) -> None:
 
 
 def _sym(k: str) -> sympy.Symbol:
-    return sympy.Symbol("v_" + re.sub(r"\W", "_", k) + f"_{abs(hash(k)) % 10**6}")
+    # A stable name (not Python's salted hash): variable orders, and so the search,
+    # are the same in every run.
+    return sympy.Symbol("v_" + re.sub(r"\W", "_", k) + "_"
+                        + hashlib.sha1(k.encode()).hexdigest()[:6])
 
 
 def _to_sympy(p: Poly, syms: Mapping[str, sympy.Symbol]) -> sympy.Expr:

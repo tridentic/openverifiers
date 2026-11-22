@@ -66,8 +66,8 @@ def test_unapproved_theorem_weakening_is_rejected(repo: Path) -> None:
     commit(repo, {PKG: "fact type T {\n  theorem t: none v in cycles(p): a\n}\n"}, "add")
     base = git(repo, "rev-parse", "HEAD")
     commit(repo, {PKG: "fact type T {\n  theorem t: exists v in cycles(p): a\n}\n"}, "weaken")
-    [m] = messages(repo, base)
-    assert "theorem t: none" in m
+    gold, meaning = messages(repo, base)          # both gates object
+    assert "theorem t: none" in gold and "Meaning-Approved-By" in meaning
 
 
 def test_approved_edit_passes_and_ai_approvers_do_not(repo: Path) -> None:
@@ -106,3 +106,55 @@ def test_cli_exit_codes(repo: Path, monkeypatch: pytest.MonkeyPatch,
     assert main([base, "HEAD"]) == 1
     assert "gold gate:" in capsys.readouterr().out
     assert main([]) == 2
+
+
+# ---------------------------------------------------------------- the meaning gate (MP-DOL)
+
+LIB = "src/openverifiers/packages/math/m.ov"
+CLASS = """package math.m
+fact type K {
+  property a: Real
+  property b: Real
+  invariant pos: a > 0
+  theorem big: b > a
+  lemma helper: b >= a
+}
+test k { scenario k_s uses math.m { } }
+"""
+
+
+def test_meaning_gate_rejects_unapproved_meaning_changes(repo: Path) -> None:
+    commit(repo, {LIB: CLASS}, "add class\n\nMeaning-Approved-By: Arjo")
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {LIB: CLASS.replace("a > 0", "a >= 0")}, "weaken an invariant")
+    [m] = messages(repo, base)
+    assert "Meaning-Approved-By: Arjo" in m and "- invariant pos: a > 0" in m
+    assert "+ invariant pos: a >= 0" in m
+
+
+def test_meaning_gate_covers_new_statements_and_continuations(repo: Path) -> None:
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {LIB: CLASS}, "new class without approval")
+    ms = messages(repo, base)
+    assert len(ms) == 1 and "+ invariant pos: a > 0" in ms[0] and "+ theorem big" in ms[0]
+    assert "lemma helper" not in ms[0]                      # lemmas are free (MP-DOL)
+    base = git(repo, "rev-parse", "HEAD")
+    multi = CLASS.replace("  invariant pos: a > 0\n", "  invariant pos:\n    a > 0\n")
+    commit(repo, {LIB: multi}, "reflow\n\nMeaning-Approved-By: Arjo")
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {LIB: multi.replace("    a > 0\n", "    a > 1\n")}, "edit a continuation")
+    [m] = messages(repo, base)
+    assert "+ a > 1" in m
+
+
+def test_meaning_gate_ignores_tests_lemmas_and_accepts_arjo_only(repo: Path) -> None:
+    commit(repo, {LIB: CLASS}, "add\n\nMeaning-Approved-By: Arjo")
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {LIB: CLASS.replace("b >= a", "b >= a - 1").replace("k_s", "k_t")},
+           "lemma and test only")
+    assert messages(repo, base) == []
+    base = git(repo, "rev-parse", "HEAD")
+    commit(repo, {LIB: CLASS.replace("theorem big: b > a", "theorem big: b > 2 * a")},
+           "x\n\nMeaning-Approved-By: Claude\nGold-Change-Approved-By: Arjo")
+    [m] = messages(repo, base)                              # only Arjo approves meaning
+    assert "Meaning-Approved-By: Arjo" in m

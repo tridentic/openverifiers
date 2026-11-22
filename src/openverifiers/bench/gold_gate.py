@@ -10,7 +10,8 @@ Gold is what verdicts are judged against:
 - in ``src/openverifiers/packages/**/*.ov``, every ``expect`` line (package tests
   are gold too) and every ``theorem`` line (the prover may not weaken targets).
 
-For each commit in BASE..HEAD:
+For each commit in BASE..HEAD (the meaning gate, MP-DOL, is described at
+MEANING_TRAILER below):
 
 1. **Changing or deleting gold** needs the trailer
    ``Gold-Change-Approved-By: <human>`` in the commit message. Adding new gold
@@ -38,6 +39,20 @@ GOLD_FILES = ("benchmarks/**/expected.json", "benchmarks/**/review.json", "laws/
 GOLD_LINES = ("src/openverifiers/packages/**/*.ov",)
 GOLD_LINE = re.compile(r"^\s*(expect|theorem)\b")
 NOT_HUMAN = re.compile(r"claude|anthropic|\bbot\b|\[bot\]|gpt|copilot|codex", re.I)
+
+#: The meaning gate (MP-DOL, decision D-023): AI drafts, OV decides, humans own
+#: meaning. Adding, changing or removing a statement that carries meaning in
+#: packages/ or laws/ (an axiom, law, definition, class invariant or main theorem;
+#: continuation lines included) needs this trailer naming Arjo. Lemmas, proofs,
+#: tests and scenarios do not. One trailer covers every such line in its commit.
+MEANING_TRAILER = "Meaning-Approved-By"
+MEANING_OWNER = "Arjo"
+MEANING_FILES = ("src/openverifiers/packages/**/*.ov", "laws/**")
+MEANING_HEAD = re.compile(r"^\s*(axiom|law|definition|invariant|theorem)\b")
+STATEMENT_HEAD = re.compile(
+    r"^\s*(axiom|law|definition|invariant|theorem|lemma|property|derived|fact|test|scenario|"
+    r"query|expect|package|import|type|predicate|function|entity|generator|transformation|"
+    r"controller|target|assume|tolerance|world|})\b|^\s*}")
 
 
 def _match(path: str, patterns: Sequence[str]) -> bool:
@@ -70,6 +85,52 @@ def approved_by(message: str) -> str | None:
     return None
 
 
+def _meaning_lines(text: str, numbers: set[int]) -> list[str]:
+    """The lines (1-based numbers) that belong to a meaning-carrying statement: the
+    statement's own line, or a continuation of one (indented, no keyword of its own)."""
+    lines = text.splitlines()
+    out = []
+    for n in sorted(numbers):
+        i = n - 1
+        while i >= 0 and (not lines[i].strip() or not STATEMENT_HEAD.match(lines[i])) \
+                and not lines[i].lstrip().startswith("#"):
+            i -= 1
+        if i >= 0 and MEANING_HEAD.match(lines[i]) and 0 < n <= len(lines) \
+                and lines[n - 1].strip() and not lines[n - 1].lstrip().startswith("#"):
+            out.append(lines[n - 1].strip())
+    return out
+
+
+def _changed_numbers(diff: str) -> tuple[set[int], set[int]]:
+    """Old and new line numbers touched by a -U0 diff."""
+    old, new = set(), set()
+    for m in re.finditer(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@", diff, re.M):
+        a, na, b, nb = int(m[1]), int(m[2] or 1), int(m[3]), int(m[4] or 1)
+        old |= set(range(a, a + na))
+        new |= set(range(b, b + nb))
+    return old, new
+
+
+def meaning_changes(repo: Path, base: str, sha: str, path: str) -> list[str]:
+    diff = _git(repo, "diff", "-U0", base, sha, "--", path)
+    old_n, new_n = _changed_numbers(diff)
+
+    def show(rev: str) -> str:
+        r = subprocess.run(["git", "-C", str(repo), "show", f"{rev}:{path}"],
+                           capture_output=True, text=True)
+        return r.stdout if r.returncode == 0 else ""
+    return ([f"- {x}" for x in _meaning_lines(show(base), old_n)]
+            + [f"+ {x}" for x in _meaning_lines(show(sha), new_n)])
+
+
+def meaning_approved(message: str) -> bool:
+    for line in message.splitlines():
+        m = re.match(rf"^{MEANING_TRAILER}:(.*)$", line)
+        if m and m.group(1).strip() == MEANING_OWNER:
+            return True
+    return False
+
+
 def check_commit(repo: Path, sha: str) -> list[Violation]:
     message = _git(repo, "log", "-1", "--format=%B", sha)
     parents = _git(repo, "log", "-1", "--format=%P", sha).split()
@@ -90,6 +151,11 @@ def check_commit(repo: Path, sha: str) -> list[Violation]:
     if changed and approved_by(message) is None:
         out.append(Violation(sha, "changes gold without a human "
                              f"'{TRAILER}:' trailer: " + "; ".join(changed)))
+    meaning = [f"{path}: {x}" for _, path in ((s[0], s[-1]) for s in status)
+               if _match(path, MEANING_FILES) for x in meaning_changes(repo, base, sha, path)]
+    if meaning and not meaning_approved(message):
+        out.append(Violation(sha, f"changes meaning-carrying lines without "
+                             f"'{MEANING_TRAILER}: {MEANING_OWNER}': " + "; ".join(meaning)))
     new_gold = [p for s, p in ((s[0], s[-1]) for s in status)
                 if s == "A" and fnmatch.fnmatch(p, "benchmarks/**/expected.json")]
     if new_gold:

@@ -577,6 +577,7 @@ exact span.
 | E404 | a generator does not draw from a closed set-valued predicate |
 | E405 | a class formula the exact evaluator cannot decide (an angle other than 0, 30, 45, 60, 90, 120, 135, 150, 180 deg; a distance inside arithmetic) |
 | E406 | a class inherits from itself |
+| E407 | a query names a lemma (`COUNTEREXAMPLE C.lemma`); a lemma serves only its own package's proofs, so anything a scenario, a query or another package relies on must be a `theorem` |
 | E208 | an undeclared type under `--strict` (W201 otherwise) |
 | W201 | warning: an undeclared type is used and treated as an opaque entity type |
 | W202 | warning: a theorem says `exists` over the same generator as an invariant, so it may be vacuous |

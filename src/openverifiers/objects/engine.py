@@ -698,7 +698,7 @@ def check_classes(classes: Classes, only: set[str] | None = None,
         out.append(settle(ans, st))
         for th in cls.theorems:
             ta = ObjAnswer(f"theorem {th[0]}", "UNKNOWN", kind="theorem")
-            same = [n for n in proven if st.reductions
+            same = [n for n in proven if st.reductions and classes.lemma_usable(n, name)
                     and n.split(".")[0] in classes.ancestors[name] and proven[n][0] == th[1]]
             if same:
                 # Every invariant of an ancestor is an invariant here (the class is a subset),
@@ -717,7 +717,8 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                     ta.steps.append(f"cannot expand: {e}")
                     v, why, wit = "UNKNOWN", "plugin_unknown", None
                 lemmas = tuple((n, f) for n, (f, _) in proven.items()
-                               if n.split(".")[0] in (*classes.ancestors[name], name))
+                               if n.split(".")[0] in (*classes.ancestors[name], name)
+                               and classes.lemma_usable(n, name))
                 if v == "UNKNOWN" and lemmas and not isinstance(gen, str):
                     # A proven theorem holds on every instance, so adding it as a hypothesis
                     # keeps satisfiability; it often gives z3 the step it could not find.
@@ -739,7 +740,8 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                 ta.reductions = frozenset(used)
             if not ta.certified:
                 certify(ta, cls, th, {n: f for n, f in certified.items()
-                                      if n.split(".")[0] in (*classes.ancestors[name], name)})
+                                      if n.split(".")[0] in (*classes.ancestors[name], name)
+                                      and classes.lemma_usable(n, name)})
             settle(ta, st)
             if ta.verdict == "PROVEN":
                 proven[th[0]] = (th[1], ta.reductions)

@@ -9,6 +9,18 @@ enclosed by an interval and checks that the two enclosures overlap. A disjoint
 pair means the symbolic layer computes something else than the expression
 says: a disagreement, which fails CI.
 
+Each case is also classed by the operations its expression uses, and a refusal
+is attributed to the side that refused, so the report shows what the trusted
+evaluator cannot cover yet.
+
+**Exp chain rule (untrusted cross-check).** The trusted evaluator does not
+differentiate through exp, so derivatives of exp bodies have no trusted oracle.
+``exp_derivatives`` compares the expander's chain-rule derivative with a
+central finite difference of the trusted evaluator's values (step 2^-64,
+200-bit intervals: the difference error is far below the 1e-20 tolerance).
+This is a numeric cross-check, not a proof; it closes when the trusted normal
+form gains exp atoms (CTO decision 5).
+
     python -m openverifiers.bench.differential --cases 5000 --seed 0
 """
 
@@ -71,6 +83,11 @@ def _poly_in(rng: random.Random, x: Term) -> Term:
     return out
 
 
+class FreeVariable(Exception):
+    """The solver's value still mentions a variable although every input was a number:
+    always wrong, so it counts as a disagreement."""
+
+
 def _atom(name: str) -> I.Iv:
     if name == "PI":
         return I.pi()
@@ -80,7 +97,7 @@ def _atom(name: str) -> I.Iv:
         return I.exp(_eval_poly(EXPS[name]))
     if name in LOGS:
         return I.ln(_eval_poly(LOGS[name]))
-    raise KeyError(name)
+    raise FreeVariable(name)
 
 
 def _eval_poly(p: Poly) -> I.Iv:
@@ -93,40 +110,120 @@ def _eval_poly(p: Poly) -> I.Iv:
     return out
 
 
-def one(rng: random.Random) -> str:
-    """'agree' | 'refused' (either side declines) | 'DISAGREE: ...'."""
+CLASSES = {"f.sqrt": "sqrt", "f.exp": "exp", "f.ln": "ln", "f.pi": "pi",
+           "f.integral": "integral", "f.deriv": "deriv", "/": "division", "^": "power"}
+
+
+def classes(e: Term) -> set[str]:
+    """The operation classes an expression uses ('arithmetic' if none of the above)."""
+    out: set[str] = set()
+
+    def go(t: Term) -> None:
+        if isinstance(t, Compound):
+            if t.functor in CLASSES:
+                out.add(CLASSES[t.functor])
+            for a in t.args:
+                go(a)
+    go(e)
+    return out or {"arithmetic"}
+
+
+def one(rng: random.Random) -> tuple[str, Term]:
+    """('agree' | 'refused:trusted' | 'refused:solver' | 'DISAGREE: ...', expression)."""
     e = expr(rng)
     props = {p: Num(Fraction(rng.randint(-20, 20), rng.randint(1, 6))) for p in PROPS}
     try:
         trusted = _iv(_Eval(props).expr(e))
     except Unsupported:
-        return "refused"
+        return "refused:trusted", e
     try:
         v = Expander(props).value(e)
         if not isinstance(v, SNum):
-            return "refused"
+            return "refused:solver", e
         solver = _eval_poly(v.p)
     except (Unsupported, I.IntervalError):
-        return "refused"
+        return "refused:solver", e
+    except FreeVariable as x:
+        return f"DISAGREE: {e} at {props}: solver value mentions {x}", e
     if solver.hi < trusted.lo or trusted.hi < solver.lo:
-        return f"DISAGREE: {e} at {props}: solver {solver}, trusted {trusted}"
+        return f"DISAGREE: {e} at {props}: solver {solver}, trusted {trusted}", e
+    return "agree", e
+
+
+def run(cases: int, seed: int) -> dict[str, object]:
+    rng = random.Random(seed)
+    counts = {"agree": 0, "refused": 0, "disagree": 0}
+    by_class: dict[str, dict[str, int]] = {}
+    examples = []
+    for _ in range(cases):
+        r, e = one(rng)
+        kind = "disagree" if r.startswith("DISAGREE") else r.partition(":")[0]
+        counts[kind] += 1
+        if kind == "disagree":
+            examples.append(r)
+        for c in classes(e):
+            row = by_class.setdefault(c, {"cases": 0, "refused:trusted": 0,
+                                          "refused:solver": 0, "disagree": 0})
+            row["cases"] += 1
+            if kind != "agree":
+                row[r if kind == "refused" else "disagree"] += 1
+    return {"cases": cases, "seed": seed, "agree": counts["agree"],
+            "refused": counts["refused"], "disagree": counts["disagree"],
+            "by_class": dict(sorted(by_class.items())), "examples": examples[:5]}
+
+
+X = _p("x")
+H = Fraction(1, 2 ** 64)                    # finite-difference step
+EXP_TOLERANCE = Fraction(1, 10 ** 20)       # relative
+
+
+def _exp_body(rng: random.Random) -> Term:
+    """c(x) * exp(u(x) / k) + d(x): polynomials c, d, u in x with y, z coefficients."""
+    u = Compound("/", (_poly_in(rng, X), Num(Fraction(rng.choice([8, 16, 32])))))
+    term = Compound("*", (_poly_in(rng, X), Compound("f.exp", (u,))))
+    if rng.random() < 0.3:                  # nested: exp of an exp body
+        term = Compound("f.exp", (Compound("/", (term, Num(Fraction(64)))),))
+    return Compound("+", (term, _poly_in(rng, X)))
+
+
+def one_exp(rng: random.Random) -> str:
+    """The expander's d/dx of an exp body against a finite difference of trusted values."""
+    body = _exp_body(rng)
+    x0 = Fraction(rng.randint(-12, 12), rng.randint(1, 4))
+    props = {"x": Num(x0), "y": Num(Fraction(rng.randint(-6, 6), rng.randint(1, 3))),
+             "z": Num(Fraction(rng.randint(-6, 6), rng.randint(1, 3)))}
+    try:
+        v = Expander(props).value(Compound("f.deriv", (body, X, X)))
+        if not isinstance(v, SNum):
+            return "refused"
+        try:
+            sym = _eval_poly(v.p)
+        except FreeVariable as x:
+            return f"DISAGREE: d/dx {body} at {props}: the derivative mentions {x}"
+        hi = _iv(_Eval({**props, "x": Num(x0 + H)}).expr(body))
+        lo = _iv(_Eval({**props, "x": Num(x0 - H)}).expr(body))
+    except (Unsupported, I.IntervalError):
+        return "refused"
+    fd = (hi - lo) * I.Iv.of(1 / (2 * H))
+    scale = 1 + max(abs(sym.lo), abs(sym.hi), abs(fd.lo), abs(fd.hi))
+    gap = max(sym.lo - fd.hi, fd.lo - sym.hi, Fraction(0))
+    if gap > EXP_TOLERANCE * scale:
+        return f"DISAGREE: d/dx {body} at {props}: chain rule {sym}, finite difference {fd}"
     return "agree"
 
 
-def run(cases: int, seed: int) -> dict[str, int | list[str]]:
+def exp_derivatives(cases: int, seed: int) -> dict[str, object]:
     rng = random.Random(seed)
     counts = {"agree": 0, "refused": 0, "disagree": 0}
     examples = []
     for _ in range(cases):
-        r = one(rng)
+        r = one_exp(rng)
         if r.startswith("DISAGREE"):
             counts["disagree"] += 1
             examples.append(r)
         else:
             counts[r] += 1
-    return {"cases": cases, "seed": seed, "agree": counts["agree"],
-            "refused": counts["refused"], "disagree": counts["disagree"],
-            "examples": examples[:5]}
+    return {"cases": cases, "seed": seed, **counts, "examples": examples[:5]}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -135,8 +232,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
     out = run(a.cases, a.seed)
+    out["exp_derivatives"] = exp_derivatives(a.cases // 5, a.seed)
     print(json.dumps(out, indent=2))
-    return 1 if out["disagree"] else 0
+    return 1 if out["disagree"] or out["exp_derivatives"]["disagree"] else 0  # type: ignore[index]
 
 
 if __name__ == "__main__":

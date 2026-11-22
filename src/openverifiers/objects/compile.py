@@ -69,6 +69,15 @@ class Classes:
     kinds: dict[str, str] = field(default_factory=dict)
     #: record type (Point, or a class used as a property type) -> field -> type
     record_types: dict[str, dict[str, Ty]] = field(default_factory=dict)
+    #: class -> the package that declares it ("<main>" outside a package)
+    packages: dict[str, str] = field(default_factory=dict)
+
+    def lemma_usable(self, member: str, in_class: str) -> bool:
+        """A lemma is a helper of its own package's proofs (CTO decision on MP-DOL
+        deviation 1): another package may rely only on a `theorem`, which is gated."""
+        owner = member.rpartition(".")[0]
+        return self.kinds.get(member) != "lemma" or \
+            self.packages.get(owner) == self.packages.get(in_class)
 
 
 def _num(value: Fraction, dims: Dims) -> Num:
@@ -155,6 +164,7 @@ def compile_classes(env: Env, decls: dict[str, A.FactType]) -> Classes:
         except _Fail as e:
             env.diags.append(e.d)
             return cls
+    cls.packages = {n: env.class_pkgs.get(n, "<main>") for n in decls}
     for n in order:
         if any(a not in cls.defs for a in _ancestors(n, decls)[:-1]):
             continue    # a parent failed to compile and was reported
@@ -612,6 +622,10 @@ def plan_query(qy: A.Query, cls: Classes, last_find: ObjPlan | None) -> ObjPlan:
         if not found or cdef is None:
             raise _Fail("E201", f"unknown theorem '{o.theorem}'", o.span,
                         "name it as Class.theorem")
+        if cls.kinds.get(o.theorem) == "lemma":
+            raise _Fail("E407", f"'{o.theorem}' is a lemma: a query may name only a theorem",
+                        o.span, "a lemma serves its own package's proofs; state it as a "
+                        "`theorem` (a meaning-carrying line, so it needs approval)")
         try:
             gen = generic(cdef, cls.prop_types[cname], cls.records, cls.record_types)
         except Unsupported as e:

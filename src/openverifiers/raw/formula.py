@@ -39,6 +39,7 @@ from fractions import Fraction
 from itertools import combinations, permutations
 
 from . import interval as I
+from . import qpi as Q
 from .builtins import ARITH, apply_op
 from .surd import Surd, SurdError
 from .terms import Compound, Num, Str, Term, make_dims, order_key
@@ -78,7 +79,7 @@ class _Angle:
     norms: Surd              # |u|^2 * |w|^2
 
 
-Value = Term | Surd | _Root | _Angle | I.Iv
+Value = Term | Surd | _Root | _Angle | I.Iv | Q.QPi
 
 
 def _iv(v: Value) -> I.Iv:
@@ -86,6 +87,8 @@ def _iv(v: Value) -> I.Iv:
         return v
     if isinstance(v, Surd):
         return I.from_surd(v.terms)
+    if isinstance(v, Q.QPi):
+        return v.iv()
     return I.Iv.of(_rat(v))
 
 
@@ -282,8 +285,12 @@ class _Eval:
             return self._exact(lambda: _value(sum(
                 (Surd.sqrt(_rat(vals[i])) * Surd.of(_rat(vals[i + 1]))
                  for i in range(0, len(vals), 2)), Surd.of(Fraction(0)))))
-        if f in ("f.exp", "f.ln", "f.pi", "f.iv") or any(isinstance(v, I.Iv) for v in vals):
+        if f in ("f.pi", "f.qpi"):           # exact in Q(pi) (D-026)
+            return self._exact(lambda: Q.PI if f == "f.pi" else Q.value(Q.from_term(a)))
+        if f in ("f.exp", "f.ln", "f.iv") or any(isinstance(v, I.Iv) for v in vals):
             return self._numeric(f, vals)
+        if f in ARITH and any(isinstance(v, Q.QPi) for v in vals):
+            return self._exact(lambda: Q.value(Q.apply(f, vals)))
         if f in ARITH and any(isinstance(v, Surd) for v in vals):
             return self._exact(lambda: _surd_op(f, vals))
         if f == "f.dist2":
@@ -306,8 +313,6 @@ class _Eval:
         try:
             if f == "f.iv":
                 return I.Iv(_rat(vals[0]), _rat(vals[1]))
-            if f == "f.pi":
-                return I.pi()
             xs = [_iv(v) for v in vals]
             if f in ("f.exp", "f.ln"):
                 return (I.exp if f == "f.exp" else I.ln)(xs[0])
@@ -347,7 +352,7 @@ class _Eval:
     def _exact(fn: Callable[[], Value]) -> Value:
         try:
             return fn()
-        except SurdError as e:
+        except (SurdError, Q.QPiError) as e:
             raise Unsupported(str(e)) from None
 
     @staticmethod
@@ -356,6 +361,8 @@ class _Eval:
             raise Unsupported("an angle or nested root cannot be stored in a collection")
         if isinstance(v, I.Iv):
             return Compound("f.iv", (Num(v.lo), Num(v.hi)))
+        if isinstance(v, Q.QPi):
+            return Q.to_term(v)
         return _term_of(v) if isinstance(v, Surd) else v
 
     def coll(self, t: Term) -> Iterator[Term]:
@@ -410,10 +417,10 @@ def _ordered(op: str, x: Fraction, y: Fraction) -> bool:
 
 def _stored(t: Term) -> Value:
     """A value read out of a tuple, list or binding: an exact surd term becomes a Surd."""
-    if isinstance(t, Compound) and t.functor == "f.surd":
+    if isinstance(t, Compound) and t.functor in ("f.surd", "f.qpi"):
         try:
-            return _value(_coord(t))
-        except SurdError as e:
+            return _value(_coord(t)) if t.functor == "f.surd" else Q.value(Q.from_term(t.args))
+        except (SurdError, Q.QPiError) as e:
             raise Unsupported(str(e)) from None
     return t
 
@@ -449,6 +456,12 @@ def compare(op: str, a: Value, b: Value) -> bool:
         if d is None:
             raise Unsupported("the intervals overlap: not decided numerically")
         return d
+    if isinstance(a, Q.QPi) or isinstance(b, Q.QPi):
+        try:
+            s = (Q.to_qpi(a) - Q.to_qpi(b)).sign()
+        except Q.QPiError as e:
+            raise Unsupported(str(e)) from None
+        return {"=": s == 0, "!=": s != 0, "<": s < 0, "<=": s <= 0, ">": s > 0, ">=": s >= 0}[op]
     if isinstance(a, Num | Surd) and isinstance(b, _Angle | _Root):
         flip = {"<": ">", "<=": ">=", ">": "<", ">=": "<="}
         return compare(flip.get(op, op), b, a)

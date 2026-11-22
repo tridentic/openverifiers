@@ -6,8 +6,8 @@ Endpoints are rounded outward to a binary grid (2^-PREC), so sizes stay bounded,
 and transcendental functions use Taylor series with explicit remainder bounds.
 Nothing is rounded inward, so enclosure is never lost.
 
-exp, ln, sin, cos, pi and sqrt are provided. They serve exponential decay,
-logarithms, general angles and `tolerance`.
+exp, ln, pi and sqrt are provided. They serve exponential decay, logarithms,
+the enclosure of pi for Q(pi), and `tolerance`.
 
 Trusted code.
 """
@@ -74,9 +74,6 @@ class Iv:
         for _ in range(k):
             out = out * self
         return out
-
-    def width(self) -> Fraction:
-        return self.hi - self.lo
 
     def within(self, o: Iv) -> bool:
         return o.lo <= self.lo and self.hi <= o.hi
@@ -152,28 +149,6 @@ def pi() -> Iv:
     """Machin: pi = 16 atan(1/5) - 4 atan(1/239)."""
     return Iv.of(Fraction(16)) * _atan_series(Fraction(1, 5)) \
         - Iv.of(Fraction(4)) * _atan_series(Fraction(1, 239))
-
-
-def _trig(x: Iv, cosine: bool) -> Iv:
-    n = 80                                       # |x| <= 8 is enough for angles <= 400 deg
-    if _mag(x) > 8:
-        raise IntervalError("angle too large for the series")
-    fact, coeffs = 1, []
-    for k in range(2 * n):
-        sign = (-1) ** (k // 2)
-        coeffs.append(Fraction(0) if (k % 2 == 1) == cosine else Fraction(sign, fact))
-        fact *= k + 1
-    rem = _mag(x) ** (2 * n) / fact
-    y = _taylor(coeffs, x, rem)
-    return Iv.make(max(y.lo, Fraction(-1)), min(y.hi, Fraction(1)))
-
-
-def cos(x: Iv) -> Iv:
-    return _trig(x, True)
-
-
-def sin(x: Iv) -> Iv:
-    return _trig(x, False)
 
 
 def sqrt(x: Iv) -> Iv:

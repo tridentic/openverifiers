@@ -24,6 +24,9 @@ from ..raw.certificate import check
 from ..raw.formula import DEG, ClassDef, Unsupported, _Eval, failing, holds
 from ..raw.interval import Iv
 from ..raw.numeric import failing_numeric
+from ..raw.qpi import QPi
+from ..raw.qpi import from_term as qpi_from
+from ..raw.qpi import to_term as qpi_term
 from ..raw.surd import Surd
 from ..raw.terms import Compound, Num, Str, Term, Var, substitute
 from .certify import comparisons, find
@@ -43,6 +46,7 @@ from .expand import (
     seq_items,
     translation_invariant,
 )
+from .qpi_lift import lift
 from .solve import Result, small_scope, solve
 
 DEFAULT_LIMIT = {"find": 16, "unique": 2, "count": 64}
@@ -112,7 +116,7 @@ def settle(ans: ObjAnswer, st: Settings) -> ObjAnswer:
         base = {Z3_UNSAT}
     elif k in ("find", "unique"):
         base = {KERNEL} if ans.bindings else set()
-        if (v == "PROVEN" and k == "unique") or not ans.bindings:
+        if (v == "PROVEN" and k == "unique" and not ans.certified) or not ans.bindings:
             base.add(Z3_UNSAT)                     # no other / no solution: solver unsat
     elif k == "count":
         base = {KERNEL, Z3_UNSAT} if ans.bindings else {Z3_UNSAT}
@@ -138,11 +142,14 @@ def _vars(t: Term, out: dict[str, None]) -> None:
             _vars(a, out)
 
 
-def term_of(v: Fraction | Surd) -> Term:
-    """A solver value as a term: a rational, or f.surd(k1, c1, k2, c2, ...) for
-    c1 sqrt(k1) + c2 sqrt(k2) + ... (exact; the evaluator re-checks it)."""
+def term_of(v: Fraction | Surd | QPi) -> Term:
+    """A solver value as a term: a rational, f.surd(k1, c1, k2, c2, ...) for
+    c1 sqrt(k1) + c2 sqrt(k2) + ..., or f.qpi for an element of Q(pi) (exact; the
+    evaluator re-checks it)."""
     if isinstance(v, Fraction):
         return Num(v)
+    if isinstance(v, QPi):
+        return qpi_term(v)
     r = v.rational()
     if r is not None:
         return Num(r)
@@ -150,7 +157,7 @@ def term_of(v: Fraction | Surd) -> Term:
                                     for x in (Num(Fraction(k)), Num(c))))
 
 
-def _ground(props: Mapping[str, Term], model: Mapping[str, Fraction | Surd]
+def _ground(props: Mapping[str, Term], model: Mapping[str, Fraction | Surd | QPi]
             ) -> dict[str, Term]:
     s = {k: term_of(v) for k, v in model.items()}
     return {k: substitute(v, s) for k, v in props.items()}
@@ -175,6 +182,16 @@ def show(t: Term) -> str:
             lead = "" if coef == 1 else "-" if coef == -1 else cs
             parts.append(cs if rad == 1 else f"{lead}√{rad}")
         return " + ".join(parts).replace("+ -", "- ")
+    if isinstance(t, Compound) and t.functor == "f.qpi":
+        k = int(t.args[0].value) if isinstance(t.args[0], Num) else 0
+        coefs = [x.value for x in t.args[1:] if isinstance(x, Num)]
+
+        def in_pi(c: list[Fraction]) -> str:
+            ts = [show(Num(x)) + ("" if i == 0 else "π" if i == 1 else f"π^{i}")
+                  for i, x in enumerate(c) if x]
+            return " + ".join(ts).replace("+ -", "- ").replace("1π", "π") or "0"
+        top, bottom = in_pi(coefs[:k]), in_pi(coefs[k:])
+        return top if bottom == "1" else f"({top})/({bottom})"
     if isinstance(t, Compound) and t.functor == "f.tuple":
         return "(" + ", ".join(show(a) for a in t.args) + ")"
     if isinstance(t, Compound) and t.functor in ("f.set", "f.list"):
@@ -204,6 +221,24 @@ class _Run:
         r = solve(cons, names, self.st.timeout_ms)
         self.steps.append(f"re-solve [z3, fresh solver] {what}: {r.status}")
         return r.status == "unsat"
+
+    def recheck_model(self, cls: ClassDef, props: Mapping[str, Term],
+                      model: Mapping[str, Fraction | Surd]
+                      ) -> tuple[dict[str, Term], tuple[str, ...] | None,
+                                 Mapping[str, Fraction | Surd | QPi]]:
+        """Ground the model and re-check it. If the check fails and the class mentions
+        pi, try the untrusted lift into Q(pi) (objects/qpi_lift.py) and re-check that."""
+        g = _ground(props, model)
+        bad = self.recheck(cls, g)
+        if bad == ():
+            return g, bad, model
+        lifted = lift(cls, props, model)
+        if lifted is None:
+            return g, bad, model
+        self.steps.append("lift the model into Q(pi) [untrusted search]")
+        g2 = _ground(props, lifted)
+        bad2 = self.recheck(cls, g2)
+        return (g2, bad2, lifted) if bad2 == () else (g, bad, model)
 
     def recheck(self, cls: ClassDef, props: Mapping[str, Term]) -> tuple[str, ...] | None:
         try:
@@ -374,13 +409,12 @@ def _search(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> ObjAnswer:
                 ans.reason, ans.complete = "plugin_unknown", False
             break
         assert res.model is not None
-        g = _ground(plan.props, res.model)
-        bad = r.recheck(plan.cls, g)
+        _, bad, exact = r.recheck_model(plan.cls, plan.props, res.model)
         if bad is None or bad:
             ans.steps.append("the solver's model is rejected")
             ans.reason, ans.complete = "plugin_unknown", False
             break
-        model = {k: term_of(v) for k, v in res.model.items()}
+        model = {k: term_of(v) for k, v in exact.items()}
         binding: dict[str, Term] = {}
         for q, coords in plan.unknowns.items():
             vals = tuple(model[c.name] for c in coords)
@@ -409,6 +443,16 @@ def _block(plan: ObjPlan, binding: Mapping[str, Term]) -> CF:
         for c, x in zip(coords, vals, strict=True):
             if isinstance(x, Num):
                 parts.append(atom("!=", Poly.var(c.name) - Poly.const(x.value)))
+                continue
+            if isinstance(x, Compound) and x.functor == "f.qpi":   # c q(pi) - p(pi) != 0
+                qv = qpi_from(x.args)
+                at = []
+                for cs in (qv.num, qv.den):
+                    acc, pw = Poly.const(Fraction(0)), Poly.const(Fraction(1))
+                    for k in cs:
+                        acc, pw = acc + pw * Poly.const(k), pw * Poly.var("PI")
+                    at.append(acc)
+                parts.append(atom("!=", Poly.var(c.name) * at[1] - at[0]))
                 continue
             # x = a + b sqrt(k): exclude it alone, not its conjugate a - b sqrt(k).
             assert isinstance(x, Compound) and x.functor == "f.surd"
@@ -439,6 +483,7 @@ def _verdict(plan: ObjPlan, r: _Run, ans: ObjAnswer, names: list[str]) -> ObjAns
             ans.verdict, ans.reason = "REFUTED", ""
         elif n == 1 and ans.complete:
             ans.verdict = "PROVEN"
+            certify_unique(plan, ans)
         elif n == 0 and ans.complete:
             ans.verdict = "REFUTED"
             ans.names = r.core(plan.cls, plan.props, names)
@@ -628,8 +673,7 @@ def theorem(cls: ClassDef, th: tuple[str, Term], r: _Run, steps: list[str],
     if res.status == "unknown":
         return "UNKNOWN", res.reason, None, ()
     assert res.model is not None
-    g = _ground(gen, res.model)
-    failed = r.recheck(cls, g)
+    g, failed, _ = r.recheck_model(cls, gen, res.model)
     try:
         violated = failed == () and not holds(th[1], g)
         said = "fails" if violated else "holds"
@@ -672,6 +716,49 @@ def certify(ans: ObjAnswer, cls: ClassDef, th: tuple[str, Term],
                      + (f"; hypotheses used: {', '.join(used)}" if used else
                         "; an identity"))
     ans.verdict, ans.reason, ans.certified = "PROVEN", "", True
+
+
+def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:
+    """A uniqueness certificate (D-026): the invariants imply asked = value, by ideal
+    membership with recorded nonzero multipliers, checked by raw/certificate.py. Only
+    for an unknown that is a whole property and a value in Q or Q(pi)."""
+    [(q, v)] = ans.bindings[0].items()
+    coords = plan.unknowns[q]
+    prop = next((k for k, t in plan.props.items() if len(coords) == 1 and t == coords[0]),
+                None)
+    if prop is None:
+        return
+    x: Term = Compound("f.p", (Str(prop),))
+    if isinstance(v, Compound) and v.functor == "f.qpi":
+        qv = qpi_from(v.args)
+
+        def at(cs: tuple[Fraction, ...]) -> Term:
+            out: Term = Num(Fraction(0))
+            for i, k in enumerate(cs):
+                term: Term = Num(k)
+                for _ in range(i):
+                    term = Compound("*", (term, Compound("f.pi", ())))
+                out = Compound("+", (out, term))
+            return out
+        x, v = Compound("*", (x, at(qv.den))), at(qv.num)
+    elif not isinstance(v, Num):
+        return
+    goal = Compound("f.cmp", (Str("="), x, Num(v.value) if isinstance(v, Num) else v))
+    hyps: dict[str, Term] = {}
+    for n, inv in plan.cls.invariants:
+        hyps.update(comparisons(inv, n))
+    hyps["pi_positive"] = Compound("f.cmp", (Str(">"), Compound("f.pi", ()), Num(Fraction(0))))
+    for k, t in plan.props.items():                # values the query gives
+        if isinstance(t, Num) and not t.dims:
+            hyps[f"given:{k}"] = Compound("f.cmp", (Str("="), Compound("f.p", (Str(k),)), t))
+    cert = find(goal, hyps)
+    if cert is not None and check(goal, hyps, cert):
+        used = sorted({n for n, _ in cert.coeffs} | set(cert.factors))
+        ans.steps.append("uniqueness certificate [kernel: raw/certificate.py]: the "
+                         f"invariants imply {prop} = {show(v) if isinstance(v, Num) else 'it'}"
+                         + (f"; multipliers {', '.join(cert.factors)}" if cert.factors else "")
+                         + f"; hypotheses used: {', '.join(used) or 'none'}")
+        ans.certified = True
 
 
 def _conjuncts_of(f: Term) -> int:
@@ -768,8 +855,8 @@ def _consistency(cls: ClassDef, gen: dict[str, Term], r: _Run, ans: ObjAnswer) -
     res = r.solve(f"invariants of {cls.name}", _pin([cons], gen, ans.steps, r.st), list(names),
                   seek=True)
     if res.status == "sat" and res.model is not None:
-        g = _ground(gen, res.model)
-        if r.recheck(cls, g) == ():
+        g, ok, _ = r.recheck_model(cls, gen, res.model)
+        if ok == ():
             ans.verdict, ans.witness = "PROVEN", g
         else:
             ans.reason = "plugin_unknown"

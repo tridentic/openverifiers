@@ -23,7 +23,8 @@ LIMIT = 1500
 UNITS = {"raw/formula.py": 400}
 #: The exact-arithmetic unit (CTO decision D-021, W1): surds, intervals, numeric
 #: checks, polynomial normal form and certificate checking, cap 450.
-EXACT = ["raw/surd.py", "raw/interval.py", "raw/numeric.py", "raw/certificate.py"]
+EXACT = ["raw/surd.py", "raw/interval.py", "raw/numeric.py", "raw/certificate.py",
+         "raw/qpi.py"]
 EXACT_LIMIT = 450
 #: All trusted code, every unit together (W1).
 TOTAL_LIMIT = 2000

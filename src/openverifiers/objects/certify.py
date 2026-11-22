@@ -8,6 +8,8 @@ The search:
 1. Goal: a comparison L op R (op =, >=, <=), or a conjunction of them.
 2. Hypotheses: the class's equation invariants, plus earlier certified theorems.
 3. Multipliers: none, then each nonzero/positive hypothesis, then pairs.
+6. For =: elimination by pseudo-division (``_pseudo``), whose leading
+   coefficients become the multiplier when they are products of nonzero hypotheses.
 4. Ideal part: reduce M (L - R) by the equations with sympy, trying several
    variable orders (defined properties eliminated first). A zero remainder gives
    the coefficients.
@@ -16,6 +18,7 @@ The search:
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import itertools
 import re
@@ -37,10 +40,14 @@ def comparisons(f: Term, name: str) -> list[tuple[str, Term]]:
 
 
 def _vars(t: Term, out: dict[str, Term]) -> None:
+    """The ring's variables in t, by their normal-form names: properties, pi, exp atoms."""
     if isinstance(t, Compound):
-        if t.functor in ("f.p", "f.at", "f.v"):
+        if t.functor in ("f.p", "f.at", "f.v", "f.pi"):
             out[str(t)] = t
             return
+        if t.functor == "f.exp":
+            with contextlib.suppress(Unsupported):
+                out[next(iter(poly(t)))[0][0]] = t
         for a in t.args:
             _vars(a, out)
 
@@ -81,7 +88,7 @@ def find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
     try:
         return _find(goal, hyps)
     except (Unsupported, sympy.PolynomialError, sympy.CoercionFailed, ValueError,
-            NotImplementedError):
+            NotImplementedError, KeyError):
         return None
 
 
@@ -114,20 +121,116 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
     others = [s for s in syms.values() if s not in defined]
     orders = [list(dict.fromkeys([*defined, *others])), list(dict.fromkeys([*others, *defined])),
               sorted(syms.values(), key=str)]
+    fpolys: dict[str, sympy.Expr] = {}
+    for name in factors:
+        h = hyps[name]
+        assert isinstance(h, Compound)
+        d = Compound("-", (h.args[1], h.args[2]) if h.args[0] != Str("<")
+                     else (h.args[2], h.args[1]))
+        fpolys[name] = _to_sympy(poly(d), syms)
     for k in range(3):
         for fs in itertools.combinations(factors, k):
             m = sympy.Integer(1)
             for name in fs:
-                h = hyps[name]
-                assert isinstance(h, Compound)
-                d = Compound("-", (h.args[1], h.args[2]) if h.args[0] != Str("<")
-                             else (h.args[2], h.args[1]))
-                m = m * _to_sympy(poly(d), syms)
+                m = m * fpolys[name]
             target = sympy.expand(m * target0)
             for gens in orders:
                 cert = _try(target, eqs, gens, back, fs, op)
                 if cert is not None and check(goal, hyps, cert):
                     return cert
+    if op == "=":
+        cert = _pseudo(target0, eqs, fpolys, back)
+        if cert is not None and check(goal, hyps, cert):
+            return cert
+    return None
+
+
+def _factors_of(lc: sympy.Expr, fpolys: Mapping[str, sympy.Expr]
+                ) -> tuple[list[str], sympy.Expr] | None:
+    """lc as a constant times a product of nonzero hypotheses, or None."""
+    const, facs = sympy.factor_list(lc)
+    names: list[str] = []
+    for f, k in facs:
+        hit = next(((n, s) for n, g in sorted(fpolys.items()) for s in (1, -1)
+                    if sympy.expand(g - s * f) == 0), None)
+        if hit is None:
+            return None
+        names += [hit[0]] * k
+        const *= hit[1] ** k
+    return names, const
+
+
+def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
+            fpolys: Mapping[str, sympy.Expr], back: Mapping[sympy.Symbol, Term]
+            ) -> Certificate | None:
+    """Eliminate variables from the goal by pseudo-division.
+
+    A pool holds members of the hypotheses' ideal, each with its cofactors (the
+    equations themselves, and equations derived from them by eliminating a
+    variable: no nonzero condition is needed to derive a member). The goal t is
+    divided only by a member linear in some variable whose leading coefficient is
+    a constant times a product of nonzero hypotheses: that product joins the
+    multiplier M. Invariant: M t0 - sum c_i h_i = t. Success when t is 0."""
+    pool = [(h, {n: sympy.Integer(1)}) for n, h, _ in eqs]
+    t, mult = sympy.expand(target0), list[str]()
+    coeffs: dict[str, sympy.Expr] = {}
+    used: set[int] = set()
+    # Variables of nonzero hypotheses are the parameters: eliminate the others first.
+    params = {v for g in fpolys.values() for v in g.free_symbols}
+
+    def order(vs: set[sympy.Symbol]) -> list[sympy.Symbol]:
+        return sorted(vs, key=lambda v: (v in params, str(v)))
+    for _ in range(4 * len(eqs) + 4):
+        if t == 0:
+            return Certificate(tuple(mult), tuple((n, _to_term(c, back))
+                                                  for n, c in coeffs.items() if c != 0))
+        step = next(((i, e, cf, x, f) for x in order(t.free_symbols)
+                     for i, (e, cf) in enumerate(pool)
+                     if i not in used and sympy.degree(e, x) == 1
+                     and (f := _factors_of(sympy.expand(e.coeff(x, 1)), fpolys)) is not None),
+                    None)
+        if step is not None:
+            i, e, cf, x, (names, const) = step
+            used.add(i)
+            d = sympy.degree(t, x)
+            q, r = sympy.pdiv(t, e, x)              # lc^d t = q e + r, r free of x
+            scale = sympy.Integer(1) / const ** d
+            lc_d = sympy.expand(e.coeff(x, 1) ** d)
+            coeffs = {n: sympy.expand(c * lc_d * scale) for n, c in coeffs.items()}
+            for n, c in cf.items():
+                coeffs[n] = sympy.expand(coeffs.get(n, 0) + q * c * scale)
+            mult += names * d
+            t = sympy.expand(r * scale)
+            continue
+        # Derive a member: in some member linear in a goal variable, eliminate a
+        # variable of its leading coefficient by another member linear in it.
+        new = None
+        for x in order(t.free_symbols):
+            for j, (e, cf) in enumerate(pool):
+                if j in used or sympy.degree(e, x) != 1:
+                    continue
+                for y in sorted(sympy.expand(e.coeff(x, 1)).free_symbols, key=str):
+                    g = next(((g, gc) for k, (g, gc) in enumerate(pool) if k != j
+                              and k not in used
+                              and sympy.degree(g, y) == 1 and sympy.degree(g, x) == 0), None)
+                    if g is None:
+                        continue
+                    q, r = sympy.pdiv(e, g[0], y)    # lc_g^d e = q g + r
+                    lc_d = sympy.expand(g[0].coeff(y, 1) ** sympy.degree(e, y))
+                    rc = {n: sympy.expand(c * lc_d) for n, c in cf.items()}
+                    for n, c in g[1].items():
+                        rc[n] = sympy.expand(rc.get(n, 0) - q * c)
+                    r = sympy.expand(r)
+                    if r != 0 and all(sympy.expand(r - o) != 0 for o, _ in pool):
+                        new = (r, rc)
+                        break
+                if new:
+                    break
+            if new:
+                break
+        if new is None:
+            return None
+        pool.append(new)
     return None
 
 
@@ -135,6 +238,8 @@ def _try(target: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]], gens: list
          back: Mapping[sympy.Symbol, Term], fs: tuple[str, ...], op: str) -> Certificate | None:
     if not gens:
         return None
+    if sympy.expand(target) == 0:                 # an identity: no ideal part needed
+        return Certificate(fs)
     hs = [e for _, e, _ in eqs if e != 0]
     names = [n for n, e, _ in eqs if e != 0]
     if hs:

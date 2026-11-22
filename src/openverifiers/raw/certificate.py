@@ -16,6 +16,12 @@ goal. A polynomial "law solved for one variable" (a = F / m with m > 0) is the
 case with a factor. The caller passes only true hypotheses: class invariants,
 and theorems already certified.
 
+Two kinds of atom are indeterminates of the ring (D-026): pi, and exp(u) for a
+polynomial u. An identity that holds for every value of an indeterminate holds
+for the true one. The derivative follows the chain rule d exp(u) = u' exp(u);
+an integral, or an evaluation at a limit, of an exp(u) whose u depends on the
+variable is refused.
+
 Trusted code.
 """
 
@@ -30,6 +36,19 @@ from .terms import Compound, Num, Str, Term
 
 Mono = tuple[tuple[str, int], ...]
 Poly = dict[Mono, Fraction]
+#: exp atoms: name -> exponent polynomial (the name is the exponent's normal form,
+#: so equal exponents give the same atom)
+EXPS: dict[str, Poly] = {}
+
+
+def _exp(u: Poly) -> Poly:
+    name = "exp" + repr(sorted(u.items()))
+    EXPS[name] = u
+    return {((name, 1),): Fraction(1)}
+
+
+def _uses(p: Poly, v: str) -> bool:
+    return any(x == v or (x in EXPS and _uses(EXPS[x], v)) for m in p for x, _ in m)
 
 
 def _add(a: Poly, b: Poly, k: Fraction = Fraction(1)) -> Poly:
@@ -54,6 +73,11 @@ def _mul(a: Poly, b: Poly) -> Poly:
 def _calc(p: Poly, v: str, integral: bool) -> Poly:
     out: Poly = {}
     for m, c in p.items():
+        for x, k in m:          # chain rule: d(E^k)/dv = k E^k u' for E = exp(u)
+            if x in EXPS and _uses(EXPS[x], v):
+                if integral:
+                    raise Unsupported("integral of exp of the variable")
+                out = _add(out, _mul({m: c * k}, _calc(EXPS[x], v, False)))
         e = dict(m)
         k = e.pop(v, 0)
         if integral:
@@ -63,17 +87,20 @@ def _calc(p: Poly, v: str, integral: bool) -> Poly:
         elif k > 1:
             e[v] = k - 1
         mono = tuple(sorted(e.items()))
-        out[mono] = out.get(mono, Fraction(0)) + (c / (k + 1) if integral else c * k)
-    return {m: c for m, c in out.items() if c != 0}
+        out = _add(out, {mono: c / (k + 1) if integral else c * k})
+    return out
 
 
 def _subst(p: Poly, v: str, q: Poly) -> Poly:
+    """p with v replaced by q, inside exp atoms too."""
     out: Poly = {}
     for m, c in p.items():
-        e = dict(m)
-        term: Poly = {tuple(sorted((x, k) for x, k in e.items() if x != v)): c}
-        for _ in range(e.get(v, 0)):
-            term = _mul(term, q)
+        term: Poly = {(): c}
+        for x, k in m:
+            f: Poly = q if x == v else _exp(_subst(EXPS[x], v, q)) if x in EXPS \
+                and _uses(EXPS[x], v) else {((x, 1),): Fraction(1)}
+            for _ in range(k):
+                term = _mul(term, f)
         out = _add(out, term)
     return out
 
@@ -83,8 +110,10 @@ def poly(t: Term) -> Poly:
     Variables are property references (f.p, f.at, f.v), named by their text."""
     if isinstance(t, Num) and not t.dims:
         return {(): t.value} if t.value else {}
-    if isinstance(t, Compound) and t.functor in ("f.p", "f.at", "f.v"):
+    if isinstance(t, Compound) and t.functor in ("f.p", "f.at", "f.v", "f.pi"):
         return {((str(t), 1),): Fraction(1)}
+    if isinstance(t, Compound) and t.functor == "f.exp":
+        return _exp(poly(t.args[0]))
     if not isinstance(t, Compound):
         raise Unsupported(f"not polynomial: {t}")
     f, a = t.functor, t.args

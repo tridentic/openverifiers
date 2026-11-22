@@ -327,11 +327,11 @@ def test_interval_functions_enclose_the_true_values() -> None:
     from openverifiers.raw import interval as I
     one = I.Iv.of(Fraction(1))
     for iv, true in ((I.exp(one), math.e), (I.ln(I.Iv.of(Fraction(2))), math.log(2)),
-                     (I.pi(), math.pi), (I.sin(one), math.sin(1)), (I.cos(one), math.cos(1)),
+                     (I.pi(), math.pi),
                      (I.sqrt(I.Iv.of(Fraction(2))), math.sqrt(2)),
                      (I.exp(I.Iv.of(Fraction(-30))), math.exp(-30))):
         assert iv.lo <= Fraction(true) <= iv.hi or abs(float(iv.lo) - true) < 1e-15
-        assert iv.width() < Fraction(1, 10**40)
+        assert iv.hi - iv.lo < Fraction(1, 10**40)
     assert I.ln(I.exp(I.Iv.of(Fraction(3, 7)))).lo <= Fraction(3, 7) <= \
         I.ln(I.exp(I.Iv.of(Fraction(3, 7)))).hi
     with pytest.raises(I.IntervalError):
@@ -345,8 +345,12 @@ def test_numeric_answers_in_three_domains() -> None:
     res = run_file(f, files={str(f)})
     decay, half, circ = res.objects
     import math
-    for a, true in ((decay, 1000 * math.exp(-0.5)), (half, math.log(2) / 0.05),
-                    (circ, 2 * math.pi)):
+
+    from openverifiers.raw.qpi import from_term
+    c = next(iter(circ.bindings[0].values()))       # exact in Q(pi) (D-026): 2 pi
+    assert circ.verdict == "PROVEN" and circ.trust_base == {"kernel"}
+    assert isinstance(c, Compound) and from_term(c.args).num == (Fraction(0), Fraction(2))
+    for a, true in ((decay, 1000 * math.exp(-0.5)), (half, math.log(2) / 0.05)):
         assert a.verdict == "PROVEN" and a.trust_base == {"kernel"}
         v = next(iter(a.bindings[0].values()))
         assert isinstance(v, Compound)

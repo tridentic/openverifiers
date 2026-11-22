@@ -103,8 +103,6 @@ def test_interval_paths() -> None:
     with pytest.raises(I.IntervalError):
         I.ln(I.Iv(Fraction(1, 10), Fraction(100)))                       # too wide to reduce
     with pytest.raises(I.IntervalError):
-        I.sin(I.Iv.of(Fraction(9)))
-    with pytest.raises(I.IntervalError):
         I.sqrt(I.Iv.of(Fraction(-1)))
     e = I.from_surd(((2, Fraction(1)),))
     assert e.lo < Fraction(14143, 10000) and e.hi > Fraction(14142, 10000)

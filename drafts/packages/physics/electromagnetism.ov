@@ -2,29 +2,47 @@
 # `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
 #
 # physics.electromagnetism: charges at rest and in rotation.
-package physics.electromagnetism @0.1-draft
+package physics.electromagnetism @0.2-draft
 
-# A spherical shell of radius R carrying charge Q spread uniformly over its
-# surface, spinning at angular speed omega about a diameter, has magnetic
-# dipole moment Q omega R^2 / 3 (the sum of its current rings; stated, not
-# derived here: OV has no surface integrals).
+# A spherical shell of radius R with charge Q spread uniformly over its surface,
+# spinning at angular speed omega about a diameter. Cut it into thin rings by
+# height: by Archimedes' hat-box theorem every slice of height dz carries the
+# same area, so the same charge Q dz / (2R). A ring at height z (from the
+# centre) has radius^2 = R^2 - z^2, carries current (charge) omega / (2 pi),
+# and has magnetic moment current * pi radius^2. Summing the rings, with s =
+# z + R running from 0 to 2R (R^2 - z^2 = 2 R s - s^2), gives the definition
+# below (the moment is the sum of the rings' moments). That the moment is
+# Q omega R^2 / 3 is a theorem.
 fact type SpinningChargedShell {
   property charge: Charge
   property R: Length
   property omega: Frequency
   property moment: "A*m^2"
+  property s: Length
   invariant positive: R > 0 omega > 0
-  law shell_moment: 3 * moment = charge * omega * R * R
+  invariant full_height: s = 2 * R
+  invariant sum_of_rings: 4 * R * moment = charge * omega * integral(2 * R * s - s * s, s)
+  theorem shell_moment: 3 * moment = charge * omega * R * R
 }
 
-# A uniform solid sphere of mass M and radius R spinning at omega about a
-# diameter has angular momentum (2/5) M R^2 omega (moment of inertia 2/5 M R^2;
-# stated, not derived here: OV has no volume integrals).
+# A uniform solid sphere of density rho and radius R spinning at omega about a
+# diameter. Cut it into thin concentric shells: a shell of radius r and
+# thickness dr has mass 4 pi r^2 rho dr and moment of inertia (2/3) r^2 times
+# its mass about a diameter. Summing the shells from 0 to R defines the mass
+# and the angular momentum (omega times the summed moment of inertia); the
+# constant factors stand outside the integrals. That the angular momentum is
+# (2/5) M R^2 omega is a theorem.
 fact type SpinningSolidSphere {
   property mass: Mass
+  property rho: Density
   property R: Length
   property omega: Frequency
   property spin: "kg*m^2/s"
-  invariant positive: mass > 0 R > 0 omega > 0
-  law sphere_spin: 5 * spin = 2 * mass * R * R * omega
+  property r: Length
+  invariant positive: rho > 0 R > 0 omega > 0
+  invariant outer_radius: r = R
+  invariant sum_of_shells_mass: mass = 4 * pi * rho * integral(r * r, r)
+  invariant sum_of_shells_spin: spin = 8 / 3 * pi * rho * omega * integral(r ^ 4, r)
+  theorem mass_positive: mass > 0
+  theorem sphere_spin: 5 * spin = 2 * mass * R * R * omega
 }

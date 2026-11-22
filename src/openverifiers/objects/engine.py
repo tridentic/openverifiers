@@ -34,6 +34,7 @@ from .compile import Classes, ObjPlan, conj, generic, size_invariants
 from .expand import (
     CF,
     FALSE,
+    RECIPS,
     Expander,
     Poly,
     SSeq,
@@ -47,7 +48,7 @@ from .expand import (
     translation_invariant,
 )
 from .qpi_lift import lift
-from .solve import Result, small_scope, solve
+from .solve import Result, small_scope, solve, variables
 
 DEFAULT_LIMIT = {"find": 16, "unique": 2, "count": 64}
 
@@ -202,6 +203,15 @@ def show(t: Term) -> str:
     return str(t)
 
 
+def _poly_text(p: Poly) -> str:
+    """A solver polynomial for a step line (variable names as the solver has them)."""
+    parts = []
+    for mono, c in p.terms:
+        vs = "*".join(v if k == 1 else f"{v}^{k}" for v, k in mono)
+        parts.append(vs if c == 1 and vs else f"{show(Num(c))}*{vs}" if vs else show(Num(c)))
+    return " + ".join(parts) or "0"
+
+
 def _instance(props: Mapping[str, Term]) -> str:
     return ", ".join(f"{k} = {show(v)}" for k, v in props.items())
 
@@ -212,6 +222,11 @@ class _Run:
 
     def solve(self, what: str, cons: list[CF], names: list[str], *, seek: bool = False
               ) -> Result:
+        divs = sorted({v for c in cons for v in variables(c) if v in RECIPS})
+        note = "side condition (division, multiplied through): " + ", ".join(
+            f"{_poly_text(RECIPS[v])} != 0" for v in divs)
+        if divs and note not in self.steps:
+            self.steps.append(note)
         r = solve(cons, names, self.st.timeout_ms, seek=seek)
         self.steps.append(f"solve [{r.via}] {what}: {r.status}"
                           + (f" ({r.reason})" if r.reason else ""))

@@ -215,6 +215,16 @@ ROOTS: dict[str, Poly] = {}
 EXPS: dict[str, Poly] = {}
 #: ln(u): variable name -> u, defined by exp(L) = u with u > 0.
 LOGS: dict[str, Poly] = {}
+#: 1/D for a non-constant D: variable name -> D, defined by R D = 1. That is the
+#: formula multiplied through by D, with the side condition D != 0 recorded (an
+#: instance with D = 0 makes the formula undefined, so it is no member).
+RECIPS: dict[str, Poly] = {}
+
+
+def recip_var(d: Poly) -> SNum:
+    name = _atom_name("RECIP", d)
+    RECIPS[name] = d
+    return SNum(Poly.var(name))
 
 
 def _atom_name(kind: str, x: Poly) -> str:
@@ -242,7 +252,7 @@ def _depends(v: str, tau: str, seen: frozenset[str] = frozenset()) -> bool:
     """Whether the solver variable v (possibly an atom) depends on tau."""
     if v == tau:
         return True
-    arg = ROOTS.get(v) or EXPS.get(v) or LOGS.get(v)
+    arg = ROOTS.get(v) or EXPS.get(v) or LOGS.get(v) or RECIPS.get(v)
     if arg is None or v in seen:
         return False
     return any(_depends(w, tau, seen | {v}) for m, _ in arg.terms for w, _ in m)
@@ -276,6 +286,8 @@ def subst_atoms(p: Poly, tau: str, val: Poly) -> Poly:
             new = root_var(subst_atoms(ROOTS[v], tau, val)).p
         elif v in LOGS:
             new = log_var(subst_atoms(LOGS[v], tau, val)).p
+        elif v in RECIPS:
+            new = recip_var(subst_atoms(RECIPS[v], tau, val)).p
         else:
             continue
         out = poly_subst(out, v, new)
@@ -296,7 +308,8 @@ def root_var(x: Poly) -> SNum:
 
 def root_definitions(names: Iterable[str]) -> list[CF]:
     """The defining constraints of the atoms among ``names`` (and of atoms those
-    mention): d^2 = X, d >= 0 for roots; e > 0 for exp; exp(L) = u, u > 0 for ln."""
+    mention): d^2 = X, d >= 0 for roots; e > 0 for exp; exp(L) = u, u > 0 for ln;
+    R D = 1 for 1/D."""
     out: list[CF] = []
     todo, done = list(names), set()
     while todo:
@@ -314,6 +327,9 @@ def root_definitions(names: Iterable[str]) -> list[CF]:
         elif n in EXPS:
             out.append(atom(">", v))
             todo += [w for m, _ in EXPS[n].terms for w, _ in m]
+        elif n in RECIPS:
+            out.append(atom("=", v * RECIPS[n] - Poly.const(Fraction(1))))
+            todo += [w for m, _ in RECIPS[n].terms for w, _ in m]
         elif n in LOGS:
             e = _atom_name("EXP", v)
             out += [atom("=", Poly.var(e) - LOGS[n]), atom(">", LOGS[n])]
@@ -459,6 +475,8 @@ class Expander:
         if f == "/" and not y.dims and (c := y.p.constant()) not in (None, 0):
             assert c is not None
             return SNum(x.p.scale(1 / c), x.dims)
+        if f == "/" and not y.dims and not x.dims and y.p.constant() is None:
+            return SNum(x.p * recip_var(y.p).p)      # multiplied through; D != 0 recorded
         if f == "^" and not x.dims and (k := y.p.constant()) is not None \
                 and k.denominator == 1 and k >= 0:
             out = Poly.const(Fraction(1))

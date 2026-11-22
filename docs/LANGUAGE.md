@@ -571,6 +571,7 @@ exact span.
 | E301 | dimension mismatch (`2 kg + 1 m`, `expected Mass, got Length`) |
 | E302 | type mismatch |
 | E303 | arithmetic or ordering on something that is not a quantity |
+| E304 | a number followed by a name that is both a unit and a property (`p > 0 t > 0` reads `0 t` as zero tonnes); separate the conditions or write `(0) t` |
 | E401 | a conclusion has nothing to derive |
 | E402 | an equation cannot be solved syntactically (nonlinear: sympy plugin, M2) |
 | E403 | a lowered rule is unsafe (a variable is used before it is bound) |

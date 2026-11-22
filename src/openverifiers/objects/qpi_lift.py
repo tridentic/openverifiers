@@ -53,6 +53,13 @@ def _sym(t: Term, props: Mapping[str, Term]) -> sympy.Expr:
         raise _Skip
     if f == "f.pi":
         return PI
+    if f in ("f.integral", "f.deriv"):          # polynomial calculus in the designator
+        var, dummy = _sym(a[1], props), sympy.Dummy("x")
+        body = _sym(a[0], props).subs(var, dummy)
+        upper = _sym(a[2], props)
+        if f == "f.integral":
+            return sympy.integrate(body, (dummy, 0, upper))
+        return sympy.diff(body, dummy).subs(dummy, upper)
     xs = [_sym(x, props) for x in a]
     if f == "+" and len(xs) == 2:
         return xs[0] + xs[1]

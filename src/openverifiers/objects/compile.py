@@ -329,6 +329,7 @@ class _Formula:
         """The dimension of a numeric expression (None: not checked here). E301 when the
         two sides of + or - differ. A bare 0 matches any dimension."""
         if isinstance(e, A.Quantity):
+            self.unit_clash(e)
             return e.dims
         if isinstance(e, A.Name):
             ty = self.bound.get(e.name) or self.props.get(e.name)
@@ -485,10 +486,22 @@ class _Formula:
             raise _Fail("E302", "a quantifier ranges over a Set, a List or a generator", e.span)
         return t, ty
 
+    def unit_clash(self, q: A.Quantity) -> None:
+        """E304: `p > 0 t > 0` reads `0 t` as zero tonnes when t is also a property."""
+        num, _, unit = q.text.replace("\t", " ").partition(" ")
+        unit = unit.strip()
+        if unit and (unit in self.props or unit in self.bound):
+            raise _Fail("E304", f"'{q.text}' reads as the quantity {num} {unit} (the unit "
+                        f"'{unit}'), but '{unit}' is also a property here", q.span,
+                        f"if you meant the number {num} followed by the property {unit}, "
+                        "end the comparison first: put the conditions on separate "
+                        f"`invariant` lines, or write ({num}) {unit}")
+
     def expr(self, e: A.Expr, lists: list[Term] | None = None, ivar: str = "") -> tuple[Term, Ty]:
         def go(x: A.Expr) -> tuple[Term, Ty]:
             return self.expr(x, lists, ivar)
         if isinstance(e, A.Quantity):
+            self.unit_clash(e)
             return _num(e.value, e.dims), REAL
         if isinstance(e, A.Name):
             if e.name in self.bound:

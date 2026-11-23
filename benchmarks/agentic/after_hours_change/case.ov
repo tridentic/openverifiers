@@ -8,7 +8,7 @@ predicate allowed(c: Change) world closed
 entity on_call: Role
 axiom working_hours(c: Change): c.hour >= 9, c.hour <= 18 -> in_hours(c)
 axiom in_hours_ok(c: Change): in_hours(c) -> allowed(c)
-axiom on_call_ok(c: Change): not in_hours(c), approved(c, on_call) -> allowed(c)
+axiom on_call_ok(c: Change): approved(c, on_call), not in_hours(c) -> allowed(c)
 
 test after_hours_change {
   scenario after_hours_change_s uses bench.after_hours_change {

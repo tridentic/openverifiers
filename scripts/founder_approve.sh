@@ -110,5 +110,9 @@ if ! PYTHONPATH=src "$py" -m openverifiers.bench.gold_gate "$root" HEAD; then
 fi
 
 git push origin "HEAD:refs/heads/v1"
-git checkout -q v1 && git merge -q --ff-only "approval/$packet"
 echo "Approved, signed and pushed: $(git log -1 --format='%h %G? %GS %s')"
+if git checkout -q v1 2>/dev/null; then
+  git merge -q --ff-only "approval/$packet"
+else      # v1 is checked out in another worktree (the agent prepares approvals in one)
+  echo "v1 is checked out in another folder: run 'git pull --ff-only' there."
+fi

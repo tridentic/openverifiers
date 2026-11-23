@@ -23,12 +23,14 @@ fact type SlowParticle extends MatterWave {
 }
 
 # Bohr model of a hydrogen-like atom of atomic number Z (n and Z are whole
-# numbers, D-027; reworked from M161). The electron (mass m, charge e) moves on a
-# circle of radius r: the Coulomb attraction k Z e^2 / r^2 is the centripetal force
-# m v^2 / r, i.e. p^2 r = m k Z e^2 with p = m v, and its angular momentum p r is
-# quantized as n h / (2 pi), with hbar = h / (2 pi). a0 = hbar^2 / (m k e^2) is the first Bohr
-# radius of hydrogen; the radius n^2 a0 / Z is then a theorem (N039, packet 2:
-# derivable, not a law).
+# numbers, D-027; reworked from M161). The electron (mass m, charge -e, e > 0 the
+# elementary charge) moves on a circle of radius r: the Coulomb attraction
+# k Z e^2 / r^2 is the centripetal force m v^2 / r, i.e. p^2 r = m k Z e^2 with
+# p = m v, and its angular momentum p r is quantized as n h / (2 pi), with
+# hbar = h / (2 pi). Idealisations (Bohr's): a classical circular orbit, a
+# non-relativistic p = m v, and an infinitely heavy nucleus (m, not the reduced mass).
+# a0 = hbar^2 / (m k e^2) is the first Bohr radius of hydrogen; the radius n^2 a0 / Z
+# is then a theorem (N039, packet 2: derivable, not a law).
 fact type BohrOrbit extends MatterWave {
   property n: Integer
   property Z: Integer

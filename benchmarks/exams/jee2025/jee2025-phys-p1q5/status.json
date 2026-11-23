@@ -1,4 +1,4 @@
 {
   "category": "language",
-  "note": "Magnetic braking: the options need the solution of dv/dt = -K v (and of the entering phase); OV can check a given solution with deriv but cannot derive one, and the stopping-before-entering question needs it."
+  "note": "Magnetic braking. The entering phase solves dv/dt = -K v, v = v0 exp(-K t), which OV can now check (exp ring) but not derive. Option D needs exp(-ln(3/2)) = 2/3, i.e. exp of an ln: the normal form has exp and ln atoms (D-030) but no rule exp(ln u) = u, so the time cannot be certified; option A needs the same entering-distance bound. It also needs an electromagnetic-induction library (force B^2 L^2 v / R on a partly entered loop), not drafted."
 }

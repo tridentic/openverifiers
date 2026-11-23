@@ -88,10 +88,11 @@ PI = Compound("f.pi", ())
 
 
 def _cert(names: tuple[str, ...] | list[str], coeffs: tuple[tuple[str, Term], ...] = (),
-          squares: tuple[tuple[Fraction, Term], ...] = ()) -> Certificate:
+          squares: tuple[tuple[Fraction, Term], ...] = (),
+          wsquares: tuple[tuple[Fraction, tuple[str, ...], Term], ...] = ()) -> Certificate:
     """A certificate; the pseudo-factor "@pi" becomes a constant the checker signs."""
     return Certificate(tuple(n for n in names if n != "@pi"), coeffs, squares,
-                       tuple(PI for n in names if n == "@pi"))
+                       tuple(PI for n in names if n == "@pi"), wsquares)
 
 
 def find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
@@ -140,6 +141,7 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
         d = Compound("-", (h.args[1], h.args[2]) if h.args[0] != Str("<")
                      else (h.args[2], h.args[1]))
         fpolys[name] = _to_sympy(poly(d), syms)
+    positive = {n: g for n, g in fpolys.items() if n != "@pi" and _op(hyps[n]) in (">", "<")}
     factors = factors + (["@pi"] if "@pi" in fpolys else [])
     for k in range(3):
         for fs in itertools.combinations(factors, k):
@@ -148,7 +150,7 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
                 m = m * fpolys[name]
             target = sympy.expand(m * target0)
             for gens in orders:
-                cert = _try(target, eqs, gens, back, fs, op)
+                cert = _try(target, eqs, gens, back, fs, op, positive)
                 if cert is not None and check(goal, hyps, cert):
                     return cert
     if op == "=":
@@ -248,7 +250,9 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
 
 
 def _try(target: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]], gens: list[sympy.Symbol],
-         back: Mapping[sympy.Symbol, Term], fs: tuple[str, ...], op: str) -> Certificate | None:
+         back: Mapping[sympy.Symbol, Term], fs: tuple[str, ...], op: str,
+         pos: Mapping[str, sympy.Expr] | None = None) -> Certificate | None:
+    pos = pos or {}
     if not gens:
         return None
     if sympy.expand(target) == 0:                 # an identity: no ideal part needed
@@ -270,15 +274,76 @@ def _try(target: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]], gens: list
     for name, h in [("", sympy.Integer(0)), *((n, e) for n, e, _ in eqs)]:
         for sign in ((0,) if not name else (1, -1)):
             rr = sympy.expand(r - sign * h)
-            sq = _square(rr, back)
-            if sq is None:
+            sos = _sos(rr, back, pos)
+            if sos is None:
                 continue
             extra = ((name, _to_term(sympy.Integer(sign), back)),) if name else ()
             merged = dict(coeffs)
             for n, t in extra:
                 merged[n] = t if n not in merged else Compound("+", (merged[n], t))
-            return _cert(fs, tuple(merged.items()), (sq,))
+            return _cert(fs, tuple(merged.items()), *sos)
     return None
+
+
+def _op(h: Term) -> str:
+    return h.args[0].value if isinstance(h, Compound) and isinstance(h.args[0], Str) else ""
+
+
+def _frac(x: sympy.Expr) -> Fraction:
+    r = sympy.Rational(x)
+    return Fraction(int(r.p), int(r.q))
+
+
+def _sos(r: sympy.Expr, back: Mapping[sympy.Symbol, Term], pos: Mapping[str, sympy.Expr]
+         ) -> tuple[tuple[tuple[Fraction, Term], ...],
+                    tuple[tuple[Fraction, tuple[str, ...], Term], ...]] | None:
+    """r as a sum of squares (D-027): one square; a quadratic by exact LDL of its Gram
+    matrix; or a constant times positive hypotheses times a square."""
+    sq = _square(r, back)
+    if sq is not None:
+        return (sq,), ()
+    xs = sorted(r.free_symbols, key=str)
+    if xs and sympy.Poly(r, *xs).total_degree() == 2:
+        z = [sympy.Integer(1), *xs]
+        poly2 = sympy.Poly(r, *xs)
+        n = len(z)
+        g = [[sympy.Integer(0)] * n for _ in range(n)]
+        for i in range(n):
+            for j in range(i, n):
+                c = poly2.coeff_monomial(z[i] * z[j])
+                g[i][j] = g[j][i] = c if i == j else c / 2
+        squares = []
+        for k in range(n):                       # exact LDL, pivoting in order
+            d = g[k][k]
+            if d < 0:
+                break
+            if d == 0:
+                if any(g[k][j] != 0 for j in range(k + 1, n)):
+                    break
+                continue
+            row = [g[k][j] / d for j in range(n)]
+            squares.append((_frac(d), _to_term(sympy.expand(
+                sum((row[j] * z[j] for j in range(k, n)), sympy.Integer(0))), back)))
+            for i in range(k + 1, n):
+                for j in range(k + 1, n):
+                    g[i][j] -= d * row[i] * row[j]
+        else:
+            return tuple(squares), ()
+    const, facs = sympy.factor_list(r)
+    if const < 0:
+        return None
+    names, q = [], sympy.Integer(1)
+    for f, k in facs:
+        hit = next((nm for nm, g2 in sorted(pos.items()) if sympy.expand(g2 - f) == 0), None)
+        if hit is not None:
+            names += [hit] * k
+        elif k % 2 == 0:
+            q = q * f ** (k // 2)
+        else:
+            return None
+    if not names:
+        return None
+    return (), ((_frac(const), tuple(names), _to_term(q, back)),)
 
 
 def _square(r: sympy.Expr, back: Mapping[sympy.Symbol, Term]) -> tuple[Fraction, Term] | None:

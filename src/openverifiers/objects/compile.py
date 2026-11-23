@@ -380,6 +380,8 @@ class _Formula:
         if isinstance(e, A.Call) and e.fn == "sqrt" and e.args:
             d1 = self.dims(e.args[0])
             return None if d1 is None else make_dims({n: k / 2 for n, k in d1})
+        if isinstance(e, A.Call) and e.fn == "value_at" and len(e.args) == 3:
+            return self.dims(e.args[0])
         if isinstance(e, A.Call) and e.fn in CALCULUS and len(e.args) == 2:
             body, var = self.dims(e.args[0]), self.dims(e.args[1])
             if body is None or var is None:
@@ -576,6 +578,14 @@ class _Formula:
             self.dims(e)            # checks the body's dimensions
             x = _f("p", Str(v.name))
             return _f(e.fn, go(e.args[0])[0], x, x), REAL
+        if isinstance(e, A.Call) and e.fn == "value_at":
+            if len(e.args) != 3 or not (isinstance(e.args[1], A.Name)
+                                        and e.args[1].name in self.props):
+                raise _Fail("E205", "value_at takes an expression, a property and a value",
+                            e.span, "e.g. value_at(N0 * exp(-k * t), t, 0)")
+            self.same_dims(e.args[1], "=", e.args[2], e.args[2].span)
+            x = _f("p", Str(e.args[1].name))
+            return _f("valueat", go(e.args[0])[0], x, go(e.args[2])[0]), REAL
         if isinstance(e, A.Call):
             raise _Fail("E201", f"unknown function '{e.fn}' in a class formula", e.span,
                         "class formulas use count, dist, dist2, angle, abs, min, max and the "

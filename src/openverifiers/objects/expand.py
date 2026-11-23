@@ -447,6 +447,8 @@ class Expander:
             for rad, coef in zip(nums[0::2], nums[1::2], strict=True):
                 out = out + root_var(Poly.const(rad)).p.scale(coef)
             return SNum(out)
+        if f == "f.valueat":
+            return self.value(subst(a[0], a[1], a[2]))
         if f in ("f.integral", "f.deriv"):
             self.fresh_tau += 1
             tau = f"TAU_{self.fresh_tau}"

@@ -250,6 +250,8 @@ class _Eval:
             return _stored(table[key]) if f == "f.v" else self.expr(table[key])
         if f in ("f.integral", "f.deriv"):
             return self._calculus(f, a)
+        if f == "f.valueat":                 # E with the designator x set to c (D-027)
+            return self.expr(subst(a[0], a[1], a[2]))
         vals = [self.expr(x) for x in a] if f not in ("f.at",) else []
         if f in ("f.tuple", "f.list"):
             return Compound(f, tuple(self._term(v) for v in vals))

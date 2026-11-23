@@ -53,6 +53,9 @@ def _sym(t: Term, props: Mapping[str, Term]) -> sympy.Expr:
         raise _Skip
     if f == "f.pi":
         return PI
+    if f == "f.valueat":
+        from ..raw.formula import subst
+        return _sym(subst(a[0], a[1], a[2]), props)
     if f in ("f.integral", "f.deriv"):          # polynomial calculus in the designator
         var, dummy = _sym(a[1], props), sympy.Dummy("x")
         body = _sym(a[0], props).subs(var, dummy)

@@ -10,7 +10,10 @@ For a goal L op R (op is =, >= or <=) under hypotheses, a certificate gives:
   their sign is decided here, by the trusted evaluator (exactly, or by a
   rigorous enclosure), never taken from the caller;
 - coeffs: (hypothesis `A = B`, polynomial c): the ideal part, sum c (A - B);
-- squares: (weight w >= 0, polynomial q), for inequalities only.
+- squares: (weight w >= 0, polynomial q), for inequalities only;
+- wsquares: (w >= 0, hypotheses h1..hk each `f > 0` or `f < 0`, q): the square
+  q^2 weighted by w f1 ... fk, which is >= 0 (a sum of squares with positive
+  parameters, D-027).
 
 It checks, by exact polynomial normal form, that M (L - R) - sum c (A - B) -
 sum w q^2 is 0. On any instance where the hypotheses hold, each A - B is 0, so
@@ -45,6 +48,8 @@ EXPS: dict[str, Poly] = {}
 
 
 def _exp(u: Poly) -> Poly:
+    if not u:                                     # exp(0) = 1
+        return {(): Fraction(1)}
     name = "exp" + repr(sorted(u.items()))
     EXPS[name] = u
     return {((name, 1),): Fraction(1)}
@@ -120,6 +125,8 @@ def poly(t: Term) -> Poly:
     if not isinstance(t, Compound):
         raise Unsupported(f"not polynomial: {t}")
     f, a = t.functor, t.args
+    if f == "f.valueat":
+        return _subst(poly(a[0]), str(a[1]), poly(a[2]))
     if f in ("f.integral", "f.deriv"):
         x = str(a[1])
         return _subst(_calc(poly(a[0]), x, f == "f.integral"), x, poly(a[2]))
@@ -148,6 +155,7 @@ class Certificate:
     coeffs: tuple[tuple[str, Term], ...] = ()
     squares: tuple[tuple[Fraction, Term], ...] = ()
     constants: tuple[Term, ...] = ()
+    wsquares: tuple[tuple[Fraction, tuple[str, ...], Term], ...] = ()
 
 
 def _cmp(f: Term) -> tuple[str, Term, Term]:
@@ -161,7 +169,7 @@ def check(goal: Term, hyps: Mapping[str, Term], cert: Certificate) -> bool:
     op, lhs, rhs = _cmp(goal)
     if op == "<=":
         op, lhs, rhs = ">=", rhs, lhs
-    if op not in ("=", ">=") or (op == "=" and cert.squares):
+    if op not in ("=", ">=") or (op == "=" and (cert.squares or cert.wsquares)):
         return False
     m: Poly = {(): Fraction(1)}
     for c in cert.constants:                      # a sign the checker decides itself
@@ -190,6 +198,15 @@ def check(goal: Term, hyps: Mapping[str, Term], cert: Certificate) -> bool:
             return False
         sq = poly(q)
         total = _add(total, _mul(sq, sq), -w)
+    for w, names, q in cert.wsquares:
+        weight: Poly = {(): Fraction(1)}
+        for name in names:
+            hop, a, b = _cmp(hyps[name]) if name in hyps else ("", lhs, rhs)
+            if hop not in (">", "<") or w < 0:
+                return False
+            weight = _mul(weight, poly(Compound("-", (a, b) if hop == ">" else (b, a))))
+        sq = poly(q)
+        total = _add(total, _mul(weight, _mul(sq, sq)), -w)
     return not total
 
 

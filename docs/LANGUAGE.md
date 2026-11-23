@@ -613,3 +613,18 @@ not do yet.
 - Counting occurrences in a finite sequence is written with polynomial
   indicators over the finite alphabet (see `benchmarks/exams/jee2025/
   jee2025-math-p1q10`); there is no `count_of` builtin yet.
+
+## For-all statements and ODE solutions (D-027)
+
+- A theorem's properties are universally quantified, so a theorem such as
+  `a * a + b * b + c * c >= a * b + b * c + c * a` is a for-all statement. It
+  reaches `{kernel}` with a sum-of-squares certificate: squares with constant
+  weights, or squares weighted by stated positive hypotheses (`m1 > 0`). The
+  untrusted finder tries one square, the exact LDL decomposition of a
+  quadratic's Gram matrix, and a factorisation into positive hypotheses times a
+  square.
+- `value_at(E, t, c)` is E with the property t set to c. A closed-form ODE
+  solution y(t) is verified by two theorems: `deriv(y(t), t) = F(t, y(t))`
+  (checked in the trusted ring of polynomials in t and exp atoms) and
+  `value_at(y(t), t, t0) = y0`. Solving an ODE is not supported (v6); the
+  solution must be proposed.

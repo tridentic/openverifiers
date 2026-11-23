@@ -1,6 +1,6 @@
-# OpenVerifiers Masterplan (MP-1.0)
+# OpenVerifiers Masterplan (MP-1.1)
 
-Nov 22, 2026 (amended Nov 23, 2026) · Founder
+Nov 22, 2026 (amended Nov 23, 2026; MP-1.1: D-029) · Founder
 
 The single reference for building OpenVerifiers, from the trusted kernel to frontier science, across six major releases. Every report, directive and change refers back to a section of this plan.
 
@@ -75,7 +75,7 @@ Trust flows upward from a small checked core; ambition lives at the top. The dia
 
 | Layer | Name | Contents | Trusted? |
 | --- | --- | --- | --- |
-| L0 | Exact arithmetic | Rationals, quadratic surds, rigorous intervals, polynomial normal forms | **Yes** (audited unit A, cap 450) |
+| L0 | Exact arithmetic | Rationals, quadratic surds, rigorous intervals, polynomial normal forms | **Yes** (audited unit A, cap 500 per D-029) |
 | L1 | Kernel checker | RawOV data model, trace checker, certificate checker (identities, ideal membership, later SOS), state hash and load | **Yes** (unit B; total TCB cap 2,000) |
 | L2 | Evaluator | Semi-naive Datalog, signed ATMS labels, stratified negation, semirings, deterministic budgets, incremental re-evaluation | No: re-checked by L1 |
 | L3 | Solvers & procedures | z3, sympy, small-scope search, optimizers (MaxSAT / OMT / MIP), validated ODE (v6), `procedure` + FFI | No: they return certificates |
@@ -482,6 +482,7 @@ Newest first. Every future change to this plan adds a row here.
 
 | ID | Date | Decision | Decided by |
 | --- | --- | --- | --- |
+| D-029 | 2026-11-23 | Trusted-code budget: the total stays a hard 2,000; per-unit caps become movable within it: unit A 500, raw/formula.py 410, main 1,090 (= 2,000). Every report gives each unit and the total. Trusted lines are spent in this order: state hash/load (C6), integer/modular arithmetic (C4), pi inside integrands (about 10 lines), then anything else | Claude (CTO); approved by the founder (2026-11-23 message) |
 | D-028 | 2026-11-23 | Claude Code works through engineering checkpoints without waiting for a go-ahead and writes a report at each one. It stops for a false PROVEN, a trusted-code cap, CI red it cannot fix, and every gold or meaning approval, which stays the founder's own act. The founder is referred to as the founder | Founder |
 | D-027 | 2026-11-23 | v1 language scope adds integers and modular arithmetic, verified closed-form ODE solutions, and polynomial for-all statements over the reals via SOS certificates. Inverse trig moves to v2; general ODE solving to v6 | Claude (CTO) |
 | D-026 | 2026-11-23 | Engine priority: exact arithmetic over Q(pi) in the checker, then the exp differential ring in the trusted normal form, then uniqueness certificates | Claude (CTO) |

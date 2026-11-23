@@ -1,7 +1,7 @@
 """Trusted-computing-base size gate.
 
 Counts source lines in the trusted modules that are not blank, not comments
-and not docstrings, and fails if the total exceeds the limit (1,500). Also
+and not docstrings, and fails if a unit exceeds its cap or the total exceeds 2,000 (D-029). Also
 prints the raw line count, docstrings included, for transparency.
 
     python scripts/tcb_size.py
@@ -17,15 +17,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1] / "src" / "openverifiers"
 TRUSTED = ["raw", "checker", "state/hash.py", "state/load.py"]
-LIMIT = 1500
+LIMIT = 1090                                 # D-029: unit caps move within the total
 #: The object layer's exact evaluator is its own audited unit (CTO decision, change
 #: order v1.1 and M-CAP item 4), with its own cap, outside the main count.
-UNITS = {"raw/formula.py": 400}
+UNITS = {"raw/formula.py": 410}
 #: The exact-arithmetic unit (CTO decision D-021, W1): surds, intervals, numeric
 #: checks, polynomial normal form and certificate checking, cap 450.
 EXACT = ["raw/surd.py", "raw/interval.py", "raw/numeric.py", "raw/certificate.py",
          "raw/qpi.py"]
-EXACT_LIMIT = 450
+EXACT_LIMIT = 500
 #: All trusted code, every unit together (W1).
 TOTAL_LIMIT = 2000
 

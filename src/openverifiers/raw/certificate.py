@@ -11,6 +11,10 @@ For a goal L op R (op is =, >= or <=) under hypotheses, a certificate gives:
   rigorous enclosure), never taken from the caller;
 - coeffs: (hypothesis `A = B`, polynomial c): the ideal part, sum c (A - B);
 - squares: (weight w >= 0, polynomial q), for inequalities only;
+- induction: for a goal sum(E, i, n) = F with n a property, the names of the
+  hypotheses `isint(n)` and `n >= 0`. The checker verifies F(0) = 0 and
+  F(n) - F(n-1) = E(n) by normal form; by induction on the natural number n the
+  goal holds (gap e, symbolic sums);
 - wsquares: (w >= 0, hypotheses h1..hk each `f > 0` or `f < 0`, q): the square
   q^2 weighted by w f1 ... fk, which is >= 0 (a sum of squares with positive
   parameters, D-027).
@@ -156,6 +160,7 @@ class Certificate:
     squares: tuple[tuple[Fraction, Term], ...] = ()
     constants: tuple[Term, ...] = ()
     wsquares: tuple[tuple[Fraction, tuple[str, ...], Term], ...] = ()
+    induction: tuple[str, str] | None = None
 
 
 def _cmp(f: Term) -> tuple[str, Term, Term]:
@@ -164,9 +169,28 @@ def _cmp(f: Term) -> tuple[str, Term, Term]:
     raise Unsupported("not a comparison")
 
 
+def _induction(lhs: Term, rhs: Term, hyps: Mapping[str, Term], names: tuple[str, str]) -> bool:
+    if not (isinstance(lhs, Compound) and lhs.functor == "f.sum" and len(lhs.args) == 3):
+        return False
+    body, i, n = lhs.args
+    nonneg = Compound("f.cmp", (Str(">="), n, Num(Fraction(0))))
+    if hyps.get(names[0]) != Compound("f.isint", (n,)) or hyps.get(names[1]) != nonneg \
+            or not (isinstance(n, Compound) and n.functor == "f.p"):
+        return False
+    e, f, x = poly(body), poly(rhs), str(n)
+    if any(v == x for m in e for v, _ in m):      # the body may not mention n itself
+        return False
+    prev = _subst(f, x, _add(poly(n), {(): Fraction(-1)}))
+    step = _add(_add(f, prev, Fraction(-1)), _subst(e, str(Compound("f.v", (i,))), poly(n)),
+                Fraction(-1))
+    return not _subst(f, x, {}) and not step         # F(0) = 0, F(n) - F(n-1) = E(n)
+
+
 def check(goal: Term, hyps: Mapping[str, Term], cert: Certificate) -> bool:
     """True when the certificate proves the goal from the hypotheses."""
     op, lhs, rhs = _cmp(goal)
+    if cert.induction is not None:
+        return op == "=" and _induction(lhs, rhs, hyps, cert.induction)
     if op == "<=":
         op, lhs, rhs = ">=", rhs, lhs
     if op not in ("=", ">=") or (op == "=" and (cert.squares or cert.wsquares)):

@@ -15,6 +15,7 @@ Each step is recorded in ``ObjAnswer.steps``.
 
 from __future__ import annotations
 
+import itertools
 from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 from fractions import Fraction
@@ -312,8 +313,15 @@ def _answer(plan: ObjPlan, st: Settings) -> ObjAnswer:
         if plan.kind == "counterexample":
             assert plan.theorem is not None
             used: set[str] = set()
-            v, why, wit, names = theorem(plan.cls, plan.theorem, r, ans.steps,
-                                         plan.note or plan.props, seek=True, used=used)
+            try:
+                v, why, wit, names = theorem(plan.cls, plan.theorem, r, ans.steps,
+                                             plan.note or plan.props, seek=True, used=used)
+            except Unsupported as e:
+                ans.steps.append(f"cannot expand: {e}")
+                small = _small_naturals(plan.cls, plan.theorem, plan.note or plan.props,
+                                        ans.steps)
+                v, why, wit, names = ("REFUTED", "", small, ()) if small is not None else \
+                    ("UNKNOWN", "plugin_unknown", None, ())
             ans.reductions = frozenset(used)
             # The verdict is the theorem's: REFUTED with the checked counterexample,
             # PROVEN when its negation is unsat, UNKNOWN otherwise.
@@ -759,10 +767,14 @@ def certify(ans: ObjAnswer, cls: ClassDef, th: tuple[str, Term],
         return
     used = sorted({n for c in certs for n, _ in c.coeffs} | {n for c in certs
                                                               for n in c.factors})
-    ans.steps.append("certificate [kernel: raw/certificate.py]: exact normal form of "
-                     "multiplier * (lhs - rhs) - ideal part - squares is 0"
-                     + (f"; hypotheses used: {', '.join(used)}" if used else
-                        "; an identity"))
+    if any(c.induction for c in certs):
+        ans.steps.append("certificate [kernel: raw/certificate.py]: by induction on the "
+                         "natural number: F(0) = 0 and F(n) - F(n-1) = E(n), exact normal form")
+    else:
+        ans.steps.append("certificate [kernel: raw/certificate.py]: exact normal form of "
+                         "multiplier * (lhs - rhs) - ideal part - squares is 0"
+                         + (f"; hypotheses used: {', '.join(used)}" if used else
+                            "; an identity"))
     ans.verdict, ans.reason, ans.certified = "PROVEN", "", True
 
 
@@ -806,6 +818,30 @@ def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:
                          + (f"; multipliers {', '.join(cert.factors)}" if cert.factors else "")
                          + f"; hypotheses used: {', '.join(used) or 'none'}")
         ans.certified = True
+
+
+def _small_naturals(cls: ClassDef, th: tuple[str, Term], gen: dict[str, Term] | str,
+                    steps: list[str], top: int = 12) -> dict[str, Term] | None:
+    """A counterexample among small natural numbers, for a class whose properties are
+    all Integer (sums with a symbolic limit cannot be expanded for the solver). Each
+    candidate is decided by the trusted evaluator: invariants hold, theorem fails."""
+    if isinstance(gen, str):
+        return None
+    names = [k for k, v in gen.items() if isinstance(v, Var)]
+    if len(names) != len(gen) or not names or (top + 1) ** len(names) > 5000 or not all(
+            n in {x.split(".")[-1] for x, _ in cls.invariants if x.startswith("Integer.")}
+            for n in names):
+        return None
+    for vals in itertools.product(range(top + 1), repeat=len(names)):
+        props: dict[str, Term] = {n: Num(Fraction(v)) for n, v in zip(names, vals, strict=True)}
+        try:
+            if failing(cls, props) == () and not holds(th[1], props):
+                steps.append(f"re-check [checker] {_instance(props)}: every invariant holds "
+                             f"and {th[0]} fails (small natural numbers, exhaustive to {top})")
+                return props
+        except Unsupported:
+            continue
+    return None
 
 
 def _conjuncts_of(f: Term) -> int:
@@ -854,6 +890,9 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                 except Unsupported as e:
                     ta.steps.append(f"cannot expand: {e}")
                     v, why, wit = "UNKNOWN", "plugin_unknown", None
+                    small = _small_naturals(cls, th, gen, ta.steps)
+                    if small is not None:
+                        v, why, wit = "REFUTED", "", small
                 lemmas = tuple((n, f) for n, (f, _) in proven.items()
                                if n.split(".")[0] in (*classes.ancestors[name], name)
                                and classes.lemma_usable(n, name))

@@ -382,6 +382,8 @@ class _Formula:
             return None if d1 is None else make_dims({n: k / 2 for n, k in d1})
         if isinstance(e, A.Call) and e.fn == "value_at" and len(e.args) == 3:
             return self.dims(e.args[0])
+        if isinstance(e, A.Call) and e.fn == "sum" and len(e.args) == 3:
+            return None                       # the body mentions the index; not checked
         if isinstance(e, A.Call) and e.fn in CALCULUS and len(e.args) == 2:
             body, var = self.dims(e.args[0]), self.dims(e.args[1])
             if body is None or var is None:
@@ -578,6 +580,18 @@ class _Formula:
             self.dims(e)            # checks the body's dimensions
             x = _f("p", Str(v.name))
             return _f(e.fn, go(e.args[0])[0], x, x), REAL
+        if isinstance(e, A.Call) and e.fn == "sum":
+            if len(e.args) != 3 or not isinstance(e.args[1], A.Name) \
+                    or e.args[1].name in self.props or e.args[1].name in self.bound:
+                raise _Fail("E205", "sum takes an expression, a new index name and an upper "
+                            "limit", e.span, "e.g. sum(i * i, i, n) for 1^2 + ... + n^2")
+            i = e.args[1].name
+            self.bound[i] = REAL
+            try:
+                body = go(e.args[0])[0]
+            finally:
+                del self.bound[i]
+            return _f("sum", body, Str(i), go(e.args[2])[0]), REAL
         if isinstance(e, A.Call) and e.fn == "value_at":
             if len(e.args) != 3 or not (isinstance(e.args[1], A.Name)
                                         and e.args[1].name in self.props):

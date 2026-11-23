@@ -449,6 +449,15 @@ class Expander:
             return SNum(out)
         if f == "f.valueat":
             return self.value(subst(a[0], a[1], a[2]))
+        if f == "f.sum" and isinstance(a[1], Str):  # a numeric upper limit only
+            n = _num(self.value(a[2])).p.constant()
+            if n is None or n.denominator != 1 or not 0 <= n <= 10_000:
+                raise Unsupported("a sum with a symbolic upper limit (proved by induction)")
+            out = Poly.const(Fraction(0))
+            for j in range(1, int(n) + 1):
+                out = out + _num(self.value(subst(a[0], Compound("f.v", (a[1],)),
+                                                  Num(Fraction(j))))).p
+            return SNum(out)
         if f in ("f.integral", "f.deriv"):
             self.fresh_tau += 1
             tau = f"TAU_{self.fresh_tau}"

@@ -231,9 +231,9 @@ def generate(name: str, items: tuple[Term, ...], k: int | None = None) -> Iterat
 
 
 class _Eval:
-    def __init__(self, props: Mapping[str, Term]) -> None:
+    def __init__(self, props: Mapping[str, Term], env: Mapping[str, Term] | None = None) -> None:
         self.props = props
-        self.env: dict[str, Term] = {}
+        self.env: dict[str, Term] = dict(env or {})
 
     def expr(self, t: Term) -> Value:
         if isinstance(t, Num):
@@ -252,6 +252,12 @@ class _Eval:
             return self._calculus(f, a)
         if f == "f.valueat":                 # E with the designator x set to c (D-027)
             return self.expr(subst(a[0], a[1], a[2]))
+        if f == "f.sum" and isinstance(a[1], Str):   # sum of E for i = 1..n (gap e)
+            n = _rat(self.expr(a[2]))
+            if n.denominator != 1 or not 0 <= n <= 10_000:
+                raise Unsupported("sum needs a whole upper limit in 0..10000")
+            return Num(sum((_rat(_Eval(self.props, {**self.env, a[1].value: Num(Fraction(i))})
+                                 .expr(a[0])) for i in range(1, int(n) + 1)), Fraction(0)))
         vals = [self.expr(x) for x in a] if f not in ("f.at",) else []
         if f in ("f.tuple", "f.list"):
             return Compound(f, tuple(self._term(v) for v in vals))

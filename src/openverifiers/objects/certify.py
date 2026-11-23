@@ -35,7 +35,7 @@ from ..raw.terms import Compound, Num, Str, Term
 def comparisons(f: Term, name: str) -> list[tuple[str, Term]]:
     """The top-level comparison conjuncts of a formula, named name, name#2, ..."""
     parts = list(f.args) if isinstance(f, Compound) and f.functor == "f.and" else [f]
-    out = [p for p in parts if isinstance(p, Compound) and p.functor == "f.cmp"]
+    out = [p for p in parts if isinstance(p, Compound) and p.functor in ("f.cmp", "f.isint")]
     return [(name if i == 0 else f"{name}#{i + 1}", p) for i, p in enumerate(out)]
 
 
@@ -106,6 +106,14 @@ def find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
 def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
     if not (isinstance(goal, Compound) and goal.functor == "f.cmp"):
         return None
+    lhs0 = goal.args[1]
+    if isinstance(lhs0, Compound) and lhs0.functor == "f.sum":     # by induction on n
+        n = lhs0.args[2]
+        isint = next((k for k, h in hyps.items() if h == Compound("f.isint", (n,))), None)
+        nonneg = next((k for k, h in hyps.items()
+                       if h == Compound("f.cmp", (Str(">="), n, Num(Fraction(0))))), None)
+        return Certificate(induction=(isint, nonneg)) if isint and nonneg else None
+    hyps = {k: h for k, h in hyps.items() if isinstance(h, Compound) and h.functor == "f.cmp"}
     op = goal.args[0].value if isinstance(goal.args[0], Str) else ""
     if op not in ("=", ">=", "<="):
         return None

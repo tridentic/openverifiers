@@ -628,3 +628,14 @@ not do yet.
   (checked in the trusted ring of polynomials in t and exp atoms) and
   `value_at(y(t), t, t0) = y0`. Solving an ODE is not supported (v6); the
   solution must be proposed.
+
+## Sums and induction (gap e)
+
+- `sum(E, i, n)` is E summed over the new index i = 1..n. For a whole n up to
+  10,000 the evaluator sums directly.
+- A closed form `sum(E, i, n) = F(n)` is proved for every natural n by an
+  induction certificate: the hypotheses must state `n: Integer` and `n >= 0`,
+  and the checker verifies F(0) = 0 and F(n) - F(n-1) = E(n) by exact normal
+  form (E may not mention n).
+- A false closed form is refuted by a counterexample among small natural
+  numbers, each decided by the evaluator.

@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "paid_and_unpaid",
+  "tag": "inconsistent_expected",
+  "why": "paid(x) and not paid(x) are both stated: inconsistent.",
+  "queries": [
+    {
+      "query": "PROVE paid(it)",
+      "verdict": "INCONSISTENT",
+      "why": "the two facts conflict."
+    }
+  ]
+}

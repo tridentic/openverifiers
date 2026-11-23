@@ -1,0 +1,16 @@
+{
+  "suite": "adversarial",
+  "case": "assumed_dry_run",
+  "tag": "needs_assumption",
+  "why": "safe_to_run follows only from the assumption dry_run; the answer must name it.",
+  "queries": [
+    {
+      "query": "PROVE safe_to_run(x1)",
+      "verdict": "PROVEN",
+      "assumptions": [
+        "dry_run"
+      ],
+      "why": "only under the assumption."
+    }
+  ]
+}

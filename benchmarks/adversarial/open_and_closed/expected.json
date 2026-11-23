@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "open_and_closed",
+  "tag": "inconsistent_expected",
+  "why": "shut(x) and not shut(x) are both stated: inconsistent.",
+  "queries": [
+    {
+      "query": "PROVE shut(it)",
+      "verdict": "INCONSISTENT",
+      "why": "the two facts conflict."
+    }
+  ]
+}

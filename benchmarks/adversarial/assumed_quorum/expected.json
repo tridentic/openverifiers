@@ -1,0 +1,16 @@
+{
+  "suite": "adversarial",
+  "case": "assumed_quorum",
+  "tag": "needs_assumption",
+  "why": "valid_vote follows only from the assumption quorum_count; the answer must name it.",
+  "queries": [
+    {
+      "query": "PROVE valid_vote(x1)",
+      "verdict": "PROVEN",
+      "assumptions": [
+        "quorum_count"
+      ],
+      "why": "only under the assumption."
+    }
+  ]
+}

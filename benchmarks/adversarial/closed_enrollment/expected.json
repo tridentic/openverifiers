@@ -1,0 +1,19 @@
+{
+  "suite": "adversarial",
+  "case": "closed_enrollment",
+  "tag": "standard",
+  "why": "enrolled is closed-world and only another student is listed, so the answer is REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE enrolled(other)",
+      "verdict": "REFUTED",
+      "why": "closed world."
+    },
+    {
+      "query": "PROVE enrolled(listed)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "stated."
+    }
+  ]
+}

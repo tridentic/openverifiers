@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "accel_in_newtons",
+  "tag": "unit_error",
+  "why": "Body.accel gets 4 N, a Force: must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

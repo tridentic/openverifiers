@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "unknown_signature",
+  "tag": "unknown_expected",
+  "why": "nothing is stated about signed; signed is open-world, so the honest answer is UNKNOWN, never REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE signed(who)",
+      "verdict": "UNKNOWN",
+      "why": "open world: absent is not false."
+    }
+  ]
+}

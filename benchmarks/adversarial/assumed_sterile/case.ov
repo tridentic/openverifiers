@@ -1,0 +1,14 @@
+# A conclusion that rests on an assumption, not on a fact.
+package bench.assumed_sterile
+type Tool
+predicate autoclaved(x: Tool) world open
+predicate sterile(x: Tool) world open
+axiom follows(x: Tool): autoclaved(x) -> sterile(x)
+
+test assumed_sterile {
+  scenario assumed_sterile_s uses bench.assumed_sterile {
+    entity x1: Tool
+    assume cycle_logged: autoclaved(x1)
+    query PROVE sterile(x1)
+  }
+}

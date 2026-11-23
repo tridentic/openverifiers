@@ -1,0 +1,19 @@
+{
+  "suite": "adversarial",
+  "case": "closed_registry",
+  "tag": "standard",
+  "why": "registered is closed-world and only another device is listed, so the answer is REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE registered(other)",
+      "verdict": "REFUTED",
+      "why": "closed world."
+    },
+    {
+      "query": "PROVE registered(listed)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "stated."
+    }
+  ]
+}

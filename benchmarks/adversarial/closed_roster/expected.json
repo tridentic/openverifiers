@@ -1,0 +1,19 @@
+{
+  "suite": "adversarial",
+  "case": "closed_roster",
+  "tag": "standard",
+  "why": "on_team is closed-world and only another player is listed, so the answer is REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE on_team(other)",
+      "verdict": "REFUTED",
+      "why": "closed world."
+    },
+    {
+      "query": "PROVE on_team(listed)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "stated."
+    }
+  ]
+}

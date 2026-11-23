@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "mass_in_seconds",
+  "tag": "unit_error",
+  "why": "Body.mass gets 2 s, a Time: must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

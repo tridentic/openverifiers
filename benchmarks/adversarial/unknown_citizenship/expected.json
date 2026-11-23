@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "unknown_citizenship",
+  "tag": "unknown_expected",
+  "why": "nothing is stated about citizen; citizen is open-world, so the honest answer is UNKNOWN, never REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE citizen(who)",
+      "verdict": "UNKNOWN",
+      "why": "open world: absent is not false."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "suite": "adversarial",
+  "case": "assumed_sterile",
+  "tag": "needs_assumption",
+  "why": "sterile follows only from the assumption cycle_logged; the answer must name it.",
+  "queries": [
+    {
+      "query": "PROVE sterile(x1)",
+      "verdict": "PROVEN",
+      "assumptions": [
+        "cycle_logged"
+      ],
+      "why": "only under the assumption."
+    }
+  ]
+}

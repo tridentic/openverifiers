@@ -1,0 +1,13 @@
+# Directly contradictory facts about one cat.
+package bench.alive_and_dead
+type Cat
+predicate alive(x: Cat) world open
+
+test alive_and_dead {
+  scenario alive_and_dead_s uses bench.alive_and_dead {
+    entity it: Cat
+    fact alive(it)
+    fact not alive(it)
+    query PROVE alive(it)
+  }
+}

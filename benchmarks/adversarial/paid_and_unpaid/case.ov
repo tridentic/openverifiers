@@ -1,0 +1,13 @@
+# Directly contradictory facts about one invoice.
+package bench.paid_and_unpaid
+type Invoice
+predicate paid(x: Invoice) world open
+
+test paid_and_unpaid {
+  scenario paid_and_unpaid_s uses bench.paid_and_unpaid {
+    entity it: Invoice
+    fact paid(it)
+    fact not paid(it)
+    query PROVE paid(it)
+  }
+}

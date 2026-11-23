@@ -1,0 +1,12 @@
+# A accel given in the wrong unit (3 W).
+package bench.accel_in_watts
+import physics.mechanics
+
+test accel_in_watts {
+  scenario accel_in_watts_s uses physics.mechanics {
+    entity box: Body
+    fact box.accel = 3 W
+    fact box.mass = 2 kg
+    query PROVE net_force(box, 10 N)
+  }
+}

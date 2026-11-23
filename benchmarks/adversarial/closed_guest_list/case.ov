@@ -1,0 +1,13 @@
+# A closed list: what is not on it is not the case.
+package bench.closed_guest_list
+type Guest
+predicate invited(x: Guest) world closed
+
+test closed_guest_list {
+  scenario closed_guest_list_s uses bench.closed_guest_list {
+    entity listed, other: Guest
+    fact invited(listed)
+    query PROVE invited(other)
+    query PROVE invited(listed)
+  }
+}

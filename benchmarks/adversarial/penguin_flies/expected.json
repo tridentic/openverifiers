@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "penguin_flies",
+  "tag": "inconsistent_expected",
+  "why": "rules derive flies(x) from bird(x) and not flies(x) from penguin(x); x is both: inconsistent.",
+  "queries": [
+    {
+      "query": "PROVE flies(x1)",
+      "verdict": "INCONSISTENT",
+      "why": "both rules fire on x1."
+    }
+  ]
+}

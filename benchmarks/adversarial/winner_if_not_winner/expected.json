@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "winner_if_not_winner",
+  "tag": "adversarial",
+  "why": "winner depends on its own negation through a closed-world not: no stratified model; must be rejected.",
+  "error": [
+    "not_stratifiable"
+  ]
+}

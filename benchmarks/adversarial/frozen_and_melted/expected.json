@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "frozen_and_melted",
+  "tag": "inconsistent_expected",
+  "why": "frozen(x) and not frozen(x) are both stated: inconsistent.",
+  "queries": [
+    {
+      "query": "PROVE frozen(it)",
+      "verdict": "INCONSISTENT",
+      "why": "the two facts conflict."
+    }
+  ]
+}

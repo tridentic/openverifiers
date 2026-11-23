@@ -1,0 +1,14 @@
+# A conclusion that rests on an assumption, not on a fact.
+package bench.assumed_approval
+type Loan
+predicate credit_ok(x: Loan) world open
+predicate approved_loan(x: Loan) world open
+axiom follows(x: Loan): credit_ok(x) -> approved_loan(x)
+
+test assumed_approval {
+  scenario assumed_approval_s uses bench.assumed_approval {
+    entity x1: Loan
+    assume credit_checked: credit_ok(x1)
+    query PROVE approved_loan(x1)
+  }
+}

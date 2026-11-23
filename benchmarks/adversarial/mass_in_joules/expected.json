@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "mass_in_joules",
+  "tag": "unit_error",
+  "why": "Body.mass gets 7 J, a Energy: must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

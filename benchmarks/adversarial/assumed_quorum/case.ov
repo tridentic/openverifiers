@@ -1,0 +1,14 @@
+# A conclusion that rests on an assumption, not on a fact.
+package bench.assumed_quorum
+type Vote
+predicate quorum(x: Vote) world open
+predicate valid_vote(x: Vote) world open
+axiom follows(x: Vote): quorum(x) -> valid_vote(x)
+
+test assumed_quorum {
+  scenario assumed_quorum_s uses bench.assumed_quorum {
+    entity x1: Vote
+    assume quorum_count: quorum(x1)
+    query PROVE valid_vote(x1)
+  }
+}

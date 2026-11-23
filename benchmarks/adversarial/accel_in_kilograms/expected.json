@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "accel_in_kilograms",
+  "tag": "unit_error",
+  "why": "Body.accel gets 1 kg, a Mass: must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

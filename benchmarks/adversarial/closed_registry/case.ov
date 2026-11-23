@@ -1,0 +1,13 @@
+# A closed list: what is not on it is not the case.
+package bench.closed_registry
+type Device
+predicate registered(x: Device) world closed
+
+test closed_registry {
+  scenario closed_registry_s uses bench.closed_registry {
+    entity listed, other: Device
+    fact registered(listed)
+    query PROVE registered(other)
+    query PROVE registered(listed)
+  }
+}

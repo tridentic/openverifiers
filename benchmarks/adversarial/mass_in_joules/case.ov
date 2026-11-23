@@ -1,0 +1,12 @@
+# A mass given in the wrong unit (7 J).
+package bench.mass_in_joules
+import physics.mechanics
+
+test mass_in_joules {
+  scenario mass_in_joules_s uses physics.mechanics {
+    entity box: Body
+    fact box.mass = 7 J
+    fact box.accel = 2 m/s^2
+    query PROVE net_force(box, 10 N)
+  }
+}

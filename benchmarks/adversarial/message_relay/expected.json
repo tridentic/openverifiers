@@ -1,0 +1,14 @@
+{
+  "suite": "adversarial",
+  "case": "message_relay",
+  "tag": "budget",
+  "why": "the closure of msg is infinite; a closed-world NO needs a complete stratum, so UNKNOWN(budget).",
+  "queries": [
+    {
+      "query": "PROVE msg(b)",
+      "verdict": "UNKNOWN",
+      "reason": "budget",
+      "why": "the stratum is never complete."
+    }
+  ]
+}

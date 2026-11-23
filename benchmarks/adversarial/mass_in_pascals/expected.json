@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "mass_in_pascals",
+  "tag": "unit_error",
+  "why": "Body.mass gets 5 Pa, a Pressure: must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

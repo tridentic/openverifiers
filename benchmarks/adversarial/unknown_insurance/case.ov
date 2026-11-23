@@ -1,0 +1,11 @@
+# An open-world fact that nobody recorded.
+package bench.unknown_insurance
+type Car
+predicate insured(x: Car) world open
+
+test unknown_insurance {
+  scenario unknown_insurance_s uses bench.unknown_insurance {
+    entity who: Car
+    query PROVE insured(who)
+  }
+}

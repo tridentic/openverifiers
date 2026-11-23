@@ -1,0 +1,15 @@
+# An infinite model: doll(a), doll(inside(a)), ... The budget must stop it, and the
+# answer must not be a closed-world NO.
+package bench.nesting_dolls
+type Doll
+function inside(x: Doll) -> Doll
+predicate doll(x: Doll) world closed
+axiom grow(x: Doll): doll(x) -> doll(inside(x))
+
+test nesting_dolls {
+  scenario nesting_dolls_s uses bench.nesting_dolls {
+    entity a, b: Doll
+    fact doll(a)
+    query PROVE doll(b)
+  }
+}

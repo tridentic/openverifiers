@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "mass_in_metres",
+  "tag": "unit_error",
+  "why": "Body.mass gets 3 m, a Length: must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

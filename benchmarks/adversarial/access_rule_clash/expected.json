@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "access_rule_clash",
+  "tag": "inconsistent_expected",
+  "why": "rules derive may_enter(x) from staff(x) and not may_enter(x) from suspended(x); x is both: inconsistent.",
+  "queries": [
+    {
+      "query": "PROVE may_enter(x1)",
+      "verdict": "INCONSISTENT",
+      "why": "both rules fire on x1."
+    }
+  ]
+}

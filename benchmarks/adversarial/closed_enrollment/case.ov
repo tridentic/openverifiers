@@ -1,0 +1,13 @@
+# A closed list: what is not on it is not the case.
+package bench.closed_enrollment
+type Student
+predicate enrolled(x: Student) world closed
+
+test closed_enrollment {
+  scenario closed_enrollment_s uses bench.closed_enrollment {
+    entity listed, other: Student
+    fact enrolled(listed)
+    query PROVE enrolled(other)
+    query PROVE enrolled(listed)
+  }
+}

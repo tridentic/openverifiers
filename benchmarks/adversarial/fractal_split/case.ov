@@ -1,0 +1,15 @@
+# An infinite model: cell(a), cell(half(a)), ... The budget must stop it, and the
+# answer must not be a closed-world NO.
+package bench.fractal_split
+type Cell
+function half(x: Cell) -> Cell
+predicate cell(x: Cell) world closed
+axiom grow(x: Cell): cell(x) -> cell(half(x))
+
+test fractal_split {
+  scenario fractal_split_s uses bench.fractal_split {
+    entity a, b: Cell
+    fact cell(a)
+    query PROVE cell(b)
+  }
+}

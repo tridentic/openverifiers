@@ -1,0 +1,12 @@
+# A accel given in the wrong unit (1 kg).
+package bench.accel_in_kilograms
+import physics.mechanics
+
+test accel_in_kilograms {
+  scenario accel_in_kilograms_s uses physics.mechanics {
+    entity box: Body
+    fact box.accel = 1 kg
+    fact box.mass = 2 kg
+    query PROVE net_force(box, 10 N)
+  }
+}

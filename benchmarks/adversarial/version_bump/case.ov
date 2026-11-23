@@ -1,0 +1,15 @@
+# An infinite model: ver(a), ver(next_version(a)), ... The budget must stop it, and the
+# answer must not be a closed-world NO.
+package bench.version_bump
+type Ver
+function next_version(x: Ver) -> Ver
+predicate ver(x: Ver) world closed
+axiom grow(x: Ver): ver(x) -> ver(next_version(x))
+
+test version_bump {
+  scenario version_bump_s uses bench.version_bump {
+    entity a, b: Ver
+    fact ver(a)
+    query PROVE ver(b)
+  }
+}

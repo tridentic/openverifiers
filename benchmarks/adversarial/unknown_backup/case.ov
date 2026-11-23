@@ -1,0 +1,11 @@
+# An open-world fact that nobody recorded.
+package bench.unknown_backup
+type Server
+predicate backed_up(x: Server) world open
+
+test unknown_backup {
+  scenario unknown_backup_s uses bench.unknown_backup {
+    entity who: Server
+    query PROVE backed_up(who)
+  }
+}

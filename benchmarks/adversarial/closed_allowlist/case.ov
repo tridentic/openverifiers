@@ -1,0 +1,13 @@
+# A closed list: what is not on it is not the case.
+package bench.closed_allowlist
+type Host
+predicate allowed_host(x: Host) world closed
+
+test closed_allowlist {
+  scenario closed_allowlist_s uses bench.closed_allowlist {
+    entity listed, other: Host
+    fact allowed_host(listed)
+    query PROVE allowed_host(other)
+    query PROVE allowed_host(listed)
+  }
+}

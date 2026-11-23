@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "unknown_insurance",
+  "tag": "unknown_expected",
+  "why": "nothing is stated about insured; insured is open-world, so the honest answer is UNKNOWN, never REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE insured(who)",
+      "verdict": "UNKNOWN",
+      "why": "open world: absent is not false."
+    }
+  ]
+}

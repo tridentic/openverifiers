@@ -1,0 +1,14 @@
+{
+  "suite": "adversarial",
+  "case": "nesting_dolls",
+  "tag": "budget",
+  "why": "the closure of doll is infinite; a closed-world NO needs a complete stratum, so UNKNOWN(budget).",
+  "queries": [
+    {
+      "query": "PROVE doll(b)",
+      "verdict": "UNKNOWN",
+      "reason": "budget",
+      "why": "the stratum is never complete."
+    }
+  ]
+}

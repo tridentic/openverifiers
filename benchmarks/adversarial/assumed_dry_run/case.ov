@@ -1,0 +1,14 @@
+# A conclusion that rests on an assumption, not on a fact.
+package bench.assumed_dry_run
+type Script
+predicate dry_run_passed(x: Script) world open
+predicate safe_to_run(x: Script) world open
+axiom follows(x: Script): dry_run_passed(x) -> safe_to_run(x)
+
+test assumed_dry_run {
+  scenario assumed_dry_run_s uses bench.assumed_dry_run {
+    entity x1: Script
+    assume dry_run: dry_run_passed(x1)
+    query PROVE safe_to_run(x1)
+  }
+}

@@ -1,0 +1,11 @@
+# An open-world fact that nobody recorded.
+package bench.unknown_allergy
+type Patient
+predicate allergic(x: Patient) world open
+
+test unknown_allergy {
+  scenario unknown_allergy_s uses bench.unknown_allergy {
+    entity who: Patient
+    query PROVE allergic(who)
+  }
+}

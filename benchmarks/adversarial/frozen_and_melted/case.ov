@@ -1,0 +1,13 @@
+# Directly contradictory facts about one ice.
+package bench.frozen_and_melted
+type Ice
+predicate frozen(x: Ice) world open
+
+test frozen_and_melted {
+  scenario frozen_and_melted_s uses bench.frozen_and_melted {
+    entity it: Ice
+    fact frozen(it)
+    fact not frozen(it)
+    query PROVE frozen(it)
+  }
+}

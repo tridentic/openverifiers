@@ -1,0 +1,17 @@
+# Two rules that disagree about the same order (open world, no priority).
+package bench.refund_policy_clash
+type Order
+predicate refundable_kind(x: Order) world open
+predicate final_sale(x: Order) world open
+predicate refundable(x: Order) world open
+axiom yes(x: Order): refundable_kind(x) -> refundable(x)
+axiom no(x: Order): final_sale(x) -> not refundable(x)
+
+test refund_policy_clash {
+  scenario refund_policy_clash_s uses bench.refund_policy_clash {
+    entity x1: Order
+    fact refundable_kind(x1)
+    fact final_sale(x1)
+    query PROVE refundable(x1)
+  }
+}

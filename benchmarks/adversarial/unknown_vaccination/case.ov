@@ -1,0 +1,11 @@
+# An open-world fact that nobody recorded.
+package bench.unknown_vaccination
+type Child
+predicate vaccinated(x: Child) world open
+
+test unknown_vaccination {
+  scenario unknown_vaccination_s uses bench.unknown_vaccination {
+    entity who: Child
+    query PROVE vaccinated(who)
+  }
+}

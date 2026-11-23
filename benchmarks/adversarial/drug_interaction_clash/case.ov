@@ -1,0 +1,17 @@
+# Two rules that disagree about the same drug (open world, no priority).
+package bench.drug_interaction_clash
+type Drug
+predicate approved_drug(x: Drug) world open
+predicate recalled(x: Drug) world open
+predicate may_prescribe(x: Drug) world open
+axiom yes(x: Drug): approved_drug(x) -> may_prescribe(x)
+axiom no(x: Drug): recalled(x) -> not may_prescribe(x)
+
+test drug_interaction_clash {
+  scenario drug_interaction_clash_s uses bench.drug_interaction_clash {
+    entity x1: Drug
+    fact approved_drug(x1)
+    fact recalled(x1)
+    query PROVE may_prescribe(x1)
+  }
+}

@@ -1,0 +1,13 @@
+# Directly contradictory facts about one door.
+package bench.open_and_closed
+type Door
+predicate shut(x: Door) world open
+
+test open_and_closed {
+  scenario open_and_closed_s uses bench.open_and_closed {
+    entity it: Door
+    fact shut(it)
+    fact not shut(it)
+    query PROVE shut(it)
+  }
+}

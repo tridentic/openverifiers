@@ -1,0 +1,12 @@
+# A accel given in the wrong unit (9 m/s).
+package bench.accel_as_speed
+import physics.mechanics
+
+test accel_as_speed {
+  scenario accel_as_speed_s uses physics.mechanics {
+    entity box: Body
+    fact box.accel = 9 m/s
+    fact box.mass = 2 kg
+    query PROVE net_force(box, 10 N)
+  }
+}

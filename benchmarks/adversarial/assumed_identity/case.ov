@@ -1,0 +1,14 @@
+# A conclusion that rests on an assumption, not on a fact.
+package bench.assumed_identity
+type Caller
+predicate id_matched(x: Caller) world open
+predicate verified(x: Caller) world open
+axiom follows(x: Caller): id_matched(x) -> verified(x)
+
+test assumed_identity {
+  scenario assumed_identity_s uses bench.assumed_identity {
+    entity x1: Caller
+    assume id_check: id_matched(x1)
+    query PROVE verified(x1)
+  }
+}

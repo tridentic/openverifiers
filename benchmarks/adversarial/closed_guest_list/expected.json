@@ -1,0 +1,19 @@
+{
+  "suite": "adversarial",
+  "case": "closed_guest_list",
+  "tag": "standard",
+  "why": "invited is closed-world and only another guest is listed, so the answer is REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE invited(other)",
+      "verdict": "REFUTED",
+      "why": "closed world."
+    },
+    {
+      "query": "PROVE invited(listed)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "stated."
+    }
+  ]
+}

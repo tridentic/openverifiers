@@ -1,0 +1,15 @@
+# An infinite model: num(a), num(succ(a)), ... The budget must stop it, and the
+# answer must not be a closed-world NO.
+package bench.successor_chain
+type N
+function succ(x: N) -> N
+predicate num(x: N) world closed
+axiom grow(x: N): num(x) -> num(succ(x))
+
+test successor_chain {
+  scenario successor_chain_s uses bench.successor_chain {
+    entity a, b: N
+    fact num(a)
+    query PROVE num(b)
+  }
+}

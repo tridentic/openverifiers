@@ -1,0 +1,14 @@
+# A rule whose conclusion is defined by its own absence.
+package bench.bootstrap_trust
+type Key
+predicate key(x: Key) world closed
+predicate trusted(x: Key) world closed
+axiom paradox(x: Key): key(x), not trusted(x) -> trusted(x)
+
+test bootstrap_trust {
+  scenario bootstrap_trust_s uses bench.bootstrap_trust {
+    entity a: Key
+    fact key(a)
+    query PROVE trusted(a)
+  }
+}

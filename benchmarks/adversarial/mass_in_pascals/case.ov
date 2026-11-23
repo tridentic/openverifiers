@@ -1,0 +1,12 @@
+# A mass given in the wrong unit (5 Pa).
+package bench.mass_in_pascals
+import physics.mechanics
+
+test mass_in_pascals {
+  scenario mass_in_pascals_s uses physics.mechanics {
+    entity box: Body
+    fact box.mass = 5 Pa
+    fact box.accel = 2 m/s^2
+    query PROVE net_force(box, 10 N)
+  }
+}

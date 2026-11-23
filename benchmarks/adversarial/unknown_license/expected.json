@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "unknown_license",
+  "tag": "unknown_expected",
+  "why": "nothing is stated about licensed; licensed is open-world, so the honest answer is UNKNOWN, never REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE licensed(who)",
+      "verdict": "UNKNOWN",
+      "why": "open world: absent is not false."
+    }
+  ]
+}

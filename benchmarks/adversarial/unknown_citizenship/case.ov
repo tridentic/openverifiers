@@ -1,0 +1,11 @@
+# An open-world fact that nobody recorded.
+package bench.unknown_citizenship
+type Person
+predicate citizen(x: Person) world open
+
+test unknown_citizenship {
+  scenario unknown_citizenship_s uses bench.unknown_citizenship {
+    entity who: Person
+    query PROVE citizen(who)
+  }
+}

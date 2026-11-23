@@ -1,0 +1,15 @@
+# An infinite model: msg(a), msg(forward(a)), ... The budget must stop it, and the
+# answer must not be a closed-world NO.
+package bench.message_relay
+type Msg
+function forward(x: Msg) -> Msg
+predicate msg(x: Msg) world closed
+axiom grow(x: Msg): msg(x) -> msg(forward(x))
+
+test message_relay {
+  scenario message_relay_s uses bench.message_relay {
+    entity a, b: Msg
+    fact msg(a)
+    query PROVE msg(b)
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "unknown_consent",
+  "tag": "unknown_expected",
+  "why": "nothing is stated about consented; consented is open-world, so the honest answer is UNKNOWN, never REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE consented(who)",
+      "verdict": "UNKNOWN",
+      "why": "open world: absent is not false."
+    }
+  ]
+}

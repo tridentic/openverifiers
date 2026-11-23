@@ -1,0 +1,13 @@
+# A closed list: what is not on it is not the case.
+package bench.closed_inventory
+type Item
+predicate in_stock(x: Item) world closed
+
+test closed_inventory {
+  scenario closed_inventory_s uses bench.closed_inventory {
+    entity listed, other: Item
+    fact in_stock(listed)
+    query PROVE in_stock(other)
+    query PROVE in_stock(listed)
+  }
+}

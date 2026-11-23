@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "unknown_vaccination",
+  "tag": "unknown_expected",
+  "why": "nothing is stated about vaccinated; vaccinated is open-world, so the honest answer is UNKNOWN, never REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE vaccinated(who)",
+      "verdict": "UNKNOWN",
+      "why": "open world: absent is not false."
+    }
+  ]
+}

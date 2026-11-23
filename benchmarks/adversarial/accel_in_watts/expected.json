@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "accel_in_watts",
+  "tag": "unit_error",
+  "why": "Body.accel gets 3 W, a Power: must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

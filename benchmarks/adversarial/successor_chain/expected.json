@@ -1,0 +1,14 @@
+{
+  "suite": "adversarial",
+  "case": "successor_chain",
+  "tag": "budget",
+  "why": "the closure of num is infinite; a closed-world NO needs a complete stratum, so UNKNOWN(budget).",
+  "queries": [
+    {
+      "query": "PROVE num(b)",
+      "verdict": "UNKNOWN",
+      "reason": "budget",
+      "why": "the stratum is never complete."
+    }
+  ]
+}

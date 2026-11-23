@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "refund_policy_clash",
+  "tag": "inconsistent_expected",
+  "why": "rules derive refundable(x) from refundable_kind(x) and not refundable(x) from final_sale(x); x is both: inconsistent.",
+  "queries": [
+    {
+      "query": "PROVE refundable(x1)",
+      "verdict": "INCONSISTENT",
+      "why": "both rules fire on x1."
+    }
+  ]
+}

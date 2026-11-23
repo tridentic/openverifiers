@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "liar_rule",
+  "tag": "adversarial",
+  "why": "true_claim depends on its own negation through a closed-world not: no stratified model; must be rejected.",
+  "error": [
+    "not_stratifiable"
+  ]
+}

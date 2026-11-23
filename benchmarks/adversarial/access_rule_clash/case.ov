@@ -1,0 +1,17 @@
+# Two rules that disagree about the same user (open world, no priority).
+package bench.access_rule_clash
+type User
+predicate staff(x: User) world open
+predicate suspended(x: User) world open
+predicate may_enter(x: User) world open
+axiom yes(x: User): staff(x) -> may_enter(x)
+axiom no(x: User): suspended(x) -> not may_enter(x)
+
+test access_rule_clash {
+  scenario access_rule_clash_s uses bench.access_rule_clash {
+    entity x1: User
+    fact staff(x1)
+    fact suspended(x1)
+    query PROVE may_enter(x1)
+  }
+}

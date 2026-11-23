@@ -1,0 +1,13 @@
+# A closed list: what is not on it is not the case.
+package bench.closed_roster
+type Player
+predicate on_team(x: Player) world closed
+
+test closed_roster {
+  scenario closed_roster_s uses bench.closed_roster {
+    entity listed, other: Player
+    fact on_team(listed)
+    query PROVE on_team(other)
+    query PROVE on_team(listed)
+  }
+}

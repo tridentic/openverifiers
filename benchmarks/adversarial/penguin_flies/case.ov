@@ -1,0 +1,17 @@
+# Two rules that disagree about the same bird (open world, no priority).
+package bench.penguin_flies
+type Bird
+predicate bird(x: Bird) world open
+predicate penguin(x: Bird) world open
+predicate flies(x: Bird) world open
+axiom yes(x: Bird): bird(x) -> flies(x)
+axiom no(x: Bird): penguin(x) -> not flies(x)
+
+test penguin_flies {
+  scenario penguin_flies_s uses bench.penguin_flies {
+    entity x1: Bird
+    fact bird(x1)
+    fact penguin(x1)
+    query PROVE flies(x1)
+  }
+}

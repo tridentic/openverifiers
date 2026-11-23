@@ -1,0 +1,14 @@
+# A rule whose conclusion is defined by its own absence.
+package bench.winner_if_not_winner
+type Team
+predicate team(x: Team) world closed
+predicate winner(x: Team) world closed
+axiom paradox(x: Team): team(x), not winner(x) -> winner(x)
+
+test winner_if_not_winner {
+  scenario winner_if_not_winner_s uses bench.winner_if_not_winner {
+    entity a: Team
+    fact team(a)
+    query PROVE winner(a)
+  }
+}

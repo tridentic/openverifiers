@@ -1,0 +1,19 @@
+{
+  "suite": "adversarial",
+  "case": "closed_allowlist",
+  "tag": "standard",
+  "why": "allowed_host is closed-world and only another host is listed, so the answer is REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE allowed_host(other)",
+      "verdict": "REFUTED",
+      "why": "closed world."
+    },
+    {
+      "query": "PROVE allowed_host(listed)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "stated."
+    }
+  ]
+}

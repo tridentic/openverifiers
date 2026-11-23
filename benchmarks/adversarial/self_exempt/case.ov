@@ -1,0 +1,14 @@
+# A rule whose conclusion is defined by its own absence.
+package bench.self_exempt
+type Rule
+predicate rule(x: Rule) world closed
+predicate applies(x: Rule) world closed
+axiom paradox(x: Rule): rule(x), not applies(x) -> applies(x)
+
+test self_exempt {
+  scenario self_exempt_s uses bench.self_exempt {
+    entity a: Rule
+    fact rule(a)
+    query PROVE applies(a)
+  }
+}

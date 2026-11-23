@@ -1,0 +1,16 @@
+{
+  "suite": "adversarial",
+  "case": "assumed_identity",
+  "tag": "needs_assumption",
+  "why": "verified follows only from the assumption id_check; the answer must name it.",
+  "queries": [
+    {
+      "query": "PROVE verified(x1)",
+      "verdict": "PROVEN",
+      "assumptions": [
+        "id_check"
+      ],
+      "why": "only under the assumption."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# An open-world fact that nobody recorded.
+package bench.unknown_license
+type Driver
+predicate licensed(x: Driver) world open
+
+test unknown_license {
+  scenario unknown_license_s uses bench.unknown_license {
+    entity who: Driver
+    query PROVE licensed(who)
+  }
+}

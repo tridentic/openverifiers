@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "unknown_backup",
+  "tag": "unknown_expected",
+  "why": "nothing is stated about backed_up; backed_up is open-world, so the honest answer is UNKNOWN, never REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE backed_up(who)",
+      "verdict": "UNKNOWN",
+      "why": "open world: absent is not false."
+    }
+  ]
+}

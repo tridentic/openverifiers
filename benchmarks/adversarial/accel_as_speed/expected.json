@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "accel_as_speed",
+  "tag": "unit_error",
+  "why": "Body.accel gets 9 m/s, a Velocity: must be rejected with E301.",
+  "error": [
+    "E301"
+  ]
+}

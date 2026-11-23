@@ -1,0 +1,19 @@
+{
+  "suite": "adversarial",
+  "case": "closed_inventory",
+  "tag": "standard",
+  "why": "in_stock is closed-world and only another item is listed, so the answer is REFUTED.",
+  "queries": [
+    {
+      "query": "PROVE in_stock(other)",
+      "verdict": "REFUTED",
+      "why": "closed world."
+    },
+    {
+      "query": "PROVE in_stock(listed)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "stated."
+    }
+  ]
+}

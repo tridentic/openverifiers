@@ -1,0 +1,16 @@
+{
+  "suite": "adversarial",
+  "case": "assumed_approval",
+  "tag": "needs_assumption",
+  "why": "approved_loan follows only from the assumption credit_checked; the answer must name it.",
+  "queries": [
+    {
+      "query": "PROVE approved_loan(x1)",
+      "verdict": "PROVEN",
+      "assumptions": [
+        "credit_checked"
+      ],
+      "why": "only under the assumption."
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "alive_and_dead",
+  "tag": "inconsistent_expected",
+  "why": "alive(x) and not alive(x) are both stated: inconsistent.",
+  "queries": [
+    {
+      "query": "PROVE alive(it)",
+      "verdict": "INCONSISTENT",
+      "why": "the two facts conflict."
+    }
+  ]
+}

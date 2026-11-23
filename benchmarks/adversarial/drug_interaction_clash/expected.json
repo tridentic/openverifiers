@@ -1,0 +1,13 @@
+{
+  "suite": "adversarial",
+  "case": "drug_interaction_clash",
+  "tag": "inconsistent_expected",
+  "why": "rules derive may_prescribe(x) from approved_drug(x) and not may_prescribe(x) from recalled(x); x is both: inconsistent.",
+  "queries": [
+    {
+      "query": "PROVE may_prescribe(x1)",
+      "verdict": "INCONSISTENT",
+      "why": "both rules fire on x1."
+    }
+  ]
+}

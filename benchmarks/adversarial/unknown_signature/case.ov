@@ -1,0 +1,11 @@
+# An open-world fact that nobody recorded.
+package bench.unknown_signature
+type Contract
+predicate signed(x: Contract) world open
+
+test unknown_signature {
+  scenario unknown_signature_s uses bench.unknown_signature {
+    entity who: Contract
+    query PROVE signed(who)
+  }
+}

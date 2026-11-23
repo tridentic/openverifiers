@@ -1,0 +1,14 @@
+# A rule whose conclusion is defined by its own absence.
+package bench.liar_rule
+type Claim
+predicate said(x: Claim) world closed
+predicate true_claim(x: Claim) world closed
+axiom paradox(x: Claim): said(x), not true_claim(x) -> true_claim(x)
+
+test liar_rule {
+  scenario liar_rule_s uses bench.liar_rule {
+    entity a: Claim
+    fact said(a)
+    query PROVE true_claim(a)
+  }
+}

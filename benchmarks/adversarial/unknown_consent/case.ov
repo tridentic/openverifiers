@@ -1,0 +1,11 @@
+# An open-world fact that nobody recorded.
+package bench.unknown_consent
+type Subject
+predicate consented(x: Subject) world open
+
+test unknown_consent {
+  scenario unknown_consent_s uses bench.unknown_consent {
+    entity who: Subject
+    query PROVE consented(who)
+  }
+}

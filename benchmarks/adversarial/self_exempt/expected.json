@@ -1,0 +1,9 @@
+{
+  "suite": "adversarial",
+  "case": "self_exempt",
+  "tag": "adversarial",
+  "why": "applies depends on its own negation through a closed-world not: no stratified model; must be rejected.",
+  "error": [
+    "not_stratifiable"
+  ]
+}

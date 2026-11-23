@@ -801,11 +801,14 @@ def cert_json(c: Certificate) -> dict[str, object]:
             "squares": [[str(w), t(x)] for w, x in c.squares],
             "constants": [t(x) for x in c.constants],
             "wsquares": [[str(w), list(ns), t(x)] for w, ns, x in c.wsquares],
-            "induction": list(c.induction) if c.induction else None}
+            "induction": list(c.induction) if c.induction else None,
+            "sums": [[[t(k), list(ns), t(q) if q is not None else None] for k, ns, q in terms]
+                     for terms in c.sums]}
 
 
 def _lemmas_of(c: Certificate) -> list[str]:
-    names = {n for n, _ in c.coeffs} | set(c.factors)
+    names = {n for n, _ in c.coeffs} | set(c.factors) | {
+        n for terms in c.sums for _, ns, _ in terms for n in ns}
     return sorted({n.removeprefix("lemma:").split("#")[0] for n in names
                    if n.startswith("lemma:")})
 
@@ -813,7 +816,7 @@ def _lemmas_of(c: Certificate) -> list[str]:
 def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:
     """A uniqueness certificate (D-026): the invariants imply asked = value, by ideal
     membership with recorded nonzero multipliers, checked by raw/certificate.py. Only
-    for an unknown that is a whole property and a value in Q or Q(pi)."""
+    for an unknown that is a whole property and a value in Q, Q(pi) or Q(sqrt k)."""
     [(q, v)] = ans.bindings[0].items()
     coords = plan.unknowns[q]
     prop = next((k for k, t in plan.props.items() if len(coords) == 1 and t == coords[0]),
@@ -833,7 +836,7 @@ def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:
                 out = Compound("+", (out, term))
             return out
         x, v = Compound("*", (x, at(qv.den))), at(qv.num)
-    elif not isinstance(v, Num):
+    elif not isinstance(v, Num) and not (isinstance(v, Compound) and v.functor == "f.surd"):
         return
     goal = Compound("f.cmp", (Str("="), x, Num(v.value) if isinstance(v, Num) else v))
     hyps: dict[str, Term] = {}
@@ -848,10 +851,12 @@ def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:
                             "goal": term_to_json(goal), "cert": cert_json(cert),
                             "givens": {k[6:]: term_to_json(h.args[2])  # type: ignore[union-attr]
                                        for k, h in hyps.items() if k.startswith("given:")}})
-        used = sorted({n for n, _ in cert.coeffs} | set(cert.factors))
+        used = sorted({n for n, _ in cert.coeffs} | set(cert.factors)
+                      | {n for terms in cert.sums for _, ns, _ in terms for n in ns})
         ans.steps.append("uniqueness certificate [kernel: raw/certificate.py]: the "
                          f"invariants imply {prop} = {show(v) if isinstance(v, Num) else 'it'}"
                          + (f"; multipliers {', '.join(cert.factors)}" if cert.factors else "")
+                         + (f"; {len(cert.sums)} positive-sum multiplier(s)" if cert.sums else "")
                          + f"; hypotheses used: {', '.join(used) or 'none'}")
         ans.certified = True
 

@@ -113,3 +113,29 @@ def test_normal_form_edge_paths() -> None:
     assert check(goal, {}, Certificate((), (), ((Fraction(1), op("-", A, B)),)))   # <= form
     with pytest.raises(Unsupported):
         check(A, {}, Certificate())                             # the goal is no comparison
+
+
+def test_surd_atoms_and_positive_sums() -> None:
+    """D-030: sqrt(k) is an indeterminate reduced by sqrt(k)^2 = k; a positive sum (a
+    signed constant times positive hypotheses, plus optional squares) joins the
+    multiplier. x > 0, x^2 = 5/2 gives x = sqrt(10)/2 with the multiplier x + sqrt(10)/2."""
+    s = Compound("f.surd", (n(10), n(Fraction(1, 2))))
+    assert poly(op("*", s, s)) == {(): Fraction(5, 2)}
+    assert poly(op("*", op("*", s, s), s)) == poly(op("*", n(Fraction(5, 2)), s))
+    hyps = {"pos": cmp(">", p("x"), n(0)), "sq": cmp("=", op("*", p("x"), p("x")),
+                                                       n(Fraction(5, 2))),
+            "nz": cmp("!=", p("x"), n(0))}
+    goal = cmp("=", p("x"), s)
+    good = Certificate(coeffs=(("sq", n(1)),), sums=(((n(1), ("pos",), None), (s, (), None)),))
+    assert check(goal, hyps, good)
+    neg = Compound("f.surd", (n(10), n(Fraction(-1, 2))))
+    for bad in (Certificate(coeffs=(("sq", n(1)),), sums=(((n(1), ("pos",), None),
+                                                            (neg, (), None)),)),
+                Certificate(coeffs=(("sq", n(1)),), sums=(((n(1), ("nz",), None),
+                                                            (s, (), None)),)),
+                Certificate(coeffs=(("sq", n(1)),), sums=(((n(1), ("pos",), p("x")),),)),
+                Certificate(coeffs=(("sq", n(1)),), sums=((),))):
+        assert not check(goal, hyps, bad)
+    assert not check(cmp("=", p("x"), neg), hyps, good)        # the negative root
+    with pytest.raises(Unsupported):
+        poly(Compound("f.surd", (n(-2), n(1))))

@@ -38,7 +38,9 @@ def _cert(c: Mapping[str, Any]) -> Certificate:
                        tuple((fr(w), tj(x)) for w, x in c["squares"]),
                        tuple(map(tj, c["constants"])),
                        tuple((fr(w), tuple(ns), tj(x)) for w, ns, x in c["wsquares"]),
-                       tuple(c["induction"]) if c["induction"] else None)
+                       tuple(c["induction"]) if c["induction"] else None,
+                       tuple(tuple((tj(k), tuple(ns), tj(q) if q else None) for k, ns, q in t)
+                             for t in c.get("sums", [])))
 
 
 def check_records(records: Sequence[Mapping[str, Any]], defs: Mapping[str, ClassDef]

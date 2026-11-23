@@ -21,6 +21,17 @@ central finite difference of the trusted evaluator's values (step 2^-64,
 This is a numeric cross-check, not a proof; it closes when the trusted normal
 form gains exp atoms (CTO decision 5).
 
+**Surd normal form (D-030, trusted against trusted).** ``surd_normal_form``
+compares the certificate checker's polynomial normal form (raw/certificate.py,
+with sqrt(k) atoms reduced by sqrt(k)^2 = k) with the evaluator on random
+polynomial expressions that contain surd constants.
+
+**Positive-sum multipliers (D-030).** ``positive_sums`` builds random multipliers
+(constants that may be negative or surds, hypotheses that may not be positive,
+optional squares). Every sum the checker accepts must be > 0 at random points
+where the hypotheses hold, and every sum it must refuse (a constant <= 0, a
+hypothesis that is not `>`/`<`, only squared terms) must be refused.
+
     python -m openverifiers.bench.differential --cases 5000 --seed 0
 """
 
@@ -33,6 +44,7 @@ import sys
 from fractions import Fraction
 
 from ..objects.expand import EXPS, LOGS, ROOTS, Expander, Poly, SNum
+from ..raw import certificate as C
 from ..raw import interval as I
 from ..raw.formula import Unsupported, _Eval, _iv
 from ..raw.terms import Compound, Num, Str, Term
@@ -70,6 +82,8 @@ def expr(rng: random.Random, depth: int = 3) -> Term:
     if k == 9:
         return Compound("f.pi", ())
     body = _poly_in(rng, _p("x"))
+    if rng.random() < 0.4:                   # pi inside the integrand (D-030)
+        body = Compound("*", (Compound("f.pi", ()), body))
     return Compound(rng.choice(["f.integral", "f.deriv"]), (body, _p("x"), _p("x")))
 
 
@@ -226,6 +240,125 @@ def exp_derivatives(cases: int, seed: int) -> dict[str, object]:
     return {"cases": cases, "seed": seed, **counts, "examples": examples[:5]}
 
 
+RADICANDS = (2, 3, 5, 6, 7, 10)
+
+
+def _surd(rng: random.Random) -> Term:
+    k = rng.choice(RADICANDS)
+    args: list[Term] = [Num(Fraction(k)), Num(Fraction(rng.randint(-5, 5), rng.randint(1, 4)))]
+    if rng.random() < 0.5:
+        args += [Num(Fraction(1)), Num(Fraction(rng.randint(-5, 5), rng.randint(1, 3)))]
+    return Compound("f.surd", tuple(args))
+
+
+def _surd_expr(rng: random.Random, depth: int = 3) -> Term:
+    if depth == 0 or rng.random() < 0.25:
+        r = rng.random()
+        return _p(rng.choice(PROPS)) if r < 0.4 else _surd(rng) if r < 0.8 else \
+            Num(Fraction(rng.randint(-9, 9), rng.randint(1, 4)))
+    k = rng.randrange(4)
+    a = _surd_expr(rng, depth - 1)
+    if k < 3:
+        return Compound(("+", "-", "*")[k], (a, _surd_expr(rng, depth - 1)))
+    return Compound("^", (a, Num(Fraction(rng.randint(0, 4)))))
+
+
+def _eval_cert_poly(p: C.Poly, props: dict[str, Num]) -> I.Iv:
+    out = I.Iv.of(Fraction(0))
+    for mono, c in p.items():
+        t = I.Iv.of(c)
+        for v, k in mono:
+            x = I.sqrt(I.Iv.of(Fraction(v[5:-1]))) if v.startswith("sqrt(") else \
+                I.Iv.of(next(n.value for name, n in props.items() if str(_p(name)) == v))
+            t = t * x.power(k)
+        out = out + t
+    return out
+
+
+def surd_normal_form(cases: int, seed: int) -> dict[str, object]:
+    rng = random.Random(seed)
+    counts = {"agree": 0, "refused": 0, "disagree": 0}
+    examples = []
+    for _ in range(cases):
+        e = _surd_expr(rng)
+        props = {p: Num(Fraction(rng.randint(-20, 20), rng.randint(1, 6))) for p in PROPS}
+        try:
+            trusted = _iv(_Eval(props).expr(e))
+            normal = _eval_cert_poly(C.poly(e), props)
+        except (Unsupported, I.IntervalError):
+            counts["refused"] += 1
+            continue
+        if normal.hi < trusted.lo or trusted.hi < normal.lo:
+            counts["disagree"] += 1
+            examples.append(f"DISAGREE: {e} at {props}: normal form {normal}, "
+                            f"evaluator {trusted}")
+        else:
+            counts["agree"] += 1
+    return {"cases": cases, "seed": seed, **counts, "examples": examples[:5]}
+
+
+def _cmp(op: str, a: Term, b: Term) -> Term:
+    return Compound("f.cmp", (Str(op), a, b))
+
+
+ZERO = Num(Fraction(0))
+SUM_HYPS = {"hx": _cmp(">", _p("x"), ZERO), "hy": _cmp("<", _p("y"), ZERO),
+            "hz": _cmp("!=", _p("z"), ZERO), "eq": _cmp("=", _p("z"), _p("z"))}
+
+
+def one_sum(rng: random.Random) -> str:
+    terms = []
+    for _ in range(rng.randint(1, 3)):
+        c = _surd(rng) if rng.random() < 0.5 else Num(Fraction(rng.randint(-3, 5), 2))
+        names = tuple(rng.choice(["hx", "hx", "hy", "hy", "hz", "eq"])
+                      for _ in range(rng.randint(0, 2)))
+        q = _surd_expr(rng, 1) if rng.random() < 0.3 else None
+        terms.append((c, names, q))
+    goal = _cmp("=", _p("x"), _p("x"))             # M (x - x) = 0: only the signs decide
+    accepted = C.check(goal, SUM_HYPS, C.Certificate(sums=(tuple(terms),)))
+    try:
+        signs = [_iv(_Eval({}).expr(c)) for c, _, _ in terms]
+    except (Unsupported, I.IntervalError):
+        return "refused"
+    should = all(sg.lo > 0 for sg in signs) and all(
+        n in ("hx", "hy") for _, ns, _ in terms for n in ns) and any(
+        q is None for _, _, q in terms)
+    if accepted != should:
+        return f"DISAGREE: sum {terms}: checker {accepted}, expected {should}"
+    if not accepted:
+        return "rejected"
+    for _ in range(5):                              # > 0 wherever the hypotheses hold
+        props = {"x": Num(Fraction(rng.randint(1, 30), rng.randint(1, 6))),
+                 "y": Num(Fraction(-rng.randint(1, 30), rng.randint(1, 6))),
+                 "z": Num(Fraction(rng.randint(-9, 9), rng.randint(1, 3)))}
+        total = I.Iv.of(Fraction(0))
+        for c, ns, q in terms:
+            t = _iv(_Eval(props).expr(c))
+            for n in ns:
+                t = t * (_iv(_Eval(props).expr(_p("x"))) if n == "hx"
+                         else I.Iv.of(Fraction(-1)) * _iv(_Eval(props).expr(_p("y"))))
+            if q is not None:
+                t = t * _iv(_Eval(props).expr(q)).power(2)
+            total = total + t
+        if total.hi <= 0:
+            return f"DISAGREE: accepted sum {terms} is {total} at {props}"
+    return "accepted"
+
+
+def positive_sums(cases: int, seed: int) -> dict[str, object]:
+    rng = random.Random(seed)
+    counts = {"accepted": 0, "rejected": 0, "refused": 0, "disagree": 0}
+    examples = []
+    for _ in range(cases):
+        r = one_sum(rng)
+        if r.startswith("DISAGREE"):
+            counts["disagree"] += 1
+            examples.append(r)
+        else:
+            counts[r] += 1
+    return {"cases": cases, "seed": seed, **counts, "examples": examples[:5]}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m openverifiers.bench.differential")
     ap.add_argument("--cases", type=int, default=1000)
@@ -233,8 +366,11 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     out = run(a.cases, a.seed)
     out["exp_derivatives"] = exp_derivatives(a.cases // 5, a.seed)
+    out["surd_normal_form"] = surd_normal_form(a.cases // 5, a.seed)
+    out["positive_sums"] = positive_sums(a.cases // 5, a.seed)
     print(json.dumps(out, indent=2))
-    return 1 if out["disagree"] or out["exp_derivatives"]["disagree"] else 0  # type: ignore[index]
+    extra = ("exp_derivatives", "surd_normal_form", "positive_sums")
+    return 1 if out["disagree"] or any(out[k]["disagree"] for k in extra) else 0  # type: ignore[index]
 
 
 if __name__ == "__main__":

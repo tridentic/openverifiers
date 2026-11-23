@@ -27,7 +27,9 @@ FILES = [ROOT / "src/openverifiers/packages/physics/mechanics.ov",
          ROOT / "src/openverifiers/packages/math/core.ov",
          ROOT / "tests/v1/transcendental.ov",
          ROOT / "benchmarks/exams/jee2025/jee2025-math-p1q7/case.ov",
-         ROOT / "benchmarks/exams/jee2025/jee2025-phys-p2q9/case.ov"]
+         ROOT / "benchmarks/exams/jee2025/jee2025-phys-p2q9/case.ov",
+         ROOT / "benchmarks/exams/jee2025/jee2025-phys-p2q12/case.ov",   # positive sums,
+         ROOT / "benchmarks/exams/jee2025/jee2025-math-p2q12/case.ov"]   # surds (D-030)
 
 
 def _records() -> list[tuple[list[dict[str, Any]], Any, int, dict[str, str]]]:
@@ -103,6 +105,14 @@ def _mutants(r: dict[str, Any], defs: Any) -> list[tuple[str, dict[str, Any]]]:
         m = copy.deepcopy(r)
         m["cert"]["induction"] = list(reversed(c["induction"]))
         out.append(("certificate: induction hypotheses swapped", m))
+    if c.get("sums"):
+        m = copy.deepcopy(r)
+        m["cert"]["sums"] = []
+        out.append(("certificate: positive sum dropped", m))
+        m = copy.deepcopy(r)
+        k = m["cert"]["sums"][0][0][0]
+        m["cert"]["sums"][0][0][0] = ["app", "*", [["num", "-1", []], k]]
+        out.append(("certificate: positive sum constant negated", m))
     if "goal" in r:
         out.append(("uniqueness: goal value moved", {**r, "goal": _bump(r["goal"])}))
     if "theorem" in r:
@@ -126,6 +136,10 @@ def test_no_unsound_mutant_is_accepted() -> None:
             tally[("rejected" if rejected else "accepted") + f" / claim {truth}"] += 1
             if not rejected and truth is False:
                 unsound.append((what, recs[i].get("theorem") or recs[i]["class"]))
+            if what.startswith("certificate: positive sum"):
+                tally["positive-sum mutants"] += 1
+                assert rejected, (what, recs[i]["class"])   # its multiplier is gone or < 0
     print(dict(tally))
     assert tally["rejected / claim False"] >= 50, tally
     assert unsound == [], unsound[:10]                 # 0 unsound mutants accepted
+    assert tally["positive-sum mutants"] >= 4, tally

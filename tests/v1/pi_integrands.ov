@@ -1,0 +1,45 @@
+# D-030 item 2: pi inside integrands, in three domains (test fixture, not a library).
+package probe.pi_integrands
+
+# Mathematics: a disc's area as a sum of rings of circumference 2 pi r.
+fact type Disc {
+  property R: Length
+  property area: Area
+  property r: Length
+  invariant positive: R > 0
+  invariant outer: r = R
+  invariant rings: area = integral(2 * pi * r, r)
+  theorem pi_r_squared: area = pi * R * R
+}
+
+# Physics: a uniform ball's mass as a sum of shells of area 4 pi r^2.
+fact type Ball {
+  property rho: Density
+  property R: Length
+  property mass: Mass
+  property r: Length
+  invariant positive: rho > 0 R > 0
+  invariant outer: r = R
+  invariant shells: mass = integral(4 * pi * rho * r * r, r)
+  theorem ball_mass: 3 * mass = 4 * pi * rho * R * R * R
+}
+
+# Chemistry: the amount of solute in a tube of length len at uniform concentration c,
+# as a sum of cylindrical shells 2 pi r len thick dr.
+fact type Tube {
+  property c: "mol/m^3"
+  property len: Length
+  property R: Length
+  property n: Amount
+  property r: Length
+  invariant positive: c > 0 len > 0 R > 0
+  invariant outer: r = R
+  invariant shells: n = integral(2 * pi * c * len * r, r)
+  theorem amount: n = pi * c * len * R * R
+}
+
+scenario sizes uses probe.pi_integrands {
+  query FIND ?a WHERE Disc{ R = 3 m, area = ?a }
+  query FIND ?m WHERE Ball{ rho = 2 kg/m^3, R = 3 m, mass = ?m }
+  query FIND ?n WHERE Tube{ c = 5 mol/m^3, len = 2 m, R = 1 m, n = ?n }
+}

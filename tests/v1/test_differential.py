@@ -57,3 +57,26 @@ def test_exp_cross_check_catches_a_constant_exp(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setattr(expand, "_depends", wrong)
     bad = exp_derivatives(100, seed=0)["disagree"]
     assert isinstance(bad, int) and bad > 0
+
+
+def test_surd_normal_form_agrees_with_the_evaluator(monkeypatch: pytest.MonkeyPatch) -> None:
+    from openverifiers.bench.differential import surd_normal_form
+    from openverifiers.raw import certificate
+    out = surd_normal_form(400, seed=1)
+    assert out["disagree"] == 0 and out["agree"] == 400, out["examples"]
+    real = certificate._mul
+
+    def wrong(a: certificate.Poly, b: certificate.Poly) -> certificate.Poly:
+        r = real(a, b)                       # forget the sqrt(k)^2 = k reduction's factor
+        return {m: c for m, c in r.items()} if not any(
+            v.startswith("sqrt(") for m in a for v, _ in m) else {
+            m: c * 2 for m, c in r.items()}
+    monkeypatch.setattr(certificate, "_mul", wrong)
+    assert surd_normal_form(400, seed=1)["disagree"] > 0  # type: ignore[operator]
+
+
+def test_accepted_positive_sums_are_positive() -> None:
+    from openverifiers.bench.differential import positive_sums
+    out = positive_sums(600, seed=2)
+    assert out["disagree"] == 0, out["examples"]
+    assert out["accepted"] > 40 and out["rejected"] > 300   # type: ignore[operator]

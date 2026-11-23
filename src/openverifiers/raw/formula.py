@@ -339,24 +339,38 @@ class _Eval:
             raise Unsupported(str(e)) from None
         raise Unsupported(f"no interval form for {f}")
 
-    def _calculus(self, f: str, a: tuple[Term, ...]) -> Num:
+    def _calculus(self, f: str, a: tuple[Term, ...]) -> Value:
         """Exact: sample the polynomial at x = 0..degree, recover its coefficients,
-        then integrate from 0 (or differentiate) and evaluate at the upper limit."""
+        then integrate from 0 (or differentiate) and evaluate at the upper limit.
+        The result is linear in the samples, so samples in Q(pi) (D-030) are combined
+        with the rational weights of the unit samples."""
         body, var, upper = a
         x = self.expr(upper)
-        ys = []
+        ys: list[Num | Q.QPi] = []
         for i in range(_degree(body, var) + 1):
             y = self.expr(subst(body, var, Num(Fraction(i))))
-            if not isinstance(y, Num) or y.dims:
+            if not ((isinstance(y, Num) and not y.dims) or isinstance(y, Q.QPi)):
                 raise Unsupported("integral or derivative of a non-number")
-            ys.append(y.value)
+            ys.append(y)
         if not isinstance(x, Num) or x.dims:
             raise Unsupported(f"the limit {upper} is not a number")
-        c = _coefficients(ys)
-        if f == "f.integral":
-            return Num(sum((c[k] * x.value ** (k + 1) / (k + 1) for k in range(len(c))),
-                           Fraction(0)))
-        return Num(sum((k * c[k] * x.value ** (k - 1) for k in range(1, len(c))), Fraction(0)))
+
+        def at(vs: list[Fraction]) -> Fraction:
+            c = _coefficients(vs)
+            if f == "f.integral":
+                return sum((c[k] * x.value ** (k + 1) / (k + 1) for k in range(len(c))),
+                           Fraction(0))
+            return sum((k * c[k] * x.value ** (k - 1) for k in range(1, len(c))), Fraction(0))
+        if all(isinstance(y, Num) for y in ys):
+            return Num(at([y.value for y in ys if isinstance(y, Num)]))
+        w = [at([Fraction(i == j) for i in range(len(ys))]) for j in range(len(ys))]
+
+        def combine() -> Value:
+            total = Q.to_qpi(Num(Fraction(0)))
+            for wj, y in zip(w, ys, strict=True):
+                total = total + Q.to_qpi(Num(wj)) * Q.to_qpi(y)
+            return Q.value(total)
+        return self._exact(combine)
 
     @staticmethod
     def _exact(fn: Callable[[], Value]) -> Value:

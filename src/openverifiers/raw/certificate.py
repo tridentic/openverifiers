@@ -17,7 +17,11 @@ For a goal L op R (op is =, >= or <=) under hypotheses, a certificate gives:
   goal holds (gap e, symbolic sums);
 - wsquares: (w >= 0, hypotheses h1..hk each `f > 0` or `f < 0`, q): the square
   q^2 weighted by w f1 ... fk, which is >= 0 (a sum of squares with positive
-  parameters, D-027).
+  parameters, D-027);
+- sums: positive sums that join the multiplier (D-030): each is a list of terms
+  (c, h1..hk, q or None), c a closed constant whose sign (> 0) the checker
+  decides and each h a hypothesis `f > 0` or `f < 0`. A term c f1 ... fk is > 0,
+  and c f1 ... fk q^2 is >= 0; with at least one term without q, the sum is > 0.
 
 It checks, by exact polynomial normal form, that M (L - R) - sum c (A - B) -
 sum w q^2 is 0. On any instance where the hypotheses hold, each A - B is 0, so
@@ -26,10 +30,12 @@ goal. A polynomial "law solved for one variable" (a = F / m with m > 0) is the
 case with a factor. The caller passes only true hypotheses: class invariants,
 and theorems already certified.
 
-Two kinds of atom are indeterminates of the ring (D-026): pi, and exp(u) for a
-polynomial u. An identity that holds for every value of an indeterminate holds
-for the true one. The derivative follows the chain rule d exp(u) = u' exp(u);
-an integral, or an evaluation at a limit, of an exp(u) whose u depends on the
+Three kinds of atom are indeterminates of the ring: pi, exp(u) for a polynomial
+u (D-026), and sqrt(k) for a positive integer k, reduced by sqrt(k)^2 = k
+(D-030; a solver value f.surd(k1, c1, ...) is c1 sqrt(k1) + ...). Reducing by a
+relation the true value satisfies keeps every identity true of it. An identity
+that holds for every value of an indeterminate holds for the true one. The
+derivative follows the chain rule d exp(u) = u' exp(u); an integral, or an evaluation at a limit, of an exp(u) whose u depends on the
 variable is refused.
 
 Trusted code.
@@ -74,11 +80,13 @@ def _mul(a: Poly, b: Poly) -> Poly:
     out: Poly = {}
     for m1, c1 in a.items():
         for m2, c2 in b.items():
-            e = dict(m1)
+            e, c = dict(m1), c1 * c2
             for v, k in m2:
                 e[v] = e.get(v, 0) + k
-            m = tuple(sorted(e.items()))
-            out[m] = out.get(m, Fraction(0)) + c1 * c2
+            for v in [v for v in e if v.startswith("sqrt(") and e[v] > 1]:
+                c, e[v] = c * Fraction(int(v[5:-1])) ** (e[v] // 2), e[v] % 2
+            m = tuple(sorted((v, k) for v, k in e.items() if k))
+            out[m] = out.get(m, Fraction(0)) + c
     return {m: c for m, c in out.items() if c != 0}
 
 
@@ -126,6 +134,15 @@ def poly(t: Term) -> Poly:
         return {((str(t), 1),): Fraction(1)}
     if isinstance(t, Compound) and t.functor == "f.exp":
         return _exp(poly(t.args[0]))
+    if isinstance(t, Compound) and t.functor == "f.surd" and len(t.args) % 2 == 0:
+        sv: Poly = {}
+        for rk, rc in zip(t.args[0::2], t.args[1::2], strict=True):
+            if not (isinstance(rk, Num) and isinstance(rc, Num) and not rk.dims and not rc.dims
+                    and rk.value > 0 and rk.value.denominator == 1):
+                raise Unsupported(f"not a surd: {t}")
+            sv = _add(sv, {(): rc.value} if rk.value == 1 else {((f"sqrt({rk.value})", 1),):
+                                                                rc.value})
+        return sv
     if not isinstance(t, Compound):
         raise Unsupported(f"not polynomial: {t}")
     f, a = t.functor, t.args
@@ -161,6 +178,7 @@ class Certificate:
     constants: tuple[Term, ...] = ()
     wsquares: tuple[tuple[Fraction, tuple[str, ...], Term], ...] = ()
     induction: tuple[str, str] | None = None
+    sums: tuple[tuple[tuple[Term, tuple[str, ...], Term | None], ...], ...] = ()
 
 
 def _cmp(f: Term) -> tuple[str, Term, Term]:
@@ -184,6 +202,14 @@ def _induction(lhs: Term, rhs: Term, hyps: Mapping[str, Term], names: tuple[str,
     step = _add(_add(f, prev, Fraction(-1)), _subst(e, str(Compound("f.v", (i,))), poly(n)),
                 Fraction(-1))
     return not _subst(f, x, {}) and not step         # F(0) = 0, F(n) - F(n-1) = E(n)
+
+
+def _positive(c: Term) -> bool:
+    """The trusted evaluator decides c > 0 (exactly, or by a rigorous enclosure)."""
+    try:
+        return holds(Compound("f.cmp", (Str(">"), c, Num(Fraction(0)))), {})
+    except Unsupported:
+        return False
 
 
 def check(goal: Term, hyps: Mapping[str, Term], cert: Certificate) -> bool:
@@ -211,6 +237,20 @@ def check(goal: Term, hyps: Mapping[str, Term], cert: Certificate) -> bool:
         if fop not in ({"!=", ">", "<"} if op == "=" else {">", "<"}):
             return False
         m = _mul(m, poly(Compound("-", (a, b) if fop != "<" else (b, a))))
+    for terms in cert.sums:                       # a sum of positive terms is > 0
+        part: Poly = {}
+        for c, names, q in terms:
+            if not _positive(c) or not all(n in hyps and _cmp(hyps[n])[0] in (">", "<")
+                                           for n in names):
+                return False
+            term = poly(c)
+            for n in names:
+                hop, a, b = _cmp(hyps[n])
+                term = _mul(term, poly(Compound("-", (a, b) if hop == ">" else (b, a))))
+            part = _add(part, term if q is None else _mul(term, _mul(poly(q), poly(q))))
+        if all(q is not None for _, _, q in terms):
+            return False
+        m = _mul(m, part)
     total = _mul(m, poly(Compound("-", (lhs, rhs))))
     for name, c in cert.coeffs:
         hop, a, b = _cmp(hyps[name])

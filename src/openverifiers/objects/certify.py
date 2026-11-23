@@ -40,10 +40,16 @@ def comparisons(f: Term, name: str) -> list[tuple[str, Term]]:
 
 
 def _vars(t: Term, out: dict[str, Term]) -> None:
-    """The ring's variables in t, by their normal-form names: properties, pi, exp atoms."""
+    """The ring's variables in t, by their normal-form names: properties, pi, exp atoms,
+    and sqrt(k) atoms of surd values (each with the relation sqrt(k)^2 = k)."""
     if isinstance(t, Compound):
         if t.functor in ("f.p", "f.at", "f.v", "f.pi"):
             out[str(t)] = t
+            return
+        if t.functor == "f.surd":
+            for k in t.args[0::2]:
+                if isinstance(k, Num) and k.value != 1:
+                    out[f"sqrt({k.value})"] = Compound("f.surd", (k, Num(Fraction(1))))
             return
         if t.functor == "f.exp":
             with contextlib.suppress(Unsupported):
@@ -89,10 +95,15 @@ PI = Compound("f.pi", ())
 
 def _cert(names: tuple[str, ...] | list[str], coeffs: tuple[tuple[str, Term], ...] = (),
           squares: tuple[tuple[Fraction, Term], ...] = (),
-          wsquares: tuple[tuple[Fraction, tuple[str, ...], Term], ...] = ()) -> Certificate:
-    """A certificate; the pseudo-factor "@pi" becomes a constant the checker signs."""
-    return Certificate(tuple(n for n in names if n != "@pi"), coeffs, squares,
-                       tuple(PI for n in names if n == "@pi"), wsquares)
+          wsquares: tuple[tuple[Fraction, tuple[str, ...], Term], ...] = (),
+          sums: tuple[tuple[tuple[Term, tuple[str, ...], Term | None], ...], ...] = ()
+          ) -> Certificate:
+    """A certificate; the pseudo-factor "@pi" becomes a constant the checker signs, and
+    the pseudo-equations "@sqrt(k)" (sqrt(k)^2 = k) are dropped: the checker's normal
+    form reduces by them itself."""
+    return Certificate(tuple(n for n in names if n != "@pi"),
+                       tuple((n, c) for n, c in coeffs if not n.startswith("@")), squares,
+                       tuple(PI for n in names if n == "@pi"), wsquares, sums=sums)
 
 
 def find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
@@ -134,6 +145,11 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
             eqs.append((name, _to_sympy(hp, syms), h))
         elif hop in ("!=", ">", "<") and (op == "=" or hop != "!="):
             factors.append(name)
+    for nm, at in terms.items():                    # sqrt(k)^2 = k, for the finder
+        if nm.startswith("sqrt("):
+            r = Fraction(nm[5:-1])
+            eqs.append((f"@{nm}", syms[nm] ** 2 - sympy.Rational(r.numerator, r.denominator),
+                        Compound("f.cmp", (Str("="), Compound("*", (at, at)), Num(r)))))
     target0 = _to_sympy(poly(Compound("-", (lhs, rhs))), syms)
     defined = [syms[str(h.args[1])] for _, _, h in eqs  # type: ignore[union-attr]
                if str(h.args[1]) in syms]                # type: ignore[union-attr]
@@ -162,7 +178,9 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
                 if cert is not None and check(goal, hyps, cert):
                     return cert
     if op == "=":
-        cert = _pseudo(target0, eqs, fpolys, back)
+        posvar = {g: n for n, g in sorted(positive.items()) if isinstance(g, sympy.Symbol)}
+        consts = {syms[k] for k in terms if k.startswith("sqrt(") or k == str(PI)}
+        cert = _pseudo(target0, eqs, fpolys, back, posvar, consts)
         if cert is not None and check(goal, hyps, cert):
             return cert
     return None
@@ -183,9 +201,76 @@ def _factors_of(lc: sympy.Expr, fpolys: Mapping[str, sympy.Expr]
     return names, const
 
 
+def _possum(g: sympy.Expr, back: Mapping[sympy.Symbol, Term],
+            posvar: Mapping[sympy.Symbol, str], consts: set[sympy.Symbol]
+            ) -> tuple[tuple[Term, tuple[str, ...], Term | None], ...] | None:
+    """g as a sum of terms c * h1 * ... (c > 0 a constant, possibly with sqrt(k) or pi;
+    each h a variable with a stated positive hypothesis), or None."""
+    gens = sorted(g.free_symbols, key=str)
+    if not gens:
+        return None
+    out = []
+    for monom, coeff in sympy.Poly(g, *gens).terms():
+        if coeff <= 0:
+            return None
+        c: Term = Num(Fraction(int(coeff.p), int(coeff.q)))
+        names: list[str] = []
+        for v, k in zip(gens, monom, strict=True):
+            if v in consts:
+                for _ in range(k):
+                    c = Compound("*", (c, back[v]))
+            elif v in posvar:
+                names += [posvar[v]] * k
+            elif k:
+                return None
+        out.append((c, tuple(names), None))
+    return tuple(out)
+
+
+def _posmult(g: sympy.Expr, back: Mapping[sympy.Symbol, Term],
+             posvar: Mapping[sympy.Symbol, str], consts: set[sympy.Symbol]
+             ) -> tuple[tuple[Term, tuple[str, ...], Term | None], ...] | None:
+    """g > 0 as a positive sum, or as squares (exact LDL of its quadratic part) plus a
+    positive sum of the rest."""
+    rep = _possum(g, back, posvar, consts)
+    if rep is not None:
+        return rep
+    xs = sorted(g.free_symbols - set(consts), key=str)
+    if not xs:
+        return None
+    pg = sympy.Poly(g, *xs)
+    quad = sum((c * sympy.prod([x ** k for x, k in zip(xs, m, strict=True)])
+                for m, c in pg.terms() if sum(m) == 2), sympy.Integer(0))
+    rest = _possum(sympy.expand(g - quad), back, posvar, consts)
+    if rest is None or quad == 0:
+        return None
+    n = len(xs)
+    gram = [[sympy.Integer(0)] * n for _ in range(n)]
+    pq = sympy.Poly(quad, *xs)
+    for i in range(n):
+        for j in range(i, n):
+            c = pq.coeff_monomial(xs[i] * xs[j])
+            gram[i][j] = gram[j][i] = c if i == j else c / 2
+    squares: list[tuple[Term, tuple[str, ...], Term | None]] = []
+    for k in range(n):                              # exact LDL, pivoting in order
+        d = gram[k][k]
+        if d < 0 or (d == 0 and any(gram[k][j] != 0 for j in range(k + 1, n))):
+            return None
+        if d == 0:
+            continue
+        row = [gram[k][j] / d for j in range(n)]
+        squares.append((Num(_frac(d)), (), _to_term(sympy.expand(
+            sum((row[j] * xs[j] for j in range(k, n)), sympy.Integer(0))), back)))
+        for i in range(k + 1, n):
+            for j in range(k + 1, n):
+                gram[i][j] -= d * row[i] * row[j]
+    return (*rest, *squares)
+
+
 def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
-            fpolys: Mapping[str, sympy.Expr], back: Mapping[sympy.Symbol, Term]
-            ) -> Certificate | None:
+            fpolys: Mapping[str, sympy.Expr], back: Mapping[sympy.Symbol, Term],
+            posvar: Mapping[sympy.Symbol, str] | None = None,
+            consts: set[sympy.Symbol] | None = None) -> Certificate | None:
     """Eliminate variables from the goal by pseudo-division.
 
     A pool holds members of the hypotheses' ideal, each with its cofactors (the
@@ -193,9 +278,20 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
     variable: no nonzero condition is needed to derive a member). The goal t is
     divided only by a member linear in some variable whose leading coefficient is
     a constant times a product of nonzero hypotheses: that product joins the
-    multiplier M. Invariant: M t0 - sum c_i h_i = t. Success when t is 0."""
+    multiplier M. Invariant: M t0 - sum c_i h_i = t. Success when t is 0.
+    When stuck on t = a y + b, t is multiplied by its conjugate a y - b if that is a
+    positive sum (D-030: a surd value's positive root), which joins M."""
+    posvar, consts = posvar or {}, consts or set()
+    roots = [(v, e) for n, e, _ in eqs if n.startswith("@sqrt(")
+             for v in e.free_symbols]
+
+    def red(e: sympy.Expr) -> sympy.Expr:              # by sqrt(k)^2 = k
+        for v, rel in roots:
+            e = sympy.rem(sympy.expand(e), rel, v)
+        return sympy.expand(e)
     pool = [(h, {n: sympy.Integer(1)}) for n, h, _ in eqs]
     t, mult = sympy.expand(target0), list[str]()
+    sums: list[tuple[tuple[Term, tuple[str, ...], Term | None], ...]] = []
     coeffs: dict[str, sympy.Expr] = {}
     used: set[int] = set()
     # Variables of nonzero hypotheses are the parameters: eliminate the others first.
@@ -203,27 +299,64 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
 
     def order(vs: set[sympy.Symbol]) -> list[sympy.Symbol]:
         return sorted(vs, key=lambda v: (v in params, str(v)))
+
+    def eliminate(i: int, x: sympy.Symbol) -> None:
+        """Eliminate x from every other unused member by member i (ideal members stay
+        ideal members, with their cofactors; no nonzero condition is needed)."""
+        e, cf = pool[i]
+        lc = sympy.LC(sympy.Poly(e, x))
+        for j, (g, gcf) in enumerate(pool):
+            if j == i or j in used or sympy.degree(g, x) < sympy.degree(e, x):
+                continue
+            q2, r2 = sympy.pdiv(g, e, x)            # lc^d2 g = q2 e + r2
+            lc_d2 = sympy.expand(lc ** (sympy.degree(g, x) - sympy.degree(e, x) + 1))
+            rc = {n: sympy.expand(c * lc_d2) for n, c in gcf.items()}
+            for n, c in cf.items():
+                rc[n] = sympy.expand(rc.get(n, 0) - q2 * c)
+            pool[j] = (red(r2), {n: red(c) for n, c in rc.items()})
+            if pool[j][0] == 0:
+                used.add(j)
+
+    # Pre-pass (Gauss): a member linear in a variable with a constant leading
+    # coefficient defines it; eliminate it from the other members, non-parameters first.
+    pivots: set[int] = set()
+    progress = True
+    while progress:
+        progress = False
+        for i, (e, _) in enumerate(pool):
+            if i in pivots or i in used:
+                continue
+            x = next((v for v in order(e.free_symbols - set(consts))
+                      if sympy.degree(e, v) == 1 and sympy.LC(sympy.Poly(e, v)).is_number
+                      and any(j != i and j not in used and v in g.free_symbols
+                              for j, (g, _) in enumerate(pool))), None)
+            if x is not None:
+                pivots.add(i)
+                eliminate(i, x)
+                progress = True
     for _ in range(4 * len(eqs) + 4):
+        t = red(t)
         if t == 0:
             return _cert(mult, tuple((n, _to_term(c, back))
-                                                  for n, c in coeffs.items() if c != 0))
-        step = next(((i, e, cf, x, f) for x in order(t.free_symbols)
+                                     for n, c in coeffs.items() if c != 0), sums=tuple(sums))
+        step = next(((i, e, cf, x, f) for x in order(t.free_symbols - set(consts))
                      for i, (e, cf) in enumerate(pool)
-                     if i not in used and sympy.degree(e, x) == 1
-                     and (f := _factors_of(sympy.expand(e.coeff(x, 1)), fpolys)) is not None),
+                     if i not in used and 1 <= sympy.degree(e, x) <= sympy.degree(t, x)
+                     and (f := _factors_of(sympy.LC(sympy.Poly(e, x)), fpolys)) is not None),
                     None)
         if step is not None:
             i, e, cf, x, (names, const) = step
             used.add(i)
-            d = sympy.degree(t, x)
-            q, r = sympy.pdiv(t, e, x)              # lc^d t = q e + r, r free of x
+            d = sympy.degree(t, x) - sympy.degree(e, x) + 1
+            q, r = sympy.pdiv(t, e, x)              # lc^d t = q e + r
             scale = sympy.Integer(1) / const ** d
-            lc_d = sympy.expand(e.coeff(x, 1) ** d)
+            lc_d = sympy.expand(sympy.LC(sympy.Poly(e, x)) ** d)
             coeffs = {n: sympy.expand(c * lc_d * scale) for n, c in coeffs.items()}
             for n, c in cf.items():
                 coeffs[n] = sympy.expand(coeffs.get(n, 0) + q * c * scale)
             mult += names * d
             t = sympy.expand(r * scale)
+            eliminate(i, x)                         # triangularize the pool too
             continue
         # Derive a member: in some member linear in a goal variable, eliminate a
         # variable of its leading coefficient by another member linear in it.
@@ -251,8 +384,47 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
                     break
             if new:
                 break
-        if new is None:
-            return None
+        if new is None:                    # a member t * Q with Q > 0: Q joins M
+            hit = None
+            for e, cf in (p for j, p in enumerate(pool) if j not in used):
+                gens = sorted(e.free_symbols | t.free_symbols, key=str)
+                if not gens or not t.free_symbols:
+                    continue
+                qq, rr = sympy.div(e, t, *gens)
+                for sgn in (1, -1):
+                    rep = _posmult(red(sgn * qq), back, posvar, consts) if rr == 0 else None
+                    if rep is not None:
+                        hit = (sgn * qq, sgn, cf, rep)
+                        break
+                if hit:
+                    break
+            if hit is not None:
+                qq, sgn, cf, rep = hit
+                coeffs = {n: red(c * qq) for n, c in coeffs.items()}
+                for n, c in cf.items():
+                    coeffs[n] = red(coeffs.get(n, 0) + sgn * c)
+                sums.append(rep)
+                t = sympy.Integer(0)
+                continue
+            conj = None
+            for y in order(t.free_symbols - set(consts)) if len(sums) < 2 else []:
+                if sympy.degree(t, y) != 1:
+                    continue
+                g0 = sympy.expand(t.coeff(y, 1) * y - t.coeff(y, 0))
+                for g in (g0, -g0):
+                    rep = _possum(red(g), back, posvar, consts)
+                    if rep is not None:
+                        conj = (g, rep)
+                        break
+                if conj:
+                    break
+            if conj is None:
+                return None
+            g, rep = conj
+            t = red(t * g)
+            coeffs = {n: red(c * g) for n, c in coeffs.items()}
+            sums.append(rep)
+            continue
         pool.append(new)
     return None
 

@@ -23,17 +23,28 @@ fact type SlowParticle extends MatterWave {
 }
 
 # Bohr model of a hydrogen-like atom of atomic number Z (n and Z are whole
-# numbers, D-027; reworked from M161): in orbit n the
-# electron's orbit radius is n^2 a0 / Z (a0: the first Bohr radius of hydrogen)
-# and its angular momentum p r is quantized as n h / (2 pi).
+# numbers, D-027; reworked from M161). The electron (mass m, charge e) moves on a
+# circle of radius r: the Coulomb attraction k Z e^2 / r^2 is the centripetal force
+# m v^2 / r, i.e. p^2 r = m k Z e^2 with p = m v, and its angular momentum p r is
+# quantized as n h / (2 pi), with hbar = h / (2 pi). a0 = hbar^2 / (m k e^2) is the first Bohr
+# radius of hydrogen; the radius n^2 a0 / Z is then a theorem (N039, packet 2:
+# derivable, not a law).
 fact type BohrOrbit extends MatterWave {
   property n: Integer
   property Z: Integer
   property a0: Length
   property r: Length
+  property m: Mass
+  property k: "N*m^2/C^2"
+  property e: Charge
+  property hbar: "J*s"
   invariant orbit_positive: n >= 1 Z >= 1 a0 > 0
-  law orbit_radius: r * Z = n * n * a0
+  invariant constants_positive: m > 0 k > 0 e > 0
+  law coulomb_centripetal: p * p * r = m * k * Z * e * e
+  invariant reduced_planck: 2 * pi * hbar = h
   law angular_momentum: 2 * pi * p * r = n * h
+  invariant bohr_radius: m * k * e * e * a0 = hbar * hbar
+  theorem orbit_radius: r * Z = n * n * a0
   # The orbit holds a whole number of wavelengths.
   theorem standing_wave: n * wavelength = 2 * pi * r
 }

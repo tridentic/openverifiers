@@ -50,7 +50,8 @@ openverifiers = ["py.typed", "legacy/datasets/*.csv", "m1/benchmarks/cases/*/*.j
                  "lang/grammar.lark", "packages/**/*.ov"]
 
 [tool.coverage.run]
-source = ["src/openverifiers/raw", "src/openverifiers/kernel", "src/openverifiers/checker"]
+source = ["src/openverifiers/raw", "src/openverifiers/kernel", "src/openverifiers/checker",
+          "src/openverifiers/state"]
 
 [tool.coverage.report]
 fail_under = 95

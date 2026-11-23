@@ -6,6 +6,7 @@
              [--no-reductions]
     ov audit PACKAGE|FILE [--dag THEOREM ...] [--json]
     ov exam [DIR] [--strict] [--drafts] [--json]
+    ov state FILE.ov [--scenario NAME] [--out PATH]
 
 ``run`` checks, lowers and evaluates each file, answers its queries, checks its
 ``expect`` lines and its classes' theorems, and exits 1 if any expectation
@@ -47,6 +48,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     if cmd == "audit":
         from .audit import main as audit
         return audit(rest)
+    if cmd == "state":
+        from .state.export import main as state
+        return state(rest)
     if cmd == "exam":
         from .bench.exam import main as exam
         return exam(rest)

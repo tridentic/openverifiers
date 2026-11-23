@@ -57,6 +57,8 @@ from ..raw.program import (
     validate,
 )
 from ..raw.terms import Compound, Num, Str, Sym, Term, Var, is_ground, order_key, variables
+from ..state.load import StateError
+from ..state.load import facts as load_state
 
 NEGATE = {"=": "!=", "!=": "=", "<": ">=", ">=": "<", ">": "<=", "<=": ">"}
 OV = "ov"
@@ -713,6 +715,13 @@ class _Lowering:
     # ------------------------------------------------------------ scenario
     def scenario(self) -> None:
         info, env = self.info, self.env
+        for name, path, file, span in env.states:   # imported OVStates (trusted loader)
+            if file == info.decl.span.file:
+                try:
+                    for f in load_state(name, path.read_text(), span):
+                        self.fact(f.id, f.atom, f.origin, f.span)
+                except (StateError, ValueError) as e:
+                    raise _Fail("E208", f"OVState '{name}': {e}", span) from None
         stmts = [self.hide(st) for st in _stmts(env, info.decl)]
         known: set[str] = set()
         binders: list[tuple[list[str], list[Literal], A.FactStmt | A.GenUse]] = []

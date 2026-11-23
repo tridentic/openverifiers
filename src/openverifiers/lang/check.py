@@ -116,6 +116,8 @@ class Env:
     class_decls: dict[str, A.FactType] = field(default_factory=dict)
     class_pkgs: dict[str, str] = field(default_factory=dict)
     objects: Classes = field(default_factory=Classes)
+    #: imported OVStates: (name, path, the importing file, span)
+    states: list[tuple[str, Path, str, Span]] = field(default_factory=list)
 
     @property
     def warnings(self) -> list[Diagnostic]:
@@ -385,7 +387,11 @@ class _Checker:
             elif isinstance(it, (A.Query, A.Expect)):
                 top.append(it)
             elif isinstance(it, A.ImportState):
-                self.err("E207", "importing an OVState arrives in Milestone 3", it.span)
+                path = Path(it.span.file).parent / it.path
+                if not path.is_file():
+                    self.err("E203", f"OVState file '{it.path}' not found", it.span)
+                else:
+                    self.env.states.append((it.alias, path, it.span.file, it.span))
             elif isinstance(it, A.Target):
                 for c in (*it.must, *it.prefer):
                     for lit in c:

@@ -1,8 +1,6 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
-# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
-#
 # math.vectors: vectors in three dimensions, by components.
-package math.vectors @0.1-draft
+# Approved by the founder (reply to packet c8c9af15519e, 2026-11-23).
+package math.vectors @0.1
 
 # The scalar triple product u . (v x w) of three vectors.
 fact type Triple {

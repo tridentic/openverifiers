@@ -1,8 +1,6 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
-# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
-#
 # chemistry.kinetics: rate laws in a closed vessel at constant volume.
-package chemistry.kinetics @0.1-draft
+# Approved by the founder (reply to packet c8c9af15519e, 2026-11-23).
+package chemistry.kinetics @0.1
 
 # A + R -> products, first order in each reactant: rate = k [A][R]. With 1:1
 # stoichiometry, after the reaction has advanced by x (concentration units)

@@ -1,8 +1,6 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
-# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
-#
 # physics.quantum: matter waves and the Bohr model.
-package physics.quantum @0.1-draft
+# Approved by the founder (packets dd2d4fd885a8 and 0e233e5b7e29), on signing the approval commit.
+package physics.quantum @0.1
 
 # de Broglie: a particle of momentum p (magnitude) has wavelength h / p.
 fact type MatterWave {

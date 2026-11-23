@@ -82,14 +82,14 @@ def test_lint_accepts_a_factor_and_the_real_cases() -> None:
 
 
 def test_draft_packages_load_only_when_asked() -> None:
-    case = JEE / "jee2025-phys-p1q13" / "case.ov"
+    case = JEE / "jee2025-phys-p2q3" / "case.ov"
     with pytest.raises(OVError) as e:
         run_file(case, files={str(case)})
     assert "E203" in str(e.value)
     with pytest.raises(OVError):              # --strict never loads drafts
         run_file(case, files={str(case)}, settings=Settings(strict=True, drafts=True))
     res = run_file(case, files={str(case)}, settings=Settings(drafts=True))
-    assert res.draft_packages == ["physics.quantum"]
+    assert res.draft_packages == ["physics.rotation"]
 
 
 def test_unit_types(tmp_path: Path) -> None:
@@ -109,9 +109,9 @@ def test_unit_types(tmp_path: Path) -> None:
 
 def test_exam_harness_end_to_end_on_one_problem(tmp_path: Path) -> None:
     listing = json.loads((JEE / "list.json").read_text())
-    prob = next(p for p in listing["problems"] if p["id"] == "jee2025-phys-p1q13")
+    prob = next(p for p in listing["problems"] if p["id"] == "jee2025-phys-p2q3")
     r = exam.run_problem(JEE, prob, Settings(drafts=True))
-    assert r.outcome == "solved" and r.provisional == ["physics.quantum"]
+    assert r.outcome == "solved" and r.provisional == ["physics.rotation"]
     r2 = exam.run_problem(JEE, prob, Settings())
     assert r2.outcome == "error" and r2.category == "library"
     s = exam.summary([r, r2])

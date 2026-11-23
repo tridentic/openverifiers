@@ -762,7 +762,6 @@ def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:
     hyps: dict[str, Term] = {}
     for n, inv in plan.cls.invariants:
         hyps.update(comparisons(inv, n))
-    hyps["pi_positive"] = Compound("f.cmp", (Str(">"), Compound("f.pi", ()), Num(Fraction(0))))
     for k, t in plan.props.items():                # values the query gives
         if isinstance(t, Num) and not t.dims:
             hyps[f"given:{k}"] = Compound("f.cmp", (Str("="), Compound("f.p", (Str(k),)), t))

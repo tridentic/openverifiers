@@ -84,6 +84,16 @@ def _to_term(e: sympy.Expr, back: Mapping[sympy.Symbol, Term]) -> Term:
     return out if out is not None else Num(Fraction(0))
 
 
+PI = Compound("f.pi", ())
+
+
+def _cert(names: tuple[str, ...] | list[str], coeffs: tuple[tuple[str, Term], ...] = (),
+          squares: tuple[tuple[Fraction, Term], ...] = ()) -> Certificate:
+    """A certificate; the pseudo-factor "@pi" becomes a constant the checker signs."""
+    return Certificate(tuple(n for n in names if n != "@pi"), coeffs, squares,
+                       tuple(PI for n in names if n == "@pi"))
+
+
 def find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
     try:
         return _find(goal, hyps)
@@ -122,12 +132,15 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
     orders = [list(dict.fromkeys([*defined, *others])), list(dict.fromkeys([*others, *defined])),
               sorted(syms.values(), key=str)]
     fpolys: dict[str, sympy.Expr] = {}
+    if str(PI) in syms:                             # pi > 0: signed by the checker itself
+        fpolys["@pi"] = syms[str(PI)]
     for name in factors:
         h = hyps[name]
         assert isinstance(h, Compound)
         d = Compound("-", (h.args[1], h.args[2]) if h.args[0] != Str("<")
                      else (h.args[2], h.args[1]))
         fpolys[name] = _to_sympy(poly(d), syms)
+    factors = factors + (["@pi"] if "@pi" in fpolys else [])
     for k in range(3):
         for fs in itertools.combinations(factors, k):
             m = sympy.Integer(1)
@@ -182,7 +195,7 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
         return sorted(vs, key=lambda v: (v in params, str(v)))
     for _ in range(4 * len(eqs) + 4):
         if t == 0:
-            return Certificate(tuple(mult), tuple((n, _to_term(c, back))
+            return _cert(mult, tuple((n, _to_term(c, back))
                                                   for n, c in coeffs.items() if c != 0))
         step = next(((i, e, cf, x, f) for x in order(t.free_symbols)
                      for i, (e, cf) in enumerate(pool)
@@ -239,7 +252,7 @@ def _try(target: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]], gens: list
     if not gens:
         return None
     if sympy.expand(target) == 0:                 # an identity: no ideal part needed
-        return Certificate(fs)
+        return _cert(fs)
     hs = [e for _, e, _ in eqs if e != 0]
     names = [n for n, e, _ in eqs if e != 0]
     if hs:
@@ -249,7 +262,7 @@ def _try(target: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]], gens: list
     coeffs = tuple((n, _to_term(q, back)) for n, q in zip(names, qs, strict=True) if q != 0)
     r = sympy.expand(r)
     if r == 0:
-        return Certificate(fs, coeffs)
+        return _cert(fs, coeffs)
     if op == "=":
         return None
     # The remainder, or the remainder shifted by one equation (r - s h, s = +-1), as a
@@ -264,7 +277,7 @@ def _try(target: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]], gens: list
             merged = dict(coeffs)
             for n, t in extra:
                 merged[n] = t if n not in merged else Compound("+", (merged[n], t))
-            return Certificate(fs, tuple(merged.items()), (sq,))
+            return _cert(fs, tuple(merged.items()), (sq,))
     return None
 
 

@@ -6,6 +6,9 @@ For a goal L op R (op is =, >= or <=) under hypotheses, a certificate gives:
 - factors: hypotheses `f != 0`, `f > 0` or `f < 0`. Their product M is the
   multiplier: nonzero for an equation, positive for an inequality (a `<` factor
   enters as -f);
+- constants: closed terms (no properties, e.g. pi) that join the multiplier;
+  their sign is decided here, by the trusted evaluator (exactly, or by a
+  rigorous enclosure), never taken from the caller;
 - coeffs: (hypothesis `A = B`, polynomial c): the ideal part, sum c (A - B);
 - squares: (weight w >= 0, polynomial q), for inequalities only.
 
@@ -31,7 +34,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from fractions import Fraction
 
-from .formula import Unsupported
+from .formula import Unsupported, holds
 from .terms import Compound, Num, Str, Term
 
 Mono = tuple[tuple[str, int], ...]
@@ -144,6 +147,7 @@ class Certificate:
     factors: tuple[str, ...] = ()
     coeffs: tuple[tuple[str, Term], ...] = ()
     squares: tuple[tuple[Fraction, Term], ...] = ()
+    constants: tuple[Term, ...] = ()
 
 
 def _cmp(f: Term) -> tuple[str, Term, Term]:
@@ -160,7 +164,17 @@ def check(goal: Term, hyps: Mapping[str, Term], cert: Certificate) -> bool:
     if op not in ("=", ">=") or (op == "=" and cert.squares):
         return False
     m: Poly = {(): Fraction(1)}
+    for c in cert.constants:                      # a sign the checker decides itself
+        try:
+            if not holds(Compound("f.cmp", (Str("!=" if op == "=" else ">"), c, Num(Fraction(0)))),
+                         {}):
+                return False
+        except Unsupported:
+            return False
+        m = _mul(m, poly(c))
     for name in cert.factors:
+        if name not in hyps:
+            return False
         fop, a, b = _cmp(hyps[name])
         if fop not in ({"!=", ">", "<"} if op == "=" else {">", "<"}):
             return False

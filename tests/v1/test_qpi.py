@@ -119,3 +119,19 @@ def test_pi_models_are_lifted_and_rechecked(tmp_path: Path) -> None:
     assert any("uniqueness certificate" in s for s in unique.steps)
     strict = run_file(f, files={str(f)}, settings=Settings(strict=True))
     assert [a.verdict for a in strict.objects] == ["PROVEN", "PROVEN"]
+
+
+def test_signs_come_from_the_checker_not_the_caller() -> None:
+    """pi x = pi y gives x = y only with pi != 0, which the checker decides itself."""
+    x, y = p("x"), p("y")
+    hyps = {"eq": cmp("=", op("*", PI, x), op("*", PI, y))}
+    goal = cmp("=", x, y)
+    assert check(goal, hyps, Certificate(coeffs=(("eq", n(1)),), constants=(PI,)))
+    # Naming a hypothesis the caller did not supply is refused, not trusted.
+    assert not check(goal, hyps, Certificate(("pi_positive",), (("eq", n(1)),)))
+    # A constant whose sign does not support the goal is refused: pi - 22/7 < 0,
+    # so it cannot multiply an inequality; an open term has no sign at all.
+    ge = cmp(">=", op("*", op("-", PI, n(Fraction(22, 7))), x), n(0))
+    assert not check(ge, {}, Certificate(constants=(op("-", PI, n(Fraction(22, 7))),)))
+    assert not check(goal, hyps, Certificate(coeffs=(("eq", n(1)),), constants=(x,)))
+    assert not check(goal, hyps, Certificate(coeffs=(("eq", n(1)),)))   # no multiplier

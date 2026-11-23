@@ -1,4 +1,4 @@
-"""C5: agent.workflow (draft): plan verification naming the failing steps, the
+"""C5: agent.workflow (a package since packet 2): plan verification naming the failing steps, the
 gate's verdicts, and bounded plan synthesis."""
 
 from __future__ import annotations
@@ -12,8 +12,8 @@ CASE = Path(__file__).parent / "workflow_repo.ov"
 
 
 def test_plans_are_checked_and_synthesised() -> None:
-    res = run_file(CASE, files={str(CASE)}, settings=Settings(drafts=True))
-    assert res.draft_packages == ["agent.workflow"]
+    res = run_file(CASE, files={str(CASE)}, settings=Settings(strict=True))
+    assert res.draft_packages == []
     valid, steps, refused, permitted, human, plan = res.answers
     assert valid.verdict == "REFUTED"
     assert sorted(str(s["i"].value) for s, _ in steps.bindings) == ["2", "3"]  # type: ignore[union-attr]

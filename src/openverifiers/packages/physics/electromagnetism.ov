@@ -1,8 +1,6 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
-# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
-#
 # physics.electromagnetism: charges at rest and in rotation.
-package physics.electromagnetism @0.2-draft
+# Approved by the founder (packet dd2d4fd885a8), on signing the approval commit.
+package physics.electromagnetism @0.2
 
 # A spherical shell of radius R with charge Q spread uniformly over its surface,
 # spinning at angular speed omega about a diameter. Cut it into thin rings by

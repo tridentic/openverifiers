@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
-POLICY = ROOT / "examples" / "policies" / "repo_policy.ov"
+POLICY = ROOT / "drafts" / "policies" / "repo_policy.ov"
 
 
 def _session(*calls: tuple[str, str]) -> list[Any]:

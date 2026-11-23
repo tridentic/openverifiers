@@ -56,11 +56,14 @@ fact type ConstantForce extends ConstantAcceleration {
 }
 
 # Vertical motion under gravity alone (up is positive): the net force is the
-# weight, -m g. h is the height gained (s).
+# weight W = m g acting downward, F = -W (gravity alone is the class's definition).
+# h is the height gained (s).
 fact type UniformGravity extends ConstantForce {
   property g: Accel
   invariant g_positive: g > 0
-  law weight: F = -m * g
+  property W: Force
+  law weight: W = m * g
+  invariant gravity_only: F = -W
   theorem free_fall_accel: a = -g
   # Mechanical energy is conserved: kinetic + potential at t equals that at 0.
   theorem energy_conservation: m * v * v / 2 + m * g * s = m * u * u / 2

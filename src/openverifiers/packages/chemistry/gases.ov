@@ -1,8 +1,6 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
-# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
-#
 # chemistry.gases: equations of state for one mole of gas.
-package chemistry.gases @0.1-draft
+# Approved by the founder (packet dd2d4fd885a8), on signing the approval commit.
+package chemistry.gases @0.1
 
 # A van der Waals gas: pressure p, molar volume vm, temperature temp.
 fact type VanDerWaalsGas {

@@ -1,8 +1,6 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
-# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
-#
 # math.vector_products: the cross product of two vectors in three dimensions.
-package math.vector_products @0.1-draft
+# Approved by the founder (packet dd2d4fd885a8), on signing the approval commit.
+package math.vector_products @0.1
 
 # c = a x b, by components (the definition of the cross product).
 fact type Cross {

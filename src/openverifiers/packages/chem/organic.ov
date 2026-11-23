@@ -60,11 +60,11 @@ entity 2-methylbut-2-ene: Molecule = alkene(side(me, me), side(h, me))
 entity cyclopentane, methylcyclobutane, ethylcyclopropane: Molecule
 entity 1,1-dimethylcyclopropane, 1,2-dimethylcyclopropane: Molecule
 
-predicate isomer_of(f: Formula) -> {Molecule} world closed
-axiom c5h10: isomer_of(C5H10) = {pent-1-ene, pent-2-ene, 2-methylbut-1-ene, 3-methylbut-1-ene,
+predicate structural_isomer_of(f: Formula) -> {Molecule} world closed
+axiom c5h10: structural_isomer_of(C5H10) = {pent-1-ene, pent-2-ene, 2-methylbut-1-ene, 3-methylbut-1-ene,
   2-methylbut-2-ene, cyclopentane, methylcyclobutane, ethylcyclopropane,
   1,1-dimethylcyclopropane, 1,2-dimethylcyclopropane}
-generator isomers(f: Formula) yields Molecule from isomer_of(f)
+generator isomers(f: Formula) yields Molecule from structural_isomer_of(f)
 
 # Products, for printing answers only.
 entity methanal: Molecule = carbonyl(h, h)
@@ -82,7 +82,7 @@ entity 3-chloropentane: Molecule = halide(cl, c(h, et, et))
 # Molecules under consideration: generated isomers and everything made from them.
 predicate molecule(m: Molecule) world closed
 predicate group(g: Group) world closed
-axiom generated(f: Formula, m: Molecule): isomer_of(f, m) -> molecule(m)
+axiom generated(f: Formula, m: Molecule): structural_isomer_of(f, m) -> molecule(m)
 
 # ---------------------------------------------------------------- ozonolysis
 # O3 then Zn/H2O cleaves C=C. Each alkene carbon becomes C=O and keeps its
@@ -154,6 +154,10 @@ predicate side_h(s: Side) -> Number world closed
 predicate x_site(r: Reaction) -> Site world closed
 predicate has_single_major(r: Reaction) world open
 predicate major(r: Reaction) -> Molecule world open
+# Markovnikov addition goes through a carbocation, which may rearrange (hydride
+# or alkyl shifts). The Markovnikov rules below hold only without one, stated
+# per scenario: assume no_shift: no_rearrangement(<alkene>).
+predicate no_rearrangement(m: Molecule) world open
 axiom alkene_sides(s, t: Side): molecule(alkene(s, t)) -> side_known(s), side_known(t)
 axiom two_h: side_known(side(h, h)) -> side_h(side(h, h)) = 2
 axiom one_h(x, y, z: Group):
@@ -161,10 +165,10 @@ axiom one_h(x, y, z: Group):
 axiom no_h(p, q, r, x, y, z: Group):
   side_known(side(c(p, q, r), c(x, y, z))) -> side_h(side(c(p, q, r), c(x, y, z))) = 0
 axiom markov_first(s, t: Side, r: Reagent, cond: Condition):
-  molecule(alkene(s, t)), markov(r, cond), side_h(s) < side_h(t)
+  molecule(alkene(s, t)), no_rearrangement(alkene(s, t)), markov(r, cond), side_h(s) < side_h(t)
   -> x_site(add(alkene(s, t), r, cond)) = first
 axiom markov_second(s, t: Side, r: Reagent, cond: Condition):
-  molecule(alkene(s, t)), markov(r, cond), side_h(t) < side_h(s)
+  molecule(alkene(s, t)), no_rearrangement(alkene(s, t)), markov(r, cond), side_h(t) < side_h(s)
   -> x_site(add(alkene(s, t), r, cond)) = second
 axiom anti_first(s, t: Side, r: Reagent, cond: Condition):
   molecule(alkene(s, t)), anti(r, cond), side_h(s) > side_h(t)
@@ -174,7 +178,7 @@ axiom anti_second(s, t: Side, r: Reagent, cond: Condition):
   -> x_site(add(alkene(s, t), r, cond)) = second
 axiom single_major(rx: Reaction, s: Site): x_site(rx) = s -> has_single_major(rx)
 axiom tie(s, t: Side, r: Reagent, cond: Condition):
-  molecule(alkene(s, t)), regime(r, cond), side_h(s) = side_h(t)
+  molecule(alkene(s, t)), regime(r, cond), side_h(s) = side_h(t), s != t
   -> not has_single_major(add(alkene(s, t), r, cond))
 axiom major_first(a, b, d, e: Group, r: Reagent, cond: Condition, x: Element):
   molecule(alkene(side(a, b), side(d, e))),
@@ -233,7 +237,9 @@ test butanone_gives_tertiary_alcohol {
 }
 
 test markovnikov_hcl_on_pent_1_ene {
-  scenario t3 uses chem.organic { }
+  scenario t3 uses chem.organic {
+    assume no_shift: no_rearrangement(pent-1-ene)
+  }
   query FIND ?p WHERE major(add(pent-1-ene, HCl)) = ?p
   expect PROVEN 2-chloropentane
 }

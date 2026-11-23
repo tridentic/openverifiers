@@ -1,6 +1,6 @@
-# OpenVerifiers Masterplan (MP-1.2)
+# OpenVerifiers Masterplan (MP-1.3)
 
-Nov 22, 2026 (amended Nov 23, 2026; MP-1.1: D-029; MP-1.2: D-030, D-031) · Founder
+Nov 22, 2026 (amended Nov 23, 2026; MP-1.1: D-029; MP-1.2: D-030, D-031; MP-1.3: D-032) · Founder
 
 The single reference for building OpenVerifiers, from the trusted kernel to frontier science, across six major releases. Every report, directive and change refers back to a section of this plan.
 
@@ -482,6 +482,7 @@ Newest first. Every future change to this plan adds a row here.
 
 | ID | Date | Decision | Decided by |
 | --- | --- | --- | --- |
+| D-032 | 2026-11-23 | Approval mechanism. "Agents never write approval trailers again: no Meaning-Approved-By, Gold-Change-Approved-By or RETRO_APPROVALS lines from an agent session, ever." "Approvals are commits made and signed by the founder, outside any agent session": a trailer counts only if its commit is signed by a key listed in `.approvers/allowed_signers`, mapped to the role founder; unsigned or wrongly signed approval commits fail the gate. The agent prepares an approval branch (`approval/<packet>`, changes staged, not committed) and `scripts/founder_approve.sh`; the founder runs one signed command. Earlier agent-stamped approvals are ratified by a `Ratifies:` trailer on a signed approval commit. Setup: docs/APPROVALS.md; the agent never creates or holds the key | Founder (2026-11-23 message); ratified in the founder's signed approval commit for packet 2 |
 | D-031 | 2026-11-23 | v1 exit criterion 1 amendment: "Replace \"HSC 45\" with \"JEE Main 2025: 45 problems drawn mechanically (15 per subject), gold from NTA's official final answer keys\". Fetch papers and keys only from official NTA domains (list them in the report). If NTA does not publish both papers and keys, stop and report instead of substituting another source. HSC becomes a v1.1 tier, run when papers are supplied." | Founder (reply to packet dd2d4fd885a8) |
 | D-030 | 2026-11-23 | Trusted-code budget: "New caps: unit A 700, raw/formula.py 450, main 1,150; total 2,300 (hard). The total stays the headline number in every report." New rule, MP §8 Trust: "No trusted check may ever be removed or weakened to fit a cap. If a cap blocks work, report it; caps change only by a masterplan decision." "Restore, first, the OVState loader's sortedness and groundness checks, and their tests (unsorted states refused again)." Then spend, in order: (1) surd-valued uniqueness certificates, Q(√d) multipliers and values; (2) π in integrands; (3) ln in the exp ring (d ln u = u'/u with u > 0 checked). Real algebraic numbers: deferred to v2 (only phys p1q10 needs them) | Founder (reply to packet dd2d4fd885a8); CTO rationale |
 | D-029 | 2026-11-23 | Trusted-code budget: the total stays a hard 2,000; per-unit caps become movable within it: unit A 500, raw/formula.py 410, main 1,090 (= 2,000). Every report gives each unit and the total. Trusted lines are spent in this order: state hash/load (C6), integer/modular arithmetic (C4), pi inside integrands (about 10 lines), then anything else | Claude (CTO); approved by the founder (2026-11-23 message) |

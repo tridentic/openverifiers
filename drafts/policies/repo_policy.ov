@@ -1,6 +1,7 @@
+# DRAFT (MP-DOL): unapproved policy lines (an example, not a library; packet 2 Part A2).
 # An example agent policy for a code repository (policy.repo): never push to
 # main; deploying needs a lead's approval. Used by the MCP tool-call gate:
-#   python -m openverifiers.mcp_gate examples/policies/repo_policy.ov --drafts
+#   python -m openverifiers.mcp_gate drafts/policies/repo_policy.ov --drafts
 package repo_policy
 import agent.workflow
 

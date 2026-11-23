@@ -1,12 +1,10 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
-# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
-#
 # agent.workflow: guardrails for agents. A policy package (policy.refunds,
 # policy.repo, ...) states which tool calls are forbidden and which need a
 # human's approval; this package derives, for a plan, every violating step
 # (named by its number), whether the plan is valid, the verdict on a single
 # tool call (the gate), and plans that reach a goal within a horizon.
-package agent.workflow @0.1-draft
+# Approved by the founder (packet dd2d4fd885a8), on signing the approval commit.
+package agent.workflow @0.1
 
 type Plan
 type Tool

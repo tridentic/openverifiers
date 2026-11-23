@@ -128,11 +128,11 @@ public signing keys of the GitHub user from
 repository variable `FOUNDER_GITHUB_USER` names another. It never writes to
 GitHub.
 
-- **Before you confirm:** a key in `allowed_signers` that is not one of your
-  GitHub signing keys is a **warning**.
-- **After you confirm:** a mismatch **fails** the job. To confirm, set the
-  repository variable `FOUNDER_SIGNING_KEY_ON_GITHUB` to `true` (Settings →
-  Secrets and variables → Actions → Variables) once the key is on GitHub.
+- **While your account shows no signing key:** a mismatch is a **warning**.
+- **Once it shows one:** a key in `allowed_signers` that is not one of your
+  GitHub signing keys **fails** the job. The check arms itself (packet 3,
+  Part D); setting the repository variable `FOUNDER_SIGNING_KEY_ON_GITHUB` to
+  `true` arms it even before.
 
 This anchors `allowed_signers` to something an agent with only repository
 access cannot change: the keys on your GitHub account.

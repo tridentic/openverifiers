@@ -1,1 +1,1 @@
-{"read": "choice", "query": 1, "options": {"A": "2", "B": "sqrt(2)", "C": "sqrt(5/2)", "D": "sqrt(2/5)"}}
+{"read": "choice", "query": 1, "options": {"A": "2", "B": "sqrt(2)", "C": "sqrt(5/2)", "D": "sqrt(2/5)"}, "assumptions": ["N043 small_oscillation: omega^2 I = kappa (physics.rotation, UNPROVEN theorem)"]}

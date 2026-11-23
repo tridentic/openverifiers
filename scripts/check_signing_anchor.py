@@ -5,9 +5,10 @@
 Read-only: it GETs https://api.github.com/users/<user>/ssh_signing_keys and never
 writes to GitHub. <user> is $FOUNDER_GITHUB_USER (CI passes the repository variable,
 or the repository owner). Every key in allowed_signers must be one of those
-signing keys. Until the founder confirms the key is on GitHub
-($FOUNDER_SIGNING_KEY_ON_GITHUB=true), a mismatch is a warning; afterwards it
-fails. Output uses GitHub Actions annotations. See docs/APPROVALS.md.
+signing keys. While the account shows no signing key at all, a mismatch is a
+warning; once it shows one (or $FOUNDER_SIGNING_KEY_ON_GITHUB=true), it fails
+(packet 3, Part D: "switch the CI check from warn to fail once the API shows it").
+Output uses GitHub Actions annotations. See docs/APPROVALS.md.
 """
 
 from __future__ import annotations
@@ -45,8 +46,9 @@ def github_blobs(user: str, token: str = "") -> set[str]:
 
 
 def verdict(local: set[str], remote: set[str] | None, confirmed: bool) -> tuple[str, str]:
-    """(level, message): level is "ok", "warning" or "error"."""
-    bad = "error" if confirmed else "warning"
+    """(level, message): level is "ok", "warning" or "error". Armed (mismatches fail)
+    when confirmed or when the account shows any signing key."""
+    bad = "error" if confirmed or remote else "warning"
     if not local:
         return bad, "no key in .approvers/allowed_signers"
     if remote is None:
@@ -55,7 +57,8 @@ def verdict(local: set[str], remote: set[str] | None, confirmed: bool) -> tuple[
     if missing:
         return bad, (f"{len(missing)} key(s) in .approvers/allowed_signers are not signing keys "
                      f"of the founder's GitHub account"
-                     + ("" if confirmed else " (warning until FOUNDER_SIGNING_KEY_ON_GITHUB=true)"))
+                     + ("" if confirmed or remote else
+                        " (a warning while the account shows no signing key)"))
     return "ok", f"all {len(local)} approval key(s) match the founder's GitHub signing keys"
 
 

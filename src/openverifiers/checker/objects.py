@@ -67,7 +67,7 @@ def check_records(records: Sequence[Mapping[str, Any]], defs: Mapping[str, Class
                 goal = tj(r["goal"]) if "goal" in r else parts(th, "")[r["part"]][1]
                 ok = check(goal, hyps, _cert(r["cert"]))
                 done |= {r["theorem"]} if ok and len(parts(th, "")) == 1 else set()
-        except (KeyError, IndexError, TypeError, ValueError, Unsupported):
+        except (KeyError, IndexError, TypeError, ValueError, Unsupported, RecursionError):
             ok = False
         bad += [] if ok else [f"record {i} ({r.get('kind')}, {r.get('class')}) rejected"]
     return bad

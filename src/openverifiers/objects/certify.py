@@ -65,15 +65,13 @@ def _vars(t: Term, out: dict[str, Term]) -> None:
 
 def _poly_term(p: Poly, terms: Mapping[str, Term]) -> Term:
     """A term whose normal form is p (variables by their names in terms, or atoms)."""
-    out: Term = Num(Fraction(0))
+    out: list[Term] = []
     for m, c in sorted(p.items()):
-        t: Term = Num(c)
+        factors: list[Term] = [Num(c)]
         for v, k in m:
-            vt = terms[v] if v in terms else _atom_term(v, terms)
-            for _ in range(k):
-                t = Compound("*", (t, vt))
-        out = Compound("+", (out, t))
-    return out
+            factors += [terms[v] if v in terms else _atom_term(v, terms)] * k
+        out.append(_balanced("*", factors))
+    return _balanced("+", out) if out else Num(Fraction(0))
 
 
 def _atom_term(name: str, terms: Mapping[str, Term]) -> Term:
@@ -100,19 +98,27 @@ def _to_sympy(p: Poly, syms: Mapping[str, sympy.Symbol]) -> sympy.Expr:
     return sympy.expand(out)
 
 
+def _balanced(op: str, xs: list[Term]) -> Term:
+    """xs joined by op as a balanced tree (depth log n): a long sum must not become a
+    deep chain, which the checker would refuse to read."""
+    if len(xs) == 1:
+        return xs[0]
+    mid = len(xs) // 2
+    return Compound(op, (_balanced(op, xs[:mid]), _balanced(op, xs[mid:])))
+
+
 def _to_term(e: sympy.Expr, back: Mapping[sympy.Symbol, Term]) -> Term:
     p = sympy.Poly(sympy.expand(e), *back.keys()) if back else None
     if p is None or p.is_zero:
         return Num(Fraction(0)) if p is None or p.is_zero else Num(Fraction(str(e)))
-    out: Term | None = None
     gens = list(back.keys())
+    terms: list[Term] = []
     for monom, coeff in p.terms():
-        t: Term = Num(Fraction(int(coeff.p), int(coeff.q)))
+        factors: list[Term] = [Num(Fraction(int(coeff.p), int(coeff.q)))]
         for g, k in zip(gens, monom, strict=True):
-            for _ in range(k):
-                t = Compound("*", (t, back[g]))
-        out = t if out is None else Compound("+", (out, t))
-    return out if out is not None else Num(Fraction(0))
+            factors += [back[g]] * k
+        terms.append(_balanced("*", factors))
+    return _balanced("+", terms) if terms else Num(Fraction(0))
 
 
 PI = Compound("f.pi", ())

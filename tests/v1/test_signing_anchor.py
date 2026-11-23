@@ -24,7 +24,9 @@ def test_blobs_reads_allowed_signers_and_github_key_lines() -> None:
 def test_mismatch_warns_until_confirmed_then_fails() -> None:
     local = anchor.blobs(FILE)
     assert anchor.verdict(local, local | {"AAAAx"}, confirmed=True)[0] == "ok"
-    assert anchor.verdict(local, {"AAAAone"}, confirmed=False)[0] == "warning"
+    assert anchor.verdict(local, set(), confirmed=False)[0] == "warning"  # no key yet
+    assert anchor.verdict(local, {"AAAAone"}, confirmed=False)[0] == "error"  # armed
     assert anchor.verdict(local, {"AAAAone"}, confirmed=True)[0] == "error"
     assert anchor.verdict(local, None, confirmed=True)[0] == "error"      # cannot read GitHub
-    assert anchor.verdict(set(), {"AAAAone"}, confirmed=False)[0] == "warning"
+    assert anchor.verdict(set(), set(), confirmed=False)[0] == "warning"
+    assert anchor.verdict(set(), {"AAAAone"}, confirmed=False)[0] == "error"

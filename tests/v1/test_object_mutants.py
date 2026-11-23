@@ -19,6 +19,7 @@ from openverifiers.objects.engine import Settings
 from openverifiers.objects.expand import FALSE, TRUE, Expander, and_
 from openverifiers.raw.canon import term_from_json
 from openverifiers.raw.formula import Unsupported
+from openverifiers.raw.terms import Compound, Str
 from openverifiers.runner import run_file
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -154,3 +155,27 @@ def test_no_unsound_mutant_is_accepted() -> None:
     assert tally["rejected / claim False"] >= 50, tally
     assert unsound == [], unsound[:10]                 # 0 unsound mutants accepted
     assert tally["positive-sum mutants"] >= 4 and tally["witness mutants"] >= 6, tally
+
+
+def test_a_record_too_deep_to_read_is_rejected_not_a_crash() -> None:
+    """A certificate term nested past Python's recursion limit is refused by the
+    checker (it used to raise RecursionError out of check_records)."""
+    deep: list[Any] = ["num", "1", []]
+    for _ in range(5000):
+        deep = ["app", "+", [deep, ["num", "1", []]]]
+    rec = {"kind": "certificate", "class": "Nothing", "theorem": "Nothing.t", "part": 0,
+           "cert": {"factors": [], "coeffs": [["h", deep]], "squares": [], "constants": [],
+                    "wsquares": [], "induction": None}}
+    assert check_records([rec], {}) == ["record 0 (certificate, Nothing) rejected"]
+
+
+def test_finder_terms_are_balanced() -> None:
+    import sympy
+
+    from openverifiers.objects.certify import _to_term
+    xs = sympy.symbols("x0:300")
+    t = _to_term(sum(xs), {x: Compound("f.p", (Str(str(x)),)) for x in xs})
+
+    def depth(u: Any) -> int:
+        return 1 + max((depth(a) for a in u.args), default=0) if isinstance(u, Compound) else 1
+    assert depth(t) < 20                      # log2(300) + a few, not 300

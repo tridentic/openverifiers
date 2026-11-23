@@ -12,6 +12,9 @@ before any formalization. Each problem has a directory ``DIR/<id>/`` with either
       {"read": "options", "options": {"A": [1], "B": [2, 3], "C": [4], "D": [5]}}
       {"read": "choice", "query": 1, "options": {"A": "2", "C": "sqrt(5/2)"}}
 
+  An optional ``"assumptions": [...]`` lists statements the formalization takes
+  as given that are not approved or not proven (for example an UNPROVEN library
+  theorem restated in the case); the report shows them with the answer.
   Queries are numbered from 1 in file order. ``numeric``: the query's single
   value (in ``unit``, if given) is compared with the official answer, an exact
   number or an accepted range ``[lo to hi]``. ``choice``: the query's single
@@ -81,6 +84,7 @@ class Result:
     note: str = ""
     provisional: list[str] = field(default_factory=list)
     trust: list[str] = field(default_factory=list)
+    assumptions: list[str] = field(default_factory=list)
 
 
 def official_range(ans: str) -> tuple[Fraction, Fraction]:
@@ -230,6 +234,7 @@ def run_problem(root: Path, problem: dict[str, Any], st: Settings) -> Result:
         r.category, r.note = "", "no formalization yet"
         return r
     spec = json.loads((d / "answer.json").read_text())
+    r.assumptions = list(spec.get("assumptions", []))
     try:
         res = run_file(d / "case.ov", files={str(d / "case.ov")}, settings=st)
     except OVError as e:
@@ -263,6 +268,7 @@ def summary(results: list[Result]) -> dict[str, Any]:
         "by_subject": {k: dict(v) for k, v in sorted(by_subject.items())},
         "categories": dict(Counter(r.category for r in results if r.category)),
         "provisional": sum(bool(r.provisional) for r in results if r.outcome == "solved"),
+        "with_assumptions": [r.id for r in results if r.assumptions and r.outcome == "solved"],
         "wrong": [r.id for r in results if r.outcome == "wrong"],
     }
 
@@ -270,7 +276,8 @@ def summary(results: list[Result]) -> dict[str, Any]:
 def render(results: list[Result]) -> str:
     lines = []
     for r in results:
-        tag = " PROVISIONAL" if r.provisional else ""
+        tag = (" PROVISIONAL" if r.provisional else "") + (
+            f" ASSUMES {'; '.join(r.assumptions)}" if r.assumptions else "")
         extra = f" [{r.category}]" if r.category else ""
         lines.append(f"{r.outcome:15} {r.id:22} official {r.official:14} got {r.got or '-'}"
                      f"{extra}{tag}")

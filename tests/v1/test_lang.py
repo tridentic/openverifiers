@@ -117,7 +117,7 @@ def test_query_text_and_expect() -> None:
      "axiom a(x: Number): not q(x) -> r(x)", [("E403", 4, 1), ("E403", 4, 1)]),
     ("package p\npredicate q(x: Number) -> {Number} world open\n"
      "generator g(x: Number) yields Number from q(x)", [("E404", 3, 43)]),
-    ("import state \"x.ovs\" as old", [("E207", 1, 1)]),
+    ("import state \"x.ovs\" as old", [("E203", 1, 1)]),
     ("scenario s {\n  tolerance 2\n}", [("E206", 2, 3)]),      # was E207: tolerance is real now
     ("predicate q(x: Number) world open\naxiom a(x: Number): q(x) -> q(x)", [("E206", 2, 1)]),
 ])

@@ -44,3 +44,13 @@ checker.
 `ov run --strict` makes every verdict whose trust base contains `z3_unsat`
 UNKNOWN(plugin_unknown). A FIND keeps its re-checked bindings but no longer
 claims the list is complete.
+
+
+## WHY and WHY NOT (v1)
+
+- `WHY lit`: the verdict of `PROVE lit`, always with its checked derivation
+  (each step's rule and source line; leaves are facts with their origins).
+- `WHY NOT lit`: what keeps `lit` from holding. For REFUTED, the refutation;
+  for UNKNOWN, the missing facts (each alternative a set that would make it
+  PROVEN, re-checked against the model); if `lit` holds after all, its
+  derivation.

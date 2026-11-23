@@ -77,6 +77,8 @@ dotted: NAME ("." NAME)*
 // ---------------------------------------------------------------- queries
 query: "query" okql
 ?okql: "PROVE" lit                          -> prove
+     | "WHY" "NOT" lit                      -> why_not
+     | "WHY" lit                            -> why
      | "FIND" qvars ["WHERE" conj] ["LIMIT" NUMBER]  -> find
      | "PROVE" "UNIQUE" qvars ["WHERE" conj] -> unique
      | "COUNT" qvars ["WHERE" conj]         -> count

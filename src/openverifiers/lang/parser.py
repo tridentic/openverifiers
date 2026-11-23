@@ -211,6 +211,12 @@ class _ToAst(Transformer[Token, Any]):
     def prove(self, m: Any, xs: list[Any]) -> A.Prove:
         return A.Prove(self._lit(xs[0]), self.sp(m))
 
+    def why(self, m: Any, xs: list[Any]) -> A.Prove:
+        return A.Prove(self._lit(xs[0]), self.sp(m), "why")
+
+    def why_not(self, m: Any, xs: list[Any]) -> A.Prove:
+        return A.Prove(self._lit(xs[0]), self.sp(m), "why_not")
+
     def find(self, m: Any, xs: list[Any]) -> A.Find:
         vs, where, limit = xs
         return A.Find(vs, where or (), self.sp(m), int(str(limit)) if limit else None)

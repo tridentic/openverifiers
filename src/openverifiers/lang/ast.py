@@ -296,6 +296,7 @@ class Tolerance:
 class Prove:
     lit: Lit
     span: Span
+    mode: str = "prove"       # prove | why (show the proof) | why_not (show what blocks it)
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,16 @@
+package probe.why
+type Request { amount: Money }
+type Role
+predicate approved(r: Request, by: Role) world open
+predicate allowed(r: Request) world open
+entity manager, clerk: Role
+axiom small(r: Request): r.amount <= 500 USD -> allowed(r)
+axiom big(r: Request): r.amount > 500 USD, approved(r, manager) -> allowed(r)
+scenario s uses probe.why {
+  entity r1, r2: Request
+  fact r1.amount = 200 USD
+  fact r2.amount = 800 USD
+  query WHY allowed(r1)
+  query WHY NOT allowed(r2)
+  query WHY NOT allowed(r1)
+}

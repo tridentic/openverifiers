@@ -256,8 +256,9 @@ def render(res: FileResult, verbose: bool = False) -> str:
         if a.expect_ok is not None:
             mark = "ok" if a.expect_ok else f"FAILED ({a.expect_msg})"
             out.append(f"  expect {a.plan.expect.verdict if a.plan.expect else ''}: {mark}")
-        if verbose:
-            out.extend("    " + s for s in _proof_lines(a, res.runs[a.scenario], lw))
+        mode = getattr(q.q, "mode", "prove")
+        if verbose or mode != "prove":
+            out.extend("    " + s for s in explain(a, res.runs[a.scenario], lw, mode))
     for oa in res.objects:
         out.extend(_obj_lines(oa, verbose))
     for ca in res.classes:
@@ -325,6 +326,24 @@ def _line(a: Answer, lw: Lowered) -> str:
         parts.append("missing: " + "; ".join(", ".join(missing_text(x, lw) for x in m)
                                              for m in v.missing[:3]))
     return "  ".join(parts)
+
+
+def explain(a: Answer, r: Run, lw: Lowered, mode: str = "prove") -> list[str]:
+    """WHY: the checked derivation, leaves first (facts with their origins).
+    WHY NOT: for REFUTED the refutation; for UNKNOWN what blocks it (the missing
+    facts, each alternative re-checked against the model); if it holds after all,
+    the derivation."""
+    lines = _proof_lines(a, r, lw)
+    if mode != "why_not":
+        return lines if lines or mode == "prove" else ["no derivation: " + a.verdict]
+    v = a.detail
+    if isinstance(v, Unknown):
+        alts = [" and ".join(_atom(x, lw) for x in alt) for alt in v.missing]
+        return [f"blocked ({v.reason}): add one of: " + " | ".join(alts)] if alts else \
+            [f"blocked ({v.reason}): nothing derives it and no single missing fact would"]
+    head = {"REFUTED": "refuted by:", "PROVEN": "it holds after all:"}.get(a.verdict,
+                                                                         a.verdict)
+    return [head, *lines]
 
 
 def _proof_lines(a: Answer, r: Run, lw: Lowered) -> list[str]:

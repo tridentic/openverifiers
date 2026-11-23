@@ -52,7 +52,7 @@ def _vars(t: Term, out: dict[str, Term]) -> None:
                 if isinstance(k, Num) and k.value != 1:
                     out[f"sqrt({k.value})"] = Compound("f.surd", (k, Num(Fraction(1))))
             return
-        if t.functor in ("f.exp", "f.ln") or (t.functor == "/" and not (
+        if t.functor in ("f.exp", "f.ln", "f.sin", "f.cos") or (t.functor == "/" and not (
                 isinstance(t.args[1], Num) and not t.args[1].dims)):
             with contextlib.suppress(Unsupported, StopIteration, IndexError):
                 p = poly(t if t.functor != "/" else Compound("/", (Num(Fraction(1)), t.args[1])))
@@ -133,7 +133,8 @@ def _cert(names: tuple[str, ...] | list[str], coeffs: tuple[tuple[str, Term], ..
     the pseudo-equations "@sqrt(k)" (sqrt(k)^2 = k) are dropped: the checker's normal
     form reduces by them itself."""
     return Certificate(tuple(n for n in names if n != "@pi"),
-                       tuple((n, c) for n, c in coeffs if not n.startswith("@sqrt(")), squares,
+                       tuple((n, c) for n, c in coeffs if not n.startswith(("@sqrt(", "@trig"))),
+                       squares,
                        tuple(PI for n in names if n == "@pi"), wsquares, sums=sums)
 
 
@@ -175,6 +176,11 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
                                                                            terms))))))
         if len(inv) == 1 and inv[0][0] not in terms:
             terms[inv[0][0]] = _atom_term(inv[0][0], terms)
+    for nm in [n for n in terms if n in ATOMS and ATOMS[n][0] in ("sin", "cos")]:
+        for kind in ("sin", "cos"):                  # both of each pair (D-033)
+            p = poly(Compound(f"f.{kind}", (_poly_term(ATOMS[nm][1], terms),)))
+            if len(p) == 1 and next(iter(p))[0][0] not in terms:
+                terms[next(iter(p))[0][0]] = _atom_term(next(iter(p))[0][0], terms)
     syms = {k: _sym(k) for k in terms}
     back = {syms[k]: terms[k] for k in terms}
     eqs, factors = [], []
@@ -193,6 +199,11 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
             r = Fraction(nm[5:-1])
             eqs.append((f"@{nm}", syms[nm] ** 2 - sympy.Rational(r.numerator, r.denominator),
                         Compound("f.cmp", (Str("="), Compound("*", (at, at)), Num(r)))))
+    for nm in [n for n in terms if n in ATOMS and ATOMS[n][0] == "cos"]:
+        sn = "sin" + nm[3:]                          # cos^2 + sin^2 = 1, for the finder
+        if sn in syms:
+            eqs.append((f"@trig{nm}", syms[nm] ** 2 + syms[sn] ** 2 - 1,
+                        Compound("f.cmp", (Str("="), Num(Fraction(0)), Num(Fraction(0))))))
     target0 = _to_sympy(poly(Compound("-", (lhs, rhs))), syms)
     defined = [syms[str(h.args[1])] for _, _, h in eqs  # type: ignore[union-attr]
                if str(h.args[1]) in syms]                # type: ignore[union-attr]
@@ -224,16 +235,25 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
     def fin(cert: Certificate) -> Certificate:
         return dataclasses.replace(cert, positive=tuple(wits))
     factors = factors + (["@pi"] if "@pi" in fpolys else [])
+    # A sin/cos pair in the hypotheses: also try the target times sin^2 + cos^2 (= 1 in
+    # the checker's ring), reduced without the relation itself, trig atoms first (D-033).
+    pairs = [(syms[n], syms["sin" + n[3:]]) for n in terms
+             if n in ATOMS and ATOMS[n][0] == "cos" and "sin" + n[3:] in syms]
+    trig_first = [v for c, sn in pairs for v in (c, sn)]
+    lifts = [(sympy.Integer(1), eqs, orders)] + [
+        (c ** 2 + sn ** 2, [e for e in eqs if not e[0].startswith("@trig")],
+         [list(dict.fromkeys([*trig_first, *o])) for o in orders]) for c, sn in pairs]
     for k in range(3):
         for fs in itertools.combinations(factors, k):
             m = sympy.Integer(1)
             for name in fs:
                 m = m * fpolys[name]
-            target = sympy.expand(m * target0)
-            for gens in orders:
-                cert = _try(target, eqs, gens, back, fs, op, positive)
-                if cert is not None and check(goal, hyps, fin(cert)):
-                    return fin(cert)
+            for lift, leqs, lorders in lifts:
+                target = sympy.expand(m * target0 * lift)
+                for gens in lorders:
+                    cert = _try(target, leqs, gens, back, fs, op, positive)
+                    if cert is not None and check(goal, hyps, fin(cert)):
+                        return fin(cert)
     if op == "=":
         posvar = {g: n for n, g in sorted(positive.items()) if isinstance(g, sympy.Symbol)}
         consts = {syms[k] for k in terms if k.startswith("sqrt(") or k == str(PI)}
@@ -385,8 +405,10 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
         return sympy.pdiv(f, g, x)  # type: ignore[no-any-return]
     roots = [(v, e) for n, e, _ in eqs if n.startswith("@sqrt(")
              for v in e.free_symbols]
+    roots += [(v, e) for n, e, _ in eqs if n.startswith("@trig")   # cos^2 = 1 - sin^2
+              for v in e.free_symbols if str(back[v]).startswith("Compound(functor='f.cos'")]
 
-    def red(e: sympy.Expr) -> sympy.Expr:              # by sqrt(k)^2 = k
+    def red(e: sympy.Expr) -> sympy.Expr:              # by sqrt(k)^2 = k, cos^2 + sin^2 = 1
         for v, rel in roots:
             e = sympy.rem(sympy.expand(e), rel, v)
         return sympy.expand(e)

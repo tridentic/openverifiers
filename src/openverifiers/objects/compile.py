@@ -561,12 +561,17 @@ class _Formula:
             return self.coll(e)
         if isinstance(e, A.Call) and e.fn in TRIG:
             if len(e.args) != 1:
-                raise _Fail("E205", f"{e.fn} takes one Angle", e.span)
+                raise _Fail("E205", f"{e.fn} takes one argument", e.span)
             arg, aty = go(e.args[0])
-            if aty != (ANGLE,):
-                raise _Fail("E302", f"{e.fn} needs an Angle property, got {_show_ty(aty)}",
+            if aty == (ANGLE,):               # an Angle property: its (cos, sin) record
+                return _f("at", arg, Num(Fraction(TRIG[e.fn]))), REAL
+            if aty != REAL:
+                raise _Fail("E302", f"{e.fn} needs an Angle or a number, got {_show_ty(aty)}",
                             e.args[0].span, "declare it `property theta: Angle`")
-            return _f("at", arg, Num(Fraction(TRIG[e.fn]))), REAL
+            if self.dims(e.args[0]) not in ((), None):     # radians: dimensionless (D-033)
+                raise _Fail("E301", f"{e.fn} needs a dimensionless argument (radians)",
+                            e.args[0].span)
+            return _f(e.fn, arg), REAL
         if isinstance(e, A.Call) and e.fn == "tan":
             raise _Fail("E206", "tan is not available: write sin(x) = t * cos(x)", e.span)
         if isinstance(e, A.Call) and e.fn in CALCULUS:

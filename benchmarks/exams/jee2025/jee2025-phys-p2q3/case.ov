@@ -39,8 +39,9 @@ fact type TwoSetups {
   invariant setup_two: s2_mid_a.d * 2 = rod_length s2_mid_b.d * 2 = rod_length
                        two.kappa = s2_mid_a.kappa + s2_mid_b.kappa
   # f = omega / (2 pi), so the ratio of frequencies is the ratio of omegas.
-  # Assumption (stated, not proven): N043, physics.rotation's UNPROVEN theorem
-  # small_oscillation, omega^2 I = kappa, for each setup (packet 3, A2).
+  # Assumption: N043, omega^2 I = kappa, for each setup. It is a theorem of the
+  # draft physics.rotation (TorsionMotion.small_oscillation, PROVEN at {kernel},
+  # D-033); queries cannot use theorems yet (v2), so it is restated here (packet 3, A2).
   invariant assumed_n043: one.omega * one.omega * one.inertia = one.kappa
                           two.omega * two.omega * two.inertia = two.kappa
   invariant asked: ratio * two.omega = one.omega

@@ -4,15 +4,28 @@
 # physics.rotation: rigid bodies turning about a fixed axis.
 package physics.rotation @0.1-draft
 
-# Small oscillations about a fixed axis under a restoring torque -kappa theta:
-# Newton's second law for rotation, I theta'' = -kappa theta, gives simple
-# harmonic motion with angular frequency omega, omega^2 = kappa / I.
+# Small oscillations about a fixed axis under a restoring torque -kappa theta, with
+# angular frequency omega. This class carries no equation of motion, so object
+# queries over it stay polynomial (an equation with cos(omega t) in it cannot be
+# re-checked numerically); TorsionMotion below derives omega^2 I = kappa.
 fact type AngularOscillator {
   property inertia: "kg*m^2"
   property kappa: "N*m"
   property omega: Frequency
   invariant positive: inertia > 0 kappa > 0 omega > 0
-  # N043 (packet 3, A2): derivable, so a theorem; UNPROVEN until sin/cos are in the
-  # certificate normal form (D-033). Answers that use it state it as an assumption.
+}
+
+# The motion theta(t) = amplitude cos(omega t). Newton's second law for rotation,
+# I theta'' = -kappa theta, holds at every instant; so it holds at t, and so does
+# its time derivative, I theta''' = -kappa theta'. Together, with sin^2 + cos^2 = 1
+# (D-033), they give omega^2 I = kappa: N043 is a theorem (packet 2: derivable).
+fact type TorsionMotion extends AngularOscillator {
+  property amplitude: Real
+  property t: Time
+  invariant amplitude_positive: amplitude > 0
+  law newton_rotation: inertia * deriv(deriv(amplitude * cos(omega * t), t), t)
+    = -kappa * (amplitude * cos(omega * t))
+  law newton_rotation_rate: inertia * deriv(deriv(deriv(amplitude * cos(omega * t), t), t), t)
+    = -kappa * deriv(amplitude * cos(omega * t), t)
   theorem small_oscillation: omega * omega * inertia = kappa
 }

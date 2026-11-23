@@ -224,6 +224,9 @@ LOGS: dict[str, Poly] = {}
 #: formula multiplied through by D, with the side condition D != 0 recorded (an
 #: instance with D = 0 makes the formula undefined, so it is no member).
 RECIPS: dict[str, Poly] = {}
+#: sin(u) and cos(u) (D-033): variable name -> (kind, u). A pair shares its hash,
+#: SIN_h and COS_h, defined by SIN_h^2 + COS_h^2 = 1 (so each is in [-1, 1]).
+TRIGS: dict[str, tuple[str, Poly]] = {}
 #: mod(a, b) for a constant integer b > 0: variable name (the remainder r) ->
 #: (a, b), defined by r = a - b q with q an integer and 0 <= r < b.
 MODS: dict[str, tuple[Poly, int]] = {}
@@ -253,6 +256,15 @@ def exp_var(x: Poly) -> SNum:
     return SNum(Poly.var(name))
 
 
+def trig_var(kind: str, x: Poly) -> SNum:
+    if x.constant() == 0:
+        return SNum(Poly.const(Fraction(1 if kind == "cos" else 0)))
+    h = _atom_name("", x)
+    for k in ("SIN", "COS"):
+        TRIGS[k + h] = (k.lower(), x)
+    return SNum(Poly.var(kind.upper() + h))
+
+
 def log_var(x: Poly) -> SNum:
     if x.constant() == 1:
         return SNum(Poly.const(Fraction(0)))
@@ -267,7 +279,7 @@ def _depends(v: str, tau: str, seen: frozenset[str] = frozenset()) -> bool:
     if v == tau:
         return True
     arg = ROOTS.get(v) or EXPS.get(v) or LOGS.get(v) or RECIPS.get(v) or \
-        (MODS[v][0] if v in MODS else None)
+        (MODS[v][0] if v in MODS else None) or (TRIGS[v][1] if v in TRIGS else None)
     if arg is None or v in seen:
         return False
     return any(_depends(w, tau, seen | {v}) for m, _ in arg.terms for w, _ in m)
@@ -281,11 +293,17 @@ def calculus(p: Poly, tau: str, integral: bool) -> Poly:
     atoms = {v for m, _ in p.terms for v, _ in m if v != tau and _depends(v, tau)}
     if not atoms:
         return poly_integral(p, tau) if integral else poly_deriv(p, tau)
-    if integral or any(a not in EXPS for a in atoms):
+    if integral or any(a not in EXPS and a not in TRIGS for a in atoms):
         raise Unsupported("calculus of a non-polynomial in the variable (sqrt, ln, exp)")
     out = poly_deriv(p, tau)                     # the polynomial part
-    for a in atoms:                              # + d p / d a * exp(u) * u'
-        out = out + poly_deriv(p, a) * Poly.var(a) * calculus(EXPS[a], tau, False)
+    for a in atoms:                              # + d p / d a * (d a / d tau)
+        if a in EXPS:                            # d exp(u) = exp(u) u'
+            out = out + poly_deriv(p, a) * Poly.var(a) * calculus(EXPS[a], tau, False)
+            continue
+        kind, u = TRIGS[a]                       # d sin(u) = cos(u) u', d cos = -sin u'
+        other = trig_var("cos" if kind == "sin" else "sin", u).p
+        out = out + poly_deriv(p, a) * (other if kind == "sin" else other.scale(
+            Fraction(-1))) * calculus(u, tau, False)
     return out
 
 
@@ -305,6 +323,8 @@ def subst_atoms(p: Poly, tau: str, val: Poly) -> Poly:
             new = recip_var(subst_atoms(RECIPS[v], tau, val)).p
         elif v in MODS:
             new = mod_var(subst_atoms(MODS[v][0], tau, val), MODS[v][1]).p
+        elif v in TRIGS:
+            new = trig_var(TRIGS[v][0], subst_atoms(TRIGS[v][1], tau, val)).p
         else:
             continue
         out = poly_subst(out, v, new)
@@ -353,6 +373,11 @@ def root_definitions(names: Iterable[str]) -> list[CF]:
         elif n in RECIPS:
             out.append(atom("=", v * RECIPS[n] - Poly.const(Fraction(1))))
             todo += [w for m, _ in RECIPS[n].terms for w, _ in m]
+        elif n in TRIGS:
+            h = n[3:]
+            s, c = Poly.var("SIN" + h), Poly.var("COS" + h)
+            out.append(atom("=", s * s + c * c - Poly.const(Fraction(1))))
+            todo += ["SIN" + h, "COS" + h, *(w for m, _ in TRIGS[n][1].terms for w, _ in m)]
         elif n in LOGS:
             e = _atom_name("EXP", v)
             out += [atom("=", Poly.var(e) - LOGS[n]), atom(">", LOGS[n])]
@@ -489,6 +514,8 @@ class Expander:
             return exp_var(_num(vals[0]).p)
         if f == "f.ln":
             return log_var(_num(vals[0]).p)
+        if f in ("f.sin", "f.cos"):
+            return trig_var(f[2:], _num(vals[0]).p)
         if f == "f.dist2":
             d = _diff(_point(vals[0]), _point(vals[1]))
             return SNum(_dot(d, d))

@@ -37,6 +37,11 @@ certificate checker's derivative of bodies with ln(u) and a / u (u > 0 by
 construction) with a central finite difference of the evaluator's values, as
 for exp above.
 
+**sin and cos (D-033, trusted).** ``trig_ring`` evaluates random bodies with
+sin(u) and cos(u) two ways, the evaluator directly and the certificate normal form
+(after its cos^2 = 1 - sin^2 reduction) with each atom enclosed, and compares the
+normal form's derivative with a central finite difference of the evaluator.
+
     python -m openverifiers.bench.differential --cases 5000 --seed 0
 """
 
@@ -367,6 +372,8 @@ def positive_sums(cases: int, seed: int) -> dict[str, object]:
 def _cert_atom(name: str, props: dict[str, Num]) -> I.Iv:
     kind, u = C.ATOMS[name]
     v = _eval_atoms(u, props)
+    if kind in ("sin", "cos"):
+        return I.trig(v, kind == "cos")
     return I.exp(v) if kind == "exp" else I.ln(v) if kind == "ln" else v.inverse()
 
 
@@ -430,6 +437,54 @@ def ln_derivatives(cases: int, seed: int) -> dict[str, object]:
     return {"cases": cases, "seed": seed, **counts, "examples": examples[:5]}
 
 
+def _trig_body(rng: random.Random) -> Term:
+    """p(x) sin(u) cos(u)^j + q(x) cos(u)^2 + r(x), u = (polynomial in x) / 8."""
+    u = Compound("/", (_poly_in(rng, X), Num(Fraction(8))))
+    s, c = Compound("f.sin", (u,)), Compound("f.cos", (u,))
+    cs: Term = c
+    for _ in range(rng.randint(0, 2)):
+        cs = Compound("*", (cs, c))
+    return Compound("+", (Compound("+", (Compound("*", (_poly_in(rng, X), Compound(
+        "*", (s, cs)))), Compound("*", (_poly_in(rng, X), Compound("*", (c, c)))))),
+        _poly_in(rng, X)))
+
+
+def one_trig(rng: random.Random) -> str:
+    body = _trig_body(rng)
+    x0 = Fraction(rng.randint(-6, 6), rng.randint(1, 4))
+    props = {"x": Num(x0), "y": Num(Fraction(rng.randint(-4, 4), rng.randint(1, 3))),
+             "z": Num(Fraction(rng.randint(-4, 4), rng.randint(1, 3)))}
+    try:
+        direct = _iv(_Eval(props).expr(body))
+        normal = _eval_atoms(C.poly(body), props)
+        d = _eval_atoms(C.poly(Compound("f.deriv", (body, X, X))), props)
+        hi = _iv(_Eval({**props, "x": Num(x0 + H)}).expr(body))
+        lo = _iv(_Eval({**props, "x": Num(x0 - H)}).expr(body))
+    except (Unsupported, I.IntervalError, StopIteration, ZeroDivisionError):
+        return "refused"
+    if normal.hi < direct.lo or direct.hi < normal.lo:
+        return f"DISAGREE: {body} at {props}: normal form {normal}, evaluator {direct}"
+    fd = (hi - lo) * I.Iv.of(1 / (2 * H))
+    scale = 1 + max(abs(d.lo), abs(d.hi), abs(fd.lo), abs(fd.hi))
+    if max(d.lo - fd.hi, fd.lo - d.hi, Fraction(0)) > EXP_TOLERANCE * scale:
+        return f"DISAGREE: d/dx {body} at {props}: normal form {d}, finite difference {fd}"
+    return "agree"
+
+
+def trig_ring(cases: int, seed: int) -> dict[str, object]:
+    rng = random.Random(seed)
+    counts = {"agree": 0, "refused": 0, "disagree": 0}
+    examples = []
+    for _ in range(cases):
+        r = one_trig(rng)
+        if r.startswith("DISAGREE"):
+            counts["disagree"] += 1
+            examples.append(r)
+        else:
+            counts[r] += 1
+    return {"cases": cases, "seed": seed, **counts, "examples": examples[:5]}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m openverifiers.bench.differential")
     ap.add_argument("--cases", type=int, default=1000)
@@ -440,8 +495,10 @@ def main(argv: list[str] | None = None) -> int:
     out["surd_normal_form"] = surd_normal_form(a.cases // 5, a.seed)
     out["positive_sums"] = positive_sums(a.cases // 5, a.seed)
     out["ln_derivatives"] = ln_derivatives(a.cases // 5, a.seed)
+    out["trig_ring"] = trig_ring(a.cases // 5, a.seed)
     print(json.dumps(out, indent=2))
-    extra = ("exp_derivatives", "surd_normal_form", "positive_sums", "ln_derivatives")
+    extra = ("exp_derivatives", "surd_normal_form", "positive_sums", "ln_derivatives",
+             "trig_ring")
     return 1 if out["disagree"] or any(out[k]["disagree"] for k in extra) else 0  # type: ignore[index]
 
 

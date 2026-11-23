@@ -94,3 +94,16 @@ def test_ln_and_inverse_derivatives_match_finite_differences(
         return real(kind, {m: 2 * c for m, c in u.items()} if kind == "inv" else u)
     monkeypatch.setattr(certificate, "_atom", wrong)
     assert ln_derivatives(300, seed=3)["disagree"] > 0  # type: ignore[operator]
+
+
+def test_trig_normal_form_and_derivatives_agree(monkeypatch: pytest.MonkeyPatch) -> None:
+    from openverifiers.bench.differential import trig_ring
+    from openverifiers.raw import certificate
+    out = trig_ring(200, seed=4)
+    assert out["disagree"] == 0 and out["agree"] > 170, out["examples"]  # type: ignore[operator]
+    real = certificate._atom
+
+    def wrong(kind: str, u: certificate.Poly) -> certificate.Poly:   # cos as sin
+        return real("sin" if kind == "cos" else kind, u)
+    monkeypatch.setattr(certificate, "_atom", wrong)
+    assert trig_ring(200, seed=4)["disagree"] > 0  # type: ignore[operator]

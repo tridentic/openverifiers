@@ -1,0 +1,37 @@
+# D-033: sin and cos of a variable in the certificate normal form (d sin u = u' cos u,
+# d cos u = -u' sin u, cos^2 u = 1 - sin^2 u), in three domains (a test fixture).
+package probe.trig_ring
+
+# Physics (SHM): x = A cos(omega t) for a mass on a spring with omega^2 m = k. Energy
+# is conserved: m v^2 + k x^2 = k A^2 at every t, with v = dx/dt.
+fact type SpringMass {
+  property m: Real
+  property k: Real
+  property omega: Real
+  property A: Real
+  property t: Real
+  invariant positive: m > 0 k > 0 omega > 0
+  invariant natural: omega * omega * m = k
+  theorem energy: m * deriv(A * cos(omega * t), t) * deriv(A * cos(omega * t), t)
+    + k * (A * cos(omega * t)) * (A * cos(omega * t)) = k * A * A
+}
+
+# AC circuits: an inductor carrying i = I0 sin(omega t) has v = L di/dt; v and
+# omega L i trace a circle: v^2 + (omega L i)^2 = (omega L I0)^2.
+fact type Inductor {
+  property L: Real
+  property omega: Real
+  property I0: Real
+  property t: Real
+  invariant positive: L > 0 omega > 0
+  theorem phasor_circle: (L * deriv(I0 * sin(omega * t), t)) * (L * deriv(I0 * sin(omega * t), t))
+    + (omega * L * I0 * sin(omega * t)) * (omega * L * I0 * sin(omega * t))
+    = (omega * L * I0) * (omega * L * I0)
+}
+
+# Mathematics: d/dx (sin x cos x) = 1 - 2 sin^2 x, and (sin x + cos x)^2 = 1 + 2 sin x cos x.
+fact type TrigIdentities {
+  property x: Real
+  theorem product_rule: deriv(sin(x) * cos(x), x) = 1 - 2 * sin(x) * sin(x)
+  theorem square_of_sum: (sin(x) + cos(x)) * (sin(x) + cos(x)) = 1 + 2 * sin(x) * cos(x)
+}

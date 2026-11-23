@@ -197,6 +197,12 @@ def _degree(t: Term, x: Term) -> int:
     raise Unsupported(f"{f} is not polynomial in {x}")
 
 
+def _subterms(t: Term) -> Iterator[Term]:
+    yield t
+    for a in t.args if isinstance(t, Compound) else ():
+        yield from _subterms(a)
+
+
 def _mentions(t: Term, x: Term) -> bool:
     return t == x or (isinstance(t, Compound) and any(_mentions(y, x) for y in t.args))
 
@@ -297,7 +303,8 @@ class _Eval:
                  for i in range(0, len(vals), 2)), Surd.of(Fraction(0)))))
         if f in ("f.pi", "f.qpi"):           # exact in Q(pi) (D-026)
             return self._exact(lambda: Q.PI if f == "f.pi" else Q.value(Q.from_term(a)))
-        if f in ("f.exp", "f.ln", "f.iv") or any(isinstance(v, I.Iv) for v in vals):
+        if f in ("f.exp", "f.ln", "f.sin", "f.cos", "f.iv") or any(isinstance(v, I.Iv)
+                                                                  for v in vals):
             return self._numeric(f, vals)
         if f in ARITH and any(isinstance(v, Q.QPi) for v in vals):
             return self._exact(lambda: Q.value(Q.apply(f, vals)))
@@ -324,8 +331,9 @@ class _Eval:
             if f == "f.iv":
                 return I.Iv(_rat(vals[0]), _rat(vals[1]))
             xs = [_iv(v) for v in vals]
-            if f in ("f.exp", "f.ln"):
-                return (I.exp if f == "f.exp" else I.ln)(xs[0])
+            if f in ("f.exp", "f.ln", "f.sin", "f.cos"):
+                return I.exp(xs[0]) if f == "f.exp" else I.ln(xs[0]) if f == "f.ln" \
+                    else I.trig(xs[0], f == "f.cos")
             if f == "-" and len(xs) == 1:
                 return -xs[0]
             if f == "^" and isinstance(vals[1], Num) and vals[1].value.denominator == 1 \
@@ -345,9 +353,15 @@ class _Eval:
         The result is linear in the samples, so samples in Q(pi) (D-030) are combined
         with the rational weights of the unit samples."""
         body, var, upper = a
+        try:
+            deg = _degree(body, var)
+        except Unsupported:
+            if f != "f.deriv":
+                raise
+            return self._exact(lambda: self._symbolic_deriv(a))
         x = self.expr(upper)
         ys: list[Num | Q.QPi] = []
-        for i in range(_degree(body, var) + 1):
+        for i in range(deg + 1):
             y = self.expr(subst(body, var, Num(Fraction(i))))
             if not ((isinstance(y, Num) and not y.dims) or isinstance(y, Q.QPi)):
                 raise Unsupported("integral or derivative of a non-number")
@@ -371,6 +385,30 @@ class _Eval:
                 total = total + Q.to_qpi(Num(wj)) * Q.to_qpi(y)
             return Q.value(total)
         return self._exact(combine)
+
+    def _symbolic_deriv(self, a: tuple[Term, ...]) -> Value:
+        """d/dx of a body that is not polynomial in x (exp, ln, 1/u, sin, cos): the
+        certificate normal form's derivative (raw/certificate.py), evaluated with
+        rigorous intervals (D-033)."""
+        from .certificate import ATOMS, poly
+        names = {str(t): t for t in _subterms(Compound("f.deriv", a))
+                 if isinstance(t, Compound) and t.functor in ("f.p", "f.at", "f.v")}
+
+        def ev(p: dict[tuple[tuple[str, int], ...], Fraction]) -> I.Iv:
+            out = I.Iv.of(Fraction(0))
+            for m, c in p.items():
+                term = I.Iv.of(c)
+                for v, k in m:
+                    kind, u = ATOMS.get(v, ("", {}))
+                    y = (I.exp(ev(u)) if kind == "exp" else I.ln(ev(u)) if kind == "ln" else
+                         ev(u).inverse() if kind == "inv" else I.trig(ev(u), kind == "cos")
+                         if kind else I.sqrt(I.Iv.of(Fraction(v[5:-1]))) if v[:5] == "sqrt("
+                         else I.pi() if v == "Compound(functor='f.pi', args=())"
+                         else _iv(self.expr(names[v])))
+                    term = term * y.power(k)
+                out = out + term
+            return out
+        return ev(poly(Compound("f.deriv", a)))
 
     @staticmethod
     def _exact(fn: Callable[[], Value]) -> Value:

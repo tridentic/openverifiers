@@ -34,8 +34,9 @@ goal. A polynomial "law solved for one variable" (a = F / m with m > 0) is the
 case with a factor. The caller passes only true hypotheses: class invariants,
 and theorems already certified.
 
-Three kinds of atom are indeterminates of the ring: pi, exp(u) for a polynomial
-u (D-026), and sqrt(k) for a positive integer k, reduced by sqrt(k)^2 = k
+The atoms are indeterminates of the ring: pi, exp(u) for a polynomial u (D-026),
+sin(u) and cos(u) (D-033), reduced by cos(u)^2 = 1 - sin(u)^2, ln(u) and 1/u, and
+sqrt(k) for a positive integer k, reduced by sqrt(k)^2 = k
 (D-030; a solver value f.surd(k1, c1, ...) is c1 sqrt(k1) + ...). Reducing by a
 relation the true value satisfies keeps every identity true of it. An identity
 that holds for every value of an indeterminate holds for the true one. The
@@ -63,8 +64,8 @@ ATOMS: dict[str, tuple[str, Poly]] = {}
 
 
 def _atom(kind: str, u: Poly) -> Poly:
-    if kind == "exp" and not u:                   # exp(0) = 1
-        return {(): Fraction(1)}
+    if kind in ("exp", "cos", "sin") and not u:   # exp(0) = cos(0) = 1, sin(0) = 0
+        return {(): Fraction(1)} if kind != "sin" else {}
     if kind == "inv" and set(u) == {()}:          # 1/c for a constant c != 0
         return {(): 1 / u[()]}
     name = kind + repr(sorted(u.items()))
@@ -82,7 +83,7 @@ def _atoms(p: Poly) -> set[str]:
     for m in p:
         for x, _ in m:
             if x in ATOMS:
-                out |= ({x} if ATOMS[x][0] != "exp" else set()) | _atoms(ATOMS[x][1])
+                out |= ({x} if ATOMS[x][0] in ("ln", "inv") else set()) | _atoms(ATOMS[x][1])
     return out
 
 
@@ -116,7 +117,15 @@ def _mul(a: Poly, b: Poly) -> Poly:
                 c, e[v] = c * Fraction(int(v[5:-1])) ** (e[v] // 2), e[v] % 2
             m = tuple(sorted((v, k) for v, k in e.items() if k))
             out[m] = out.get(m, Fraction(0)) + c
-    return {m: c for m, c in out.items() if c != 0}
+    out = {m: c for m, c in out.items() if c != 0}
+    for m in [m for m in out if any(v.startswith("cos") and k > 1 for v, k in m)]:
+        c, e = out.pop(m), dict(m)                # cos^2 = 1 - sin^2 (D-033)
+        v = next(v for v in e if v.startswith("cos") and e[v] > 1)
+        e[v] -= 2
+        rest = {tuple(sorted((x, k) for x, k in e.items() if k)): c}
+        out = _add(out, _mul(rest, _add({(): Fraction(1)}, _mul(
+            _atom("sin", ATOMS[v][1]), _atom("sin", ATOMS[v][1])), Fraction(-1))))
+    return out
 
 
 def _calc(p: Poly, v: str, integral: bool) -> Poly:
@@ -128,11 +137,14 @@ def _calc(p: Poly, v: str, integral: bool) -> Poly:
                     raise Unsupported("integral of exp, ln or 1/u of the variable")
                 kind, u = ATOMS[x]
                 e = dict(m)
-                e[x] = k + {"exp": 0, "ln": -1, "inv": 1}[kind]
+                e[x] = k + {"exp": 0, "ln": -1, "inv": 1, "sin": -1, "cos": -1}[kind]
                 du = _calc(u, v, False)
-                du = _mul(du, _atom("inv", u)) if kind == "ln" else du
+                du = _mul(du, _atom("inv", u)) if kind == "ln" else _mul(
+                    du, _atom("cos" if kind == "sin" else "sin", u)) if kind in (
+                    "sin", "cos") else du
                 mono = tuple(sorted((a, b) for a, b in e.items() if b))
-                out = _add(out, _mul({mono: c * k * (-1 if kind == "inv" else 1)}, du))
+                out = _add(out, _mul({mono: c * k * (-1 if kind in ("inv", "cos") else 1)},
+                                     du))
         e = dict(m)
         k = e.pop(v, 0)
         if integral:
@@ -167,7 +179,7 @@ def poly(t: Term) -> Poly:
         return {(): t.value} if t.value else {}
     if isinstance(t, Compound) and t.functor in ("f.p", "f.at", "f.v", "f.pi"):
         return {((str(t), 1),): Fraction(1)}
-    if isinstance(t, Compound) and t.functor in ("f.exp", "f.ln"):
+    if isinstance(t, Compound) and t.functor in ("f.exp", "f.ln", "f.sin", "f.cos"):
         return _atom(t.functor[2:], poly(t.args[0]))
     if isinstance(t, Compound) and t.functor == "f.surd" and len(t.args) % 2 == 0:
         sv: Poly = {}

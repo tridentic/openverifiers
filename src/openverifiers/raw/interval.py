@@ -112,6 +112,19 @@ def exp(x: Iv) -> Iv:
     return Iv.make(max(y.lo, Fraction(0)), y.hi)
 
 
+def trig(x: Iv, cosine: bool) -> Iv:
+    """cos x or sin x for |x| <= 8 (D-033): the Taylor series to x^159 with the
+    Lagrange bound |x|^160 / 160! (every derivative is bounded by 1)."""
+    if _mag(x) > 8:
+        raise IntervalError("sin or cos of an argument above 8 in magnitude")
+    fact, coeffs = 1, []
+    for k in range(160):
+        coeffs.append(Fraction(0) if (k % 2 == 1) == cosine else Fraction((-1) ** (k // 2), fact))
+        fact *= k + 1
+    y = _taylor(coeffs, x, _mag(x) ** 160 / fact)
+    return Iv.make(max(y.lo, Fraction(-1)), min(y.hi, Fraction(1)))
+
+
 def _atanh_series(z: Iv, n: int = 80) -> Iv:
     """artanh(z) for |z| <= 1/3: sum z^(2k+1) / (2k+1)."""
     coeffs = [Fraction(0) if k % 2 == 0 else Fraction(1, k) for k in range(2 * n)]
@@ -172,7 +185,10 @@ def from_surd(terms: tuple[tuple[int, Fraction], ...]) -> Iv:
 
 
 def decide(op: str, a: Iv, b: Iv) -> bool | None:
-    """The comparison if the intervals decide it (separated), else None."""
+    """The comparison if the intervals decide it (separated, or the same point: a
+    point enclosure is an exact value), else None."""
+    if a.lo == a.hi == b.lo == b.hi:
+        return op in ("=", "<=", ">=")
     if a.hi < b.lo:
         lt = True
     elif b.hi < a.lo:

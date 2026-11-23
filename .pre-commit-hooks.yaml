@@ -1,0 +1,8 @@
+# OpenVerifiers commit gate for pre-commit (https://pre-commit.com).
+- id: ov-gate
+  name: ov gate (OpenVerifiers)
+  description: Check staged OV files with the kernel (expectations, theorems, classes).
+  entry: ov gate --staged
+  language: python
+  files: \.ov$
+  pass_filenames: false

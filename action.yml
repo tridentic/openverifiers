@@ -1,0 +1,19 @@
+# OpenVerifiers commit gate as a GitHub Action.
+#   - uses: tridentic/openverifiers@v1
+#     with: { base: ${{ github.event.before }} }
+name: ov gate
+description: Check changed OV files with the OpenVerifiers kernel, and the gold and meaning gates.
+inputs:
+  base:
+    description: The base revision (checks base..HEAD).
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - shell: bash
+      run: pip install "${{ github.action_path }}"
+    - shell: bash
+      run: ov gate --base "${{ inputs.base }}"

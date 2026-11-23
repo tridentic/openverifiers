@@ -48,6 +48,15 @@ TOOL = {
 }
 
 
+FILES_TOOL = {
+    "name": "check_files",
+    "description": "Run the OpenVerifiers commit gate on OV files: each must load and its "
+                   "expectations, theorems and classes must hold.",
+    "inputSchema": {"type": "object", "required": ["paths"], "properties": {
+        "paths": {"type": "array", "items": {"type": "string"}}}},
+}
+
+
 def decide(policy: Path, tool: str, target: str, drafts: bool = False) -> dict[str, Any]:
     """The policy's verdict on one requested call."""
     if not (_NAME.match(tool) and _NAME.match(target)):
@@ -94,10 +103,16 @@ def handle(msg: dict[str, Any], policy: Path, drafts: bool) -> str | None:
         return _reply(id_, {"protocolVersion": PROTOCOL, "capabilities": {"tools": {}},
                             "serverInfo": {"name": "openverifiers-gate", "version": "0.1"}})
     if method == "tools/list":
-        return _reply(id_, {"tools": [TOOL]})
+        return _reply(id_, {"tools": [TOOL, FILES_TOOL]})
     if method == "tools/call":
         params = msg.get("params") or {}
         args = params.get("arguments") or {}
+        if params.get("name") == FILES_TOOL["name"]:
+            from .gate import check_file
+            rows = [check_file(Path(str(p)), drafts) for p in args.get("paths") or []]
+            return _reply(id_, {"content": [{"type": "text", "text": json.dumps(
+                {"ok": all(ok for ok, _ in rows), "files": [line for _, line in rows]})}],
+                "isError": not all(ok for ok, _ in rows)})
         if params.get("name") != TOOL["name"]:
             return _reply(id_, error={"code": -32602, "message": "unknown tool"})
         out = decide(policy, str(args.get("tool", "")), str(args.get("target", "")), drafts)

@@ -10,6 +10,19 @@
 package bench.jee2025_phys_p2q3
 import physics.rotation
 
+# Modelling (reworked from library line M168): a spring of constant k fixed
+# horizontally at distance d from the hinge of the upright rod; a small turn
+# theta stretches it by d theta (small angles: sin theta ~ theta, cos ~ 1), so
+# it adds k d^2 to the restoring torque constant. Stated here as this problem's
+# reading, not as a law.
+fact type SpringOnLever {
+  property k: "N/m"
+  property d: Length
+  property kappa: "N*m"
+  invariant positive: k > 0 d >= 0
+  invariant small_angle_lever: kappa = k * d * d
+}
+
 fact type TwoSetups {
   property rod_length: Length
   property one: AngularOscillator

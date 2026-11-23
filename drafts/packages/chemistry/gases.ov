@@ -13,8 +13,10 @@ fact type VanDerWaalsGas {
   property a: "Pa*m^6/mol^2"
   property b: "m^3/mol"
   invariant positive: p > 0 temp > 0 R > 0 a > 0 b > 0
-  invariant excluded_volume: vm > b
+  invariant molar_volume_positive: vm > 0
   law van_der_waals: (p + a / (vm * vm)) * (vm - b) = R * temp
+  # Reworked (M126, DERIVABLE): with p, a, R T > 0 the law forces vm > b.
+  theorem excluded_volume: vm > b
   # Multiplied through by vm^2: vm is a root of a cubic.
   theorem cubic_in_vm: (p * vm * vm + a) * (vm - b) = R * temp * vm * vm
 }

@@ -32,3 +32,4 @@ bench-out/
 
 # Exam sources (copyrighted originals): never committed
 private/
+repro-out/

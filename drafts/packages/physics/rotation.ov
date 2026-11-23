@@ -14,13 +14,3 @@ fact type AngularOscillator {
   invariant positive: inertia > 0 kappa > 0 omega > 0
   law small_oscillation: omega * omega * inertia = kappa
 }
-
-# A spring of constant k, perpendicular to the body at distance d from the
-# axis: a small turn theta stretches it by d theta, so it adds k d^2 to kappa.
-fact type SpringOnLever {
-  property k: "N/m"
-  property d: Length
-  property kappa: "N*m"
-  invariant positive: k > 0 d >= 0
-  law lever_torque: kappa = k * d * d
-}

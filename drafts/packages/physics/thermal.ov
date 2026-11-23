@@ -5,14 +5,21 @@
 package physics.thermal @0.1-draft
 
 # Two large parallel black surfaces facing each other across vacuum, at absolute
-# temperatures hot and cold: the net power per unit area radiated from the hot
-# one to the cold one (Stefan-Boltzmann law for black bodies).
+# temperatures hot and cold. Each black surface emits sigma T^4 per unit area
+# (the Stefan-Boltzmann law); every ray from one plate reaches the other, so
+# the net transfer from hot to cold is the difference of the two emissions.
+# Reworked (M171, DERIVABLE): the net-flux formula is now a theorem.
 fact type BlackGap {
   property sigma: "W/m^2/K^4"
   property hot: Temperature
   property cold: Temperature
+  property emit_hot: "W/m^2"
+  property emit_cold: "W/m^2"
   property flux: "W/m^2"
   invariant constant_positive: sigma > 0
   invariant absolute: hot >= 0 cold >= 0
-  law stefan_boltzmann: flux = sigma * (hot ^ 4 - cold ^ 4)
+  law stefan_boltzmann_hot: emit_hot = sigma * hot ^ 4
+  law stefan_boltzmann_cold: emit_cold = sigma * cold ^ 4
+  invariant net_transfer: flux = emit_hot - emit_cold
+  theorem net_flux: flux = sigma * (hot ^ 4 - cold ^ 4)
 }

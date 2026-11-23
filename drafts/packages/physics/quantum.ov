@@ -22,12 +22,13 @@ fact type SlowParticle extends MatterWave {
   invariant kinetic_energy: p * p = 2 * m * energy
 }
 
-# Bohr model of a hydrogen-like atom of atomic number Z: in orbit n the
+# Bohr model of a hydrogen-like atom of atomic number Z (n and Z are whole
+# numbers, D-027; reworked from M161): in orbit n the
 # electron's orbit radius is n^2 a0 / Z (a0: the first Bohr radius of hydrogen)
 # and its angular momentum p r is quantized as n h / (2 pi).
 fact type BohrOrbit extends MatterWave {
-  property n: Real
-  property Z: Real
+  property n: Integer
+  property Z: Integer
   property a0: Length
   property r: Length
   invariant orbit_positive: n >= 1 Z >= 1 a0 > 0

@@ -1,0 +1,33 @@
+# JEE (Advanced) 2025, paper 1, mathematics Q4 (see list.json). Formalization only.
+#
+# P = diag(2, 2, 3). Asked: the number of 3x3 invertible matrices Q with integer
+# entries such that Q^-1 = Q^T and P Q = Q P.
+# Reading: Q^-1 = Q^T says Q Q^T = I (which also makes Q invertible); entries
+# are named q<row><column>.
+package bench.jee2025_math_p1q4
+
+fact type CommutingOrthogonal {
+  property q11: Integer
+  property q12: Integer
+  property q13: Integer
+  property q21: Integer
+  property q22: Integer
+  property q23: Integer
+  property q31: Integer
+  property q32: Integer
+  property q33: Integer
+  # Q Q^T = I, entry by entry.
+  invariant rows_unit: q11 * q11 + q12 * q12 + q13 * q13 = 1
+                       q21 * q21 + q22 * q22 + q23 * q23 = 1
+                       q31 * q31 + q32 * q32 + q33 * q33 = 1
+  invariant rows_orthogonal: q11 * q21 + q12 * q22 + q13 * q23 = 0
+                             q11 * q31 + q12 * q32 + q13 * q33 = 0
+                             q21 * q31 + q22 * q32 + q23 * q33 = 0
+  # P Q = Q P with P = diag(2, 2, 3): (P Q)ij = p_i qij and (Q P)ij = qij p_j.
+  invariant commutes: 2 * q13 = 3 * q13 2 * q23 = 3 * q23 3 * q31 = 2 * q31 3 * q32 = 2 * q32
+}
+
+scenario jee2025_math_p1q4 uses bench.jee2025_math_p1q4 {
+  query COUNT ?a, ?b, ?c, ?d, ?e, ?f, ?g, ?h, ?i WHERE CommutingOrthogonal{
+    q11 = ?a, q12 = ?b, q13 = ?c, q21 = ?d, q22 = ?e, q23 = ?f, q31 = ?g, q32 = ?h, q33 = ?i }
+}

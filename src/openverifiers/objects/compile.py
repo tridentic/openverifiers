@@ -29,7 +29,7 @@ Ty = tuple[object, ...]
 REAL: Ty = ("Real",)
 GENERATORS = {"cycles": 1, "orderings": 1, "pairs": 1, "subsets": 2}
 FUNCS = {"count": 1, "dist": 2, "dist2": 2, "angle": 3, "abs": 1, "min": 2, "max": 2,
-         "sqrt": 1, "exp": 1, "ln": 1}
+         "sqrt": 1, "exp": 1, "ln": 1, "mod": 2}
 #: In classes, an Angle is the record (cos, sin) with the foundation axiom
 #: cos^2 + sin^2 = 1 (one per Angle property). sin and cos read its fields; the
 #: special angles (0, 30, 45, 60, 90, 120, 135, 150, 180 deg) have exact values.
@@ -246,6 +246,9 @@ def _compile_class(d: A.FactType, decls: dict[str, A.FactType], cls: Classes, en
             elif isinstance(m, A.Prop):
                 invariants += _component_invariants(d.name, m, props[m.name], cls)
                 invariants += _angle_invariants(d.name, m.name, props[m.name])
+                if m.ty.name == "Integer":       # its values are whole numbers (D-027)
+                    invariants.append((f"Integer.whole@{d.name}.{m.name}",
+                                       _f("isint", _f("p", Str(m.name)))))
     for m in d.members:
         if isinstance(m, A.Invariant):
             cls.kinds[f"{d.name}.{m.name}"] = m.kind
@@ -546,7 +549,7 @@ class _Formula:
                 raise _Fail("E205", f"{e.fn} takes {FUNCS[e.fn]} argument(s)", e.span)
             args = [go(a)[0] for a in e.args]
             name = e.fn if e.fn in ("count", "dist", "dist2", "angle", "sqrt", "exp",
-                                    "ln") else None
+                                    "ln", "mod") else None
             if e.fn in ("exp", "ln") and self.dims(e.args[0]) not in ((), None):
                 raise _Fail("E301", f"{e.fn} needs a dimensionless argument", e.args[0].span)
             return (_f(name, *args) if name else Compound(e.fn, tuple(args))), REAL

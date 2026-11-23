@@ -56,6 +56,8 @@ def holds(f: CF, a: dict[str, int]) -> bool:
         op, p = f[1], f[2]
         assert isinstance(p, Poly)
         x = _value(p, a)
+        if op in ("int", "nint"):
+            return (x.denominator == 1) == (op == "int")
         return {"=": x == 0, "!=": x != 0, ">": x > 0, ">=": x >= 0}[str(op)]
     parts = f[1]
     assert isinstance(parts, (frozenset, tuple))

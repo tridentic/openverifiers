@@ -598,3 +598,18 @@ with `--dag THEOREM` the theorem's dependencies down to axioms.
 
 [KNOWN_LIMITATIONS.md](../KNOWN_LIMITATIONS.md) lists what the language does
 not do yet.
+
+## Integers and counting (D-027)
+
+- `property n: Integer` is a whole number: the class gets the type-derived
+  invariant `Integer.whole@C.n` (the trusted evaluator checks the value is an
+  integer; the solver uses `IsInt`).
+- `mod(a, b)` is `a - b * floor(a / b)` (b a positive integer constant in solver
+  queries); divisibility is `mod(b, a) = 0`.
+- `COUNT` enumerates at most 4096 solutions (a deterministic budget); past it the
+  answer is UNKNOWN(budget). Counting uses one incremental solver with a
+  blocking clause per model; every model is re-checked by the kernel, and the
+  count's completeness is the solver's final unsat (trust `z3_unsat`).
+- Counting occurrences in a finite sequence is written with polynomial
+  indicators over the finite alphabet (see `benchmarks/exams/jee2025/
+  jee2025-math-p1q10`); there is no `count_of` builtin yet.

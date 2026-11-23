@@ -268,6 +268,8 @@ class _Eval:
             return _stored(seq[int(i.value) % len(seq)])
         if f == "f.count":
             return Num(Fraction(len(_seq(vals[0]))))
+        if f == "f.mod" and _rat(vals[1]) != 0:   # a - b floor(a / b)
+            return Num(_rat(vals[0]) % _rat(vals[1]))
         if f == "f.dist":
             d = _sub(_point(vals[0]), _point(vals[1]))
             sq = self._exact(lambda: _dot(d, d))
@@ -388,6 +390,9 @@ class _Eval:
             return not self.holds(a[0])
         if f == "f.cmp" and isinstance(a[0], Str):
             return compare(a[0].value, self.expr(a[1]), self.expr(a[2]))
+        if f == "f.isint":                   # a whole number (Integer properties, D-027)
+            v = self.expr(a[0])
+            return isinstance(v, Num) and not v.dims and v.value.denominator == 1
         if f in ("f.exists", "f.forall", "f.forall_idx") and isinstance(a[0], Str):
             var = a[0].value
             if f == "f.forall_idx":

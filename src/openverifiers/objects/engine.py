@@ -48,9 +48,11 @@ from .expand import (
     translation_invariant,
 )
 from .qpi_lift import lift
-from .solve import Result, small_scope, solve, variables
+from .solve import Result, enumerate_models, small_scope, solve, variables
 
-DEFAULT_LIMIT = {"find": 16, "unique": 2, "count": 64}
+#: COUNT enumerates at most this many solutions (a deterministic budget, D-027);
+#: past it the answer is UNKNOWN(budget), never a truncated count.
+DEFAULT_LIMIT = {"find": 16, "unique": 2, "count": 4096}
 
 
 @dataclass
@@ -411,6 +413,8 @@ def _search(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> ObjAnswer:
     for v in plan.props.values():
         _vars(v, names)
     base = _expand(plan.cls.invariants, plan.props, r.st)
+    if plan.kind == "count" and _count_fast(plan, r, ans, base, list(names), limit):
+        return _verdict(plan, r, ans, list(names))
     blocks: list[CF] = []
     while True:
         what = f"invariants of {plan.cls.name}" + (f" minus {len(blocks)} found" if blocks
@@ -448,6 +452,35 @@ def _search(plan: ObjPlan, r: _Run, ans: ObjAnswer) -> ObjAnswer:
         blocks.append(_block(plan, binding))
         r.steps.append("block " + ", ".join(f"?{q} = {show(v)}" for q, v in binding.items()))
     return _verdict(plan, r, ans, list(names))
+
+
+def _count_fast(plan: ObjPlan, r: _Run, ans: ObjAnswer, base: CF, names: list[str],
+                limit: int) -> bool:
+    """COUNT by incremental enumeration (one solver, a blocking clause per model).
+    Every model is re-checked by the kernel; the count's completeness is the
+    solver's final unsat, as for the general search. False: use the general path."""
+    block = [c.name for coords in plan.unknowns.values() for c in coords]
+    got = enumerate_models([base], names, block, limit, r.st.timeout_ms)
+    if got is None:
+        return False
+    models, complete = got
+    r.steps.append(f"enumerate [z3, incremental] invariants of {plan.cls.name}: "
+                   f"{len(models)} model(s)" + ("; then unsat" if complete else
+                                                  "; budget reached"))
+    for model in models:
+        _, bad, exact = r.recheck_model(plan.cls, plan.props, model)
+        if bad is None or bad:
+            ans.steps.append("the solver's model is rejected")
+            ans.reason, ans.complete = "plugin_unknown", False
+            return True
+        vals = {k: term_of(v) for k, v in exact.items()}
+        ans.bindings.append({q: (Compound("f.tuple", tuple(vals[c.name] for c in coords))
+                                 if plan.is_tuple[q] else vals[coords[0].name])
+                             for q, coords in plan.unknowns.items()})
+    ans.complete = complete
+    if not complete:
+        ans.reason = "budget"
+    return True
 
 
 def _block(plan: ObjPlan, binding: Mapping[str, Term]) -> CF:

@@ -76,6 +76,8 @@ def to_z3(f: CF, vs: dict[str, z3.ArithRef]) -> z3.BoolRef:
         op, p = f[1], f[2]
         assert isinstance(p, Poly)
         e = _poly(p, vs)
+        if op in ("int", "nint"):
+            return z3.IsInt(e) if op == "int" else z3.Not(z3.IsInt(e))
         return {"=": e == 0, "!=": e != 0, ">": e > 0, ">=": e >= 0}[str(op)]
     parts = f[1]
     assert isinstance(parts, (frozenset, tuple))
@@ -221,6 +223,53 @@ def _solve(cs: list[CF], variables: list[str], timeout_ms: int, deadline: float,
             return Result("unknown", reason="plugin_unknown")   # not exact in our fragment
         out[name] = q
     return Result("sat", out)
+
+
+def enumerate_models(constraints: Sequence[CF], variables: Sequence[str],
+                     block: Sequence[str], limit: int, timeout_ms: int = 20_000
+                     ) -> tuple[list[dict[str, Fraction]], bool] | None:
+    """All models, distinct on the ``block`` variables, with one incremental solver
+    (COUNT, D-027): each model adds a clause excluding its ``block`` values. Returns
+    (models, complete); complete when the solver ends with unsat. None when this fast
+    path does not apply (a disjunction to split, a non-rational model, no answer
+    within the time), so the caller falls back to the general search."""
+    cs = _conjuncts(constraints)
+    used: set[str] = set()
+    for c in cs:
+        _vars_of(c, used)
+    roots = root_definitions(sorted(used))
+    cs = _conjuncts([*cs, *roots])
+    if _split(cs) is not None:
+        return None
+    names = sorted(set(variables) | used | {v for c in roots for v in variables_of(c)})
+    vs = {v: z3.Real(v) for v in names}
+    s = z3.SolverFor("QF_NRA")
+    s.set("random_seed", SEED_BASE)
+    s.set("timeout", timeout_ms)
+    s.add(*(to_z3(c, vs) for c in cs))
+    out: list[dict[str, Fraction]] = []
+    while len(out) < limit:
+        r = s.check()
+        if r == z3.unsat:
+            return out, True
+        if r != z3.sat:
+            return None
+        m = s.model()
+        model: dict[str, Fraction] = {}
+        for name in variables:
+            val = m.eval(vs[name], model_completion=True)
+            if not z3.is_rational_value(val):
+                return None
+            model[name] = Fraction(val.numerator_as_long(), val.denominator_as_long())
+        out.append(model)
+        s.add(z3.Or([vs[b] != z3.RealVal(str(model[b])) for b in block]))
+    return out, False
+
+
+def variables_of(f: CF) -> set[str]:
+    out: set[str] = set()
+    _vars_of(f, out)
+    return out
 
 
 def _quadratic_surd(val: z3.AlgebraicNumRef) -> Surd | None:

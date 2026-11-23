@@ -120,6 +120,11 @@ FALSE: CF = ("false",)
 
 
 def atom(op: str, p: Poly) -> CF:
+    if op in ("int", "nint"):                    # p is (not) an integer (D-027)
+        c = p.constant()
+        if c is not None:
+            return TRUE if (c.denominator == 1) == (op == "int") else FALSE
+        return ("atom", op, p)
     if op in ("<", "<="):
         op, p = (">" if op == "<" else ">="), p.scale(Fraction(-1))
     c = p.constant()
@@ -158,7 +163,7 @@ def or_(parts: Iterable[CF], keep: bool = False) -> CF:
     return out[0] if len(out) == 1 else ("or", tuple(out) if keep else frozenset(out))
 
 
-_FLIP = {"=": "!=", "!=": "=", ">": ">=", ">=": ">"}
+_FLIP = {"=": "!=", "!=": "=", ">": ">=", ">=": ">", "int": "nint", "nint": "int"}
 
 
 def not_(f: CF) -> CF:
@@ -169,7 +174,7 @@ def not_(f: CF) -> CF:
     if f[0] == "atom":
         op, p = f[1], f[2]
         assert isinstance(op, str) and isinstance(p, Poly)
-        return atom(_FLIP[op], p if op in ("=", "!=") else p.scale(Fraction(-1)))
+        return atom(_FLIP[op], p if op in ("=", "!=", "int", "nint") else p.scale(Fraction(-1)))
     parts = f[1]
     assert isinstance(parts, (frozenset, tuple))
     return (or_ if f[0] == "and" else and_)(not_(x) for x in parts)
@@ -219,6 +224,15 @@ LOGS: dict[str, Poly] = {}
 #: formula multiplied through by D, with the side condition D != 0 recorded (an
 #: instance with D = 0 makes the formula undefined, so it is no member).
 RECIPS: dict[str, Poly] = {}
+#: mod(a, b) for a constant integer b > 0: variable name (the remainder r) ->
+#: (a, b), defined by r = a - b q with q an integer and 0 <= r < b.
+MODS: dict[str, tuple[Poly, int]] = {}
+
+
+def mod_var(a: Poly, b: int) -> SNum:
+    name = _atom_name("MOD", a.scale(Fraction(1, b)))
+    MODS[name] = (a, b)
+    return SNum(Poly.var(name))
 
 
 def recip_var(d: Poly) -> SNum:
@@ -252,7 +266,8 @@ def _depends(v: str, tau: str, seen: frozenset[str] = frozenset()) -> bool:
     """Whether the solver variable v (possibly an atom) depends on tau."""
     if v == tau:
         return True
-    arg = ROOTS.get(v) or EXPS.get(v) or LOGS.get(v) or RECIPS.get(v)
+    arg = ROOTS.get(v) or EXPS.get(v) or LOGS.get(v) or RECIPS.get(v) or \
+        (MODS[v][0] if v in MODS else None)
     if arg is None or v in seen:
         return False
     return any(_depends(w, tau, seen | {v}) for m, _ in arg.terms for w, _ in m)
@@ -288,6 +303,8 @@ def subst_atoms(p: Poly, tau: str, val: Poly) -> Poly:
             new = log_var(subst_atoms(LOGS[v], tau, val)).p
         elif v in RECIPS:
             new = recip_var(subst_atoms(RECIPS[v], tau, val)).p
+        elif v in MODS:
+            new = mod_var(subst_atoms(MODS[v][0], tau, val), MODS[v][1]).p
         else:
             continue
         out = poly_subst(out, v, new)
@@ -327,6 +344,12 @@ def root_definitions(names: Iterable[str]) -> list[CF]:
         elif n in EXPS:
             out.append(atom(">", v))
             todo += [w for m, _ in EXPS[n].terms for w, _ in m]
+        elif n in MODS:
+            a, b = MODS[n]
+            q = Poly.var(n + "_Q")
+            out += [atom("int", q), atom("=", v - a + q.scale(Fraction(b))), atom(">=", v),
+                    atom(">", Poly.const(Fraction(b)) - v)]
+            todo += [w for m, _ in a.terms for w, _ in m]
         elif n in RECIPS:
             out.append(atom("=", v * RECIPS[n] - Poly.const(Fraction(1))))
             todo += [w for m, _ in RECIPS[n].terms for w, _ in m]
@@ -446,6 +469,11 @@ class Expander:
             return root_var(x.p)
         if f == "f.pi":
             return SNum(Poly.var("PI"))
+        if f == "f.mod":
+            b = _num(vals[1]).p.constant()
+            if b is None or b <= 0 or b.denominator != 1:
+                raise Unsupported("mod by something other than a positive integer constant")
+            return mod_var(_num(vals[0]).p, int(b))
         if f == "f.exp":
             return exp_var(_num(vals[0]).p)
         if f == "f.ln":
@@ -514,6 +542,8 @@ class Expander:
             return not_(self.formula(a[0]))
         if f == "f.cmp" and isinstance(a[0], Str):
             return compare(a[0].value, self.value(a[1]), self.value(a[2]))
+        if f == "f.isint":
+            return atom("int", _num(self.value(a[0])).p)
         if f in ("f.exists", "f.forall", "f.forall_idx") and isinstance(a[0], Str):
             var = a[0].value
             if f == "f.forall_idx":

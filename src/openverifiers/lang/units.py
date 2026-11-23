@@ -57,7 +57,7 @@ QUANTITY_TYPES: dict[str, Dims] = {
     "Charge": _d(A=1, s=1), "Voltage": _d(kg=1, m=2, s=-3, A=-1),
     "Resistance": _d(kg=1, m=2, s=-3, A=-2), "Frequency": _d(s=-1),
     "Molarity": _d(mol=1, m=-3), "MolarMass": _d(kg=1, mol=-1), "Money": _d(USD=1),
-    "Density": _d(kg=1, m=-3),
+    "Density": _d(kg=1, m=-3), "Integer": (),
     "Real": (), "Angle": _d(deg=1),
 }
 

@@ -1,4 +1,0 @@
-{
-  "category": "language",
-  "note": "Counts seven-digit strings over {0, 1, 2}: OV has no sequences over a finite alphabet, and COUNT stops at 64 (the answer is 762)."
-}

@@ -1,0 +1,35 @@
+# JEE (Advanced) 2025, paper 1, mathematics Q10 (see list.json). Formalization only.
+#
+# S is the set of seven-digit numbers formed with the digits 0, 1 and 2 (the
+# first digit is not 0). Asked: how many x in S have at least one of the digits
+# 0 and 1 appearing exactly twice.
+# Reading: d1..d7 are the digits, d1 the leading one. A digit d in {0, 1, 2} is
+# 0 exactly when (d - 1)(d - 2)/2 = 1 (else it is 0), and 1 exactly when
+# d (2 - d) = 1, so the sums below count the zeros and the ones. "At least one
+# of them appears exactly twice" is (zeros - 2)(ones - 2) = 0.
+package bench.jee2025_math_p1q10
+
+fact type SevenDigits {
+  property d1: Integer
+  property d2: Integer
+  property d3: Integer
+  property d4: Integer
+  property d5: Integer
+  property d6: Integer
+  property d7: Integer
+  property zeros: Integer
+  property ones: Integer
+  invariant digits: d1 >= 1 d1 <= 2 d2 >= 0 d2 <= 2 d3 >= 0 d3 <= 2 d4 >= 0 d4 <= 2
+                    d5 >= 0 d5 <= 2 d6 >= 0 d6 <= 2 d7 >= 0 d7 <= 2
+  invariant count_zeros: 2 * zeros = (d1 - 1) * (d1 - 2) + (d2 - 1) * (d2 - 2)
+    + (d3 - 1) * (d3 - 2) + (d4 - 1) * (d4 - 2) + (d5 - 1) * (d5 - 2)
+    + (d6 - 1) * (d6 - 2) + (d7 - 1) * (d7 - 2)
+  invariant count_ones: ones = d1 * (2 - d1) + d2 * (2 - d2) + d3 * (2 - d3)
+    + d4 * (2 - d4) + d5 * (2 - d5) + d6 * (2 - d6) + d7 * (2 - d7)
+  invariant asked: (zeros - 2) * (ones - 2) = 0
+}
+
+scenario jee2025_math_p1q10 uses bench.jee2025_math_p1q10 {
+  query COUNT ?a, ?b, ?c, ?d, ?e, ?f, ?g WHERE SevenDigits{
+    d1 = ?a, d2 = ?b, d3 = ?c, d4 = ?d, d5 = ?e, d6 = ?f, d7 = ?g }
+}

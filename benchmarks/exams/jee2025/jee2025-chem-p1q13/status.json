@@ -1,4 +1,4 @@
 {
-  "category": "structures",
-  "note": "Multistep organic synthesis with yields: the masses follow once the products are known, but identifying the products needs structures and reactions."
+  "category": "out_of_scope",
+  "note": "Organic/structural chemistry from structure drawings is out of scope in v1 (2026-11-23 directive). Multistep organic synthesis with yields: the masses follow once the products are known, but identifying the products needs structures and reactions."
 }

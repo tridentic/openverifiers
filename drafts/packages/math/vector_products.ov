@@ -1,0 +1,21 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# math.vector_products: the cross product of two vectors in three dimensions.
+package math.vector_products @0.1-draft
+
+# c = a x b, by components (the definition of the cross product).
+fact type Cross {
+  property ax: Real
+  property ay: Real
+  property az: Real
+  property bx: Real
+  property by: Real
+  property bz: Real
+  property cx: Real
+  property cy: Real
+  property cz: Real
+  invariant components: cx = ay * bz - az * by cy = az * bx - ax * bz cz = ax * by - ay * bx
+  theorem orthogonal_to_a: ax * cx + ay * cy + az * cz = 0
+  theorem orthogonal_to_b: bx * cx + by * cy + bz * cz = 0
+}

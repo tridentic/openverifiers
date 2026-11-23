@@ -1,0 +1,8 @@
+{
+  "reviewer": "Claude subagent, gold-blind (saw only the question text, the case, answer.json and the imported libraries)",
+  "date": "2026-11-23",
+  "verdict": "faithful",
+  "issues": [],
+  "library_issues": [],
+  "notes": "The six row equations state Q Q^T = I in full (for square matrices also Q^T Q = I and invertibility); the four commuting constraints are exactly the off-block entries of PQ = QP; COUNT runs over all nine entries."
+}

@@ -1,0 +1,8 @@
+{
+  "reviewer": "Claude subagent, gold-blind (saw only the question text, the case, answer.json and the imported libraries)",
+  "date": "2026-11-23",
+  "verdict": "faithful",
+  "issues": [],
+  "library_issues": [],
+  "notes": "2*zeros counts zeros via (d-1)(d-2); ones via d(2-d); (zeros-2)(ones-2)=0 is exactly 'zeros = 2 or ones = 2'; zeros and ones are fixed by the digits, so no extra multiplicity."
+}

@@ -1,0 +1,54 @@
+# JEE (Advanced) 2025, paper 1, mathematics Q16 (see list.json). Formalization only.
+#
+# w = i + j - 2k; u x v = w and v x w = u; u = alpha i + beta j + gamma k with
+# -t alpha + beta + gamma = 0, alpha - t beta + gamma = 0, alpha + beta - t gamma = 0.
+# Match: (P) |v|^2; (Q) gamma^2 if alpha = sqrt 3; (R) (beta + gamma)^2 if
+# alpha = sqrt 3; (S) t + 3 if alpha = sqrt 2; with (1) 0, (2) 1, (3) 2, (4) 3, (5) 5.
+# Reading: each claimed match "X -> (n)" is a theorem "X = value of (n)" under the
+# conditions; an option holds when all four of its matches are proven. The
+# conditions alpha = sqrt 3 and alpha = sqrt 2 are written alpha^2 = 3 (or 2)
+# with alpha > 0.
+package bench.jee2025_math_p1q16
+import math.vector_products
+
+fact type Setting {
+  property uv: Cross
+  property vw: Cross
+  property t: Real
+  # u x v = w with w = (1, 1, -2); v x w = u; the same u, v, w in both products.
+  invariant w_given: uv.cx = 1 uv.cy = 1 uv.cz = -2
+  invariant same_vectors: vw.ax = uv.bx vw.ay = uv.by vw.az = uv.bz
+                          vw.bx = uv.cx vw.by = uv.cy vw.bz = uv.cz
+  invariant second_product: vw.cx = uv.ax vw.cy = uv.ay vw.cz = uv.az
+  invariant system: -t * uv.ax + uv.ay + uv.az = 0 uv.ax - t * uv.ay + uv.az = 0
+                    uv.ax + uv.ay - t * uv.az = 0
+  theorem p_is_1: uv.bx * uv.bx + uv.by * uv.by + uv.bz * uv.bz = 1
+  theorem p_is_5: uv.bx * uv.bx + uv.by * uv.by + uv.bz * uv.bz = 5
+}
+
+fact type AlphaRootThree extends Setting {
+  invariant alpha: uv.ax * uv.ax = 3 uv.ax > 0
+  theorem q_is_0: uv.az * uv.az = 0
+  theorem q_is_3: uv.az * uv.az = 3
+  theorem r_is_3: (uv.ay + uv.az) * (uv.ay + uv.az) = 3
+  theorem r_is_2: (uv.ay + uv.az) * (uv.ay + uv.az) = 2
+  theorem r_is_0: (uv.ay + uv.az) * (uv.ay + uv.az) = 0
+}
+
+fact type AlphaRootTwo extends Setting {
+  invariant alpha: uv.ax * uv.ax = 2 uv.ax > 0
+  theorem s_is_5: t + 3 = 5
+  theorem s_is_2: t + 3 = 2
+}
+
+scenario jee2025_math_p1q16 uses bench.jee2025_math_p1q16 {
+  query COUNTEREXAMPLE Setting.p_is_1
+  query COUNTEREXAMPLE Setting.p_is_5
+  query COUNTEREXAMPLE AlphaRootThree.q_is_0
+  query COUNTEREXAMPLE AlphaRootThree.q_is_3
+  query COUNTEREXAMPLE AlphaRootThree.r_is_3
+  query COUNTEREXAMPLE AlphaRootThree.r_is_2
+  query COUNTEREXAMPLE AlphaRootThree.r_is_0
+  query COUNTEREXAMPLE AlphaRootTwo.s_is_5
+  query COUNTEREXAMPLE AlphaRootTwo.s_is_2
+}

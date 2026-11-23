@@ -1,4 +1,4 @@
 {
-  "category": "language",
-  "note": "Counts real solutions of an equation with inverse tangent and inverse sine: OV has no inverse trigonometric functions and does not count solutions over the reals."
+  "category": "out_of_scope",
+  "note": "Inverse trigonometric functions move to v2 (D-027). Counts real solutions of an equation with inverse tangent and inverse sine: OV has no inverse trigonometric functions and does not count solutions over the reals."
 }

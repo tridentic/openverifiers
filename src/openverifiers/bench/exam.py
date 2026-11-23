@@ -61,7 +61,8 @@ CATEGORIES = {
     "library": "OV can state it, but the needed library does not exist, even as a draft",
     "engine": "stated, but the engine cannot decide it (UNKNOWN: solver, budget, evaluator)",
     "faithfulness": "the reviewer found the formalization unfaithful",
-    "not_attempted": "expressible in principle; not attempted in W3",
+    "not_attempted": "expressible in principle; not attempted yet",
+    "out_of_scope": "outside v1 by decision (organic structures; inverse trig, D-027)",
 }
 
 _NUM = re.compile(r"^\s*(-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?(?:/\d+)?)\s*([^(]*?)\s*"

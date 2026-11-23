@@ -1,0 +1,53 @@
+# The nightly scheduled run (D-034): the CI streak counts push runs on distinct commits
+# plus this run. It tests branch v1 with the full matrix (including macOS 3.11, which
+# push runs skip because GitHub's macOS queue cancelled it before it started, 3 times on
+# 2026-11-23) and runs the gold and meaning gates over the whole history.
+# GitHub runs schedules only from the default branch's workflow files: this file must
+# also be on the default branch (main) for the schedule to fire (packet 4).
+name: nightly
+
+on:
+  schedule:
+    - cron: "0 21 * * *"          # 21:00 UTC daily
+  workflow_dispatch:               # manual runs do not count for the streak (D-034)
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Lint, types, trusted-code size, reports
+        run: |
+          ruff check .
+          mypy
+          python scripts/tcb_size.py
+          python scripts/check_reports.py
+      - name: Full test suite
+        run: python -m pytest -q
+
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v1
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Gold and meaning gates over the whole history
+        run: PYTHONPATH=src python -m openverifiers.bench.gold_gate "$(git rev-list --max-parents=0 HEAD | tail -1)" HEAD

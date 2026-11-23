@@ -13,6 +13,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ["3.11", "3.12"]
+        # macOS 3.11 runs in the nightly workflow: on push runs GitHub's macOS queue
+        # cancelled it before it started (no runner), 3 times on 2026-11-23 (packet 4).
+        exclude:
+          - os: macos-latest
+            python-version: "3.11"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,6 +33,8 @@ jobs:
         run: mypy
       - name: Trusted-code size gate
         run: python scripts/tcb_size.py
+      - name: No unfilled placeholder in any report
+        run: python scripts/check_reports.py
       - name: Tests with coverage gate (raw, kernel, checker >= 95%)
         run: |
           python -m coverage run -m pytest -q tests/v1
@@ -70,8 +77,8 @@ jobs:
           fi
           PYTHONPATH=src python -m openverifiers.bench.gold_gate "$BASE" HEAD
       # Read-only: compares .approvers/allowed_signers with the founder's GitHub
-      # signing keys (docs/APPROVALS.md). Warns until the founder confirms the key is
-      # on GitHub (repository variable FOUNDER_SIGNING_KEY_ON_GITHUB=true), then fails.
+      # signing keys (docs/APPROVALS.md). Warns while the account shows no signing
+      # key; fails on a mismatch once it shows one (packet 3, Part D).
       - name: Approval-key anchor
         env:
           FOUNDER_GITHUB_USER: ${{ vars.FOUNDER_GITHUB_USER || github.repository_owner }}

@@ -1,23 +1,14 @@
 # Policy: network fetches only from allowlisted hosts.
 package bench.network_allowlist
-type Plan
-type Action
-type Thing
-predicate plan(p: Plan) world closed
-predicate step(p: Plan, i: Number, a: Action, x: Thing) world closed
-predicate violation(p: Plan, i: Number) world closed
-predicate violates(p: Plan) world closed
-predicate valid(p: Plan) world closed
-axiom any_violation(p: Plan, i: Number): violation(p, i) -> violates(p)
-axiom valid_plan(p: Plan): plan(p), not violates(p) -> valid(p)
-predicate allowlisted(x: Thing) world closed
-entity fetch: Action
-axiom off_list(p: Plan, i: Number, x: Thing): step(p, i, fetch, x), not allowlisted(x) -> violation(p, i)
+import agent.workflow
+predicate allowlisted(x: Target) world closed
+entity fetch: Tool
+axiom off_list(p: Plan, i: Number, x: Target): step(p, i, fetch, x), not allowlisted(x) -> violation(p, i)
 
 test network_allowlist {
   scenario network_allowlist_s uses bench.network_allowlist {
     entity sync: Plan
-    entity docs_host, paste_site: Thing
+    entity docs_host, paste_site: Target
     fact plan(sync)
     fact allowlisted(docs_host)
     fact step(sync, 1, fetch, docs_host)

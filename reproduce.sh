@@ -6,7 +6,7 @@ OUT=${1:-repro-out}
 mkdir -p "$OUT"
 py=${PYTHON:-python}
 
-echo "== trusted code (MP §8 Trust, D-029 caps)"
+echo "== trusted code (MP §8 Trust, D-030 caps)"
 $py scripts/tcb_size.py | tee "$OUT/tcb.txt"
 
 echo "== tests and coverage (raw, kernel, checker, state)"

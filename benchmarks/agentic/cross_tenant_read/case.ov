@@ -1,28 +1,19 @@
 # Policy: an agent may only read data of its own tenant.
 package bench.cross_tenant_read
-type Plan
-type Action
-type Thing
-predicate plan(p: Plan) world closed
-predicate step(p: Plan, i: Number, a: Action, x: Thing) world closed
-predicate violation(p: Plan, i: Number) world closed
-predicate violates(p: Plan) world closed
-predicate valid(p: Plan) world closed
-axiom any_violation(p: Plan, i: Number): violation(p, i) -> violates(p)
-axiom valid_plan(p: Plan): plan(p), not violates(p) -> valid(p)
+import agent.workflow
 type Tenant
-predicate owner(x: Thing, t: Tenant) world closed
+predicate owner(x: Target, t: Tenant) world closed
 predicate acts_for(p: Plan, t: Tenant) world closed
-predicate own_data(p: Plan, x: Thing) world closed
-entity read: Action
-axiom same_tenant(p: Plan, x: Thing, t: Tenant): acts_for(p, t), owner(x, t) -> own_data(p, x)
-axiom other_tenant(p: Plan, i: Number, x: Thing): step(p, i, read, x), not own_data(p, x) -> violation(p, i)
+predicate own_data(p: Plan, x: Target) world closed
+entity read: Tool
+axiom same_tenant(p: Plan, x: Target, t: Tenant): acts_for(p, t), owner(x, t) -> own_data(p, x)
+axiom other_tenant(p: Plan, i: Number, x: Target): step(p, i, read, x), not own_data(p, x) -> violation(p, i)
 
 test cross_tenant_read {
   scenario cross_tenant_read_s uses bench.cross_tenant_read {
     entity sync: Plan
     entity a, b: Tenant
-    entity orders_b, orders_a: Thing
+    entity orders_b, orders_a: Target
     fact plan(sync)
     fact acts_for(sync, a)
     fact owner(orders_a, a)

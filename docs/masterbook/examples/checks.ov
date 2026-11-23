@@ -1,0 +1,19 @@
+# Facts that are not atoms become checks; functional values clash (Masterbook ch. 2).
+package checks
+import physics.mechanics
+
+scenario cart uses physics.mechanics {
+  entity c: Body
+  fact net_force(c, 10 N)
+  fact c.accel = 2 m/s^2
+  fact c.mass > 3 kg
+  query FIND ?m WHERE c.mass = ?m
+}
+
+scenario clash uses physics.mechanics {
+  entity d: Body
+  fact net_force(d, 10 N)
+  fact d.accel = 2 m/s^2
+  fact d.mass = 4 kg
+  query PROVE net_force(d, 10 N)
+}

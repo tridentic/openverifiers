@@ -1,0 +1,39 @@
+== trusted code (MP §8 Trust, D-030 caps)
+   26  raw/__init__.py
+   85  raw/builtins.py
+  124  raw/canon.py
+   50  raw/labels.py
+  156  raw/program.py
+   71  raw/terms.py
+  114  raw/trace.py
+   17  checker/__init__.py
+  269  checker/check.py
+   47  checker/objects.py
+  101  checker/verdict.py
+   14  state/hash.py
+   26  state/load.py
+ 1100  trusted code lines (limit 1150); 1619 physical lines incl. docs
+  418  raw/formula.py: its own audited unit (limit 450)
+  573  exact-arithmetic unit: raw/surd.py, raw/interval.py, raw/numeric.py, raw/certificate.py, raw/qpi.py (limit 700)
+ 2091  all trusted code (limit 2300)
+== tests and coverage (raw, kernel, checker, state)
+325 passed, 4 deselected in 338.69s (0:05:38)
+TOTAL                                    2178     43    98%
+635 passed, 4 deselected in 178.16s (0:02:58)
+== benchmark suites (default and --strict)
+105/107 cases pass; false PROVEN 0; p50 0.0017s p95 0.0399s; 0 case(s) vary across 1 seed(s)
+101/107 cases pass; false PROVEN 0; p50 0.0017s p95 0.0399s; 0 case(s) vary across 1 seed(s)
+== JEE 2025 capability (default with drafts, and --strict)
+docs/masterbook/build/repro/exam.json {'problems': 30, 'outcomes': {'not_formalized': 16, 'unknown': 1, 'solved': 13}, 'by_subject': {'chemistry': {'not_formalized': 7, 'solved': 3}, 'mathematics': {'not_formalized': 4, 'solved': 6}, 'physics': {'not_formalized': 5, 'unknown': 1, 'solved': 4}}, 'categories': {'not_attempted': 1, 'language': 4, 'library': 4, 'engine': 1, 'out_of_scope': 7}, 'provisional': 1, 'with_assumptions': ['jee2025-phys-p2q3'], 'wrong': []}
+docs/masterbook/build/repro/exam_strict.json {'problems': 30, 'outcomes': {'not_formalized': 16, 'unknown': 4, 'solved': 9, 'error': 1}, 'by_subject': {'chemistry': {'not_formalized': 7, 'solved': 3}, 'mathematics': {'not_formalized': 4, 'unknown': 3, 'solved': 3}, 'physics': {'not_formalized': 5, 'unknown': 1, 'solved': 3, 'error': 1}}, 'categories': {'not_attempted': 1, 'language': 4, 'library': 5, 'engine': 4, 'out_of_scope': 7}, 'provisional': 0, 'with_assumptions': [], 'wrong': []}
+== differential testing (5,000 cases, seed 0)
+{'agree': 4781, 'refused': 219, 'disagree': 0} 0
+== unsound mutants: rule path and object path (Condition B)
+22 passed in 30.20s
+== faithfulness lint
+0 error(s), 0 warning(s)
+== gold and meaning gates over the whole history
+gold gate: ok (d33e8ae260..HEAD)
+repro: done; tables in docs/masterbook/build/repro/
+bash reproduce.sh docs/masterbook/build/repro  644.45s user 22.71s system 98% cpu 11:18.30 total
+exit=0

@@ -1,0 +1,7 @@
+{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}
+{"jsonrpc": "2.0", "method": "notifications/initialized"}
+{"jsonrpc": "2.0", "id": 2, "method": "tools/list"}
+{"jsonrpc": "2.0", "id": 10, "method": "tools/call", "params": {"name": "check_tool_call", "arguments": {"tool": "push", "target": "main"}}}
+{"jsonrpc": "2.0", "id": 11, "method": "tools/call", "params": {"name": "check_tool_call", "arguments": {"tool": "open_pr", "target": "feature"}}}
+{"jsonrpc": "2.0", "id": 12, "method": "tools/call", "params": {"name": "check_tool_call", "arguments": {"tool": "deploy", "target": "prod"}}}
+{"jsonrpc": "2.0", "id": 13, "method": "tools/call", "params": {"name": "check_tool_call", "arguments": {"tool": "rm_rf", "target": "home"}}}

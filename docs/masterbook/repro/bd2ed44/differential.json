@@ -1,0 +1,97 @@
+{
+  "cases": 5000,
+  "seed": 0,
+  "agree": 4781,
+  "refused": 219,
+  "disagree": 0,
+  "by_class": {
+    "arithmetic": {
+      "cases": 1491,
+      "refused:trusted": 0,
+      "refused:solver": 0,
+      "disagree": 0
+    },
+    "deriv": {
+      "cases": 380,
+      "refused:trusted": 16,
+      "refused:solver": 0,
+      "disagree": 0
+    },
+    "division": {
+      "cases": 1423,
+      "refused:trusted": 79,
+      "refused:solver": 0,
+      "disagree": 0
+    },
+    "exp": {
+      "cases": 783,
+      "refused:trusted": 58,
+      "refused:solver": 0,
+      "disagree": 0
+    },
+    "integral": {
+      "cases": 406,
+      "refused:trusted": 24,
+      "refused:solver": 0,
+      "disagree": 0
+    },
+    "ln": {
+      "cases": 800,
+      "refused:trusted": 64,
+      "refused:solver": 0,
+      "disagree": 0
+    },
+    "pi": {
+      "cases": 1144,
+      "refused:trusted": 112,
+      "refused:solver": 0,
+      "disagree": 0
+    },
+    "power": {
+      "cases": 781,
+      "refused:trusted": 26,
+      "refused:solver": 0,
+      "disagree": 0
+    },
+    "sqrt": {
+      "cases": 728,
+      "refused:trusted": 218,
+      "refused:solver": 0,
+      "disagree": 0
+    }
+  },
+  "examples": [],
+  "exp_derivatives": {
+    "cases": 1000,
+    "seed": 0,
+    "agree": 973,
+    "refused": 27,
+    "disagree": 0,
+    "examples": []
+  },
+  "surd_normal_form": {
+    "cases": 1000,
+    "seed": 0,
+    "agree": 1000,
+    "refused": 0,
+    "disagree": 0,
+    "examples": []
+  },
+  "positive_sums": {
+    "cases": 1000,
+    "seed": 0,
+    "accepted": 129,
+    "rejected": 871,
+    "refused": 0,
+    "disagree": 0,
+    "examples": []
+  },
+  "ln_derivatives": {
+    "cases": 1000,
+    "seed": 0,
+    "agree": 997,
+    "refused": 3,
+    "disagree": 0,
+    "examples": []
+  }
+}

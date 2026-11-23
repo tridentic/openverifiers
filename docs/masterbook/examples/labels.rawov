@@ -1,0 +1,12 @@
+% A worked example for signed ATMS labels (Masterbook ch. 3). Two assumptions,
+% rain and sprinkler; wet and dry are closed-world, so `not` is negation as failure.
+world wet closed.
+world dry closed.
+fact lawn: lawn(lawn) @"fact:garden".
+fact rain: rain(lawn) @"assume:rain".
+fact sprinkler: sprinkler_on(lawn) @"assume:sprinkler".
+rule from_rain: wet(X) :- rain(X).
+rule from_sprinkler: wet(X) :- sprinkler_on(X).
+rule slip: slippery(X) :- wet(X), lawn(X).
+rule dry_lawn: dry(X) :- lawn(X), not wet(X).
+rule warn_sign: warn(X) :- slippery(X), not dry(X).

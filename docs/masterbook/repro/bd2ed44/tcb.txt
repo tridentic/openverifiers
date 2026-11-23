@@ -1,0 +1,17 @@
+   26  raw/__init__.py
+   85  raw/builtins.py
+  124  raw/canon.py
+   50  raw/labels.py
+  156  raw/program.py
+   71  raw/terms.py
+  114  raw/trace.py
+   17  checker/__init__.py
+  269  checker/check.py
+   47  checker/objects.py
+  101  checker/verdict.py
+   14  state/hash.py
+   26  state/load.py
+ 1100  trusted code lines (limit 1150); 1619 physical lines incl. docs
+  418  raw/formula.py: its own audited unit (limit 450)
+  573  exact-arithmetic unit: raw/surd.py, raw/interval.py, raw/numeric.py, raw/certificate.py, raw/qpi.py (limit 700)
+ 2091  all trusted code (limit 2300)

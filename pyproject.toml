@@ -35,6 +35,10 @@ dev = [
     "ruff>=0.5",
     "coverage>=7.4",
 ]
+# Documentation only (the Masterbook: scripts/build_masterbook.py). Never a runtime dependency.
+docs = [
+    "typst>=0.13",
+]
 
 [project.scripts]
 ov = "openverifiers.cli:main"

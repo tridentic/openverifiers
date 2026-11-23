@@ -1,0 +1,17 @@
+package kitchen
+type T
+predicate raw(x: T) world open
+predicate cooked(x: T) world open
+predicate allowed(x: T) world open
+transformation cook(x: T) requires raw(x) ensures cooked(x)
+controller kitchen(x: T) { pipe cook guard allowed(x) }
+scenario base uses kitchen {
+  entity egg, ham: T
+  fact raw(egg)
+  fact raw(ham)
+}
+scenario more extends base {
+  fact allowed(egg)
+  query PROVE cooked(egg)
+  query PROVE cooked(ham)
+}

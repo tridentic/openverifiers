@@ -1,0 +1,462 @@
+{
+  "results": [
+    {
+      "id": "jee2025-phys-p1q1",
+      "subject": "physics",
+      "type": "mcq_single",
+      "official": "A",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "not_attempted",
+      "note": "Rolling without slipping inside a ring with a spring along the rim: needs a rolling-constraint and small-oscillation (energy) library; not drafted in W3.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-phys-p1q5",
+      "subject": "physics",
+      "type": "mcq_multi",
+      "official": "B, D",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "language",
+      "note": "Magnetic braking. The entering phase solves dv/dt = -K v, v = v0 exp(-K t), which OV can now check (exp ring) but not derive. Option D needs exp(-ln(3/2)) = 2/3, i.e. exp of an ln: the normal form has exp and ln atoms (D-030) but no rule exp(ln u) = u, so the time cannot be certified; option A needs the same entering-distance bound. It also needs an electromagnetic-induction library (force B^2 L^2 v / R on a partly entered loop), not drafted.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-phys-p1q7",
+      "subject": "physics",
+      "type": "mcq_multi",
+      "official": "A, D",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "library",
+      "note": "Reflection and transmission of waves at junctions of strings of different density (phase change, wavenumber ratio): needs a waves library; not drafted.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-phys-p1q10",
+      "subject": "physics",
+      "type": "numeric",
+      "official": "3",
+      "outcome": "unknown",
+      "got": "UNKNOWN []",
+      "category": "engine",
+      "note": "",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-phys-p1q13",
+      "subject": "physics",
+      "type": "numeric",
+      "official": "72",
+      "outcome": "solved",
+      "got": "72",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-phys-p1q16",
+      "subject": "physics",
+      "type": "mcq_single",
+      "official": "C",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "library",
+      "note": "Matches energy scalings with Z (Moseley's law, nuclear electrostatic energy, binding energy per nucleon, Bohr levels, continuous x-rays): descriptive atomic and nuclear physics knowledge; no library.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-phys-p2q3",
+      "subject": "physics",
+      "type": "mcq_single",
+      "official": "C",
+      "outcome": "solved",
+      "got": "1/2\u221a10 = option C",
+      "category": "",
+      "note": "",
+      "provisional": [
+        "physics.rotation"
+      ],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": [
+        "N043 small_oscillation: omega^2 I = kappa (physics.rotation, UNPROVEN theorem)"
+      ]
+    },
+    {
+      "id": "jee2025-phys-p2q6",
+      "subject": "physics",
+      "type": "mcq_multi",
+      "official": "A, B",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "library",
+      "note": "Image formation by two facing concave mirrors with a glass slab between them: needs a geometric optics library (mirror equation, apparent shift by a slab); not drafted.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-phys-p2q9",
+      "subject": "physics",
+      "type": "numeric",
+      "official": "[1.65 to 1.67]",
+      "outcome": "solved",
+      "got": "5/3",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-phys-p2q12",
+      "subject": "physics",
+      "type": "numeric",
+      "official": "[2.3 to 2.4]",
+      "outcome": "solved",
+      "got": "2331/1000",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p1q1",
+      "subject": "chemistry",
+      "type": "mcq_single",
+      "official": "A",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "library",
+      "note": "Thermal decomposition products of ammonium nitrite and nitrate: descriptive inorganic chemistry (a reaction-products knowledge base); no library.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p1q4",
+      "subject": "chemistry",
+      "type": "mcq_single",
+      "official": "B",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "out_of_scope",
+      "note": "Organic/structural chemistry from structure drawings is out of scope in v1 (2026-11-23 directive). Most acidic C-H among drawn hydrocarbons: needs structures and carbanion stability (aromaticity, resonance).",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p1q7",
+      "subject": "chemistry",
+      "type": "mcq_multi",
+      "official": "B",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "out_of_scope",
+      "note": "Organic/structural chemistry from structure drawings is out of scope in v1 (2026-11-23 directive). HBr / Finkelstein / Swarts sequence and orders of bond lengths and reactivity: needs structures and reaction knowledge.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p1q10",
+      "subject": "chemistry",
+      "type": "numeric",
+      "official": "[-7.2 to -7]",
+      "outcome": "solved",
+      "got": "-7100 mol/m^3",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p1q13",
+      "subject": "chemistry",
+      "type": "numeric",
+      "official": "175",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "out_of_scope",
+      "note": "Organic/structural chemistry from structure drawings is out of scope in v1 (2026-11-23 directive). Multistep organic synthesis with yields: the masses follow once the products are known, but identifying the products needs structures and reactions.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p1q16",
+      "subject": "chemistry",
+      "type": "mcq_single",
+      "official": "B",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "out_of_scope",
+      "note": "Organic/structural chemistry from structure drawings is out of scope in v1 (2026-11-23 directive). Matching biomolecules to qualitative tests: needs structures and test chemistry.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p2q3",
+      "subject": "chemistry",
+      "type": "mcq_single",
+      "official": "D",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "out_of_scope",
+      "note": "Organic/structural chemistry from structure drawings is out of scope in v1 (2026-11-23 directive). Products of reaction sequences and their unsaturated carbons: needs structures and reactions.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p2q6",
+      "subject": "chemistry",
+      "type": "mcq_multi",
+      "official": "B, D",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "out_of_scope",
+      "note": "Organic/structural chemistry from structure drawings is out of scope in v1 (2026-11-23 directive). Phosphorus oxoacids with P-H bonds: needs the acids' structures (which hydrogens are bonded to P).",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p2q9",
+      "subject": "chemistry",
+      "type": "numeric",
+      "official": "[10.85 to 11.1]",
+      "outcome": "solved",
+      "got": "11000 kg/m^3",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-chem-p2q12",
+      "subject": "chemistry",
+      "type": "numeric",
+      "official": "[4 to 4.25]",
+      "outcome": "solved",
+      "got": "25/6",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p1q1",
+      "subject": "mathematics",
+      "type": "mcq_single",
+      "official": "C",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "language",
+      "note": "The hypothesis is 'f(x) != g(x) for every real x'; OV has no quantifier over the reals (only over collections), so the step 'a cubic always has a real root, so a3 = b3' cannot be stated.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p1q4",
+      "subject": "mathematics",
+      "type": "mcq_single",
+      "official": "C",
+      "outcome": "solved",
+      "got": "16 = option C",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel",
+        "z3_unsat"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p1q7",
+      "subject": "mathematics",
+      "type": "mcq_multi",
+      "official": "A, D",
+      "outcome": "solved",
+      "got": "A, D",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p1q10",
+      "subject": "mathematics",
+      "type": "numeric",
+      "official": "762",
+      "outcome": "solved",
+      "got": "762",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel",
+        "z3_unsat"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p1q13",
+      "subject": "mathematics",
+      "type": "numeric",
+      "official": "2",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "language",
+      "note": "Three first-order linear ODEs and a limit as x -> 0+: OV does not solve differential equations and has no limits.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p1q16",
+      "subject": "mathematics",
+      "type": "mcq_single",
+      "official": "A",
+      "outcome": "solved",
+      "got": "A",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel",
+        "z3_unsat"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p2q3",
+      "subject": "mathematics",
+      "type": "mcq_single",
+      "official": "C",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "out_of_scope",
+      "note": "Inverse trigonometric functions move to v2 (D-027). Counts real solutions of an equation with inverse tangent and inverse sine: OV has no inverse trigonometric functions and does not count solutions over the reals.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p2q6",
+      "subject": "mathematics",
+      "type": "mcq_multi",
+      "official": "A, C",
+      "outcome": "not_formalized",
+      "got": "",
+      "category": "language",
+      "note": "Locus of chord midpoints of y^2 = x cut off by area 4/3, then an area bounded by the locus: needs areas between curves (integrals of square roots); OV's calculus is polynomial only.",
+      "provisional": [],
+      "trust": [],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p2q9",
+      "subject": "mathematics",
+      "type": "numeric",
+      "official": "[0.7 to 0.8]",
+      "outcome": "solved",
+      "got": "3/4",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    },
+    {
+      "id": "jee2025-math-p2q12",
+      "subject": "mathematics",
+      "type": "numeric",
+      "official": "-2",
+      "outcome": "solved",
+      "got": "-2",
+      "category": "",
+      "note": "",
+      "provisional": [],
+      "trust": [
+        "kernel"
+      ],
+      "assumptions": []
+    }
+  ],
+  "summary": {
+    "problems": 30,
+    "outcomes": {
+      "not_formalized": 16,
+      "unknown": 1,
+      "solved": 13
+    },
+    "by_subject": {
+      "chemistry": {
+        "not_formalized": 7,
+        "solved": 3
+      },
+      "mathematics": {
+        "not_formalized": 4,
+        "solved": 6
+      },
+      "physics": {
+        "not_formalized": 5,
+        "unknown": 1,
+        "solved": 4
+      }
+    },
+    "categories": {
+      "not_attempted": 1,
+      "language": 4,
+      "library": 4,
+      "engine": 1,
+      "out_of_scope": 7
+    },
+    "provisional": 1,
+    "with_assumptions": [
+      "jee2025-phys-p2q3"
+    ],
+    "wrong": []
+  }
+}

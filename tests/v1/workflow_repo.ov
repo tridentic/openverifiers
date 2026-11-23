@@ -1,0 +1,34 @@
+package probe.repo
+import agent.workflow
+# policy.repo (example policy): never push to main; deploying needs a lead's approval.
+entity push, run_tests, open_pr, deploy, merge: Tool
+entity main, feature, prod: Target
+entity lead, intern: Role
+scenario repo uses probe.repo {
+  fact forbidden(push, main)
+  fact needs_approval(deploy)
+  fact approver(lead)
+  entity release: Plan
+  fact plan(release)
+  fact step(release, 1, run_tests, feature)
+  fact step(release, 2, push, main)
+  fact step(release, 3, deploy, prod)
+  fact approved(release, 3, intern)
+  query PROVE valid(release)
+  query FIND ?i WHERE violation(release, ?i)
+  fact request(push, main)
+  fact request(open_pr, feature)
+  fact request(deploy, prod)
+  query PROVE refused(push, main)
+  query PROVE permitted(open_pr, feature)
+  query PROVE needs_human(deploy, prod)
+  entity s0, tested, reviewed, merged: State
+  fact start(s0)
+  fact goal(merged)
+  fact horizon(3)
+  fact transition(s0, run_tests, feature, tested)
+  fact transition(tested, push, main, merged)
+  fact transition(tested, open_pr, feature, reviewed)
+  fact transition(reviewed, merge, feature, merged)
+  query FIND ?p WHERE solution(?p)
+}

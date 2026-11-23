@@ -1,0 +1,14 @@
+# An example agent policy for a code repository (policy.repo): never push to
+# main; deploying needs a lead's approval. Used by the MCP tool-call gate:
+#   python -m openverifiers.mcp_gate examples/policies/repo_policy.ov --drafts
+package repo_policy
+import agent.workflow
+
+entity push, run_tests, open_pr, deploy, merge, delete_branch: Tool
+entity main, feature, prod: Target
+entity lead: Role
+
+axiom no_push_to_main: forbidden(push, main)
+axiom no_deleting_main: forbidden(delete_branch, main)
+axiom deploy_needs_approval: needs_approval(deploy)
+axiom lead_approves: approver(lead)

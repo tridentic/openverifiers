@@ -1,0 +1,64 @@
+# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
+# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
+#
+# agent.workflow: guardrails for agents. A policy package (policy.refunds,
+# policy.repo, ...) states which tool calls are forbidden and which need a
+# human's approval; this package derives, for a plan, every violating step
+# (named by its number), whether the plan is valid, the verdict on a single
+# tool call (the gate), and plans that reach a goal within a horizon.
+package agent.workflow @0.1-draft
+
+type Plan
+type Tool
+type Target
+type Role
+type State
+type Path
+
+predicate plan(p: Plan) world closed
+predicate step(p: Plan, i: Number, t: Tool, x: Target) world closed
+predicate forbidden(t: Tool, x: Target) world closed
+predicate needs_approval(t: Tool) world closed
+predicate approver(r: Role) world closed
+predicate approved(p: Plan, i: Number, r: Role) world closed
+predicate approval_given(p: Plan, i: Number) world closed
+predicate violation(p: Plan, i: Number) world closed
+predicate violates(p: Plan) world closed
+predicate valid(p: Plan) world closed
+
+# A step violates the policy if its call is forbidden, or if it needs approval
+# that no approver gave for that step.
+axiom by_approver(p: Plan, i: Number, r: Role): approved(p, i, r), approver(r) -> approval_given(p, i)
+axiom forbidden_step(p: Plan, i: Number, t: Tool, x: Target):
+  step(p, i, t, x), forbidden(t, x) -> violation(p, i)
+axiom unapproved_step(p: Plan, i: Number, t: Tool, x: Target):
+  step(p, i, t, x), needs_approval(t), not approval_given(p, i) -> violation(p, i)
+axiom any_violation(p: Plan, i: Number): violation(p, i) -> violates(p)
+axiom valid_plan(p: Plan): plan(p), not violates(p) -> valid(p)
+
+# The tool-call gate: one requested call, decided before it runs.
+predicate request(t: Tool, x: Target) world closed
+predicate refused(t: Tool, x: Target) world closed
+predicate needs_human(t: Tool, x: Target) world closed
+predicate permitted(t: Tool, x: Target) world closed
+axiom gate_refuse(t: Tool, x: Target): request(t, x), forbidden(t, x) -> refused(t, x)
+axiom gate_human(t: Tool, x: Target):
+  request(t, x), not forbidden(t, x), needs_approval(t) -> needs_human(t, x)
+axiom gate_permit(t: Tool, x: Target):
+  request(t, x), not forbidden(t, x), not needs_approval(t) -> permitted(t, x)
+
+# Bounded plan synthesis: states reachable from the start by permitted calls
+# needing no approval, within the horizon; the path term records the calls.
+function then(p: Path, t: Tool, x: Target) -> Path
+entity nothing: Path
+predicate start(s: State) world closed
+predicate goal(s: State) world closed
+predicate horizon(k: Number) world closed
+predicate transition(s: State, t: Tool, x: Target, s2: State) world closed
+predicate reach(s: State, p: Path, n: Number) world closed
+predicate solution(p: Path) world closed
+axiom reach_start(s: State): start(s) -> reach(s, nothing, 0)
+axiom reach_step(s: State, s2: State, p: Path, n: Number, m: Number, k: Number, t: Tool, x: Target):
+  reach(s, p, n), horizon(k), n < k, transition(s, t, x, s2), not forbidden(t, x),
+  not needs_approval(t), m = n + 1 -> reach(s2, then(p, t, x), m)
+axiom reached_goal(s: State, p: Path, n: Number): reach(s, p, n), goal(s) -> solution(p)

@@ -35,8 +35,8 @@ u (D-026), and sqrt(k) for a positive integer k, reduced by sqrt(k)^2 = k
 (D-030; a solver value f.surd(k1, c1, ...) is c1 sqrt(k1) + ...). Reducing by a
 relation the true value satisfies keeps every identity true of it. An identity
 that holds for every value of an indeterminate holds for the true one. The
-derivative follows the chain rule d exp(u) = u' exp(u); an integral, or an evaluation at a limit, of an exp(u) whose u depends on the
-variable is refused.
+derivative follows the chain rule d exp(u) = u' exp(u); an integral, or an
+evaluation at a limit, of an exp(u) whose u depends on the variable is refused.
 
 Trusted code.
 """

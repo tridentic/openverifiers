@@ -24,6 +24,13 @@ MEANING_TRAILER below):
 2. **Gold first.** A commit that adds a benchmark's ``expected.json`` may touch
    nothing outside ``benchmarks/``, so the gold is fixed in history before OV's
    results for that case exist.
+3. **Approvals after the fact.** History cannot be rewritten, so a commit that
+   landed without its trailer can be approved later by a line in
+   ``RETRO_APPROVALS`` (``<full sha> <meaning|gold> <approval>``). The file is
+   read at the head of the checked range. Adding or removing a line needs the
+   trailer of that line's kind in the same commit, from an approver, so an
+   unapproved line is itself a violation. Gold-first violations cannot be
+   approved this way.
 
 Exit 0 when every commit passes, 1 otherwise, with one line per violation.
 """
@@ -78,6 +85,7 @@ def _git(repo: Path, *args: str) -> str:
 class Violation:
     commit: str
     message: str
+    kind: str = "order"             # "gold", "meaning" or "order" (gold first)
 
     def __str__(self) -> str:
         return f"{self.commit[:10]}: {self.message}"
@@ -152,6 +160,19 @@ def meaning_approved(message: str, roles: frozenset[str] = DEFAULT_APPROVERS) ->
     return _trailer(message, MEANING_TRAILER, roles) is not None
 
 
+RETRO = "RETRO_APPROVALS"
+
+
+def read_retro(text: str | None) -> frozenset[tuple[str, str, str]]:
+    """(sha, kind, approval) lines of a RETRO_APPROVALS file; ``#`` starts a comment."""
+    out = set()
+    for ln in (text or "").splitlines():
+        parts = ln.split("#", 1)[0].split(None, 2)
+        if len(parts) == 3 and parts[1] in ("meaning", "gold"):
+            out.add((parts[0], parts[1], parts[2].strip()))
+    return frozenset(out)
+
+
 def _show(repo: Path, rev: str, path: str) -> str | None:
     r = subprocess.run(["git", "-C", str(repo), "show", f"{rev}:{path}"],
                        capture_output=True, text=True)
@@ -176,8 +197,12 @@ def check_commit(repo: Path, sha: str) -> list[Violation]:
               _git(repo, "diff", "--no-renames", "--name-status", base, sha).splitlines()]
     out: list[Violation] = []
     changed: list[str] = []
+    retro: set[str] = set()
     for st, path in ((s[0], s[-1]) for s in status):
-        if path == "APPROVERS":
+        if path == RETRO:
+            delta = read_retro(_show(repo, base, path)) ^ read_retro(_show(repo, sha, path))
+            retro |= {k for _, k, _ in delta}
+        elif path == "APPROVERS":
             if read_approvers(_show(repo, base, path)) != read_approvers(_show(repo, sha, path)):
                 changed.append("APPROVERS (who may approve)")
         elif _match(path, GOLD_FILES) and st != "A":
@@ -189,16 +214,23 @@ def check_commit(repo: Path, sha: str) -> list[Violation]:
                        and GOLD_LINE.match(ln[1:])]
             changed += [f"{path}: {r!r}" for r in removed]
     roles = read_approvers(_show(repo, base, "APPROVERS"))
+    if "gold" in retro:
+        changed.append(f"{RETRO} (gold approvals)")
     if changed and approved_by(message, roles) is None:
         out.append(Violation(sha, f"changes gold without a '{TRAILER}: <approver>' trailer "
-                             f"(approvers: {', '.join(sorted(roles))}): " + "; ".join(changed)))
+                             f"(approvers: {', '.join(sorted(roles))}): " + "; ".join(changed),
+                             "gold"))
+    if "meaning" in retro and not meaning_approved(message, roles):
+        out.append(Violation(sha, f"changes {RETRO} (meaning approvals) without "
+                             f"'{MEANING_TRAILER}: <approver>'", "meaning"))
     meaning = [f"{path}: {x}" for _, path in ((s[0], s[-1]) for s in status)
                if is_library(repo, base, sha, path)
                for x in meaning_changes(repo, base, sha, path)]
     if meaning and not meaning_approved(message, roles):
         out.append(Violation(sha, f"changes meaning-carrying lines without "
                              f"'{MEANING_TRAILER}: <approver>' (approvers: "
-                             f"{', '.join(sorted(roles))}): " + "; ".join(meaning)))
+                             f"{', '.join(sorted(roles))}): " + "; ".join(meaning),
+                             "meaning"))
     new_gold = [p for s, p in ((s[0], s[-1]) for s in status)
                 if s == "A" and fnmatch.fnmatch(p, "benchmarks/**/expected.json")]
     if new_gold:
@@ -212,8 +244,15 @@ def check_commit(repo: Path, sha: str) -> list[Violation]:
 
 
 def check_range(repo: Path, base: str, head: str) -> list[Violation]:
+    """Every violation in base..head, less those approved in RETRO_APPROVALS at head
+    (an approval whose first word is not an approver role does not count)."""
     shas = _git(repo, "rev-list", "--reverse", f"{base}..{head}").split()
-    return [v for sha in shas for v in check_commit(repo, sha)]
+    head_sha = _git(repo, "rev-parse", head).strip()
+    roles = read_approvers(_show(repo, head_sha, "APPROVERS"))
+    retro = {(s, k) for s, k, who in read_retro(_show(repo, head_sha, RETRO))
+             if who.split()[0] in roles and not NOT_HUMAN.search(who.split("(")[0])}
+    return [v for sha in shas for v in check_commit(repo, sha)
+            if (sha, v.kind) not in retro or v.kind == "order"]
 
 
 def main(argv: Sequence[str] | None = None) -> int:

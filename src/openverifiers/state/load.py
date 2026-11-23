@@ -13,7 +13,8 @@ import json
 
 from ..raw.canon import atom_from_json
 from ..raw.program import Atom, Fact, Span
-from .hash import VERSION, digest
+from ..raw.terms import is_ground
+from .hash import VERSION, canonical, digest
 
 
 class StateError(ValueError):
@@ -29,8 +30,12 @@ def load_atoms(text: str) -> tuple[str, tuple[Atom, ...]]:
         raise StateError("unknown OVState version or shape")
     if digest(b) != d["sha256"]:
         raise StateError("the hash does not match the content")
-    # Ground atoms are enforced where they become facts (raw/program.py validate).
-    return d["sha256"], tuple(atom_from_json(a) for a in b["atoms"])
+    atoms = tuple(atom_from_json(a) for a in b["atoms"])
+    if any(not all(is_ground(t) for t in a.args) for a in atoms) or canonical(b) != canonical(
+            {"version": VERSION, "atoms": sorted(b["atoms"], key=lambda r: json.dumps(
+                r, sort_keys=True))}):
+        raise StateError("atoms must be ground and sorted")
+    return d["sha256"], atoms
 
 
 def facts(name: str, text: str, span: Span | None = None) -> tuple[Fact, ...]:

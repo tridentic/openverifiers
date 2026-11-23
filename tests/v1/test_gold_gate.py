@@ -195,3 +195,25 @@ def test_meaning_gate_covers_package_files_anywhere_but_drafts(repo: Path) -> No
     [m] = messages(repo, base)
     assert "benchmarks/physics/c1/lib.ov" in m
     assert "drafts/" not in m and "c9/case.ov" not in m and "fixture.ov" not in m
+
+
+def test_retro_approvals_need_their_own_trailer_and_then_clear_the_commit(repo: Path) -> None:
+    base = git(repo, "rev-parse", "HEAD")
+    bad = commit(repo, {"policy/p.ov": "package p\naxiom a: q -> r\n"}, "unapproved policy")
+    assert len(messages(repo, base)) == 1
+    line = f"{bad} meaning founder (reply to packet abc)\n"
+    commit(repo, {"RETRO_APPROVALS": line}, "self-approved")       # no trailer
+    ms = messages(repo, base)
+    assert len(ms) == 1 and "RETRO_APPROVALS (meaning approvals)" in ms[0]
+    git(repo, "reset", "-q", "--hard", "HEAD~1")
+    commit(repo, {"RETRO_APPROVALS": line},
+           "record\n\nMeaning-Approved-By: founder (reply to packet abc)")
+    assert messages(repo, base) == []
+    # a meaning approval does not clear a gold change; an AI approval clears nothing
+    base2 = git(repo, "rev-parse", "HEAD")
+    gold = commit(repo, {PKG: "test a {\n  query PROVE p\n  expect REFUTED\n}\n"}, "flip")
+    commit(repo, {"RETRO_APPROVALS": line + f"{gold} meaning founder (x)\n"
+                  + f"{gold} gold claude (x)\n"},
+           "record\n\nMeaning-Approved-By: founder (x)\nGold-Change-Approved-By: founder (x)")
+    [m] = messages(repo, base2)
+    assert "without a 'Gold-Change-Approved-By" in m

@@ -19,6 +19,7 @@ The search:
 from __future__ import annotations
 
 import contextlib
+import dataclasses
 import hashlib
 import itertools
 import re
@@ -27,7 +28,7 @@ from fractions import Fraction
 
 import sympy
 
-from ..raw.certificate import Certificate, Poly, check, poly
+from ..raw.certificate import ATOMS, Certificate, Poly, check, poly
 from ..raw.formula import Unsupported
 from ..raw.terms import Compound, Num, Str, Term
 
@@ -51,11 +52,35 @@ def _vars(t: Term, out: dict[str, Term]) -> None:
                 if isinstance(k, Num) and k.value != 1:
                     out[f"sqrt({k.value})"] = Compound("f.surd", (k, Num(Fraction(1))))
             return
-        if t.functor == "f.exp":
-            with contextlib.suppress(Unsupported):
-                out[next(iter(poly(t)))[0][0]] = t
+        if t.functor in ("f.exp", "f.ln") or (t.functor == "/" and not (
+                isinstance(t.args[1], Num) and not t.args[1].dims)):
+            with contextlib.suppress(Unsupported, StopIteration, IndexError):
+                p = poly(t if t.functor != "/" else Compound("/", (Num(Fraction(1)), t.args[1])))
+                if len(p) == 1 and next(iter(p.values())) == 1:
+                    out[next(iter(p))[0][0]] = t if t.functor != "/" else \
+                        Compound("/", (Num(Fraction(1)), t.args[1]))
         for a in t.args:
             _vars(a, out)
+
+
+def _poly_term(p: Poly, terms: Mapping[str, Term]) -> Term:
+    """A term whose normal form is p (variables by their names in terms, or atoms)."""
+    out: Term = Num(Fraction(0))
+    for m, c in sorted(p.items()):
+        t: Term = Num(c)
+        for v, k in m:
+            vt = terms[v] if v in terms else _atom_term(v, terms)
+            for _ in range(k):
+                t = Compound("*", (t, vt))
+        out = Compound("+", (out, t))
+    return out
+
+
+def _atom_term(name: str, terms: Mapping[str, Term]) -> Term:
+    kind, u = ATOMS[name]
+    arg = _poly_term(u, terms)
+    return Compound("/", (Num(Fraction(1)), arg)) if kind == "inv" else \
+        Compound(f"f.{kind}", (arg,))
 
 
 def _sym(k: str) -> sympy.Symbol:
@@ -102,7 +127,7 @@ def _cert(names: tuple[str, ...] | list[str], coeffs: tuple[tuple[str, Term], ..
     the pseudo-equations "@sqrt(k)" (sqrt(k)^2 = k) are dropped: the checker's normal
     form reduces by them itself."""
     return Certificate(tuple(n for n in names if n != "@pi"),
-                       tuple((n, c) for n, c in coeffs if not n.startswith("@")), squares,
+                       tuple((n, c) for n, c in coeffs if not n.startswith("@sqrt(")), squares,
                        tuple(PI for n in names if n == "@pi"), wsquares, sums=sums)
 
 
@@ -132,6 +157,18 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
     terms: dict[str, Term] = {}
     for t in (goal, *hyps.values()):
         _vars(t, terms)
+    # Atoms that calculus makes (inv(u) from d ln(u), ...), and inv(u) for each ln(u).
+    for t in (goal, *hyps.values()):
+        with contextlib.suppress(Unsupported, KeyError):
+            for m in poly(Compound("-", (t.args[1], t.args[2]))):  # type: ignore[union-attr]
+                for v, _ in m:
+                    if v not in terms and v in ATOMS:
+                        terms[v] = _atom_term(v, terms)
+    for nm in [n for n in terms if n in ATOMS and ATOMS[n][0] == "ln"]:
+        inv = next(iter(poly(Compound("/", (Num(Fraction(1)), _poly_term(ATOMS[nm][1],
+                                                                           terms))))))
+        if len(inv) == 1 and inv[0][0] not in terms:
+            terms[inv[0][0]] = _atom_term(inv[0][0], terms)
     syms = {k: _sym(k) for k in terms}
     back = {syms[k]: terms[k] for k in terms}
     eqs, factors = [], []
@@ -166,6 +203,20 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
                      else (h.args[2], h.args[1]))
         fpolys[name] = _to_sympy(poly(d), syms)
     positive = {n: g for n, g in fpolys.items() if n != "@pi" and _op(hyps[n]) in (">", "<")}
+    # Witnesses that each ln/inv argument u is > 0, and u inv(u) - 1 as "@pos<i>".
+    wits: list[tuple[Term, Term, tuple[str, ...], tuple[Term, ...]]] = []
+    for nm in [n for n in terms if n in ATOMS and ATOMS[n][0] == "inv"]:
+        u = ATOMS[nm][1]
+        w = _witness(_to_sympy(u, syms), positive, {syms[k]: terms[k] for k in terms
+                                                     if k in ATOMS and ATOMS[k][0] == "exp"})
+        if w is not None:
+            c, names, exps = w
+            eqs.append((f"@pos{len(wits)}", sympy.expand(_to_sympy(u, syms) * syms[nm] - 1),
+                        Compound("f.cmp", (Str("="), Num(Fraction(0)), Num(Fraction(0))))))
+            wits.append((_poly_term(u, terms), Num(c), names, exps))
+
+    def fin(cert: Certificate) -> Certificate:
+        return dataclasses.replace(cert, positive=tuple(wits))
     factors = factors + (["@pi"] if "@pi" in fpolys else [])
     for k in range(3):
         for fs in itertools.combinations(factors, k):
@@ -175,15 +226,37 @@ def _find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
             target = sympy.expand(m * target0)
             for gens in orders:
                 cert = _try(target, eqs, gens, back, fs, op, positive)
-                if cert is not None and check(goal, hyps, cert):
-                    return cert
+                if cert is not None and check(goal, hyps, fin(cert)):
+                    return fin(cert)
     if op == "=":
         posvar = {g: n for n, g in sorted(positive.items()) if isinstance(g, sympy.Symbol)}
         consts = {syms[k] for k in terms if k.startswith("sqrt(") or k == str(PI)}
         cert = _pseudo(target0, eqs, fpolys, back, posvar, consts)
-        if cert is not None and check(goal, hyps, cert):
-            return cert
+        if cert is not None and check(goal, hyps, fin(cert)):
+            return fin(cert)
     return None
+
+
+def _witness(u: sympy.Expr, positive: Mapping[str, sympy.Expr],
+             exps: Mapping[sympy.Symbol, Term]
+             ) -> tuple[Fraction, tuple[str, ...], tuple[Term, ...]] | None:
+    """u as c * (positive hypotheses) * (exp atoms) with c > 0, or None."""
+    const, facs = sympy.factor_list(u)
+    names: list[str] = []
+    xs: list[Term] = []
+    for f, k in facs:
+        if f in exps:
+            xs += [exps[f]] * k
+            continue
+        hit = next(((n, s) for n, g in sorted(positive.items()) for s in (1, -1)
+                    if sympy.expand(g - s * f) == 0), None)
+        if hit is None:
+            return None
+        names += [hit[0]] * k
+        const *= hit[1] ** k
+    if not const.is_Rational or const <= 0:
+        return None
+    return _frac(const), tuple(names), tuple(xs)
 
 
 def _factors_of(lc: sympy.Expr, fpolys: Mapping[str, sympy.Expr]

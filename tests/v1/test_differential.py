@@ -80,3 +80,17 @@ def test_accepted_positive_sums_are_positive() -> None:
     out = positive_sums(600, seed=2)
     assert out["disagree"] == 0, out["examples"]
     assert out["accepted"] > 40 and out["rejected"] > 300   # type: ignore[operator]
+
+
+def test_ln_and_inverse_derivatives_match_finite_differences(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    from openverifiers.bench.differential import ln_derivatives
+    from openverifiers.raw import certificate
+    out = ln_derivatives(300, seed=3)
+    assert out["disagree"] == 0 and out["agree"] > 280, out["examples"]  # type: ignore[operator]
+    real = certificate._atom
+
+    def wrong(kind: str, u: certificate.Poly) -> certificate.Poly:   # 1/u as 1/(2u)
+        return real(kind, {m: 2 * c for m, c in u.items()} if kind == "inv" else u)
+    monkeypatch.setattr(certificate, "_atom", wrong)
+    assert ln_derivatives(300, seed=3)["disagree"] > 0  # type: ignore[operator]

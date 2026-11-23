@@ -18,6 +18,10 @@ For a goal L op R (op is =, >= or <=) under hypotheses, a certificate gives:
 - wsquares: (w >= 0, hypotheses h1..hk each `f > 0` or `f < 0`, q): the square
   q^2 weighted by w f1 ... fk, which is >= 0 (a sum of squares with positive
   parameters, D-027);
+- positive: witnesses (u, c, h1..hk, exps) that u = c f1 ... fk exp(..) ... with c > 0
+  (signed by the checker) and each h a `>`/`<` hypothesis, so u > 0 (D-030). Every
+  ln(u) and 1/u in the goal needs one (ln is used only where u > 0 is checked),
+  and with it the coefficient name "@pos<i>" stands for u inv(u) - 1 = 0;
 - sums: positive sums that join the multiplier (D-030): each is a list of terms
   (c, h1..hk, q or None), c a closed constant whose sign (> 0) the checker
   decides and each h a hypothesis `f > 0` or `f < 0`. A term c f1 ... fk is > 0,
@@ -52,21 +56,46 @@ from .terms import Compound, Num, Str, Term
 
 Mono = tuple[tuple[str, int], ...]
 Poly = dict[Mono, Fraction]
-#: exp atoms: name -> exponent polynomial (the name is the exponent's normal form,
-#: so equal exponents give the same atom)
-EXPS: dict[str, Poly] = {}
+#: atoms with an argument: name -> (kind, argument polynomial), kind "exp", "ln" or
+#: "inv" (1/u). The name is the kind and the argument's normal form, so equal
+#: arguments give the same atom.
+ATOMS: dict[str, tuple[str, Poly]] = {}
 
 
-def _exp(u: Poly) -> Poly:
-    if not u:                                     # exp(0) = 1
+def _atom(kind: str, u: Poly) -> Poly:
+    if kind == "exp" and not u:                   # exp(0) = 1
         return {(): Fraction(1)}
-    name = "exp" + repr(sorted(u.items()))
-    EXPS[name] = u
+    if kind == "inv" and set(u) == {()}:          # 1/c for a constant c != 0
+        return {(): 1 / u[()]}
+    name = kind + repr(sorted(u.items()))
+    ATOMS[name] = (kind, u)
     return {((name, 1),): Fraction(1)}
 
 
 def _uses(p: Poly, v: str) -> bool:
-    return any(x == v or (x in EXPS and _uses(EXPS[x], v)) for m in p for x, _ in m)
+    return any(x == v or (x in ATOMS and _uses(ATOMS[x][1], v)) for m in p for x, _ in m)
+
+
+def _atoms(p: Poly) -> set[str]:
+    """The ln and inv atoms of p, inside other atoms' arguments too."""
+    out = set()
+    for m in p:
+        for x, _ in m:
+            if x in ATOMS:
+                out |= ({x} if ATOMS[x][0] != "exp" else set()) | _atoms(ATOMS[x][1])
+    return out
+
+
+def _partial(t: Term) -> list[Poly]:
+    """The arguments of ln and the non-constant divisors written in t (each needs u > 0)."""
+    if not isinstance(t, Compound):
+        return []
+    out = [u for a in t.args for u in _partial(a)]
+    if t.functor == "f.ln":
+        out.append(poly(t.args[0]))
+    if t.functor == "/" and len(t.args) == 2 and not set(poly(t.args[1])) <= {()}:
+        out.append(poly(t.args[1]))
+    return out
 
 
 def _add(a: Poly, b: Poly, k: Fraction = Fraction(1)) -> Poly:
@@ -93,11 +122,17 @@ def _mul(a: Poly, b: Poly) -> Poly:
 def _calc(p: Poly, v: str, integral: bool) -> Poly:
     out: Poly = {}
     for m, c in p.items():
-        for x, k in m:          # chain rule: d(E^k)/dv = k E^k u' for E = exp(u)
-            if x in EXPS and _uses(EXPS[x], v):
-                if integral:
-                    raise Unsupported("integral of exp of the variable")
-                out = _add(out, _mul({m: c * k}, _calc(EXPS[x], v, False)))
+        for x, k in m:          # chain rule, for an atom A of u: d(A^k)/dv = k A^(k-1) A' with
+            if x in ATOMS and _uses(ATOMS[x][1], v):   # exp' = exp u', ln' = u' inv(u),
+                if integral:                           # inv' = -u' inv(u)^2
+                    raise Unsupported("integral of exp, ln or 1/u of the variable")
+                kind, u = ATOMS[x]
+                e = dict(m)
+                e[x] = k + {"exp": 0, "ln": -1, "inv": 1}[kind]
+                du = _calc(u, v, False)
+                du = _mul(du, _atom("inv", u)) if kind == "ln" else du
+                mono = tuple(sorted((a, b) for a, b in e.items() if b))
+                out = _add(out, _mul({mono: c * k * (-1 if kind == "inv" else 1)}, du))
         e = dict(m)
         k = e.pop(v, 0)
         if integral:
@@ -112,13 +147,13 @@ def _calc(p: Poly, v: str, integral: bool) -> Poly:
 
 
 def _subst(p: Poly, v: str, q: Poly) -> Poly:
-    """p with v replaced by q, inside exp atoms too."""
+    """p with v replaced by q, inside the arguments of atoms too."""
     out: Poly = {}
     for m, c in p.items():
         term: Poly = {(): c}
         for x, k in m:
-            f: Poly = q if x == v else _exp(_subst(EXPS[x], v, q)) if x in EXPS \
-                and _uses(EXPS[x], v) else {((x, 1),): Fraction(1)}
+            f: Poly = q if x == v else _atom(ATOMS[x][0], _subst(ATOMS[x][1], v, q)) \
+                if x in ATOMS and _uses(ATOMS[x][1], v) else {((x, 1),): Fraction(1)}
             for _ in range(k):
                 term = _mul(term, f)
         out = _add(out, term)
@@ -132,8 +167,8 @@ def poly(t: Term) -> Poly:
         return {(): t.value} if t.value else {}
     if isinstance(t, Compound) and t.functor in ("f.p", "f.at", "f.v", "f.pi"):
         return {((str(t), 1),): Fraction(1)}
-    if isinstance(t, Compound) and t.functor == "f.exp":
-        return _exp(poly(t.args[0]))
+    if isinstance(t, Compound) and t.functor in ("f.exp", "f.ln"):
+        return _atom(t.functor[2:], poly(t.args[0]))
     if isinstance(t, Compound) and t.functor == "f.surd" and len(t.args) % 2 == 0:
         sv: Poly = {}
         for rk, rc in zip(t.args[0::2], t.args[1::2], strict=True):
@@ -162,6 +197,8 @@ def poly(t: Term) -> Poly:
     k = ps[1].get((), Fraction(0)) if len(ps) == 2 and set(ps[1]) <= {()} else None
     if f == "/" and k:
         return _add({}, ps[0], 1 / k)
+    if f == "/" and k is None and len(ps) == 2:          # a / u = a inv(u) (D-030)
+        return _mul(ps[0], _atom("inv", ps[1]))
     if f == "^" and k is not None and k.denominator == 1 and k >= 0:
         out: Poly = {(): Fraction(1)}
         for _ in range(int(k)):
@@ -179,6 +216,7 @@ class Certificate:
     wsquares: tuple[tuple[Fraction, tuple[str, ...], Term], ...] = ()
     induction: tuple[str, str] | None = None
     sums: tuple[tuple[tuple[Term, tuple[str, ...], Term | None], ...], ...] = ()
+    positive: tuple[tuple[Term, Term, tuple[str, ...], tuple[Term, ...]], ...] = ()
 
 
 def _cmp(f: Term) -> tuple[str, Term, Term]:
@@ -251,8 +289,31 @@ def check(goal: Term, hyps: Mapping[str, Term], cert: Certificate) -> bool:
         if all(q is not None for _, _, q in terms):
             return False
         m = _mul(m, part)
-    total = _mul(m, poly(Compound("-", (lhs, rhs))))
+    rel: dict[str, Poly] = {}                   # witnessed u > 0: u inv(u) - 1 = 0
+    for i, (u, c, names, exps) in enumerate(cert.positive):
+        if not _positive(c) or not all(n in hyps and _cmp(hyps[n])[0] in (">", "<")
+                                       for n in names) or not all(
+                isinstance(x, Compound) and x.functor == "f.exp" for x in exps):
+            return False
+        wit = poly(c)
+        for n in names:
+            hop, a, b = _cmp(hyps[n])
+            wit = _mul(wit, poly(Compound("-", (a, b) if hop == ">" else (b, a))))
+        for x in exps:
+            wit = _mul(wit, poly(x))
+        if wit != poly(u):
+            return False
+        rel[f"@pos{i}"] = _add(_mul(wit, _atom("inv", wit)), {(): Fraction(1)}, Fraction(-1))
+    goal_p = poly(Compound("-", (lhs, rhs)))
+    need = _partial(lhs) + _partial(rhs) + [ATOMS[x][1] for x in _atoms(poly(lhs))
+                                            | _atoms(poly(rhs))]
+    if any(u not in [poly(w) for w, _, _, _ in cert.positive] for u in need):
+        return False
+    total = _mul(m, goal_p)
     for name, c in cert.coeffs:
+        if name in rel:
+            total = _add(total, _mul(poly(c), rel[name]), Fraction(-1))
+            continue
         hop, a, b = _cmp(hyps[name])
         if hop != "=":
             return False

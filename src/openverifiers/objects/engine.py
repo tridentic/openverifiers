@@ -803,12 +803,14 @@ def cert_json(c: Certificate) -> dict[str, object]:
             "wsquares": [[str(w), list(ns), t(x)] for w, ns, x in c.wsquares],
             "induction": list(c.induction) if c.induction else None,
             "sums": [[[t(k), list(ns), t(q) if q is not None else None] for k, ns, q in terms]
-                     for terms in c.sums]}
+                     for terms in c.sums],
+            "positive": [[t(u), t(k), list(ns), [t(x) for x in xs]] for u, k, ns, xs in c.positive]}
 
 
 def _lemmas_of(c: Certificate) -> list[str]:
     names = {n for n, _ in c.coeffs} | set(c.factors) | {
-        n for terms in c.sums for _, ns, _ in terms for n in ns}
+        n for terms in c.sums for _, ns, _ in terms for n in ns} | {
+        n for _, _, ns, _ in c.positive for n in ns}
     return sorted({n.removeprefix("lemma:").split("#")[0] for n in names
                    if n.startswith("lemma:")})
 

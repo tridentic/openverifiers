@@ -32,6 +32,11 @@ optional squares). Every sum the checker accepts must be > 0 at random points
 where the hypotheses hold, and every sum it must refuse (a constant <= 0, a
 hypothesis that is not `>`/`<`, only squared terms) must be refused.
 
+**ln and 1/u derivatives (D-030, trusted).** ``ln_derivatives`` compares the
+certificate checker's derivative of bodies with ln(u) and a / u (u > 0 by
+construction) with a central finite difference of the evaluator's values, as
+for exp above.
+
     python -m openverifiers.bench.differential --cases 5000 --seed 0
 """
 
@@ -359,6 +364,72 @@ def positive_sums(cases: int, seed: int) -> dict[str, object]:
     return {"cases": cases, "seed": seed, **counts, "examples": examples[:5]}
 
 
+def _cert_atom(name: str, props: dict[str, Num]) -> I.Iv:
+    kind, u = C.ATOMS[name]
+    v = _eval_atoms(u, props)
+    return I.exp(v) if kind == "exp" else I.ln(v) if kind == "ln" else v.inverse()
+
+
+def _eval_atoms(p: C.Poly, props: dict[str, Num]) -> I.Iv:
+    out = I.Iv.of(Fraction(0))
+    for mono, c in p.items():
+        t = I.Iv.of(c)
+        for v, k in mono:
+            x = _cert_atom(v, props) if v in C.ATOMS else I.Iv.of(
+                next(n.value for name, n in props.items() if str(_p(name)) == v))
+            t = t * x.power(k)
+        out = out + t
+    return out
+
+
+def _positive_u(rng: random.Random) -> Term:
+    """A positive expression in x (and y): a square plus a positive constant, or a
+    positive constant times exp of a polynomial."""
+    q = _poly_in(rng, X)
+    sq = Compound("*", (q, q))
+    if rng.random() < 0.5:
+        return Compound("+", (sq, Num(Fraction(rng.randint(1, 5), rng.randint(1, 3)))))
+    return Compound("*", (Num(Fraction(rng.randint(1, 5))), Compound(
+        "f.exp", (Compound("/", (_poly_in(rng, X), Num(Fraction(16)))),))))
+
+
+def one_ln(rng: random.Random) -> str:
+    u, w = _positive_u(rng), _positive_u(rng)
+    body = Compound("+", (Compound("*", (_poly_in(rng, X), Compound("f.ln", (u,)))),
+                          Compound("/", (_poly_in(rng, X), w))))
+    x0 = Fraction(rng.randint(-8, 8), rng.randint(1, 4))
+    props = {"x": Num(x0), "y": Num(Fraction(rng.randint(-6, 6), rng.randint(1, 3))),
+             "z": Num(Fraction(rng.randint(-6, 6), rng.randint(1, 3)))}
+    try:
+        d = C.poly(Compound("f.deriv", (body, X, X)))
+        sym = _eval_atoms({m: c for m, c in d.items()},
+                          {k: v if k != "x" else Num(x0) for k, v in props.items()})
+        hi = _iv(_Eval({**props, "x": Num(x0 + H)}).expr(body))
+        lo = _iv(_Eval({**props, "x": Num(x0 - H)}).expr(body))
+    except (Unsupported, I.IntervalError, StopIteration, ZeroDivisionError):
+        return "refused"
+    fd = (hi - lo) * I.Iv.of(1 / (2 * H))
+    scale = 1 + max(abs(sym.lo), abs(sym.hi), abs(fd.lo), abs(fd.hi))
+    gap = max(sym.lo - fd.hi, fd.lo - sym.hi, Fraction(0))
+    if gap > EXP_TOLERANCE * scale:
+        return f"DISAGREE: d/dx {body} at {props}: normal form {sym}, finite difference {fd}"
+    return "agree"
+
+
+def ln_derivatives(cases: int, seed: int) -> dict[str, object]:
+    rng = random.Random(seed)
+    counts = {"agree": 0, "refused": 0, "disagree": 0}
+    examples = []
+    for _ in range(cases):
+        r = one_ln(rng)
+        if r.startswith("DISAGREE"):
+            counts["disagree"] += 1
+            examples.append(r)
+        else:
+            counts[r] += 1
+    return {"cases": cases, "seed": seed, **counts, "examples": examples[:5]}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m openverifiers.bench.differential")
     ap.add_argument("--cases", type=int, default=1000)
@@ -368,8 +439,9 @@ def main(argv: list[str] | None = None) -> int:
     out["exp_derivatives"] = exp_derivatives(a.cases // 5, a.seed)
     out["surd_normal_form"] = surd_normal_form(a.cases // 5, a.seed)
     out["positive_sums"] = positive_sums(a.cases // 5, a.seed)
+    out["ln_derivatives"] = ln_derivatives(a.cases // 5, a.seed)
     print(json.dumps(out, indent=2))
-    extra = ("exp_derivatives", "surd_normal_form", "positive_sums")
+    extra = ("exp_derivatives", "surd_normal_form", "positive_sums", "ln_derivatives")
     return 1 if out["disagree"] or any(out[k]["disagree"] for k in extra) else 0  # type: ignore[index]
 
 

@@ -1,0 +1,33 @@
+# D-030 item 3: ln in the exp ring (d ln u = u' / u, with u > 0 checked), in three
+# domains (a test fixture, not a library).
+package probe.ln_ring
+
+# Mathematics: y = x ln x / (1 + ln x) solves x^2 y' + x y = x^2 + y^2 for x > 1/e
+# (1 + ln x > 0 there), with y(1) = 0.
+fact type HomogeneousOde {
+  property x: Real
+  invariant domain: x > 0 1 + ln(x) > 0
+  theorem solves: x * x * deriv(x * ln(x) / (1 + ln(x)), x) + x * (x * ln(x) / (1 + ln(x)))
+    = x * x + (x * ln(x) / (1 + ln(x))) * (x * ln(x) / (1 + ln(x)))
+}
+
+# Chemistry: first-order decay a = a0 exp(-k t): d ln(a) / dt = -k.
+fact type FirstOrderDecay {
+  property a0: Real
+  property k: Real
+  property t: Real
+  invariant positive: a0 > 0
+  theorem log_slope: deriv(ln(a0 * exp(-k * t)), t) = -k
+}
+
+# Physics: isothermal work W(V) = n R T (ln V - ln V1); dW/dV = n R T / V = p.
+fact type IsothermalWork {
+  property n: Real
+  property R: Real
+  property temp: Real
+  property V: Real
+  property V1: Real
+  invariant positive: n > 0 R > 0 temp > 0
+  invariant volumes: V > 0 V1 > 0
+  theorem pressure: deriv(n * R * temp * (ln(V) - ln(V1)), V) = n * R * temp / V
+}

@@ -1,0 +1,16 @@
+{
+  "reviewer": "Claude subagent, gold-blind (saw only the question text, the case, answer.json and the imported libraries)",
+  "date": "2026-11-23",
+  "verdict": "faithful_with_notes",
+  "issues": [
+    "Reconstructed question: x^2 y' + x y = x^2 + y^2 for x > 1/e with y(1) = 0, asked for 2 (y(e))^2 / y(e^2). The case reads it the same way.",
+    "Uniqueness of the IVP solution is assumed outside OV. The claim is correct: f(x,y) = (x^2 + y^2 - x y)/x^2 is smooth, so locally Lipschitz, for x > 0. The candidate is defined on all of (1/e, inf), which contains 1, so it is the solution there. This is stated honestly as unchecked.",
+    "The Values type is not formally linked to Candidate. at_e and at_e2 are hand substitutions of the candidate formula, with ln e = 1 and ln e^2 = 2 written in. They are correct steps, but OV does not derive them from the checked theorem.",
+    "e is left as a free positive real while ln e = 1 is hard-coded. This is harmless because the asked ratio comes out independent of e, and the comment says so. It is still an abstraction, not evaluation at the real constant e.",
+    "AtOne's invariant y1*(1+0) = 1*0 is a hand substitution of x = 1, ln 1 = 0 into the candidate. It is correct but adds nothing beyond restating the step.",
+    "The ratio invariant needs ye2 != 0 for the answer to be unique. e > 0 gives ye2 = 2e^2/3 > 0, so this holds.",
+    "Domain: 1 + ln(x) > 0 is equivalent to x > 1/e because ln is increasing, and it is exactly where the candidate's denominator is positive. The extra invariant x > 0 is redundant but harmless, since it is needed for ln to be defined."
+  ],
+  "library_issues": [],
+  "notes": "The question is read correctly. The candidate y = x ln x/(1 + ln x) solves the ODE with y(1) = 0, the hand-substituted values at e and e^2 are correct, and answer.json reads query 1, the unique value of asked. The remaining caveats are the unchecked uniqueness argument (stated honestly and correct) and the hand link between Candidate and Values."
+}

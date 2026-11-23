@@ -1,0 +1,43 @@
+# JEE (Advanced) 2025, Paper 2, Mathematics Q9.
+# y(x) solves x^2 y' + x y = x^2 + y^2 for x > 1/e, with y(1) = 0. Asked: 2 y(e)^2 / y(e^2).
+#
+# Reading: OV does not solve differential equations. This case states a candidate solution
+# and checks it: the theorem `solves` is the ODE itself with y replaced by the
+# candidate, and `starts_at_zero` is y(1) = 0. The right side is smooth for x > 0,
+# so the initial value problem has one solution (Picard-Lindelof; outside OV, not checked);
+# the candidate is therefore y. x > 1/e is written as 1 + ln(x) > 0 (ln is
+# increasing), which is also where the candidate's denominator is positive.
+package bench.jee2025_math_p2q9
+
+fact type Candidate {
+  property x: Real
+  invariant domain: x > 0
+  invariant beyond_one_over_e: 1 + ln(x) > 0
+  theorem solves: x * x * deriv(x * ln(x) / (1 + ln(x)), x) + x * (x * ln(x) / (1 + ln(x)))
+    = x * x + (x * ln(x) / (1 + ln(x))) * (x * ln(x) / (1 + ln(x)))
+}
+
+# The initial condition: y(1) = 1 ln(1) / (1 + ln(1)) with ln 1 = 0.
+fact type AtOne {
+  property y1: Real
+  invariant at_one: y1 * (1 + 0) = 1 * 0
+  theorem starts_at_zero: y1 = 0
+}
+
+# y(e) and y(e^2) read from the checked solution y = x ln(x) / (1 + ln(x)),
+# with ln e = 1 and ln e^2 = 2 written in. e is any positive number here:
+# the asked value does not depend on it.
+fact type Values {
+  property e: Real
+  property ye: Real
+  property ye2: Real
+  property asked: Real
+  invariant e_positive: e > 0
+  invariant at_e: ye * (1 + 1) = e * 1
+  invariant at_e2: ye2 * (1 + 2) = e * e * 2
+  invariant ratio: asked * ye2 = 2 * ye * ye
+}
+
+scenario jee2025_math_p2q9 uses bench.jee2025_math_p2q9 {
+  query PROVE UNIQUE ?a WHERE Values{ asked = ?a }
+}

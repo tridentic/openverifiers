@@ -84,6 +84,9 @@ class ObjAnswer:
     #: the verdict is proven by a certificate the trusted checker (raw/certificate.py)
     #: verified: its trust base is {kernel}, and --strict keeps it
     certified: bool = False
+    #: the hypotheses (invariants, laws, lemmas) a certificate used: the theorem's exact
+    #: statement closure (OV-Paper); empty when not certified
+    used_hyps: tuple[str, ...] = ()
     kind: str = ""                                 # find unique count check counterexample
                                                    # consistency theorem
 
@@ -776,6 +779,7 @@ def certify(ans: ObjAnswer, cls: ClassDef, th: tuple[str, Term],
                          + (f"; hypotheses used: {', '.join(used)}" if used else
                             "; an identity"))
     ans.verdict, ans.reason, ans.certified = "PROVEN", "", True
+    ans.used_hyps = tuple(sorted({n.split("#")[0].removeprefix("lemma:") for n in used}))
 
 
 def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:

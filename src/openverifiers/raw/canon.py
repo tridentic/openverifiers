@@ -38,10 +38,6 @@ from .program import (
 from .terms import Compound, Num, Str, Sym, Term, Var
 
 
-def _frac(x: Fraction) -> str:
-    return str(x)
-
-
 def _unfrac(s: object) -> Fraction:
     if not isinstance(s, str) or str(Fraction(s)) != s:
         raise ValueError(f"not a canonical rational: {s!r}")
@@ -74,7 +70,7 @@ def term_to_json(t: Term) -> list[object]:
     if isinstance(t, Var):
         return ["var", t.name]
     if isinstance(t, Num):
-        return ["num", _frac(t.value), [[k, _frac(e)] for k, e in t.dims]]
+        return ["num", str(t.value), [[k, str(e)] for k, e in t.dims]]
     return ["app", t.functor, [term_to_json(a) for a in t.args]]
 
 

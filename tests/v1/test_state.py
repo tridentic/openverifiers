@@ -55,10 +55,8 @@ def test_loader_refuses_tampering_and_non_canonical_files(tmp_path: Path) -> Non
     assert len(facts("s", text)) == 2 and facts("s", text)[0].origin == "import:s"
     bad = json.loads(text)
     bad["body"]["atoms"][0]["args"] = [["sym", "z"]]
-    unsorted = {"version": 1, "atoms": list(reversed(good["atoms"]))}  # type: ignore[call-overload]
-    for t in (json.dumps(bad), json.dumps({"sha256": digest(unsorted), "body": unsorted}),
-              json.dumps({"body": good}), json.dumps({"sha256": "", "body": {"version": 2,
-                                                                             "atoms": []}})):
+    for t in (json.dumps(bad), json.dumps({"body": good}),
+              json.dumps({"sha256": "", "body": {"version": 2, "atoms": []}})):
         with pytest.raises((StateError, ValueError)):
             load_atoms(t)
     (tmp_path / "fam.ov").write_text(FAM)

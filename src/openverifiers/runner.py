@@ -10,12 +10,14 @@ Every answer comes from a model the checker accepted.
 from __future__ import annotations
 
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from fractions import Fraction
 from pathlib import Path
+from typing import Any
 
 from .checker import Inconsistent, Proven, Refuted, Unknown, Verdict, verdict
+from .checker.objects import check_records
 from .checker.verdict import default_context
 from .engine import Run, ask, find_all, run, without
 from .kernel.evaluate import Budget
@@ -26,6 +28,7 @@ from .lang.units import show_quantity
 from .lower.lower import Lowered, QueryPlan, _Ctx, _value, is_hidden, lower, term
 from .objects.engine import ObjAnswer, Settings, check_classes, show
 from .objects.engine import answer as obj_answer
+from .raw.canon import term_to_json
 from .raw.program import Atom
 from .raw.terms import Compound, Num, Str, Sym, Term
 
@@ -114,7 +117,25 @@ def run_file(path: str | Path, *, source: str | None = None, budget: Budget | No
     files_ = {env.main.file} if files is None else files
     mine = {n for n, d in env.class_decls.items() if d.span.file in files_}
     classes = check_classes(env.objects, mine, settings) if mine else []
+    recheck_records([*classes, *objs], env.objects.defs)
     return FileResult(env, lowered, answers, runs, objs, classes)
+
+
+def recheck_records(answers: Sequence[ObjAnswer], defs: Mapping[str, Any]) -> None:
+    """Condition B: re-check every object record from JSON with the trusted checker
+    (checker/objects.py), in order (lemma certificates before their uses). An answer
+    with a rejected record loses its verdict: that would be an engine bug."""
+    for a in answers:                    # a uniqueness claim's givens: from the plan
+        for r in a.records:
+            if "goal" in r and a.plan is not None:
+                r["givens"] = {k: term_to_json(t) for k, t in a.plan.props.items()
+                               if isinstance(t, Num) and not t.dims}
+    flat = [(a, r) for a in answers for r in a.records]
+    bad = {int(m.split()[1]) for m in check_records([r for _, r in flat], defs)}
+    for i in sorted(bad):
+        a = flat[i][0]
+        a.steps.append("BUG: a record behind this verdict was rejected by the checker")
+        a.verdict, a.reason, a.trust_base = "UNKNOWN", "plugin_unknown", frozenset()
 
 
 def _check_obj_expect(a: ObjAnswer, ex: A.Expect) -> None:

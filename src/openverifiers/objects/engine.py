@@ -21,7 +21,8 @@ from dataclasses import dataclass, field, replace
 from fractions import Fraction
 
 from ..lang.units import show_quantity
-from ..raw.certificate import check
+from ..raw.canon import term_to_json
+from ..raw.certificate import Certificate, check
 from ..raw.formula import DEG, ClassDef, Unsupported, _Eval, failing, holds
 from ..raw.interval import Iv
 from ..raw.numeric import failing_numeric
@@ -84,6 +85,9 @@ class ObjAnswer:
     #: the verdict is proven by a certificate the trusted checker (raw/certificate.py)
     #: verified: its trust base is {kernel}, and --strict keeps it
     certified: bool = False
+    #: JSON records behind kernel verdicts (accepted models, certificates), re-checked
+    #: from JSON by the trusted checker/objects.py (Condition B)
+    records: list[dict[str, object]] = field(default_factory=list)
     #: the hypotheses (invariants, laws, lemmas) a certificate used: the theorem's exact
     #: statement closure (OV-Paper); empty when not certified
     used_hyps: tuple[str, ...] = ()
@@ -223,8 +227,11 @@ def _instance(props: Mapping[str, Term]) -> str:
 
 
 class _Run:
-    def __init__(self, st: Settings, steps: list[str]) -> None:
+    def __init__(self, st: Settings, steps: list[str],
+                 records: list[dict[str, object]] | None = None) -> None:
         self.st, self.steps = st, steps
+        #: JSON records of accepted models, re-checked by checker/objects.py
+        self.records = records if records is not None else []
 
     def solve(self, what: str, cons: list[CF], names: list[str], *, seek: bool = False
               ) -> Result:
@@ -269,6 +276,9 @@ class _Run:
             return None
         self.steps.append(f"re-check [checker] {_instance(props)}: "
                           + ("every invariant holds" if not bad else "fails " + ", ".join(bad)))
+        if not bad:
+            self.records.append({"kind": "model", "class": cls.name,
+                                 "props": {k: term_to_json(v) for k, v in props.items()}})
         return bad
 
     def core(self, cls: ClassDef, props: Mapping[str, Term], names: list[str],
@@ -304,7 +314,7 @@ def answer(plan: ObjPlan, st: Settings | None = None) -> ObjAnswer:
 
 def _answer(plan: ObjPlan, st: Settings) -> ObjAnswer:
     ans = ObjAnswer(plan.query.text, "UNKNOWN", plan=plan, kind=plan.kind)
-    r = _Run(st, ans.steps)
+    r = _Run(st, ans.steps, ans.records)
     try:
         if plan.kind == "check":
             bad = r.recheck(plan.cls, plan.props)
@@ -778,8 +788,26 @@ def certify(ans: ObjAnswer, cls: ClassDef, th: tuple[str, Term],
                          "multiplier * (lhs - rhs) - ideal part - squares is 0"
                          + (f"; hypotheses used: {', '.join(used)}" if used else
                             "; an identity"))
+    for k, c in enumerate(certs):
+        ans.records.append({"kind": "certificate", "class": cls.name, "theorem": th[0],
+                            "part": k, "cert": cert_json(c), "lemmas": _lemmas_of(c)})
     ans.verdict, ans.reason, ans.certified = "PROVEN", "", True
     ans.used_hyps = tuple(sorted({n.split("#")[0].removeprefix("lemma:") for n in used}))
+
+
+def cert_json(c: Certificate) -> dict[str, object]:
+    t = term_to_json
+    return {"factors": list(c.factors), "coeffs": [[n, t(x)] for n, x in c.coeffs],
+            "squares": [[str(w), t(x)] for w, x in c.squares],
+            "constants": [t(x) for x in c.constants],
+            "wsquares": [[str(w), list(ns), t(x)] for w, ns, x in c.wsquares],
+            "induction": list(c.induction) if c.induction else None}
+
+
+def _lemmas_of(c: Certificate) -> list[str]:
+    names = {n for n, _ in c.coeffs} | set(c.factors)
+    return sorted({n.removeprefix("lemma:").split("#")[0] for n in names
+                   if n.startswith("lemma:")})
 
 
 def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:
@@ -816,6 +844,10 @@ def certify_unique(plan: ObjPlan, ans: ObjAnswer) -> None:
             hyps[f"given:{k}"] = Compound("f.cmp", (Str("="), Compound("f.p", (Str(k),)), t))
     cert = find(goal, hyps)
     if cert is not None and check(goal, hyps, cert):
+        ans.records.append({"kind": "certificate", "class": plan.cls.name,
+                            "goal": term_to_json(goal), "cert": cert_json(cert),
+                            "givens": {k[6:]: term_to_json(h.args[2])  # type: ignore[union-attr]
+                                       for k, h in hyps.items() if k.startswith("given:")}})
         used = sorted({n for n, _ in cert.coeffs} | set(cert.factors))
         ans.steps.append("uniqueness certificate [kernel: raw/certificate.py]: the "
                          f"invariants imply {prop} = {show(v) if isinstance(v, Num) else 'it'}"
@@ -867,7 +899,7 @@ def check_classes(classes: Classes, only: set[str] | None = None,
         except Unsupported as e:
             gen = str(e)
         ans = ObjAnswer(f"class {name} is consistent", "UNKNOWN", kind="consistency")
-        r = _Run(st, ans.steps)
+        r = _Run(st, ans.steps, ans.records)
         if isinstance(gen, str):
             ans.steps.append(f"no bounded instance: {gen}")
             ans.reason = "budget"
@@ -889,7 +921,7 @@ def check_classes(classes: Classes, only: set[str] | None = None,
             else:
                 used: set[str] = set()
                 try:
-                    v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps), ta.steps, gen,
+                    v, why, wit, _ = theorem(cls, th, _Run(st, ta.steps, ta.records), ta.steps, gen,
                                              used=used)
                 except Unsupported as e:
                     ta.steps.append(f"cannot expand: {e}")
@@ -908,7 +940,8 @@ def check_classes(classes: Classes, only: set[str] | None = None,
                     used2: set[str] = set()
                     with_lemmas = replace(cls, invariants=(*cls.invariants, *lemmas))
                     try:
-                        v2, why2, wit2, _ = theorem(with_lemmas, th, _Run(st, ta.steps),
+                        v2, why2, wit2, _ = theorem(with_lemmas, th, _Run(st, ta.steps,
+                                                                          ta.records),
                                                     ta.steps, gen, used=used2)
                     except Unsupported:
                         v2, why2, wit2 = "UNKNOWN", "plugin_unknown", None

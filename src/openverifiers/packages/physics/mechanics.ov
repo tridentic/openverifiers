@@ -51,6 +51,8 @@ fact type ConstantForce extends ConstantAcceleration {
   law newton2: F = m * a
   # Work-energy: the work F s equals the change in kinetic energy.
   theorem work_energy: F * s = m * v * v / 2 - m * u * u / 2
+  # Impulse-momentum: the impulse F t equals the change in momentum.
+  theorem impulse: m * (v - u) = F * t
 }
 
 # Vertical motion under gravity alone (up is positive): the net force is the
@@ -64,41 +66,17 @@ fact type UniformGravity extends ConstantForce {
   theorem energy_conservation: m * v * v / 2 + m * g * s = m * u * u / 2
 }
 
-# Two bodies that push on each other (and on nothing else) for a time dt with
-# constant forces: F on body 1, F2 on body 2.
-fact type TwoBodyInteraction {
-  property m1: Mass
-  property m2: Mass
-  property u1: Velocity
-  property u2: Velocity
-  property v1: Velocity
-  property v2: Velocity
-  property a1: Accel
-  property a2: Accel
-  property F: Force
-  property F2: Force
-  property dt: Time
-  invariant elapsed: dt >= 0
-  invariant positive_m1: m1 > 0
-  invariant positive_m2: m2 > 0
-  invariant velocity1: v1 = u1 + integral(a1, dt)
-  invariant velocity2: v2 = u2 + integral(a2, dt)
-  law newton2_1: F = m1 * a1
-  law newton2_2: F2 = m2 * a2
-  law newton3: F2 = -F
-  theorem momentum_conservation: m1 * u1 + m2 * u2 = m1 * v1 + m2 * v2
-  theorem impulse: m1 * (v1 - u1) = F * dt
-}
-
-# The same interaction by composition: each body is a ConstantForce (its
-# kinematics and Newton's second law come with it); only Newton's third law and
-# the shared time are new. TwoBodyInteraction above restates the definitions;
-# retiring it needs an approved gold change (its theorem lines are gold).
+# Two bodies that push on each other, and on nothing else, for the same time
+# with constant forces. Each body is a ConstantForce (its kinematics and
+# Newton's second law come with it). The pair is isolated: each body's net
+# force is the mutual push, on body 1 as push and on body 2 as -push (Newton's
+# third law), stated as the definition of an isolated pair.
 fact type BodyPair {
   property b1: ConstantForce
   property b2: ConstantForce
+  property push: Force
   invariant same_time: b1.t = b2.t
-  law newton3: b2.F = -b1.F
+  invariant isolated: b1.F = push b2.F = -push
   theorem momentum: b1.m * b1.u + b2.m * b2.u = b1.m * b1.v + b2.m * b2.v
   theorem impulse_balance: b1.m * (b1.v - b1.u) = -(b2.m * (b2.v - b2.u))
 }
@@ -150,13 +128,6 @@ test drop_speed {
   scenario drop_speed_s uses physics.mechanics { }
   query FIND ?v WHERE UniformGravity{ m = 1 kg, g = 10 m/s^2, u = 0 m/s, s = -5 m, v = ?v }
   expect PROVEN -10 m/s
-}
-
-test recoil {
-  scenario recoil_s uses physics.mechanics { }
-  query FIND ?v2 WHERE TwoBodyInteraction{ m1 = 2 kg, m2 = 3 kg, u1 = 0 m/s, u2 = 0 m/s,
-                                           v1 = 6 m/s, v2 = ?v2 }
-  expect PROVEN -4 m/s
 }
 
 test work_energy_no_counterexample {

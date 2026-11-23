@@ -8,7 +8,7 @@ to do.
 | change | before | after | what to do |
 |---|---|---|---|
 | new `.ov` keywords | `law`, `definition`, `lemma` were names | keywords (axiom kinds; class members) | rename anything named so (nothing in the repo was) |
-| `physics.mechanics` | `axiom newton2` | `law newton2`, plus classes ConstantAcceleration, ConstantForce, UniformGravity, TwoBodyInteraction | none: the rule is unchanged |
+| `physics.mechanics` | `axiom newton2` | `law newton2`, plus classes ConstantAcceleration, ConstantForce, UniformGravity, BodyPair (TwoBodyInteraction retired in W2) | none: the rule is unchanged |
 | `math.core` | vocabulary only | quadratic, Vieta, AM-GM classes and theorems | none |
 | class properties of a quantity type | unknowns refused (E206), formulas not unit-checked | unknowns allowed; formulas and pattern values dimension-checked (E301) | fix any E301 the checker now reports |
 | WHAT IF RETRACT of a fact | re-ran the whole program | the fact is a hidden assumption; retracting it is a context change | none; answers are unchanged |
@@ -62,3 +62,10 @@ Nothing else breaks: `openverifiers.lang`, `openverifiers.lower`,
 | RawOV text parser left the trusted base | `openverifiers.raw.text`; `parse`, `dump`, `parse_atom`, `parse_term`, `dump_term`, `dump_atom`, `RawSyntaxError` exported from `openverifiers.raw` | `openverifiers.rawtext` (untrusted) | import them from `openverifiers.rawtext` |
 | OVTrace JSON | terms and atoms as RawOV text strings inside the JSON lines | canonical tagged JSON (`raw/canon.py`): `["sym", n]`, `["num", "p/q", dims]`, `{"pred", "args", "neg"}` | regenerate stored traces; old trace files are rejected |
 | checker entry point | `check_trace(program, trace)` on in-memory objects | also `check_json(program_json, trace_jsonl)`; the engine always goes through it | none |
+
+## W2: TwoBodyInteraction retired (branch `v1`)
+
+| change | before | after | what to do |
+|---|---|---|---|
+| `physics.mechanics.TwoBodyInteraction` | flat class m1, m2, u1, ..., F, F2, dt | `BodyPair { b1, b2: ConstantForce, push }` | `TwoBodyInteraction{ m1 = 2 kg, ... v2 = ?v2 }` becomes `BodyPair{ b1 = ConstantForce{ m = 2 kg, ... }, b2 = ConstantForce{ ..., v = ?v } }`. `momentum_conservation` is `BodyPair.momentum`; `impulse` is `ConstantForce.impulse` (for each body) |
+| `BodyPair.newton3` (law) | `b2.F = -b1.F` | `invariant isolated: b1.F = push b2.F = -push` | none: the same forces, with the isolation stated |

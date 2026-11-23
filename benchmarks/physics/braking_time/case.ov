@@ -1,0 +1,8 @@
+# Braking to rest: u = 20 m/s, v = 0, a = -4 m/s^2; the time is 5 s.
+package bench.braking_time
+import physics.mechanics
+
+test braking_time {
+  scenario braking_time_s uses physics.mechanics { }
+  query FIND ?t WHERE ConstantAcceleration{ u = 20 m/s, v = 0 m/s, a = -4 m/s^2, t = ?t }
+}

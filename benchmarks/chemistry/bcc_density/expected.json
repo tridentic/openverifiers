@@ -1,0 +1,16 @@
+{
+  "suite": "chemistry",
+  "case": "bcc_density",
+  "tag": "standard",
+  "why": "A ccp cell (4 atoms) of edge 500 pm, molar mass 60 g/mol, N_A = 6e23: density = 4*60/(6e23*(5e-8 cm)^3) = 3.2 g/cm^3 = 3200 kg/m^3.",
+  "queries": [
+    {
+      "query": "FIND ?d WHERE CcpCell{ edge = 500 pm, molar_mass = 60 g/mol, avogadro = 6e23 mol^-1, density = ?d }",
+      "verdict": "PROVEN",
+      "values": [
+        "3200 kg/m^3"
+      ],
+      "why": "4 * 60 g / (6e23 * 1.25e-22 cm^3) = 3.2 g/cm^3."
+    }
+  ]
+}

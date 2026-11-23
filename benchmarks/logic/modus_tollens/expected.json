@@ -1,0 +1,13 @@
+{
+  "suite": "logic",
+  "case": "modus_tollens",
+  "tag": "standard",
+  "why": "rain -> wet and not wet are stated; contraposition is not a rule here, so nothing derives not rain: UNKNOWN.",
+  "queries": [
+    {
+      "query": "PROVE rain(today)",
+      "verdict": "UNKNOWN",
+      "why": "contraposition is not a rule; nothing states rain either way."
+    }
+  ]
+}

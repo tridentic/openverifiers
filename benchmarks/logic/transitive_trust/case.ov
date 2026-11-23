@@ -1,0 +1,15 @@
+# Trust delegates: trusts(a, b) and trusts(b, c) give trusts(a, c).
+package bench.transitive_trust
+type Agent
+predicate trusts(a: Agent, b: Agent) world closed
+axiom chain(a: Agent, b: Agent, c: Agent): trusts(a, b), trusts(b, c) -> trusts(a, c)
+
+test transitive_trust {
+  scenario transitive_trust_s uses bench.transitive_trust {
+    entity a, b, c, d: Agent
+    fact trusts(a, b)
+    fact trusts(b, c)
+    query PROVE trusts(a, c)
+    query PROVE trusts(a, d)
+  }
+}

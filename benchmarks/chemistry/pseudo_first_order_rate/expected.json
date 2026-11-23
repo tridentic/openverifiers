@@ -1,0 +1,16 @@
+{
+  "suite": "chemistry",
+  "case": "pseudo_first_order_rate",
+  "tag": "standard",
+  "why": "k' = k [R]0 with k = 2 m^3/(mol s), [R]0 = 5 mol/m^3: k' = 10 /s.",
+  "queries": [
+    {
+      "query": "FIND ?k WHERE PseudoFirstOrder{ k = 2 m^3/mol/s, r0 = 5 mol/m^3, a0 = 1 mol/m^3, x = 0 mol/m^3, k1 = ?k }",
+      "verdict": "PROVEN",
+      "values": [
+        "10 Hz"
+      ],
+      "why": "k1 = k r0 = 10 per second."
+    }
+  ]
+}

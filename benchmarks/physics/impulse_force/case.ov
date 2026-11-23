@@ -1,0 +1,8 @@
+# Impulse: m = 3 kg, u = 2 m/s, v = 8 m/s over t = 2 s; the force is 9 N.
+package bench.impulse_force
+import physics.mechanics
+
+test impulse_force {
+  scenario impulse_force_s uses physics.mechanics { }
+  query FIND ?F WHERE ConstantForce{ m = 3 kg, u = 2 m/s, v = 8 m/s, t = 2 s, F = ?F }
+}

@@ -1,0 +1,8 @@
+# Density of a ccp metal: edge 500 pm, molar mass 60 g/mol, N_A = 6 x 10^23 /mol.
+package bench.bcc_density
+import chemistry.solid_state
+
+test bcc_density {
+  scenario bcc_density_s uses chemistry.solid_state { }
+  query FIND ?d WHERE CcpCell{ edge = 500 pm, molar_mass = 60 g/mol, avogadro = 6e23 mol^-1, density = ?d }
+}

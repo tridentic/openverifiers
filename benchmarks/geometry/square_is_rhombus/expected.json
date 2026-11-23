@@ -1,0 +1,18 @@
+{
+  "suite": "geometry",
+  "case": "square_is_rhombus",
+  "tag": "standard",
+  "why": "the 2 x 2 square is a rhombus (all sides equal) and a rectangle.",
+  "queries": [
+    {
+      "query": "CHECK Quadrilateral{ vertices = {(0,0), (2,0), (2,2), (0,2)} } IS Rhombus",
+      "verdict": "PROVEN",
+      "why": "all four sides are 2."
+    },
+    {
+      "query": "CHECK Quadrilateral{ vertices = {(0,0), (2,0), (2,2), (0,2)} } IS Rectangle",
+      "verdict": "PROVEN",
+      "why": "all angles are right."
+    }
+  ]
+}

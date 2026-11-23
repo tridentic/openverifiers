@@ -1,0 +1,16 @@
+{
+  "suite": "physics",
+  "case": "impulse_force",
+  "tag": "standard",
+  "why": "A 3 kg body from 2 m/s to 8 m/s in 2 s: F t = m (v - u) gives F = 9 N.",
+  "queries": [
+    {
+      "query": "FIND ?F WHERE ConstantForce{ m = 3 kg, u = 2 m/s, v = 8 m/s, t = 2 s, F = ?F }",
+      "verdict": "PROVEN",
+      "values": [
+        "9 N"
+      ],
+      "why": "a = 3 m/s^2, F = 9 N."
+    }
+  ]
+}

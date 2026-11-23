@@ -1,0 +1,16 @@
+{
+  "suite": "physics",
+  "case": "braking_time",
+  "tag": "standard",
+  "why": "A car at 20 m/s brakes at -4 m/s^2 to rest: v = u + a t gives t = 5 s.",
+  "queries": [
+    {
+      "query": "FIND ?t WHERE ConstantAcceleration{ u = 20 m/s, v = 0 m/s, a = -4 m/s^2, t = ?t }",
+      "verdict": "PROVEN",
+      "values": [
+        "5 s"
+      ],
+      "why": "0 = 20 - 4 t."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# If it rains the ground is wet; the ground is not wet. Rules are one-way, so
+# 'not rain' is not derived: the honest answer about rain is UNKNOWN.
+package bench.modus_tollens
+type Day
+predicate rain(d: Day) world open
+predicate wet(d: Day) world open
+axiom wet_if_rain(d: Day): rain(d) -> wet(d)
+
+test modus_tollens {
+  scenario modus_tollens_s uses bench.modus_tollens {
+    entity today: Day
+    fact not wet(today)
+    query PROVE rain(today)
+  }
+}

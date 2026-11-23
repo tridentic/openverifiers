@@ -1,0 +1,8 @@
+# A 'quadratic' with a = 0 has no stationary point as defined: no instance.
+package bench.cubic_vertex_none
+import math.calculus
+
+test cubic_vertex_none {
+  scenario cubic_vertex_none_s uses math.calculus { }
+  query FIND ?t WHERE QuadraticExtremum{ a = 0, b = 2, c = 1, t = ?t }
+}

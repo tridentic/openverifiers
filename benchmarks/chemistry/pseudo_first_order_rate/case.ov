@@ -1,0 +1,8 @@
+# The pseudo-first-order constant: k = 2 m^3 mol^-1 s^-1, [R]0 = 5 mol/m^3 gives k' = 10 s^-1.
+package bench.pseudo_first_order_rate
+import chemistry.kinetics
+
+test pseudo_first_order_rate {
+  scenario pseudo_first_order_rate_s uses chemistry.kinetics { }
+  query FIND ?k WHERE PseudoFirstOrder{ k = 2 m^3/mol/s, r0 = 5 mol/m^3, a0 = 1 mol/m^3, x = 0 mol/m^3, k1 = ?k }
+}

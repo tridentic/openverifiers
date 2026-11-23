@@ -1,0 +1,13 @@
+{
+  "suite": "mathematics",
+  "case": "cubic_vertex_none",
+  "tag": "standard",
+  "why": "a = 0 violates QuadraticExtremum's leading coefficient; no instance.",
+  "queries": [
+    {
+      "query": "FIND ?t WHERE QuadraticExtremum{ a = 0, b = 2, c = 1, t = ?t }",
+      "verdict": "REFUTED",
+      "why": "the leading invariant a != 0 fails."
+    }
+  ]
+}

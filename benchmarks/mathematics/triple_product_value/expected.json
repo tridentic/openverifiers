@@ -1,0 +1,16 @@
+{
+  "suite": "mathematics",
+  "case": "triple_product_value",
+  "tag": "standard",
+  "why": "u = (1,0,0), v = (0,1,0), w = (0,0,1): u . (v x w) = 1.",
+  "queries": [
+    {
+      "query": "FIND ?t WHERE Triple{ ux = 1, uy = 0, uz = 0, vx = 0, vy = 1, vz = 0, wx = 0, wy = 0, wz = 1, triple = ?t }",
+      "verdict": "PROVEN",
+      "values": [
+        "1"
+      ],
+      "why": "det of the identity matrix."
+    }
+  ]
+}

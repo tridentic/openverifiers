@@ -1,0 +1,8 @@
+# The scalar triple product of the unit vectors i, j, k is 1.
+package bench.triple_product_value
+import math.vectors
+
+test triple_product_value {
+  scenario triple_product_value_s uses math.vectors { }
+  query FIND ?t WHERE Triple{ ux = 1, uy = 0, uz = 0, vx = 0, vy = 1, vz = 0, wx = 0, wy = 0, wz = 1, triple = ?t }
+}

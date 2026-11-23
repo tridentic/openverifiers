@@ -1,0 +1,19 @@
+{
+  "suite": "logic",
+  "case": "transitive_trust",
+  "tag": "standard",
+  "why": "a trusts b, b trusts c: trust is transitive by the rule, so a trusts c.",
+  "queries": [
+    {
+      "query": "PROVE trusts(a, c)",
+      "verdict": "PROVEN",
+      "assumptions": [],
+      "why": "one chain step."
+    },
+    {
+      "query": "PROVE trusts(a, d)",
+      "verdict": "REFUTED",
+      "why": "closed world: no path to d."
+    }
+  ]
+}

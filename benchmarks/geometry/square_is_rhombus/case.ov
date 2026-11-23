@@ -1,0 +1,7 @@
+# A 2 x 2 square is both a rhombus and a rectangle.
+import math.geometry
+
+scenario square_is_rhombus_bs uses math.geometry {
+  query CHECK Quadrilateral{ vertices = {(0,0), (2,0), (2,2), (0,2)} } IS Rhombus
+  query CHECK Quadrilateral{ vertices = {(0,0), (2,0), (2,2), (0,2)} } IS Rectangle
+}

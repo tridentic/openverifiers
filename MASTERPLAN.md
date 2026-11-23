@@ -1,6 +1,6 @@
-# OpenVerifiers Masterplan (MP-1.1)
+# OpenVerifiers Masterplan (MP-1.2)
 
-Nov 22, 2026 (amended Nov 23, 2026; MP-1.1: D-029) · Founder
+Nov 22, 2026 (amended Nov 23, 2026; MP-1.1: D-029; MP-1.2: D-030, D-031) · Founder
 
 The single reference for building OpenVerifiers, from the trusted kernel to frontier science, across six major releases. Every report, directive and change refers back to a section of this plan.
 
@@ -75,8 +75,8 @@ Trust flows upward from a small checked core; ambition lives at the top. The dia
 
 | Layer | Name | Contents | Trusted? |
 | --- | --- | --- | --- |
-| L0 | Exact arithmetic | Rationals, quadratic surds, rigorous intervals, polynomial normal forms | **Yes** (audited unit A, cap 500 per D-029) |
-| L1 | Kernel checker | RawOV data model, trace checker, certificate checker (identities, ideal membership, later SOS), state hash and load | **Yes** (unit B; total TCB cap 2,000) |
+| L0 | Exact arithmetic | Rationals, quadratic surds, rigorous intervals, polynomial normal forms | **Yes** (audited unit A, cap 700 per D-030) |
+| L1 | Kernel checker | RawOV data model, trace checker, certificate checker (identities, ideal membership, later SOS), state hash and load | **Yes** (unit B; total TCB cap 2,300 per D-030) |
 | L2 | Evaluator | Semi-naive Datalog, signed ATMS labels, stratified negation, semirings, deterministic budgets, incremental re-evaluation | No: re-checked by L1 |
 | L3 | Solvers & procedures | z3, sympy, small-scope search, optimizers (MaxSAT / OMT / MIP), validated ODE (v6), `procedure` + FFI | No: they return certificates |
 | L4 | Lowering | Type and unit checking, class compilation, generators, desugaring to RawOV with source spans | No: deterministic and tested |
@@ -306,11 +306,11 @@ Releases ship in order. A release is done only when **every** exit criterion is 
 
 **Exit criteria:**
 
-1. 0 false PROVEN over every gold-first case: JEE 30, HSC 45, A-level 30 if sources arrive, agentic 20, breadth 35, adversarial 50.
+1. 0 false PROVEN over every gold-first case: JEE 30, JEE Main 2025: 45 problems drawn mechanically (15 per subject), gold from NTA's official final answer keys, A-level 30 if sources arrive, agentic 20, breadth 35, adversarial 50. (D-031: replaces HSC 45; HSC becomes a v1.1 tier, run when papers are supplied.)
 2. A capability report with the domain × tier matrix and the failure taxonomy.
 3. 0 unsound mutants accepted, including the object path.
 4. ≥ 60% of library theorems at `{kernel}` trust.
-5. Total TCB ≤ 2,000 lines.
+5. Total TCB ≤ 2,300 lines (D-030).
 6. CI green 20 runs in a row; `reproduce.sh` regenerates every table.
 
 **Non-goals:** optimisation, the readable surface, adapters.
@@ -431,7 +431,7 @@ These run through every release and appear in every report.
 
 | Program | Rules | Reported every time |
 | --- | --- | --- |
-| **Trust** | Small audited units; certificates over solver trust; mutation testing of every trace path; differential testing of the solver-side symbolic layer; deterministic budgets | Total and per-unit TCB lines · unsound mutants accepted (must be 0) · share of theorems at `{kernel}` · `--strict` pass rates |
+| **Trust** | Small audited units; "No trusted check may ever be removed or weakened to fit a cap. If a cap blocks work, report it; caps change only by a masterplan decision." (D-030); certificates over solver trust; mutation testing of every trace path; differential testing of the solver-side symbolic layer; deterministic budgets | Total and per-unit TCB lines · unsound mutants accepted (must be 0) · share of theorems at `{kernel}` · `--strict` pass rates |
 | **Evaluation** | Gold first and alone, before OV runs (the git history proves the order); gold from official keys or dual independent solutions; problem lists drawn mechanically; the ratchet (the failing set may only shrink); no gold edit without the founder's `Gold-Change-Approved-By` trailer | Per-suite cases, false PROVEN (must be 0), false REFUTED, UNKNOWN precision, failure taxonomy, gold provenance |
 | **Faithfulness** | Scenarios contain only the givens; a lint for leaked answers; a reviewer agent that never sees the gold; every invariant has a `because:`; `EXPLAIN --nl` renders for human comparison; mistranslation cases in the adversarial suite | Flags raised, flags confirmed, mistranslations caught by each layer |
 | **Performance** | Agents need tight loops; targets are tracked in an uninstrumented bench job | `ov check` p95 (rules < 300 ms, objects < 2 s); q11 < 1 s; incremental re-check < 100 ms; 10k facts < 5 s; seed variance |
@@ -482,6 +482,8 @@ Newest first. Every future change to this plan adds a row here.
 
 | ID | Date | Decision | Decided by |
 | --- | --- | --- | --- |
+| D-031 | 2026-11-23 | v1 exit criterion 1 amendment: "Replace \"HSC 45\" with \"JEE Main 2025: 45 problems drawn mechanically (15 per subject), gold from NTA's official final answer keys\". Fetch papers and keys only from official NTA domains (list them in the report). If NTA does not publish both papers and keys, stop and report instead of substituting another source. HSC becomes a v1.1 tier, run when papers are supplied." | Founder (reply to packet dd2d4fd885a8) |
+| D-030 | 2026-11-23 | Trusted-code budget: "New caps: unit A 700, raw/formula.py 450, main 1,150; total 2,300 (hard). The total stays the headline number in every report." New rule, MP §8 Trust: "No trusted check may ever be removed or weakened to fit a cap. If a cap blocks work, report it; caps change only by a masterplan decision." "Restore, first, the OVState loader's sortedness and groundness checks, and their tests (unsorted states refused again)." Then spend, in order: (1) surd-valued uniqueness certificates, Q(√d) multipliers and values; (2) π in integrands; (3) ln in the exp ring (d ln u = u'/u with u > 0 checked). Real algebraic numbers: deferred to v2 (only phys p1q10 needs them) | Founder (reply to packet dd2d4fd885a8); CTO rationale |
 | D-029 | 2026-11-23 | Trusted-code budget: the total stays a hard 2,000; per-unit caps become movable within it: unit A 500, raw/formula.py 410, main 1,090 (= 2,000). Every report gives each unit and the total. Trusted lines are spent in this order: state hash/load (C6), integer/modular arithmetic (C4), pi inside integrands (about 10 lines), then anything else | Claude (CTO); approved by the founder (2026-11-23 message) |
 | D-028 | 2026-11-23 | Claude Code works through engineering checkpoints without waiting for a go-ahead and writes a report at each one. It stops for a false PROVEN, a trusted-code cap, CI red it cannot fix, and every gold or meaning approval, which stays the founder's own act. The founder is referred to as the founder | Founder |
 | D-027 | 2026-11-23 | v1 language scope adds integers and modular arithmetic, verified closed-form ODE solutions, and polynomial for-all statements over the reals via SOS certificates. Inverse trig moves to v2; general ODE solving to v6 | Claude (CTO) |

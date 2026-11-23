@@ -39,12 +39,18 @@ hash=$(field packet-hash); title=$(field title); trailers=$(field trailers); rat
 key=$(git config user.signingkey || true)
 [ -n "$key" ] || die "no signing key configured; see docs/APPROVALS.md, steps 1-2"
 key="${key/#\~/$HOME}"
+# Sign from the private key file (passphrase asked each time), never via ssh-agent:
+# a .pub path or a key:: literal makes git sign with whatever the agent holds.
 case "$key" in
-  key::*) pub="${key#key::}" ;;
-  *) if [ -f "$key.pub" ]; then pub=$(cat "$key.pub"); else pub=$(cat "$key"); fi ;;
+  key::*|*.pub) die "user.signingkey must be the PRIVATE key's path (e.g. ~/.ssh/ov_founder_signing), not a public key; see docs/APPROVALS.md step 2";;
 esac
-case "$pub" in ssh-*|sk-ssh-*) ;; *) die "user.signingkey is not an SSH public key (or a path to one)";; esac
+[ -f "$key" ] && [ -f "$key.pub" ] || die "user.signingkey must be a private key file with its .pub next to it; see docs/APPROVALS.md step 2"
+pub=$(cat "$key.pub")
+case "$pub" in ssh-*|sk-ssh-*) ;; *) die "$key.pub is not an SSH public key";; esac
 blob=$(awk '{print $2}' <<<"$pub")
+if ssh-add -L 2>/dev/null | grep -qF "$blob"; then
+  die "this signing key is loaded in ssh-agent; remove it (ssh-add -d $key.pub) and never add it again (docs/APPROVALS.md)"
+fi
 signers=.approvers/allowed_signers
 
 if ! git show "HEAD:$signers" 2>/dev/null | grep -qF "$blob"; then

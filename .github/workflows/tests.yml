@@ -69,3 +69,12 @@ jobs:
             BASE=$(git rev-parse HEAD~1)
           fi
           PYTHONPATH=src python -m openverifiers.bench.gold_gate "$BASE" HEAD
+      # Read-only: compares .approvers/allowed_signers with the founder's GitHub
+      # signing keys (docs/APPROVALS.md). Warns until the founder confirms the key is
+      # on GitHub (repository variable FOUNDER_SIGNING_KEY_ON_GITHUB=true), then fails.
+      - name: Approval-key anchor
+        env:
+          FOUNDER_GITHUB_USER: ${{ vars.FOUNDER_GITHUB_USER || github.repository_owner }}
+          FOUNDER_SIGNING_KEY_ON_GITHUB: ${{ vars.FOUNDER_SIGNING_KEY_ON_GITHUB }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/check_signing_anchor.py

@@ -47,6 +47,12 @@ whole history by `reproduce.sh`):
 
    It refuses to run inside an agent session or a non-interactive shell.
 
+   **That refusal is a speed bump, not security.** It looks for agent and CI
+   environment variables and a terminal, and any process can fake both. The
+   security is the key's passphrase (or a hardware key's touch): no commit is
+   signed without you typing it. That holds only if the key never sits
+   unlocked in an agent (see the warning under step 2 of the key setup).
+
 ## One-time key setup (copy and paste)
 
 Do this once, in your own terminal, not in an agent session. The agent must
@@ -64,14 +70,16 @@ not create or hold this key.
    ssh-keygen -t ed25519-sk -C "openverifiers founder approvals" -f ~/.ssh/ov_founder_signing
    ```
 
-2. **Tell git to sign with it in this repository:**
+2. **Tell git to sign with it in this repository.** `user.signingkey` is the
+   **private** key's path (no `.pub`). Git then signs with `ssh-keygen` reading
+   that file, so it asks for the passphrase on every approval:
 
    ```bash
    git config gpg.format ssh
    ```
 
    ```bash
-   git config user.signingkey ~/.ssh/ov_founder_signing.pub
+   git config user.signingkey ~/.ssh/ov_founder_signing
    ```
 
    ```bash
@@ -92,15 +100,42 @@ not create or hold this key.
 
    `--only` commits just this file, so any staged packet changes stay staged.
 
+   > **Warning.** Never `ssh-add` this key, never store its passphrase in the
+   > macOS Keychain (`ssh-add --apple-use-keychain`, `UseKeychain yes`), and use
+   > it for nothing but signing approvals (not for SSH logins or pushes).
+   > With a key loaded in ssh-agent, any process running as you, an agent
+   > session included, could sign an approval without asking you. If you
+   > configured it with the `.pub` path before, re-run the `user.signingkey`
+   > command above and check that `ssh-add -l` does not list it.
+
 4. **Check it** (it should print `G founder` for your setup commit):
 
    ```bash
    git log -1 --format='%G? %GS' -- .approvers/allowed_signers
    ```
 
-5. **Optional:** add the same public key to GitHub as a *signing* key
+5. **Recommended:** add the same public key to GitHub as a *signing* key
    (Settings → SSH and GPG keys → New SSH key → Key type: Signing key). Your
-   approval commits then show as Verified.
+   approval commits then show as Verified, and CI gets an independent anchor
+   for the key (below).
+
+## The trust anchor in CI (read-only)
+
+The CI gold-gate job runs `scripts/check_signing_anchor.py`. It reads the
+public signing keys of the GitHub user from
+`https://api.github.com/users/<owner>/ssh_signing_keys` and compares them with
+`.approvers/allowed_signers`. The user is the repository owner unless the
+repository variable `FOUNDER_GITHUB_USER` names another. It never writes to
+GitHub.
+
+- **Before you confirm:** a key in `allowed_signers` that is not one of your
+  GitHub signing keys is a **warning**.
+- **After you confirm:** a mismatch **fails** the job. To confirm, set the
+  repository variable `FOUNDER_SIGNING_KEY_ON_GITHUB` to `true` (Settings →
+  Secrets and variables → Actions → Variables) once the key is on GitHub.
+
+This anchors `allowed_signers` to something an agent with only repository
+access cannot change: the keys on your GitHub account.
 
 **Who set the key.** Whoever first commits `.approvers/allowed_signers` sets
 which key is trusted. So check its history once, and after any change to it:

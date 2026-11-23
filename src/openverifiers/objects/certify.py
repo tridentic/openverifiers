@@ -135,7 +135,7 @@ def find(goal: Term, hyps: Mapping[str, Term]) -> Certificate | None:
     try:
         return _find(goal, hyps)
     except (Unsupported, sympy.PolynomialError, sympy.CoercionFailed, ValueError,
-            NotImplementedError, KeyError):
+            NotImplementedError, KeyError, _Budget):
         return None
 
 
@@ -340,6 +340,21 @@ def _posmult(g: sympy.Expr, back: Mapping[sympy.Symbol, Term],
     return (*rest, *squares)
 
 
+#: Deterministic budgets for the pseudo-division search: a goal or pool member with
+#: more terms than MAX_TERMS, or more than MAX_DIVISIONS pseudo-divisions, ends the
+#: search (the theorem stays uncertified; nothing is ever certified by giving up).
+MAX_TERMS = 200
+MAX_DIVISIONS = 150
+
+
+class _Budget(Exception):
+    """The search's work budget is spent."""
+
+
+def _big(e: sympy.Expr) -> bool:
+    return len(sympy.Add.make_args(e)) > MAX_TERMS
+
+
 def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
             fpolys: Mapping[str, sympy.Expr], back: Mapping[sympy.Symbol, Term],
             posvar: Mapping[sympy.Symbol, str] | None = None,
@@ -355,6 +370,13 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
     When stuck on t = a y + b, t is multiplied by its conjugate a y - b if that is a
     positive sum (D-030: a surd value's positive root), which joins M."""
     posvar, consts = posvar or {}, consts or set()
+    work = [0]
+
+    def pdiv(f: sympy.Expr, g: sympy.Expr, x: sympy.Symbol) -> tuple[sympy.Expr, sympy.Expr]:
+        work[0] += 1
+        if work[0] > MAX_DIVISIONS:
+            raise _Budget
+        return sympy.pdiv(f, g, x)  # type: ignore[no-any-return]
     roots = [(v, e) for n, e, _ in eqs if n.startswith("@sqrt(")
              for v in e.free_symbols]
 
@@ -381,7 +403,7 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
         for j, (g, gcf) in enumerate(pool):
             if j == i or j in used or sympy.degree(g, x) < sympy.degree(e, x):
                 continue
-            q2, r2 = sympy.pdiv(g, e, x)            # lc^d2 g = q2 e + r2
+            q2, r2 = pdiv(g, e, x)            # lc^d2 g = q2 e + r2
             lc_d2 = sympy.expand(lc ** (sympy.degree(g, x) - sympy.degree(e, x) + 1))
             rc = {n: sympy.expand(c * lc_d2) for n, c in gcf.items()}
             for n, c in cf.items():
@@ -409,6 +431,8 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
                 progress = True
     for _ in range(4 * len(eqs) + 4):
         t = red(t)
+        if _big(t) or any(_big(e) for j, (e, _) in enumerate(pool) if j not in used):
+            return None
         if t == 0:
             return _cert(mult, tuple((n, _to_term(c, back))
                                      for n, c in coeffs.items() if c != 0), sums=tuple(sums))
@@ -421,7 +445,7 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
             i, e, cf, x, (names, const) = step
             used.add(i)
             d = sympy.degree(t, x) - sympy.degree(e, x) + 1
-            q, r = sympy.pdiv(t, e, x)              # lc^d t = q e + r
+            q, r = pdiv(t, e, x)              # lc^d t = q e + r
             scale = sympy.Integer(1) / const ** d
             lc_d = sympy.expand(sympy.LC(sympy.Poly(e, x)) ** d)
             coeffs = {n: sympy.expand(c * lc_d * scale) for n, c in coeffs.items()}
@@ -444,13 +468,14 @@ def _pseudo(target0: sympy.Expr, eqs: list[tuple[str, sympy.Expr, Term]],
                               and sympy.degree(g, y) == 1 and sympy.degree(g, x) == 0), None)
                     if g is None:
                         continue
-                    q, r = sympy.pdiv(e, g[0], y)    # lc_g^d e = q g + r
+                    q, r = pdiv(e, g[0], y)    # lc_g^d e = q g + r
                     lc_d = sympy.expand(g[0].coeff(y, 1) ** sympy.degree(e, y))
                     rc = {n: sympy.expand(c * lc_d) for n, c in cf.items()}
                     for n, c in g[1].items():
                         rc[n] = sympy.expand(rc.get(n, 0) - q * c)
                     r = sympy.expand(r)
-                    if r != 0 and all(sympy.expand(r - o) != 0 for o, _ in pool):
+                    if r != 0 and not _big(r) and all(sympy.expand(r - o) != 0
+                                                      for o, _ in pool):
                         new = (r, rc)
                         break
                 if new:

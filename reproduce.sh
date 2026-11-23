@@ -38,6 +38,6 @@ echo "== faithfulness lint"
 
 echo "== gold and meaning gates over the whole history"
 PYTHONPATH=src $py -m openverifiers.bench.gold_gate "$(git rev-list --max-parents=0 HEAD | tail -1)" HEAD \
-  | tail -1 | tee "$OUT/gold_gate.txt" || true
+  | tee "$OUT/gold_gate.txt" || true     # every line: one per violation
 
 echo "repro: done; tables in $OUT/"

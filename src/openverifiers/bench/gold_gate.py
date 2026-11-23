@@ -24,13 +24,26 @@ MEANING_TRAILER below):
 2. **Gold first.** A commit that adds a benchmark's ``expected.json`` may touch
    nothing outside ``benchmarks/``, so the gold is fixed in history before OV's
    results for that case exist.
-3. **Approvals after the fact.** History cannot be rewritten, so a commit that
-   landed without its trailer can be approved later by a line in
-   ``RETRO_APPROVALS`` (``<full sha> <meaning|gold> <approval>``). The file is
-   read at the head of the checked range. Adding or removing a line needs the
-   trailer of that line's kind in the same commit, from an approver, so an
-   unapproved line is itself a violation. Gold-first violations cannot be
-   approved this way.
+3. **Signed approvals (D-032).** A trailer counts only if its commit is signed
+   (``git commit -S``, SSH) by a key listed in ``.approvers/allowed_signers``
+   under an approver role (the principal ``founder``). The file is read from the
+   parent commit, like ``APPROVERS``. Unsigned or wrongly signed approval
+   commits fail. Agents never write approval trailers; the founder runs
+   ``scripts/founder_approve.sh`` (docs/APPROVALS.md).
+   - **Setup:** the commit that creates ``.approvers/allowed_signers`` must be
+     signed by a key it lists; every later change to it is a gold change.
+   - **Ratification:** history cannot be rewritten, so a signed approval commit
+     may list earlier commits in a ``Ratifies:`` trailer. Their meaning (or
+     gold) violations are cleared when the ratifying commit carries the meaning
+     (or gold) trailer. Gold-first violations cannot be cleared.
+
+**Rules apply from the commit that introduced them** (the first commit whose
+``bench/gold_gate.py`` names the trailer): earlier history was never under the
+rule. A repository without that file is under every rule from its first commit.
+The signature rule covers every approval trailer, whenever it was written.
+
+``--staged`` is the dry run: it reports what the staged change would need
+(``needs: meaning gold``) without checking any message or signature.
 
 Exit 0 when every commit passes, 1 otherwise, with one line per violation.
 """
@@ -38,9 +51,11 @@ Exit 0 when every commit passes, 1 otherwise, with one line per violation.
 from __future__ import annotations
 
 import fnmatch
+import os
 import re
 import subprocess
 import sys
+import tempfile
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -144,33 +159,44 @@ def _changed_numbers(diff: str) -> tuple[set[int], set[int]]:
     return old, new
 
 
-def meaning_changes(repo: Path, base: str, sha: str, path: str) -> list[str]:
-    diff = _git(repo, "diff", "-U0", base, sha, "--", path)
-    old_n, new_n = _changed_numbers(diff)
+def _diff(repo: Path, base: str, sha: str, *args: str) -> str:
+    """``git diff`` from base to sha; sha "" is the staged index (the dry run).
+    Options come before ``--`` in args, paths after."""
+    i = args.index("--") if "--" in args else len(args)
+    revs = ["--cached", base] if sha == "" else [base, sha]
+    return _git(repo, "diff", *args[:i], *revs, *args[i:])
 
-    def show(rev: str) -> str:
-        r = subprocess.run(["git", "-C", str(repo), "show", f"{rev}:{path}"],
-                           capture_output=True, text=True)
-        return r.stdout if r.returncode == 0 else ""
-    return ([f"- {x}" for x in _meaning_lines(show(base), old_n)]
-            + [f"+ {x}" for x in _meaning_lines(show(sha), new_n)])
+
+def meaning_changes(repo: Path, base: str, sha: str, path: str) -> list[str]:
+    old_n, new_n = _changed_numbers(_diff(repo, base, sha, "-U0", "--", path))
+    return ([f"- {x}" for x in _meaning_lines(_show(repo, base, path) or "", old_n)]
+            + [f"+ {x}" for x in _meaning_lines(_show(repo, sha, path) or "", new_n)])
 
 
 def meaning_approved(message: str, roles: frozenset[str] = DEFAULT_APPROVERS) -> bool:
     return _trailer(message, MEANING_TRAILER, roles) is not None
 
 
-RETRO = "RETRO_APPROVALS"
+SIGNERS = ".approvers/allowed_signers"
+RATIFIES = "Ratifies"
 
 
-def read_retro(text: str | None) -> frozenset[tuple[str, str, str]]:
-    """(sha, kind, approval) lines of a RETRO_APPROVALS file; ``#`` starts a comment."""
-    out = set()
-    for ln in (text or "").splitlines():
-        parts = ln.split("#", 1)[0].split(None, 2)
-        if len(parts) == 3 and parts[1] in ("meaning", "gold"):
-            out.add((parts[0], parts[1], parts[2].strip()))
-    return frozenset(out)
+def signed_role(repo: Path, sha: str, signers: str | None,
+                roles: frozenset[str] = DEFAULT_APPROVERS) -> str | None:
+    """The approver role whose key (in the ``signers`` file text) signed ``sha``, or None."""
+    if not signers:
+        return None
+    fd, name = tempfile.mkstemp(suffix=".signers")
+    try:
+        with os.fdopen(fd, "w") as f:
+            f.write(signers)
+        out = subprocess.run(["git", "-C", str(repo), "-c", f"gpg.ssh.allowedSignersFile={name}",
+                              "log", "-1", "--format=%G?%x00%GS", sha],
+                             capture_output=True, text=True).stdout.strip()
+    finally:
+        os.unlink(name)
+    status, _, who = out.partition("\0")
+    return who if status == "G" and who in roles and not NOT_HUMAN.search(who) else None
 
 
 def _show(repo: Path, rev: str, path: str) -> str | None:
@@ -189,76 +215,156 @@ def is_library(repo: Path, base: str, sha: str, path: str) -> bool:
                for t in (_show(repo, base, path), _show(repo, sha, path)))
 
 
-def check_commit(repo: Path, sha: str) -> list[Violation]:
-    message = _git(repo, "log", "-1", "--format=%B", sha)
-    parents = _git(repo, "log", "-1", "--format=%P", sha).split()
-    base = parents[0] if parents else _git(repo, "hash-object", "-t", "tree", "/dev/null").strip()
+@dataclass
+class Changes:
+    gold: list[str]           # gold changed or deleted (needs the gold trailer)
+    meaning: list[str]        # meaning-carrying lines changed (needs the meaning trailer)
+    order: list[str]          # new gold committed together with other files
+    setup: bool               # creates .approvers/allowed_signers
+
+
+def changes(repo: Path, base: str, sha: str) -> Changes:
+    """What a commit (or, for sha "", the staged index) changes, against base."""
     status = [line.split("\t") for line in
-              _git(repo, "diff", "--no-renames", "--name-status", base, sha).splitlines()]
-    out: list[Violation] = []
-    changed: list[str] = []
-    retro: set[str] = set()
-    for st, path in ((s[0], s[-1]) for s in status):
-        if path == RETRO:
-            delta = read_retro(_show(repo, base, path)) ^ read_retro(_show(repo, sha, path))
-            retro |= {k for _, k, _ in delta}
-        elif path == "APPROVERS":
+              _diff(repo, base, sha, "--no-renames", "--name-status").splitlines()]
+    pairs = [(s[0], s[-1]) for s in status]
+    gold: list[str] = []
+    setup = False
+    for st, path in pairs:
+        if path == "APPROVERS":
             if read_approvers(_show(repo, base, path)) != read_approvers(_show(repo, sha, path)):
-                changed.append("APPROVERS (who may approve)")
+                gold.append("APPROVERS (who may approve)")
+        elif path == SIGNERS:
+            setup = _show(repo, base, path) is None
+            if not setup:
+                gold.append(f"{SIGNERS} (approval keys)")
         elif _match(path, GOLD_FILES) and st != "A":
-            changed.append(f"{path} ({'deleted' if st == 'D' else 'modified'})")
+            gold.append(f"{path} ({'deleted' if st == 'D' else 'modified'})")
         elif _match(path, GOLD_LINES) and st != "A":
-            diff = _git(repo, "diff", "-U0", base, sha, "--", path)
-            removed = [ln[1:].strip() for ln in diff.splitlines()
-                       if ln.startswith("-") and not ln.startswith("---")
-                       and GOLD_LINE.match(ln[1:])]
-            changed += [f"{path}: {r!r}" for r in removed]
-    roles = read_approvers(_show(repo, base, "APPROVERS"))
-    if "gold" in retro:
-        changed.append(f"{RETRO} (gold approvals)")
-    if changed and approved_by(message, roles) is None:
-        out.append(Violation(sha, f"changes gold without a '{TRAILER}: <approver>' trailer "
-                             f"(approvers: {', '.join(sorted(roles))}): " + "; ".join(changed),
-                             "gold"))
-    if "meaning" in retro and not meaning_approved(message, roles):
-        out.append(Violation(sha, f"changes {RETRO} (meaning approvals) without "
-                             f"'{MEANING_TRAILER}: <approver>'", "meaning"))
-    meaning = [f"{path}: {x}" for _, path in ((s[0], s[-1]) for s in status)
-               if is_library(repo, base, sha, path)
+            diff = _diff(repo, base, sha, "-U0", "--", path)
+            gold += [f"{path}: {ln[1:].strip()!r}" for ln in diff.splitlines()
+                     if ln.startswith("-") and not ln.startswith("---")
+                     and GOLD_LINE.match(ln[1:])]
+    meaning = [f"{path}: {x}" for _, path in pairs if is_library(repo, base, sha, path)
                for x in meaning_changes(repo, base, sha, path)]
-    if meaning and not meaning_approved(message, roles):
+    order = []
+    if any(st == "A" and fnmatch.fnmatch(p, "benchmarks/**/expected.json") for st, p in pairs):
+        order = [p for _, p in pairs if not p.startswith("benchmarks/")]
+    return Changes(gold, meaning, order, setup)
+
+
+GATE_FILE = "src/openverifiers/bench/gold_gate.py"
+
+
+def rules_since(repo: Path, head: str = "HEAD") -> dict[str, str | None]:
+    """For each rule kind, the commit that introduced it (None: in force from the start)."""
+    out: dict[str, str | None] = {}
+    for kind, word in (("gold", TRAILER), ("meaning", MEANING_TRAILER)):
+        hits = _git(repo, "log", "--reverse", "--format=%H", f"-S{word}", head, "--",
+                    GATE_FILE).split()
+        out[kind] = hits[0] if hits else None
+    out["order"] = out["gold"]
+    return out
+
+
+def _in_force(repo: Path, since: str | None, sha: str) -> bool:
+    if since is None:
+        return True
+    r = subprocess.run(["git", "-C", str(repo), "merge-base", "--is-ancestor", since, sha],
+                       capture_output=True)
+    return r.returncode == 0 and since != sha
+
+
+def _base(repo: Path, sha: str) -> str:
+    parents = _git(repo, "log", "-1", "--format=%P", sha).split()
+    return parents[0] if parents else _git(repo, "hash-object", "-t", "tree", "/dev/null").strip()
+
+
+def check_commit(repo: Path, sha: str,
+                 since: dict[str, str | None] | None = None) -> list[Violation]:
+    message = _git(repo, "log", "-1", "--format=%B", sha)
+    base = _base(repo, sha)
+    ch = changes(repo, base, sha)
+    since = since if since is not None else rules_since(repo)
+    if not _in_force(repo, since["gold"], sha):
+        ch.gold, ch.order = [], []
+    if not _in_force(repo, since["meaning"], sha):
+        ch.meaning = []
+    has_trailer = bool(re.search(rf"^({TRAILER}|{MEANING_TRAILER}):", message, re.M))
+    roles = read_approvers(_show(repo, base, "APPROVERS"))
+    out: list[Violation] = []
+    gold_t, meaning_t = approved_by(message, roles), meaning_approved(message, roles)
+    signer = (signed_role(repo, sha, _show(repo, base, SIGNERS), roles)
+              if gold_t or meaning_t else None)
+    if has_trailer and signer is None and not (ch.gold or ch.meaning):
+        out.append(Violation(sha, "carries an approval trailer but is not signed by a key in "
+                             f"{SIGNERS} listed as an approver", "meaning"))
+    unsigned = (f" (the trailer is there, but the commit is not signed by a key in {SIGNERS} "
+                f"listed as an approver)")
+    if ch.setup and signed_role(repo, sha, _show(repo, sha, SIGNERS), roles) is None:
+        out.append(Violation(sha, f"creates {SIGNERS} without being signed by a key it lists "
+                             f"as an approver", "gold"))
+    if ch.gold and not (gold_t and signer):
+        out.append(Violation(sha, f"changes gold without a '{TRAILER}: <approver>' trailer "
+                             f"(approvers: {', '.join(sorted(roles))})"
+                             + (unsigned if gold_t else "") + ": " + "; ".join(ch.gold), "gold"))
+    if ch.meaning and not (meaning_t and signer):
         out.append(Violation(sha, f"changes meaning-carrying lines without "
                              f"'{MEANING_TRAILER}: <approver>' (approvers: "
-                             f"{', '.join(sorted(roles))}): " + "; ".join(meaning),
-                             "meaning"))
-    new_gold = [p for s, p in ((s[0], s[-1]) for s in status)
-                if s == "A" and fnmatch.fnmatch(p, "benchmarks/**/expected.json")]
-    if new_gold:
-        others = [p for _, p in ((s[0], s[-1]) for s in status)
-                  if not p.startswith("benchmarks/")]
-        if others:
-            out.append(Violation(sha, "adds benchmark gold together with files outside "
-                                 "benchmarks/ (gold must be committed first, alone): "
-                                 + ", ".join(others)))
+                             f"{', '.join(sorted(roles))})" + (unsigned if meaning_t else "")
+                             + ": " + "; ".join(ch.meaning), "meaning"))
+    if ch.order:
+        out.append(Violation(sha, "adds benchmark gold together with files outside "
+                             "benchmarks/ (gold must be committed first, alone): "
+                             + ", ".join(ch.order)))
+    return out
+
+
+def ratified(repo: Path, head: str) -> set[tuple[str, str]]:
+    """(commit prefix, kind) pairs ratified by signed approval commits reachable from head."""
+    out: set[tuple[str, str]] = set()
+    for sha in _git(repo, "log", "--format=%H", f"--grep=^{RATIFIES}:", head).split():
+        message = _git(repo, "log", "-1", "--format=%B", sha)
+        base = _base(repo, sha)
+        roles = read_approvers(_show(repo, base, "APPROVERS"))
+        if signed_role(repo, sha, _show(repo, base, SIGNERS), roles) is None:
+            continue
+        kinds = ({"gold"} if approved_by(message, roles) else set()) | (
+            {"meaning"} if meaning_approved(message, roles) else set())
+        for line in message.splitlines():
+            if line.startswith(f"{RATIFIES}:"):
+                out |= {(t, k) for t in line.split(":", 1)[1].split()
+                        if re.fullmatch(r"[0-9a-f]{7,40}", t) for k in kinds}
     return out
 
 
 def check_range(repo: Path, base: str, head: str) -> list[Violation]:
-    """Every violation in base..head, less those approved in RETRO_APPROVALS at head
-    (an approval whose first word is not an approver role does not count)."""
+    """Every violation in base..head, less those a signed approval commit ratified."""
     shas = _git(repo, "rev-list", "--reverse", f"{base}..{head}").split()
-    head_sha = _git(repo, "rev-parse", head).strip()
-    roles = read_approvers(_show(repo, head_sha, "APPROVERS"))
-    retro = {(s, k) for s, k, who in read_retro(_show(repo, head_sha, RETRO))
-             if who.split()[0] in roles and not NOT_HUMAN.search(who.split("(")[0])}
-    return [v for sha in shas for v in check_commit(repo, sha)
-            if (sha, v.kind) not in retro or v.kind == "order"]
+    rat, since = ratified(repo, head), rules_since(repo, head)
+    return [v for sha in shas for v in check_commit(repo, sha, since)
+            if v.kind == "order" or not any(sha.startswith(p) and k == v.kind for p, k in rat)]
+
+
+def dry_run(repo: Path) -> list[str]:
+    """What the staged change would need, as report lines; the last is ``needs: ...``."""
+    ch = changes(repo, "HEAD", "")
+    lines = [f"gold: {x}" for x in ch.gold] + [f"meaning: {x}" for x in ch.meaning]
+    lines += [f"gold first: new gold with {p}" for p in ch.order]
+    needs = [*(["meaning"] if ch.meaning else []), *(["gold"] if ch.gold else [])]
+    last = f"needs: {' '.join(needs) or 'nothing'}"
+    return [*lines, last + (" (BLOCKED: gold must be committed first, alone)" if ch.order else "")]
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
+    if args == ["--staged"]:
+        lines = dry_run(Path.cwd())
+        print("\n".join(f"gold gate (dry run): {x}" for x in lines))
+        return 1 if "BLOCKED" in lines[-1] else 0
     if len(args) != 2:
-        print("usage: python -m openverifiers.bench.gold_gate BASE HEAD", file=sys.stderr)
+        print("usage: python -m openverifiers.bench.gold_gate BASE HEAD | --staged",
+              file=sys.stderr)
         return 2
     found = check_range(Path.cwd(), args[0], args[1])
     for v in found:

@@ -1,0 +1,16 @@
+# Policy: a large refund needs a manager's approval; approvals may not be recorded yet (open world).
+package bench.approval_open_world
+type Role
+type Request { amount: Money }
+predicate approved(r: Request, by: Role) world open
+predicate allowed(r: Request) world open
+entity manager: Role
+axiom approved_refund(r: Request): r.amount > 500 USD, approved(r, manager) -> allowed(r)
+
+test approval_open_world {
+  scenario approval_open_world_s uses bench.approval_open_world {
+    entity r9: Request
+    fact r9.amount = 900 USD
+    query PROVE allowed(r9)
+  }
+}

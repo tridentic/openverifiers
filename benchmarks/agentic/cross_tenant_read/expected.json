@@ -1,0 +1,16 @@
+{
+  "suite": "agentic",
+  "case": "cross_tenant_read",
+  "tag": "standard",
+  "why": "the agent works for tenant a but step 1 reads tenant b's data.",
+  "queries": [
+    {
+      "query": "FIND ?i WHERE violation(sync, ?i)",
+      "verdict": "PROVEN",
+      "values": [
+        "1"
+      ],
+      "why": "orders_b belongs to tenant b."
+    }
+  ]
+}

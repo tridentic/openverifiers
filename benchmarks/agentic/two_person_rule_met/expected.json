@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "two_person_rule_met",
+  "tag": "standard",
+  "why": "two different approvers: deployable.",
+  "queries": [
+    {
+      "query": "PROVE deployable(c2)",
+      "verdict": "PROVEN",
+      "why": "ada and bo are different and both approved."
+    }
+  ]
+}

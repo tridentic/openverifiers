@@ -1,0 +1,21 @@
+{
+  "suite": "agentic",
+  "case": "read_only_agent_writes",
+  "tag": "standard",
+  "why": "the agent's role is read-only; step 2 writes.",
+  "queries": [
+    {
+      "query": "PROVE valid(audit)",
+      "verdict": "REFUTED",
+      "why": "step 2 writes."
+    },
+    {
+      "query": "FIND ?i WHERE violation(audit, ?i)",
+      "verdict": "PROVEN",
+      "values": [
+        "2"
+      ],
+      "why": "only the write."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+# Policy: a production change needs approvals from two different people.
+package bench.two_person_rule_met
+type Change
+type Person
+predicate approved(c: Change, by: Person) world closed
+predicate deployable(c: Change) world closed
+axiom two_person(c: Change, a: Person, b: Person): approved(c, a), approved(c, b), a != b -> deployable(c)
+
+test two_person_rule_met {
+  scenario two_person_rule_met_s uses bench.two_person_rule_met {
+    entity c2: Change
+    entity ada, bo: Person
+    fact approved(c2, ada)
+    fact approved(c2, bo)
+    query PROVE deployable(c2)
+  }
+}

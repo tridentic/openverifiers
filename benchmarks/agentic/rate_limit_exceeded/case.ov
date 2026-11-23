@@ -1,0 +1,28 @@
+# Policy: at most 3 calls to the paid API per plan (calls are numbered).
+package bench.rate_limit_exceeded
+type Plan
+type Action
+type Thing
+predicate plan(p: Plan) world closed
+predicate step(p: Plan, i: Number, a: Action, x: Thing) world closed
+predicate violation(p: Plan, i: Number) world closed
+predicate violates(p: Plan) world closed
+predicate valid(p: Plan) world closed
+axiom any_violation(p: Plan, i: Number): violation(p, i) -> violates(p)
+axiom valid_plan(p: Plan): plan(p), not violates(p) -> valid(p)
+predicate call_number(p: Plan, i: Number, k: Number) world closed
+entity call_api: Action
+axiom over_limit(p: Plan, i: Number, k: Number): call_number(p, i, k), k > 3 -> violation(p, i)
+
+test rate_limit_exceeded {
+  scenario rate_limit_exceeded_s uses bench.rate_limit_exceeded {
+    entity batch: Plan
+    entity api: Thing
+    fact plan(batch)
+    fact call_number(batch, 1, 1)
+    fact call_number(batch, 2, 2)
+    fact call_number(batch, 4, 3)
+    fact call_number(batch, 5, 4)
+    query FIND ?i WHERE violation(batch, ?i)
+  }
+}

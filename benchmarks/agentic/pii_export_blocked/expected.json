@@ -1,0 +1,21 @@
+{
+  "suite": "agentic",
+  "case": "pii_export_blocked",
+  "tag": "standard",
+  "why": "step 2 exports the customers table, which holds personal data, to an external destination.",
+  "queries": [
+    {
+      "query": "PROVE valid(report)",
+      "verdict": "REFUTED",
+      "why": "step 2 violates."
+    },
+    {
+      "query": "FIND ?i WHERE violation(report, ?i)",
+      "verdict": "PROVEN",
+      "values": [
+        "2"
+      ],
+      "why": "only step 2 exports personal data; step 3's metrics hold none."
+    }
+  ]
+}

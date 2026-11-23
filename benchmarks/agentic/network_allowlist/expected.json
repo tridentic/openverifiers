@@ -1,0 +1,16 @@
+{
+  "suite": "agentic",
+  "case": "network_allowlist",
+  "tag": "standard",
+  "why": "step 1 fetches an allowed host; step 2 a host not on the allowlist.",
+  "queries": [
+    {
+      "query": "FIND ?i WHERE violation(sync, ?i)",
+      "verdict": "PROVEN",
+      "values": [
+        "2"
+      ],
+      "why": "paste_site is not allowlisted."
+    }
+  ]
+}

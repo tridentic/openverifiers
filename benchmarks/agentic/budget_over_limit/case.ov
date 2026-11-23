@@ -1,0 +1,14 @@
+# Policy: an agent task may not spend more than its budget.
+package bench.budget_over_limit
+type Task { spend: Money, budget: Money }
+predicate within_budget(t: Task) world closed
+axiom ok_budget(t: Task): t.spend <= t.budget -> within_budget(t)
+
+test budget_over_limit {
+  scenario budget_over_limit_s uses bench.budget_over_limit {
+    entity t1: Task
+    fact t1.spend = 1200 USD
+    fact t1.budget = 1000 USD
+    query PROVE within_budget(t1)
+  }
+}

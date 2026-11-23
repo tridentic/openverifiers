@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "approval_open_world",
+  "tag": "needs_assumption",
+  "why": "approvals are open-world: nothing says the manager approved, nor that they did not, so it is UNKNOWN and the missing fact is the manager's approval.",
+  "queries": [
+    {
+      "query": "PROVE allowed(r9)",
+      "verdict": "UNKNOWN",
+      "why": "the approval is not recorded either way."
+    }
+  ]
+}

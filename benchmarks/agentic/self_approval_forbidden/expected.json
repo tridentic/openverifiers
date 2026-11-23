@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "self_approval_forbidden",
+  "tag": "standard",
+  "why": "the requester approved their own change; self-approval does not count, so it is not deployable.",
+  "queries": [
+    {
+      "query": "PROVE deployable(c3)",
+      "verdict": "REFUTED",
+      "why": "the only approver is the author."
+    }
+  ]
+}

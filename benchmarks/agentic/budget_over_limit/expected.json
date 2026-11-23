@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "budget_over_limit",
+  "tag": "standard",
+  "why": "the task's spend (1200 USD) exceeds its budget (1000 USD), so it is not within budget.",
+  "queries": [
+    {
+      "query": "PROVE within_budget(t1)",
+      "verdict": "REFUTED",
+      "why": "1200 > 1000; closed world."
+    }
+  ]
+}

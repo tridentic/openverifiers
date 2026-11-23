@@ -1,0 +1,16 @@
+{
+  "suite": "agentic",
+  "case": "secret_in_log",
+  "tag": "standard",
+  "why": "step 2 writes the API key to the log.",
+  "queries": [
+    {
+      "query": "FIND ?i WHERE violation(debug, ?i)",
+      "verdict": "PROVEN",
+      "values": [
+        "2"
+      ],
+      "why": "only step 2 logs a secret."
+    }
+  ]
+}

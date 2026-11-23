@@ -1,0 +1,20 @@
+# Policy: if a customer's refunds in a day total more than 500 USD, a manager must approve.
+package bench.refund_total_needs_approval
+type Customer { refunded_today: Money }
+type Role
+predicate approved(c: Customer, by: Role) world closed
+predicate needs_review(c: Customer) world closed
+predicate cleared(c: Customer) world closed
+entity manager: Role
+axiom big_total(c: Customer): c.refunded_today > 500 USD -> needs_review(c)
+axiom small_total(c: Customer): c.refunded_today <= 500 USD -> cleared(c)
+axiom reviewed(c: Customer): needs_review(c), approved(c, manager) -> cleared(c)
+
+test refund_total_needs_approval {
+  scenario refund_total_needs_approval_s uses bench.refund_total_needs_approval {
+    entity kim: Customer
+    fact kim.refunded_today = 650 USD
+    query PROVE needs_review(kim)
+    query PROVE cleared(kim)
+  }
+}

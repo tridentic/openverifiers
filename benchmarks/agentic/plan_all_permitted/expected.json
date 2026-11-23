@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "plan_all_permitted",
+  "tag": "standard",
+  "why": "every step reads or writes inside the workspace: no violation, the plan is valid.",
+  "queries": [
+    {
+      "query": "PROVE valid(build)",
+      "verdict": "PROVEN",
+      "why": "both writes are inside the workspace."
+    }
+  ]
+}

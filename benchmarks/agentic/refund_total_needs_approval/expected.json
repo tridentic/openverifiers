@@ -1,0 +1,18 @@
+{
+  "suite": "agentic",
+  "case": "refund_total_needs_approval",
+  "tag": "standard",
+  "why": "each refund is small, but the day's total (650 USD) is over 500 USD and nobody approved.",
+  "queries": [
+    {
+      "query": "PROVE needs_review(kim)",
+      "verdict": "PROVEN",
+      "why": "650 > 500."
+    },
+    {
+      "query": "PROVE cleared(kim)",
+      "verdict": "REFUTED",
+      "why": "no approval; closed world."
+    }
+  ]
+}

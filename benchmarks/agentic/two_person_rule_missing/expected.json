@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "two_person_rule_missing",
+  "tag": "standard",
+  "why": "one approval only: the two-person rule needs two different approvers.",
+  "queries": [
+    {
+      "query": "PROVE deployable(c1)",
+      "verdict": "REFUTED",
+      "why": "a = b is excluded; one approver only."
+    }
+  ]
+}

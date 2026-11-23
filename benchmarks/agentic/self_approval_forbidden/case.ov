@@ -1,0 +1,18 @@
+# Policy: a change needs an approval by someone other than its author.
+package bench.self_approval_forbidden
+type Change
+type Person
+predicate author(c: Change, p: Person) world closed
+predicate approved(c: Change, by: Person) world closed
+predicate deployable(c: Change) world closed
+axiom independent(c: Change, a: Person, b: Person): author(c, a), approved(c, b), a != b -> deployable(c)
+
+test self_approval_forbidden {
+  scenario self_approval_forbidden_s uses bench.self_approval_forbidden {
+    entity c3: Change
+    entity dev: Person
+    fact author(c3, dev)
+    fact approved(c3, dev)
+    query PROVE deployable(c3)
+  }
+}

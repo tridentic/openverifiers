@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "change_needs_ticket",
+  "tag": "standard",
+  "why": "the change has no ticket; with tickets closed-world, it is not allowed.",
+  "queries": [
+    {
+      "query": "PROVE allowed(resize)",
+      "verdict": "REFUTED",
+      "why": "no ticket; closed world."
+    }
+  ]
+}

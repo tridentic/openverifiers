@@ -1,0 +1,21 @@
+{
+  "suite": "agentic",
+  "case": "delete_before_backup",
+  "tag": "standard",
+  "why": "the delete at step 1 comes before the backup at step 2.",
+  "queries": [
+    {
+      "query": "PROVE valid(cleanup)",
+      "verdict": "REFUTED",
+      "why": "the backup comes after."
+    },
+    {
+      "query": "FIND ?i WHERE violation(cleanup, ?i)",
+      "verdict": "PROVEN",
+      "values": [
+        "1"
+      ],
+      "why": "the delete at step 1."
+    }
+  ]
+}

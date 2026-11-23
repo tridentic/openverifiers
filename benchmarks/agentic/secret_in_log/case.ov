@@ -1,0 +1,28 @@
+# Policy: never write a secret to a log.
+package bench.secret_in_log
+type Plan
+type Action
+type Thing
+predicate plan(p: Plan) world closed
+predicate step(p: Plan, i: Number, a: Action, x: Thing) world closed
+predicate violation(p: Plan, i: Number) world closed
+predicate violates(p: Plan) world closed
+predicate valid(p: Plan) world closed
+axiom any_violation(p: Plan, i: Number): violation(p, i) -> violates(p)
+axiom valid_plan(p: Plan): plan(p), not violates(p) -> valid(p)
+predicate secret(x: Thing) world closed
+entity log_write, use: Action
+axiom leak(p: Plan, i: Number, x: Thing): step(p, i, log_write, x), secret(x) -> violation(p, i)
+
+test secret_in_log {
+  scenario secret_in_log_s uses bench.secret_in_log {
+    entity debug: Plan
+    entity api_key, status: Thing
+    fact plan(debug)
+    fact secret(api_key)
+    fact step(debug, 1, use, api_key)
+    fact step(debug, 2, log_write, api_key)
+    fact step(debug, 3, log_write, status)
+    query FIND ?i WHERE violation(debug, ?i)
+  }
+}

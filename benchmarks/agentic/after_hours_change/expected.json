@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "after_hours_change",
+  "tag": "standard",
+  "why": "the change is at hour 23, outside 9..18, and needs on-call approval, which is missing.",
+  "queries": [
+    {
+      "query": "PROVE allowed(hotfix)",
+      "verdict": "REFUTED",
+      "why": "out of hours, no approval."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# Policy: an infrastructure change needs a ticket.
+package bench.change_needs_ticket
+type Change
+type Ticket
+predicate has_ticket(c: Change, t: Ticket) world closed
+predicate allowed(c: Change) world closed
+axiom ticketed(c: Change, t: Ticket): has_ticket(c, t) -> allowed(c)
+
+test change_needs_ticket {
+  scenario change_needs_ticket_s uses bench.change_needs_ticket {
+    entity resize: Change
+    query PROVE allowed(resize)
+  }
+}

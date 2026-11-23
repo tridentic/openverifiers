@@ -1,0 +1,19 @@
+# Policy: production changes outside 9:00-18:00 need the on-call engineer's approval.
+package bench.after_hours_change
+type Change { hour: Number }
+type Role
+predicate approved(c: Change, by: Role) world closed
+predicate in_hours(c: Change) world closed
+predicate allowed(c: Change) world closed
+entity on_call: Role
+axiom working_hours(c: Change): c.hour >= 9, c.hour <= 18 -> in_hours(c)
+axiom in_hours_ok(c: Change): in_hours(c) -> allowed(c)
+axiom on_call_ok(c: Change): not in_hours(c), approved(c, on_call) -> allowed(c)
+
+test after_hours_change {
+  scenario after_hours_change_s uses bench.after_hours_change {
+    entity hotfix: Change
+    fact hotfix.hour = 23
+    query PROVE allowed(hotfix)
+  }
+}

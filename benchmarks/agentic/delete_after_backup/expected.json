@@ -1,0 +1,13 @@
+{
+  "suite": "agentic",
+  "case": "delete_after_backup",
+  "tag": "standard",
+  "why": "the table is backed up at step 1 before the delete at step 2.",
+  "queries": [
+    {
+      "query": "PROVE valid(cleanup)",
+      "verdict": "PROVEN",
+      "why": "the backup comes first."
+    }
+  ]
+}

@@ -1369,7 +1369,6 @@ def gen_cli() -> str:
     return "\n".join(out)
 
 
-ERRDIR = ROOT / "docs" / "masterbook" / "errors"
 
 
 def lang_doc_codes() -> dict[str, str]:
@@ -1392,17 +1391,59 @@ def source_codes() -> dict[str, list[str]]:
     return out
 
 
+MECH = ("package m @0.1\ntype Body { mass: Mass, accel: Accel }\npredicate net_force(b: Body, F: Force) world open\n"
+        "axiom newton2(b: Body, F: Force): net_force(b, F) -> F = b.mass * b.accel\n")
+POINT = "type Point { x: Real, y: Real }\n"
+#: Files that trigger each code, after the snippets in tests/v1/test_lang.py,
+#: test_objects.py, test_diagnostics.py and test_lemma_scope.py. Written to
+#: build/work/errors/ at build time (never committed: several declare packages,
+#: and committed package files fall under the meaning gate).
+ERROR_FIXTURES: dict[str, dict[str, str]] = {
+    "E101": {"E101.ov": "scenario s { fact p(a) b }\n"},
+    "E102": {"E102.ov": "scenario s { fact p(a) $ }\n"},
+    "E103": {"E103.ov": "scenario s { fact p(3 furlong) }\n"},
+    "E201": {"E201.ov": "scenario s { fact frob(a) }\n"},
+    "E202": {"E202.ov": "type T\nscenario s { entity a: T  entity a: T }\n"},
+    "E203": {"E203.ov": "import nowhere.at_all\n"},
+    "E204": {"E204.ov": MECH + "test x { scenario s uses m { entity c: Body  fact c.colour = 2 } }\n"},
+    "E205": {"E205.ov": MECH + "test x { scenario s uses m { entity c: Body  fact net_force(c) } }\n"},
+    "E206": {"E206.ov": "scenario s {\n  tolerance 2\n}\n"},
+    "E207": {"E207.ov": POINT + "fact type T { property a: Real  derived b: Real = a * 2 }\n"},
+    "E208": {"E208.ov": "# strict: run with --strict\npackage p\npredicate f(s: Surface) world open\n"},
+    "E301": {"E301.ov": MECH + "test x { scenario s uses m { entity c: Body  fact c.mass = 2 kg + 1 m } }\n"},
+    "E302": {"E302.ov": MECH + "test x { scenario s uses m { entity c: Body  fact net_force(c, c) } }\n"},
+    "E303": {"E303.ov": MECH + "test x { scenario s uses m { entity c: Body  fact c < c } }\n"},
+    "E304": {"E304.ov": "fact type Gas {\n  property p: Pressure\n  property t: Temperature\n  invariant pos: p > 0 t > 0\n}\n"},
+    "E401": {"E401.ov": "package p\npredicate q(x: Number) world open\naxiom a(x: Number): q(x) -> x = 1\n"},
+    "E402": {"E402.ov": "package p\ntype B { v: Number }\npredicate q(b: B) world open\naxiom a(b: B): q(b) -> b.v ^ 2 = 4\n"},
+    "E403": {"E403.ov": "package p\npredicate q(x: Number) world closed\npredicate r(x: Number) world open\naxiom a(x: Number): not q(x) -> r(x)\n"},
+    "E404": {"E404.ov": "package p\npredicate q(x: Number) -> {Number} world open\ngenerator g(x: Number) yields Number from q(x)\n"},
+    "E405": {"E405.ov": POINT + "fact type T { property v: Set<Point> invariant a: exists w in cycles(v): angle(w[0], w[1], w[2]) = 37 deg }\n"},
+    "E406": {"E406.ov": "fact type A extends B { }\nfact type B extends A { }\n"},
+    "E407": {"lemmapkg.ov": "package lemmapkg\nfact type Base {\n  property a: Real\n  property b: Real\n  invariant shift: a = b + 1\n  lemma gap: a - b = 1\n}\n",
+             "E407.ov": "import lemmapkg\nscenario s uses lemmapkg {\n  query COUNTEREXAMPLE Base.gap\n}\n"},
+    "W201": {"W201.ov": "package p\npredicate f(s: Surface) world open\n"},
+    "W202": {"W202.ov": POINT + "fact type Q { property vertices: Set<Point>  invariant four: count(vertices) = 4 }\n"
+             "fact type S extends Q {\n  invariant shape: exists v in cycles(vertices): all i: dist(v[i], v[i+1]) = dist(v[0], v[1]) > 0\n"
+             "  theorem t: exists v in cycles(vertices): dist(v[0], v[2]) = dist(v[1], v[3])\n}\n"},
+}
+
+
 def gen_errors() -> str:
     docs, src = lang_doc_codes(), source_codes()
-    codes = sorted(set(docs) | set(src))
+    codes = sorted(set(docs) | set(src) | set(ERROR_FIXTURES))
+    d = B.WORK / "errors"
+    d.mkdir(parents=True, exist_ok=True)
     blocks = []
     rows = []
     for c in codes:
-        fx = ERRDIR / f"{c}.ov"
         trig = "-"
-        if fx.exists():
-            strict = "--strict" if "strict" in fx.read_text().splitlines()[0] else ""
-            cmd = f"ov run {strict} {B.rel(fx)}".replace("  ", " ")
+        if c in ERROR_FIXTURES:
+            for fn, text in ERROR_FIXTURES[c].items():
+                (d / fn).write_text(text)
+            fx = d / f"{c}.ov"
+            strict = "--strict " if "strict" in fx.read_text().splitlines()[0] else ""
+            cmd = f"ov run {strict}{B.rel(fx)}"
             res = B.do_run(cmd + " @@ exit=" + ("0" if c.startswith("W") else "1"), ARGS)
             if f"[{c}]" not in res["out"]:
                 B.fail(f"error fixture {fx.name} did not trigger {c}:\n{res['out']}")
@@ -1430,6 +1471,51 @@ def gen_okql_ebnf() -> str:
     lines = [f"{n} ::= {ebnf(parse_expansion(rules[n]))} ;" for n in
              ("query", "okql", "qvars", "qvar_t", "change", "expect", "conj", "fact_lit", "lit", "cmp")]
     return f"#listing({B.ts('generated from grammar.lark: the OKQL rules')}, \"ebnf\", {B.ts(chr(10).join(lines))})"
+
+
+def md_section(path: str, start: str, stop: str = "## ") -> str:
+    lines = (ROOT / path).read_text().splitlines()
+    i = next(k for k, ln in enumerate(lines) if ln.startswith(start))
+    j = next((k for k in range(i + 1, len(lines)) if lines[k].startswith(stop)), len(lines))
+    return "\n".join(lines[i + 1: j])
+
+
+def gen_reports() -> str:
+    rows = []
+    for p in sorted((ROOT / "reports").glob("*.md")):
+        t = p.read_text()
+        title = next((ln.lstrip("# ") for ln in t.splitlines() if ln.startswith("#")), "")
+        dev = re.search(r"^## .*[Dd]eviation", t, re.M) is not None
+        sh = re.search(r"^## .*[Ss]hortcut", t, re.M) is not None
+        h = B.git("log", "--diff-filter=A", "--format=%h", "--", str(p.relative_to(ROOT))).split()
+        rows.append([code(p.name), tx(title[:90]), code(h[-1] if h else "?"),
+                     tx(("deviations " if dev else "") + ("shortcuts" if sh else ""))])
+    return tbl(["report", "title", "added in", "has sections"], rows, "(1.7fr, 3fr, 0.6fr, 1fr)")
+
+
+def gen_deviations() -> str:
+    out = []
+    for path in ("reports/V1_EXIT_C7_2026-11-23.md",):
+        out.append(f"#strong[{tx(path + ': Deviations')}]\n")
+        out.append(md_to_typst(md_section(path, "## 5. Deviations")))
+        out.append(f"\n#strong[{tx(path + ': Shortcuts found')}]\n")
+        out.append(md_to_typst(md_section(path, "## 6. Shortcuts found")))
+    return "\n".join(out)
+
+
+def gen_risks() -> str:
+    return md_to_typst(md_section("MASTERPLAN.md", "## 10. Risks", "## 11."))
+
+
+def gen_jee_blockers() -> str:
+    rows = []
+    for r in exam_rows(False):
+        if r["outcome"] in ("solved",):
+            continue
+        rows.append([code(r["id"].removeprefix("jee2025-")), tx(r["outcome"]), tx(r.get("category", "")),
+                     tx(r.get("note", "")[:400])])
+    return tbl(["problem", "outcome", "category", "what blocks it (the exam report's note, verbatim, cut at 400 characters)"],
+               rows, "(0.8fr, 0.8fr, 0.8fr, 5fr)")
 
 
 def gen_jee_table() -> str:
@@ -1772,6 +1858,8 @@ GENDEFS = {
     "state_excerpt": gen_state_excerpt, "labels_trace": gen_labels_trace,
     "labels_verdicts": gen_labels_verdicts, "records_excerpt": gen_records_excerpt,
     "blueprint": gen_blueprint, "sdk": gen_sdk, "mcp_rawov": gen_mcp_rawov,
+    "reports": gen_reports, "deviations": gen_deviations, "risks": gen_risks,
+    "jee_blockers": gen_jee_blockers,
 }
 LOWERDEFS = {
     "class": low_class, "newton": low_newton, "transformation": low_transformation,

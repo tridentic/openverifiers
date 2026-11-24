@@ -150,7 +150,7 @@ For a ground query $q$ and context $C$ (by default $C = A$, every declared assum
 
 {{fig:verdicts}}
 
-INCONSISTENT is global: any satisfied nogood makes _every_ query INCONSISTENT, even an unrelated one {{src:KNOWN_LIMITATIONS.md:149-151}}. Confidence and source metadata never enter labels or verdicts.
+INCONSISTENT is global: any satisfied nogood makes _every_ query INCONSISTENT, even an unrelated one {{src:KNOWN_LIMITATIONS.md:139-142}}. Confidence and source metadata never enter labels or verdicts.
 
 === Solvers and plugins: trusted for nothing
 

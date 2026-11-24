@@ -1,0 +1,22 @@
+# WHAT IF over assumptions and facts, on the approved agent.workflow package.
+# No package is declared here: the file adds no meaning lines.
+import agent.workflow
+
+scenario release_check uses agent.workflow {
+  entity release: Plan
+  entity deploy, run_tests: Tool
+  entity prod, feature: Target
+  entity lead: Role
+  fact plan(release)
+  fact needs_approval(deploy)
+  fact approver(lead)
+  fact step(release, 1, run_tests, feature)
+  fact step(release, 2, deploy, prod)
+  assume signed_off: approved(release, 2, lead)
+
+  query PROVE valid(release)
+  query WHAT IF RETRACT approved(release, 2, lead) THEN PROVE valid(release)
+  query WHAT IF RETRACT step(release, 2, deploy, prod) THEN PROVE valid(release)
+  query WHY NOT valid(release)
+  query FIND ?i WHERE violation(release, ?i)
+}

@@ -1,0 +1,6 @@
+case.ov:13  query COUNTEREXAMPLE PerpRectangle.perp_diagonals
+  REFUTED  trust {kernel}  instance: vertices = {(0, 0), (2, 0), (2, 1), (0, 1)}
+check class PerpRectangle is consistent
+  PROVEN  trust {kernel}
+check theorem PerpRectangle.perp_diagonals
+  REFUTED  trust {kernel}  instance: vertices = {(0, 0), (0, -1), (-2, -1), (-2, 0)}

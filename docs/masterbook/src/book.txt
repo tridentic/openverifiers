@@ -3,3 +3,5 @@
 01_big_picture.typ
 02_language.typ
 03_runtime.typ
+04_okql.typ
+05_prover.typ

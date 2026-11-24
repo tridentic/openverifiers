@@ -1,0 +1,4 @@
+docs/masterbook/examples/target_bad.ov:5:8: error[E201]: unknown predicate 'shipped'
+    must shipped(release)
+         ^^^^^^^^^^^^^^^^
+  hint: declare it with `entity`, `predicate` or `function`

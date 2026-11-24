@@ -1,0 +1,12 @@
+why.ov:13  query WHY allowed(r1)
+  PROVEN  assumptions {}  proof: 2 steps  trust {kernel}
+    #0 s.L11: Request.amount(r1, 200 USD)  (why.ov:11)
+    #2 probe.why.small: allowed(r1)  (why.ov:7)
+why.ov:14  query WHY NOT allowed(r2)
+  UNKNOWN (missing_facts)  missing: approved(r2, manager)
+    blocked (missing_facts): add one of: approved(r2, manager)
+why.ov:15  query WHY NOT allowed(r1)
+  PROVEN  assumptions {}  proof: 2 steps  trust {kernel}
+    it holds after all:
+    #0 s.L11: Request.amount(r1, 200 USD)  (why.ov:11)
+    #2 probe.why.small: allowed(r1)  (why.ov:7)

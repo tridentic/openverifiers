@@ -1,0 +1,4 @@
+case.ov:5  query CHECK Quadrilateral{ vertices = {(0,0), (3,0), (3,1), (0,1)} } IS Rectangle
+  PROVEN  trust {kernel}
+case.ov:6  query CHECK Quadrilateral{ vertices = {(0,0), (3,0), (3,1), (0,1)} } IS Rhombus
+  REFUTED  trust {kernel}  fails: Rhombus.sides

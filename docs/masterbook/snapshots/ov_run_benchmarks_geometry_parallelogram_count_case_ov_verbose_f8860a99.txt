@@ -1,0 +1,13 @@
+case.ov:6  query COUNT ?p WHERE Parallelogram{ vertices = {(0,0), (4,0), (1,2), ?p} }
+  PROVEN  ?p = (3, -2)  ?p = (-3, 2)  ?p = (5, 2)  count = 3  trust {kernel, z3_unsat}
+    solve [small-scope [-4, 4]] invariants of Parallelogram: sat
+    re-check [checker] vertices = {(0, 0), (4, 0), (1, 2), (3, -2)}: every invariant holds
+    block ?p = (3, -2)
+    solve [small-scope [-4, 4]] invariants of Parallelogram minus 1 found: sat
+    re-check [checker] vertices = {(0, 0), (4, 0), (1, 2), (-3, 2)}: every invariant holds
+    block ?p = (-3, 2)
+    solve [z3] invariants of Parallelogram minus 2 found: sat
+    re-check [checker] vertices = {(0, 0), (4, 0), (1, 2), (5, 2)}: every invariant holds
+    block ?p = (5, 2)
+    solve [z3] invariants of Parallelogram minus 3 found: unsat
+    re-solve [z3, fresh solver] invariants of Parallelogram minus 3 found: unsat

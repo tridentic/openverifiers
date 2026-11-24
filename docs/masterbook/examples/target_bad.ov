@@ -1,0 +1,6 @@
+# The same target naming a predicate no package declares: the checker rejects it.
+import agent.workflow
+
+target safe_release {
+  must shipped(release)
+}

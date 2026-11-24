@@ -1,0 +1,2 @@
+target.ov:18  query PROVE valid(release)
+  REFUTED  assumptions {}  proof: 0 steps  (closed world)  trust {kernel}

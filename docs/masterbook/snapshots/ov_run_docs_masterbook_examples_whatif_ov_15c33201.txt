@@ -1,0 +1,13 @@
+whatif.ov:17  query PROVE valid(release)
+  PROVEN  assumptions {signed_off}  proof: 2 steps  trust {kernel}
+whatif.ov:18  query WHAT IF RETRACT approved(release, 2, lead) THEN PROVE valid(release)
+  REFUTED  assumptions {not signed_off}  proof: 0 steps  (closed world)  trust {kernel}
+whatif.ov:19  query WHAT IF RETRACT step(release, 2, deploy, prod) THEN PROVE valid(release)
+  PROVEN  assumptions {}  proof: 2 steps  trust {kernel}
+whatif.ov:20  query WHY NOT valid(release)
+  PROVEN  assumptions {signed_off}  proof: 2 steps  trust {kernel}
+    it holds after all:
+    #0 release_check.L10: plan(release)  (whatif.ov:10)
+    #10 agent.workflow.valid_plan: valid(release)  (workflow.ov:35)
+whatif.ov:21  query FIND ?i WHERE violation(release, ?i)
+  UNKNOWN (open_world)

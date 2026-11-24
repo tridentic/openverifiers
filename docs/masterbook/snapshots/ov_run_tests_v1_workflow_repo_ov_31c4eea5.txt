@@ -1,0 +1,13 @@
+workflow_repo.ov:17  query PROVE valid(release)
+  REFUTED  assumptions {}  proof: 0 steps  (closed world)  trust {kernel}
+workflow_repo.ov:18  query FIND ?i WHERE violation(release, ?i)
+  PROVEN  i = 2  assumptions {}
+  PROVEN  i = 3  assumptions {}  trust {kernel}
+workflow_repo.ov:22  query PROVE refused(push, main)
+  PROVEN  assumptions {}  proof: 3 steps  trust {kernel}
+workflow_repo.ov:23  query PROVE permitted(open_pr, feature)
+  PROVEN  assumptions {}  proof: 2 steps  trust {kernel}
+workflow_repo.ov:24  query PROVE needs_human(deploy, prod)
+  PROVEN  assumptions {}  proof: 3 steps  trust {kernel}
+workflow_repo.ov:33  query FIND ?p WHERE solution(?p)
+  PROVEN  p = then(then(then(nothing, run_tests, feature), open_pr, feature), merge, feature)  assumptions {}  trust {kernel}

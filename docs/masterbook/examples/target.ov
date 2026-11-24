@@ -1,0 +1,19 @@
+# A target for OVProver (MP §4.1). It is parsed and checked; nothing consumes it yet.
+import agent.workflow
+
+entity release: Plan
+entity deploy, run_tests: Tool
+entity prod, feature: Target
+
+target safe_release {
+  must valid(release)
+  must not violates(release)
+  prefer step(release, 1, run_tests, feature)
+}
+
+scenario release_draft uses agent.workflow {
+  fact plan(release)
+  fact needs_approval(deploy)
+  fact step(release, 2, deploy, prod)
+  query PROVE valid(release)
+}

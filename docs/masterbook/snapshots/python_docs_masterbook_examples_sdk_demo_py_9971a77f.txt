@@ -1,0 +1,8 @@
+FIND ?A, ?C, ?D -> PROVEN ['kernel']
+FIND ?p WHERE major(add(B, HBr, peroxide)) = ?p -> PROVEN ['kernel']
+PROVE optically_active(add(C, HCN)) -> REFUTED ['kernel']
+WHAT IF RETRACT not tautomerizes(D) THEN FIND ?A -> UNKNOWN []
+  PROVEN  A = 2-methylbut-1-ene, C = butanone, D = methanal  assumptions {}  trust {kernel}
+warn(lawn), all assumptions: Proven
+warn(lawn), no assumptions:  Unknown
+trace steps: 8 strata: {'dry': 1, 'lawn': 0, 'rain': 0, 'slippery': 0, 'sprinkler_on': 0, 'warn': 2, 'wet': 0}

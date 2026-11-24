@@ -1,0 +1,4 @@
+use.ov:4  query PROVE ancestor(ann, cy)
+  PROVEN  assumptions {}  proof: 1 steps  trust {kernel}
+use.ov:5  query PROVE ancestor(cy, ann)
+  REFUTED  assumptions {}  proof: 0 steps  (closed world)  trust {kernel}

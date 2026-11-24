@@ -1,0 +1,2 @@
+examples/geometry/square.ov: ok
+ov gate: ok (1 OV file(s))

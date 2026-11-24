@@ -1,0 +1,3 @@
+docs/masterbook/build/work/use_tampered.ov:2:1: error[E208]: OVState 'kin': the hash does not match the content
+  import state "fam_tampered.json" as kin
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

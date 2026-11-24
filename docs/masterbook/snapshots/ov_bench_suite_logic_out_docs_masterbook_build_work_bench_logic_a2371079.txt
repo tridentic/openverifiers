@@ -1,0 +1,8 @@
+ok   logic/ancestors  <masked>
+ok   logic/chain_depth_5  <masked>
+ok   logic/default_with_exception  <masked>
+ok   logic/modus_tollens  <masked>
+ok   logic/open_vs_closed  <masked>
+ok   logic/syllogism  <masked>
+ok   logic/transitive_trust  <masked>
+7/7 cases pass; false PROVEN 0; p50 <masked> p95 <masked>; 0 case(s) vary across 1 seed(s)

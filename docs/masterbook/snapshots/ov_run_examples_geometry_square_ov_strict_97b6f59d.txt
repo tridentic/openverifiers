@@ -1,0 +1,13 @@
+square.ov:26  query [test fourth_vertex] FIND ?p: Point WHERE Square{ vertices = {(3,1), (1,3), (5,3), ?p} }
+  PROVEN  ?p = (3, 5)  trust {kernel}  (more solutions exist)
+  expect: ok
+square.ov:28  query [test fourth_vertex] PROVE UNIQUE ?p
+  UNKNOWN  (plugin_unknown)  ?p = (3, 5)
+  expect: FAILED (got verdict UNKNOWN)
+check class Quadrilateral is consistent
+  PROVEN  trust {kernel}
+check class Square is consistent
+  PROVEN  trust {kernel}
+check theorem Square.diagonals_equal
+  UNPROVEN  (plugin_unknown)
+1/2 expectations met

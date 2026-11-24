@@ -443,9 +443,8 @@ def expand(text: str, name: str, nums: Numbers, args: argparse.Namespace) -> str
         for m in re.finditer(rf"\b{bad}\b", text):
             line = text[: m.start()].count("\n") + 1
             fail(f"{name}:{line}: unfilled placeholder '{bad}'")
-    paras = re.split(r"\n\s*\n", text)
-    offset = 0
-    for para in paras:
+    for pm in re.finditer(r"(?:[^\n]|\n(?!\s*\n))+", text):
+        para, base = pm.group(0), pm.start()
         for m in re.finditer(r"\{\{badge:(\w+)\}\}", para):
             kind = m.group(1)
             if kind not in ("IMPLEMENTED", "PARTIAL", "PLANNED"):
@@ -456,13 +455,12 @@ def expand(text: str, name: str, nums: Numbers, args: argparse.Namespace) -> str
                 k = para[: m.start()].count("\n")
                 window = "\n".join(lines[max(0, k - 1): k + 3])
             kinds = {x.group(1) for x in MARKER.finditer(window)}
-            line = text[: offset + m.start()].count("\n") + 1 if offset >= 0 else 0
+            line = text[: base + m.start()].count("\n") + 1
             if not (kinds & EVIDENCE_KINDS):
                 fail(f"{name}:{line}: badge {kind} without an evidence marker")
             if kind == "PLANNED" and "mp" not in kinds:
                 fail(f"{name}:{line}: PLANNED badge without a masterplan reference {{{{mp:..}}}}")
             STATS[f"badge.{kind}"] += 1
-        offset += len(para) + 2
 
     # 2. markers
     def rep(m: re.Match[str]) -> str:

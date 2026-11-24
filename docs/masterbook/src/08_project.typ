@@ -39,7 +39,7 @@ The project is built by agents that are rewarded for passing checks, so the chec
   [Gold never changes without the founder's signed trailer], [the gold gate + `.approvers/allowed_signers` (D-032)],
   [Agents never write approval trailers], [D-032; the gate fails unsigned commits with a trailer {{src:docs/APPROVALS.md:1-36}}],
   [Meaning lines (axioms, laws, definitions, invariants, theorem statements) need the founder], [the meaning gate (D-023, D-025)],
-  [A derivable result is a theorem, never a law], [D-025 {{src:MASTERPLAN.md:493}}; `ov audit`'s claim ratio],
+  [A derivable result is a theorem, never a law], [D-025 {{src:MASTERPLAN.md:492}}; `ov audit`'s claim ratio],
   [A theorem stated too strongly is fixed in the definition, never by weakening a PROVEN theorem], [the founder's packet-3 reply (Part B) {{report:reports/APPROVAL_RECORD_2026-11-23_packet3.md}}],
   [The failing set may only shrink (the ratchet)], [`KNOWN_MISMATCHES` in {{test:tests/v1/test_bench.py::test_benchmark_suites_against_gold}}],
   [Exam problems are drawn mechanically before the library is built], [`DRAW_RULE.md` committed before `list.json` {{src:benchmarks/exams/DRAW_RULE.md:1-10}}],

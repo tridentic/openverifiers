@@ -1,7 +1,10 @@
+
 """The library surface as it is used today (no documented SDK at this commit).
 
 Run from the repository root: python docs/masterbook/examples/sdk_demo.py
 """
+
+from pathlib import Path
 
 from openverifiers.checker import verdict
 from openverifiers.engine import ask, run
@@ -15,7 +18,7 @@ for a in res.answers:
 print(render(res).splitlines()[1])
 
 # 2. RawOV directly: evaluate (untrusted), check (trusted), ask.
-prog = parse(open("docs/masterbook/examples/labels.rawov").read())
+prog = parse(Path("docs/masterbook/examples/labels.rawov").read_text())
 r = run(prog)
 q = parse_atom("warn(lawn)")
 print("warn(lawn), all assumptions:", type(ask(r, q)).__name__)

@@ -40,11 +40,11 @@ The trust base `{kernel, z3_unsat}` says: the three points were re-checked by th
 {{listing:benchmarks/geometry/check_rectangle_not_rhombus/case.ov}}
 {{run:ov run benchmarks/geometry/check_rectangle_not_rhombus/case.ov}}
 
-`CHECK x IS T` takes an instance written as a pattern, not a scenario entity {{src:KNOWN_LIMITATIONS.md:62-63}}; the masterplan's `CHECK argument a` (every inference step of an argument) is not built {{mp:v3 Lens, logic.arguments}}.
+`CHECK x IS T` takes an instance written as a pattern, not a scenario entity {{src:KNOWN_LIMITATIONS.md:63-64}}; the masterplan's `CHECK argument a` (every inference step of an argument) is not built {{mp:v3 Lens, logic.arguments}}.
 
 === COUNTEREXAMPLE
 
-{{badge:IMPLEMENTED}} `COUNTEREXAMPLE C.theorem` returns _the theorem's verdict_ (D-012): REFUTED with a counterexample the evaluator confirmed, PROVEN if the negation is unsat, UNKNOWN otherwise {{src:docs/OKQL.md:32}}:
+{{badge:IMPLEMENTED}} `COUNTEREXAMPLE C.theorem` returns _the theorem's verdict_ (D-012): REFUTED with a counterexample the evaluator confirmed, PROVEN if the negation is unsat, UNKNOWN otherwise {{src:docs/OKQL.md:31}}:
 
 {{listing:benchmarks/geometry/false_theorem_rectangle/case.ov}}
 {{run:ov run benchmarks/geometry/false_theorem_rectangle/case.ov @@ exit=1}}
@@ -112,5 +112,5 @@ The v1 hooks that these modes will build on exist: every trace step carries its 
 
 - Queries live only inside `.ov` files; no standalone OKQL front end, no queries against a saved state by name.
 - An object query's WHERE is exactly one pattern {{src:KNOWN_LIMITATIONS.md:65-66}}.
-- FIND on a rule predicate with no solution reports UNKNOWN(open_world) even when the predicate is closed-world (above), and an UNKNOWN FIND does not list missing facts, while PROVE does {{src:KNOWN_LIMITATIONS.md:190-194}}.
+- FIND on a rule predicate with no solution reports UNKNOWN(open_world) even when the predicate is closed-world (above), and an UNKNOWN FIND does not list missing facts, while PROVE does {{src:KNOWN_LIMITATIONS.md:191-194}}.
 - `missing` is a depth-one heuristic, not the verified minimal antichain D-016 asks for.

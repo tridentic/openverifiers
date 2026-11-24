@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File ".venv/bin/ov", line 8, in <module>
+  <masked>, in <module>
     sys.exit(main())
              ^^^^^^
   File "src/openverifiers/cli.py", line 57, in main
@@ -17,10 +17,10 @@ Traceback (most recent call last):
   File "src/openverifiers/lang/check.py", line 188, in load
     text = p.read_text(encoding="utf-8") if source is None else source
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  <masked>, line 1027, in read_text
+  <masked>, in read_text
     with self.open(mode='r', encoding=encoding, errors=errors) as f:
          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  <masked>, line 1013, in open
+  <masked>, in open
     return io.open(self, mode, buffering, encoding, errors, newline)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 FileNotFoundError: [Errno 2] No such file or directory: '--help'

@@ -13,19 +13,19 @@
 
 == Lexical structure
 
-{{badge:IMPLEMENTED}} The tokens are defined at the bottom of `grammar.lark` {{src:src/openverifiers/lang/grammar.lark:125-147}}:
+{{badge:IMPLEMENTED}} The tokens are defined at the bottom of `grammar.lark` {{src:src/openverifiers/lang/grammar.lark:134-154}}:
 
 - *Names* are letters, digits and `_`, and may contain inner hyphens so that chemical names are single tokens: `pent-1-ene`, `2-chloropentane`, `1,1-dimethylcyclopropane`. A hyphen joins a part with a letter in it, or digits followed by another hyphen; so `a-b` is one name and `i-1` is `i - 1`.
 - *Quantities* are a number optionally followed _on the same line_ by a unit expression: `10 N`, `2 m/s^2`, `0.5 kg`. The unit alternatives are spliced into the token's regular expression from `lang/units.py` at load time (`@UNIT@`). Numbers are exact rationals; `0.1` is $1 slash 10$.
 - *Query variables* are `?x`; *strings* are `"..."`; *comments* run from `#` to the end of the line.
 
-{{listing:src/openverifiers/lang/grammar.lark:125-147}}
+{{listing:src/openverifiers/lang/grammar.lark:134-154}}
 
 The trap this creates, and the error that catches it: in a class body, `p > 0 t > 0` reads `0 t` as zero tonnes, because `t` is a unit. The compiler reports E304 and suggests writing `(0) t` or separating the conditions {{test:tests/v1/test_diagnostics.py::test_unit_property_clash_is_an_error_with_a_fix}}.
 
 == The grammar
 
-{{badge:IMPLEMENTED}} The grammar is a Lark LALR(1) grammar of {{src:src/openverifiers/lang/grammar.lark}} 147 lines. The EBNF below is generated from it by the build (rule `?x` marks an inlined rule in Lark; aliases `-> name` are dropped), so it cannot drift from the parser. The full grammar file is Appendix A.
+{{badge:IMPLEMENTED}} The grammar is a Lark LALR(1) grammar {{src:src/openverifiers/lang/grammar.lark}}. The EBNF below is generated from it by the build (rule `?x` marks an inlined rule in Lark; aliases `-> name` are dropped), so it cannot drift from the parser. The full grammar file is Appendix A.
 
 {{gen:ebnf}}
 
@@ -75,7 +75,7 @@ The meaning gate (`bench/gold_gate.py`) flags any added, changed or removed line
 
 *Why E407 exists.* A lemma is exempt from the meaning gate, so nothing outside its package may depend on it: a query that names one (`COUNTEREXAMPLE C.lemma`) is error E407, and a lemma is reused only by proofs in its own package {{src:src/openverifiers/objects/compile.py:670-676}} {{test:tests/v1/test_lemma_scope.py::test_a_query_may_not_name_a_lemma}}. Anything a scenario, a query or another package relies on must be a `theorem`, which the gate sees.
 
-*`drafts/`* (D-025). {{badge:IMPLEMENTED}} Unapproved libraries live in `drafts/packages/`. They load only with `--drafts`, never with `--strict`, every result that uses one is printed PROVISIONAL, and they never count in headline numbers {{src:src/openverifiers/runner.py:66-71}} {{src:MASTERPLAN.md:493}}. At this commit `drafts/` holds `physics.rotation` and the example policy `repo_policy` (above).
+*`drafts/`* (D-025). {{badge:IMPLEMENTED}} Unapproved libraries live in `drafts/packages/`. They load only with `--drafts`, never with `--strict`, every result that uses one is printed PROVISIONAL, and they never count in headline numbers {{src:src/openverifiers/runner.py:69-73}} {{src:MASTERPLAN.md:492}}. At this commit `drafts/` holds `physics.rotation` and the example policy `repo_policy` (above).
 
 == Scenarios
 
@@ -84,7 +84,7 @@ The meaning gate (`bench/gold_gate.py`) flags any added, changed or removed line
 *Definition.* {{badge:IMPLEMENTED}} `scenario s uses p1, p2 extends t { stmt* }` where a statement is `entity`, `fact`, `assume`, `generator … from`, `query`, `expect` or `tolerance` {{src:src/openverifiers/lang/grammar.lark:35-41}}. Each scenario lowers to one RawOV program: the used packages' axioms plus the scenario's items.
 
 - `entity a, b: T` declares constants; `entity a: T = expr` names a structure.
-- `fact lit` states a fact with origin `fact:s`; `confidence x` and `source "…"` are metadata and never change a verdict (MP pushback 6) {{src:docs/SEMANTICS.md:115}}.
+- `fact lit` states a fact with origin `fact:s`; `confidence x` and `source "…"` are metadata and never change a verdict (MP pushback 6) {{src:docs/SEMANTICS.md:113}}.
 - `assume name: lit` states a _named_ hypothesis with origin `assume:name`; every conclusion that uses it carries `name` in its label (§3.5), so `WHAT IF RETRACT` and `UNDER` style questions are label lookups.
 - `extends t` inherits every statement of scenario `t`.
 
@@ -153,7 +153,7 @@ The brief names four core types. This section gives, for each, its exact syntax,
   [`invariant … because: "…"`], [not in the grammar (above)], [{{badge:PLANNED}} {{mp:D-020, MP §8 Faithfulness}}],
 )
 
-*Bodies.* A body is a conjunction of conditions written one after another; `P -> Q` is an implication; `exists v in C: …`, `none v in C: …` and `all v in C: …` range over a collection and run to the end of the body; `all i: chain` ranges over the indices of the list the chain indexes with `i`, and indices wrap around ($v_(n) = v_0$). There is no `or` inside class bodies {{src:KNOWN_LIMITATIONS.md:68-72}}.
+*Bodies.* A body is a conjunction of conditions written one after another; `P -> Q` is an implication; `exists v in C: …`, `none v in C: …` and `all v in C: …` range over a collection and run to the end of the body; `all i: chain` ranges over the indices of the list the chain indexes with `i`, and indices wrap around ($v_(n) = v_0$). There is no `or` inside class bodies {{src:KNOWN_LIMITATIONS.md:69-70}}.
 
 *Inheritance and the diamond rule.* {{badge:IMPLEMENTED}} `extends` may name several parents. The class's invariant list is its linearised ancestors' invariants first, each shared ancestor's _once_, then its own {{src:src/openverifiers/objects/compile.py:204-215}}. `Square extends Rectangle, Rhombus` therefore has `Quadrilateral.four` and `Parallelogram.bisect` once each. A class that inherits from itself is E406.
 
@@ -163,7 +163,7 @@ The brief names four core types. This section gives, for each, its exact syntax,
 
 *Composition.* A property may be typed by another class; its invariants are added to the owner as `Comp.inv@Owner.prop`, and `ov audit` counts them under the component {{src:docs/LANGUAGE.md:475-490}}. JEE phys p2q9 (§7.4) uses this: a `ChargedConductingSphere` has a `SpinningChargedShell` and a `SpinningSolidSphere`.
 
-*A warning that exists because of the brief.* W202 warns when a theorem says `exists` over the same generator as an invariant: it may pick an ordering that pairs up sides and hold vacuously. The brief's own `Square.diagonals_equal` did exactly this; `examples/geometry/square.ov` rewrites it as "every ordering with the square's shape has equal diagonals" {{src:examples/geometry/square.ov:14-21}}.
+*A warning that exists because of the brief.* W202 warns when a theorem says `exists` over the same generator as an invariant: it may pick an ordering that pairs up sides and hold vacuously. The brief's own `Square.diagonals_equal` did exactly this; `examples/geometry/square.ov` rewrites it as "every ordering with the square's shape has equal diagonals" {{src:examples/geometry/square.ov:15-22}}.
 
 == Native mathematics <math>
 
@@ -187,7 +187,7 @@ $ cal(B) = ("kg", "m", "s", "A", "K", "mol", "cd", "USD", "deg") $
 $ [a b] = [a] + [b], quad [a slash b] = [a] - [b], quad [a^k] = k [a] quad (k in QQ "constant"), $
 $ a + b, quad a - b, quad a = b, quad a < b quad "are well-typed only if" [a] = [b], $
 
-and a violation is E301 (`cannot add Mass and Length`). Quantities are stored in base units, so `500 g` and `0.5 kg` are the same RawOV term $(1 slash 2, e_"kg")$; the RawOV text prints the dimension vector after the number (`1/2{kg^1}`). Angles are their own dimension counted in degrees, so that special angles stay exact; a radian has no unit {{src:src/openverifiers/lang/units.py:47-49}}. Quantity types (`Mass`, `Force`, `Molarity`, …) are names for dimension vectors {{src:src/openverifiers/lang/units.py:52-62}}. User-declared units are not supported {{src:KNOWN_LIMITATIONS.md:93-94}}.
+and a violation is E301 (`cannot add Mass and Length`). Quantities are stored in base units, so `500 g` and `0.5 kg` are the same RawOV term $(1 slash 2, e_"kg")$; the RawOV text prints the dimension vector after the number (`1/2{kg^1}`). Angles are their own dimension counted in degrees, so that special angles stay exact; a radian has no unit {{src:src/openverifiers/lang/units.py:45-47}}. Quantity types (`Mass`, `Force`, `Molarity`, …) are names for dimension vectors {{src:src/openverifiers/lang/units.py:51-63}}. User-declared units are not supported {{src:KNOWN_LIMITATIONS.md:93-94}}.
 
 {{lower:units}}
 
@@ -282,7 +282,7 @@ Shown in §2.8.2 above: `3 N` is the term $3 dot e_"kg" + e_"m" - 2 e_"s"$, and 
 + *the meaning gate*: no agent-written meaning line enters `packages/` without the founder's signed approval (§3.11) {{src:src/openverifiers/bench/gold_gate.py:69-81}};
 + *the faithfulness lint* (`python -m openverifiers.bench.faithfulness`): mechanical errors F1–F5 (answer leaked into the case, a general law stated in a case, a stray package next to a case, an answer map that does not match, an `assume` in an exam case) and warnings W1–W2 {{src:src/openverifiers/bench/faithfulness.py:1-31}};
 + *the gold-blind reviewer*: a separate agent sees only the question text, the formalization and the imported libraries, never the official answer, and writes `faithfulness_review.json` {{src:benchmarks/exams/jee2025/jee2025-phys-p2q9/faithfulness_review.json}};
-+ *the MCP tools*: an agent can call `check_files` (run the commit gate on OV files) and `check_tool_call` over MCP {{src:src/openverifiers/mcp_gate.py:41-58}}.
++ *the MCP tools*: an agent can call `check_files` (run the commit gate on OV files) and `check_tool_call` over MCP {{src:src/openverifiers/mcp_gate.py:40-58}}.
 
 {{run:python -m openverifiers.bench.faithfulness}}
 

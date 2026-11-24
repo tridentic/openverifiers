@@ -10,7 +10,7 @@ This chapter is generated as far as possible from the project's own records, so 
 + *Formalization faithfulness:* the kernel checks the program, not its reading of the problem; the reviewer and lint are heuristics; `because:` is not implemented (§6.4). {{badge:PARTIAL}} {{src:MASTERPLAN.md:463}}
 + *Two worlds:* classes and rules do not see each other; theorems use only invariants and laws, not imported rule axioms {{src:KNOWN_LIMITATIONS.md:44-47}}. {{badge:PARTIAL}} {{src:KNOWN_LIMITATIONS.md:44-47}}
 + *Trigonometry of a variable* (D-033, being built on `v1` after `bd2ed44`), inverse trigonometry (v2), real algebraic numbers (v2), ODE solving (v6). {{badge:PLANNED}} {{mp:D-027, D-030; v2; v6}}
-+ *INCONSISTENT is global* and conflict sets are not minimal {{src:KNOWN_LIMITATIONS.md:139-146}}. {{badge:PARTIAL}} {{src:KNOWN_LIMITATIONS.md:139-146}}
++ *INCONSISTENT is global* and conflict sets are not minimal {{src:KNOWN_LIMITATIONS.md:141-146}}. {{badge:PARTIAL}} {{src:KNOWN_LIMITATIONS.md:141-146}}
 + *No incremental evaluation;* retracting a fact re-runs the program. {{badge:PLANNED}} {{mp:v2 Engine, incremental evaluation}}
 + *v1 exit:* criterion 1 partial (one official-key exam tier, D-031b), criterion 6 partial (CI streak) {{report:reports/V1_EXIT_C7_2026-11-23.md}}.
 

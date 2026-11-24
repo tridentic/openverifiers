@@ -9,7 +9,7 @@
 #table(columns: (1.1fr, 3.3fr, 0.9fr),
   [*command*], [*what it does*], [*status*],
   [`ov run F.ov … [--verbose] [--strict] [--no-reductions] [--drafts]`], [check, lower, evaluate, check the trace, answer the queries, check `expect` lines and class theorems; exit 1 on any failure {{src:src/openverifiers/runner.py:402-438}}], [{{badge:IMPLEMENTED}} {{test:tests/v1/test_lang.py::test_failed_expectation_is_reported}}],
-  [`ov check F.ov …`], [the same work, one summary line per file (for loops and hooks)], [{{badge:IMPLEMENTED}} {{src:src/openverifiers/runner.py:384-399}}],
+  [`ov check F.ov …`], [the same work, one summary line per file (for loops and hooks)], [{{badge:IMPLEMENTED}} {{src:src/openverifiers/runner.py:388-399}}],
   [`ov audit PKG|FILE [--dag T] [--json]`], [axioms by kind, theorems with status and trust, ratios, dependency DAGs], [{{badge:IMPLEMENTED}} {{src:src/openverifiers/audit.py:1-24}}],
   [`ov state F.ov [--scenario S] [--out P]`], [write a scenario's checked model as an OVState], [{{badge:IMPLEMENTED}} {{test:tests/v1/test_state.py::test_export_import_round_trip}}],
   [`ov gate [--base REV] [--staged] [--drafts] [PATH…]`], [the commit gate (§3.11)], [{{badge:IMPLEMENTED}} {{src:src/openverifiers/gate.py:1-17}}],
@@ -68,7 +68,7 @@ Terms are symbols, strings, exact rational numbers with a dimension vector, vari
 
 {{badge:IMPLEMENTED}} The trusted path reads programs and traces _only_ as canonical JSON, with the standard library's `json`, and every value has exactly one encoding {{src:src/openverifiers/raw/canon.py:1-17}}:
 
-{{listing:src/openverifiers/raw/canon.py:7-14}}
+{{listing:src/openverifiers/raw/canon.py:9-13}}
 
 The program document, as written for `push_block` (the first three rows of each list):
 
@@ -110,7 +110,7 @@ $ not L = min { {"flip"(ell_e) : e in L} : (ell_e)_(e in L) "with" ell_e in e } 
 
 $ "label"(h) supset.eq "label"(b_1) times.o dots.c times.o "label"(b_k) times.o not "label"(c_1) times.o dots.c times.o not "label"(c_m) $
 
-over every ground rule instance $h arrow.l b_1..b_k, "not" c_1..c_m$ whose builtins hold, where each $"label"(c_j)$ is final because $c_j$ lives in a lower, complete stratum. The result has the property the whole design rests on {{src:docs/SEMANTICS.md:85-93}}:
+over every ground rule instance $h arrow.l b_1..b_k, "not" c_1..c_m$ whose builtins hold, where each $"label"(c_j)$ is final because $c_j$ lives in a lower, complete stratum. The result has the property the whole design rests on {{src:docs/SEMANTICS.md:81-85}}:
 
 #note[*Context independence.* For every $C subset.eq A$ and atom $p$: $"label"(p)$ holds in $C$ if and only if $p$ is in the stratified model of the program whose `assume:` facts are restricted to $C$. {{test:tests/v1/test_kernel.py::test_what_if_by_label_lookup_equals_rerun}} checks this against a full re-run on random programs.]
 
@@ -150,7 +150,7 @@ For a ground query $q$ and context $C$ (by default $C = A$, every declared assum
 
 {{fig:verdicts}}
 
-INCONSISTENT is global: any satisfied nogood makes _every_ query INCONSISTENT, even an unrelated one {{src:KNOWN_LIMITATIONS.md:139-142}}. Confidence and source metadata never enter labels or verdicts.
+INCONSISTENT is global: any satisfied nogood makes _every_ query INCONSISTENT, even an unrelated one {{src:KNOWN_LIMITATIONS.md:141-143}}. Confidence and source metadata never enter labels or verdicts.
 
 === Solvers and plugins: trusted for nothing
 
@@ -288,7 +288,7 @@ The whole-history result at the code commit: {{num:gold_gate.line}} ({{num:gold_
 {{listing:.pre-commit-hooks.yaml}}
 {{listing:action.yml}}
 
-and over MCP, where `check_files` runs it on paths an agent names {{src:src/openverifiers/mcp_gate.py:94-101}}.
+and over MCP, where `check_files` runs it on paths an agent names {{src:src/openverifiers/mcp_gate.py:110-115}}.
 
 === The MCP tool-call gate
 
@@ -313,4 +313,4 @@ The decisions carry `"provisional": []` although `repo_policy.ov` is an unapprov
 
 {{run:python -m pytest -q -m bench tests/v1 @@ mask=in [0-9.]+s}}
 
-What drives the numbers: rule scenarios are dominated by the Python evaluator and the checker's closure pass (both linear-ish in trace size for these programs); object queries by z3 and the sympy certificate search. Incremental evaluation is not built {{mp:v2 Engine, MP §7 incremental evaluation}}, so every query re-runs from scratch; retracting a _fact_ (not an assumption) re-runs the program {{src:KNOWN_LIMITATIONS.md:155-157}}.
+What drives the numbers: rule scenarios are dominated by the Python evaluator and the checker's closure pass (both linear-ish in trace size for these programs); object queries by z3 and the sympy certificate search. Incremental evaluation is not built {{mp:v2 Engine, MP §7 incremental evaluation}}, so every query re-runs from scratch; retracting a _fact_ (not an assumption) re-runs the program {{src:KNOWN_LIMITATIONS.md:147-148}}.

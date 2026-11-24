@@ -23,7 +23,7 @@
 
 `reproduce.sh` runs both, but its filter drops the tallies (§3.11, Appendix J); this is the same command, run by the build, keeping them:
 
-{{run:python -m pytest -q -s tests/v1/test_checker.py tests/v1/test_object_mutants.py | grep -E "killed|rejected|passed" @@ mask=in [0-9.]+s}}
+{{run:python -m pytest -q -s tests/v1/test_checker.py tests/v1/test_object_mutants.py | grep -E "killed|rejected|passed" @@ mask=in [0-9.]+s( [(][0-9:]+[)])?}}
 
 Read: every non-equivalent mutant of the q11 RawOV trace, the q11 OV trace and the reachability trace is killed; on the object path, every record claiming something false was rejected (`rejected / claim False`), and the records accepted are ones whose claim is still true (`accepted / claim True`) or makes no claim (`accepted / claim None`). The masterplan's criterion, "0 unsound mutants accepted, including the object path", is met at this commit.
 

@@ -28,7 +28,7 @@ Every answer is exactly one of four verdicts {{src:MASTERPLAN.md:25-30}} {{src:s
 #table(columns: (1fr, 3fr),
   [`PROVEN(proof, assumptions, trust_base)`], [the claim follows from the axioms, facts and the listed assumptions],
   [`REFUTED(proof, assumptions, trust_base)`], [its negation follows (or, for a closed-world predicate with a complete stratum, it is not derivable)],
-  [`UNKNOWN(missing, reason)`], [neither; `reason` is one of `missing_facts`, `budget`, `plugin_unknown`, `open_world` {{src:src/openverifiers/checker/verdict.py:30}}],
+  [`UNKNOWN(missing, reason)`], [neither; `reason` is one of `missing_facts`, `budget`, `plugin_unknown`, `open_world` {{src:src/openverifiers/checker/verdict.py:31}}],
   [`INCONSISTENT(conflict_set)`], [the stated facts and assumptions contradict each other; the conflict set names them],
 )
 
@@ -36,7 +36,7 @@ Every answer is exactly one of four verdicts {{src:MASTERPLAN.md:25-30}} {{src:s
 
 + `{kernel}`: trusted code checked everything (a rule trace, a re-checked model or a certificate). This is the only level `--strict` keeps. {{badge:IMPLEMENTED}} {{src:src/openverifiers/runner.py:47-50}}
 + solver-trusted: the trust base names `z3_unsat` (an unsat answer only z3 vouches for) and the `red:*` reductions it was computed under. `--strict` turns these into UNKNOWN(plugin_unknown). {{badge:IMPLEMENTED}} {{src:docs/SEMANTICS.md:186-202}}
-+ provisional: the answer used a draft package from `drafts/` (loaded only with `--drafts`, never with `--strict`), and is printed as PROVISIONAL. {{badge:IMPLEMENTED}} {{src:src/openverifiers/runner.py:66-71}}
++ provisional: the answer used a draft package from `drafts/` (loaded only with `--drafts`, never with `--strict`), and is printed as PROVISIONAL. {{badge:IMPLEMENTED}} {{src:src/openverifiers/runner.py:69-73}}
 
 A second, independent ladder applies to _content_ (MP §4.1): an `axiom` is trusted, a `law` is trusted as a claim and counted in the claim ratio, a `definition` adds no trust, and a `theorem` is never trusted until proven {{src:MASTERPLAN.md:101-116}}. Appendix J records that "three trust levels" is undefined.
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# ruff: noqa: E501  (docs tooling: long Graphviz/Typst string templates)
 """Build the OpenVerifiers Masterbook (docs only; never imported by the package).
 
     python scripts/build_masterbook.py [--accept] [--ci] [--run-repro] [--no-pdf]
@@ -48,10 +49,8 @@ import re
 import shutil
 import subprocess
 import sys
-import textwrap
 from collections import defaultdict
 from collections.abc import Callable
-from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
@@ -520,8 +519,6 @@ def expand(text: str, name: str, nums: Numbers, args: argparse.Namespace) -> str
         return m.group(0)
 
     out = MARKER.sub(rep, text)
-    for m in re.finditer(r"\{\{|\}\}", out.replace("{{{", "")):
-        pass
     left = [m.group(0) for m in re.finditer(r"\{\{\w+:", text) if not MARKER.match(
         text, m.start())]
     for x in left:
@@ -602,7 +599,7 @@ def main() -> int:
     nums = Numbers(repro) if repro.exists() else Numbers.__new__(Numbers)
     if not repro.exists():
         nums.v, nums.dir = {}, repro
-    import masterbook_parts as parts            # figures, generated tables, lowerings
+    import masterbook_parts as parts  # figures, generated tables, lowerings
     parts.register(sys.modules[__name__], nums, args)
 
     meta = {"head": head, "code_commit": cc, "date": date,
@@ -621,6 +618,13 @@ def main() -> int:
     main_typ = '#import "template.typ": *\n#show: book\n' + "\n".join(includes) + "\n"
     (BUILD / "main.typ").write_text(main_typ)
 
+    used = {r["snap"] for r in RUNS.values()}
+    for f in SNAP.glob("*.txt"):
+        if f.name not in used:
+            if args.accept:
+                f.unlink()
+            else:
+                fail(f"snapshot {f.name} is not used by any run (remove it, or build with --accept)")
     STATS["figures"] = len(set(FIGURES_USED))
     STATS["figures_list"] = sorted(set(FIGURES_USED))
     if ERRORS:

@@ -1,3 +1,4 @@
+# ruff: noqa: E501  (docs tooling: long Graphviz/Typst string templates)
 """Figures, generated tables and lowerings for the Masterbook (docs only).
 
 Loaded by scripts/build_masterbook.py. Every function here reads real data:
@@ -11,7 +12,6 @@ from __future__ import annotations
 import ast
 import json
 import re
-import subprocess
 from collections import defaultdict
 from fractions import Fraction
 from pathlib import Path
@@ -58,12 +58,12 @@ def wrap(s: str, n: int = 38) -> str:
 
 
 def G(body: str, rankdir: str = "TB", extra: str = "") -> str:
-    return ("digraph G {\n  graph [rankdir=%s, fontname=\"Helvetica\", fontsize=10, "
-            "nodesep=0.25, ranksep=0.35, bgcolor=\"white\", size=\"6.5,8.4\" %s];\n"
+    return (f"digraph G {{\n  graph [rankdir={rankdir}, fontname=\"Helvetica\", fontsize=10, "
+            f"nodesep=0.25, ranksep=0.35, bgcolor=\"white\", size=\"6.5,8.4\" {extra}];\n"
             "  node [fontname=\"Helvetica\", fontsize=9, shape=box, style=\"rounded,filled\", "
             "fillcolor=\"#f4f4f4\", color=\"#666666\", margin=\"0.08,0.04\"];\n"
             "  edge [fontname=\"Helvetica\", fontsize=8, color=\"#555555\", arrowsize=0.6];\n"
-            "%s\n}\n" % (rankdir, extra, body))
+            f"{body}\n}}\n")
 
 
 # ============================================================================ helpers: OV
@@ -200,17 +200,17 @@ def fig_trust() -> str:
     for f in exact:
         inside.append(f'    "{f}" [fillcolor="#f9d9d5"];')
     return G("""
-  subgraph cluster_t { label="trusted computing base (scripts/tcb_size.py): only this decides"; style="rounded,filled"; fillcolor="#fff3f1"; color="#c0392b";
-%s
-  }
-  subgraph cluster_u { label="untrusted proposers: may only propose (MP-INV)"; style="rounded"; color="#888888";
+  subgraph cluster_t {{ label="trusted computing base (scripts/tcb_size.py): only this decides"; style="rounded,filled"; fillcolor="#fff3f1"; color="#c0392b";
+{}
+  }}
+  subgraph cluster_u {{ label="untrusted proposers: may only propose (MP-INV)"; style="rounded"; color="#888888";
     "lang/ (parser, checker)"; "lower/lower.py"; "kernel/evaluate.py"; "objects/ (compile, engine, z3, sympy)"; "agents / LLM authors"; "bench/, audit.py, gate.py, mcp_gate.py";
-  }
+  }}
   "kernel/evaluate.py" -> "checker/check.py" [label="OVTrace JSON"];
   "objects/ (compile, engine, z3, sympy)" -> "checker/objects.py" [label="records JSON"];
   "lower/lower.py" -> "raw/canon.py" [label="program JSON"];
   "agents / LLM authors" -> "lang/ (parser, checker)" [label=".ov text"];
-""" % "\n".join(inside), rankdir="LR")
+""".format("\n".join(inside)), rankdir="LR")
 
 
 # ---------------------------------------------------------------------------- imports
@@ -279,7 +279,7 @@ def fig_imports() -> str:
 
 def fig_imports_pkg() -> str:
     edges, sizes = module_graph()
-    main, units, exact = tcb_files()
+    _main, _units, _exact = tcb_files()
     tot: dict[str, int] = defaultdict(int)
     for m, n in sizes.items():
         tot[m.split(".")[0] if "." in m else m] += n
@@ -973,6 +973,7 @@ def fig_dag_mcp_ok() -> str:
 
 def fig_walkthrough() -> str:
     import hashlib
+
     from openverifiers.raw.canon import program_to_json
     res = q11_result()
     lw = res.lowered[0]
@@ -1125,8 +1126,8 @@ def rule_graph(path: str, lo: int, hi: int, title: str, also: tuple[str, ...] = 
     env = load(ROOT / path)
     lw = lower(env, None)[0]
     p = lw.program
-    rules = [r for r in p.rules if r.span and Path(r.span.file).resolve() == (ROOT / path).resolve()
-             and lo <= r.span.line <= hi or any(r.id.startswith(a) for a in also)]
+    rules = [r for r in p.rules if (r.span and Path(r.span.file).resolve() == (ROOT / path).resolve()
+             and lo <= r.span.line <= hi) or any(r.id.startswith(a) for a in also)]
     heads: dict[str, list[str]] = defaultdict(list)
     for r in rules:
         heads[r.head.key].append(r.id)
@@ -1158,7 +1159,7 @@ def fig_lower_classes() -> str:
         own = [n for n, _ in d.invariants if n.startswith(name + ".")]
         out.append(f'  {name} [label="{name}\\nown: {esc(", ".join(n.split(".", 1)[1] for n in own) or "-")}\\n'
                    f'flattened invariants: {len(d.invariants)}", fillcolor="#e8f1fb"];')
-        for a in cl.ancestors.get(name, ())[:]:
+        for _a in cl.ancestors.get(name, ())[:]:
             pass
     for name, parents in (("Parallelogram", ["Quadrilateral"]), ("Rectangle", ["Parallelogram"]),
                           ("Rhombus", ["Parallelogram"]), ("Square", ["Rectangle", "Rhombus"])):
@@ -1206,7 +1207,7 @@ def code(s: str) -> str:
 
 
 def gen_tcb() -> str:
-    main, units, exact = tcb_files()
+    main, _units, exact = tcb_files()
     rows = []
     for f in main:
         rows.append([code(f), "main", tx(N.get(f"tcb.file.{f}"))])
@@ -1220,7 +1221,7 @@ def gen_tcb() -> str:
 
 
 def gen_modules() -> str:
-    edges, sizes = module_graph()
+    _edges, sizes = module_graph()
     main, units, exact = tcb_files()
     trusted = {f.replace("/", ".").removesuffix(".py").removesuffix(".__init__"): f for f in [*main, *units, *exact]}
     rows = []
@@ -1363,7 +1364,7 @@ CLI_RUNS = [("ov --help", 0), ("ov run", 2), ("ov run --help", 2), ("ov exam --h
 def gen_cli() -> str:
     out = []
     for cmd, code_ in CLI_RUNS:
-        mask = ' @@ mask=File "/[^"]*"' if "state --help" in cmd else ""
+        mask = ' @@ mask=File "[^"]*(bin/ov|/lib/python[^"]*)", line [0-9]+' if "state --help" in cmd else ""
         out.append(B.render_run(B.do_run(f"{cmd} @@ exit={code_}{mask}", ARGS)))
     return "\n".join(out)
 
@@ -1456,7 +1457,7 @@ def gen_errors() -> str:
 def gen_ebnf() -> str:
     rules = lark_rules(GRAMMAR.read_text())
     lines = []
-    for n, inl, e in rules:
+    for n, _inl, e in rules:
         if n.isupper():
             continue
         lines.append(f"{n} ::= {ebnf(parse_expansion(e))} ;")
@@ -1544,7 +1545,7 @@ def gen_bench_table() -> str:
     body = []
     for r in rows:
         body.append([tx(str(r.get(k, ""))) for k in keys] + [tx(str(sm.get(r.get("suite"), {}).get("passed", "")))])
-    return tbl(keys + ["pass (--strict)"], body)
+    return tbl([*keys, "pass (--strict)"], body)
 
 
 def gen_diff_table() -> str:
@@ -1564,8 +1565,8 @@ def gen_diff_table() -> str:
 def gen_lowering_rawov_q11() -> str:
     from openverifiers.lang.check import load
     from openverifiers.lower.lower import lower
-    from openverifiers.rawtext import dump
     from openverifiers.raw.program import Program
+    from openverifiers.rawtext import dump
     env = load(ROOT / "examples/chem/q11.ov")
     p = lower(env, None)[0].program
     sel = Program(p.worlds[:0], tuple(f for f in p.facts if f.span and f.span.file.endswith("q11.ov")),

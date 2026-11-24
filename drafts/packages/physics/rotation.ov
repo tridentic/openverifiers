@@ -15,17 +15,18 @@ fact type AngularOscillator {
   invariant positive: inertia > 0 kappa > 0 omega > 0
 }
 
-# The motion theta(t) = amplitude cos(omega t). Newton's second law for rotation,
-# I theta'' = -kappa theta, holds at every instant; so it holds at t, and so does
-# its time derivative, I theta''' = -kappa theta'. Together, with sin^2 + cos^2 = 1
-# (D-033), they give omega^2 I = kappa: N043 is a theorem (packet 2: derivable).
+# The motion theta(t) = amplitude cos(omega t), released from rest at the angle
+# `amplitude` at t = 0 (an idealised small oscillation: the torque is linear in
+# theta). Newton's second law for rotation, I theta'' = -kappa theta, holds at every
+# instant, in particular at the release: I theta''(0) = -kappa theta(0). With
+# theta(0) = amplitude > 0 that gives omega^2 I = kappa: N043 is a theorem
+# (packet 2: derivable).
 fact type TorsionMotion extends AngularOscillator {
   property amplitude: Real
   property t: Time
   invariant amplitude_positive: amplitude > 0
-  law newton_rotation: inertia * deriv(deriv(amplitude * cos(omega * t), t), t)
-    = -kappa * (amplitude * cos(omega * t))
-  law newton_rotation_rate: inertia * deriv(deriv(deriv(amplitude * cos(omega * t), t), t), t)
-    = -kappa * deriv(amplitude * cos(omega * t), t)
+  law newton_rotation_at_release:
+    inertia * value_at(deriv(deriv(amplitude * cos(omega * t), t), t), t, 0)
+    = -kappa * value_at(amplitude * cos(omega * t), t, 0)
   theorem small_oscillation: omega * omega * inertia = kappa
 }

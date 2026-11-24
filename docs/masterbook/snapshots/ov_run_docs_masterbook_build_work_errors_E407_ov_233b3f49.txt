@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E407.ov:3:9: error[E407]: 'Base.gap' is a lemma: a query may name only a theorem
+    query COUNTEREXAMPLE Base.gap
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  hint: a lemma serves its own package's proofs; state it as a `theorem` (a meaning-carrying line, so it needs approval)

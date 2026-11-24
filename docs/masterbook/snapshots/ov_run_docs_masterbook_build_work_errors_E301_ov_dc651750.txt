@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E301.ov:5:60: error[E301]: cannot add Mass and Length
+  test x { scenario s uses m { entity c: Body  fact c.mass = 2 kg + 1 m } }
+                                                             ^^^^^^^^^^
+  hint: both sides of + and - need the same dimension

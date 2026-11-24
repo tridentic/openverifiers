@@ -1,0 +1,2 @@
+ov bench: unknown option --help
+usage: ov bench [DIR] [--suite NAME] [--case NAME] [--seeds N] [--out DIR] [--strict] [--no-reductions]

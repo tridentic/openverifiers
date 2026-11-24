@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File ".venv/bin/ov", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "src/openverifiers/cli.py", line 57, in main
+    return state(rest)
+           ^^^^^^^^^^^
+  File "src/openverifiers/state/export.py", line 44, in main
+    out = export(Path(pos[0]), opts.get("--scenario"))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/openverifiers/state/export.py", line 21, in export
+    res = run_file(path, files={str(path)})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/openverifiers/runner.py", line 89, in run_file
+    env = load(path, source=source, search=(DRAFTS,) if drafts else ())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "src/openverifiers/lang/check.py", line 188, in load
+    text = p.read_text(encoding="utf-8") if source is None else source
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  <masked>, line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  <masked>, line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '--help'

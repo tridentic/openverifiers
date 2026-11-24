@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E401.ov:3:29: error[E401]: this conclusion has nothing to derive
+  axiom a(x: Number): q(x) -> x = 1
+                              ^^^^^
+  hint: a conclusion equation needs a field or a functional predicate

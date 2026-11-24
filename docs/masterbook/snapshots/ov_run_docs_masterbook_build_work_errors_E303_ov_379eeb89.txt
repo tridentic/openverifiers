@@ -1,0 +1,6 @@
+docs/masterbook/build/work/errors/E303.ov:5:51: error[E303]: '<' needs quantities, got Body
+  test x { scenario s uses m { entity c: Body  fact c < c } }
+                                                    ^
+docs/masterbook/build/work/errors/E303.ov:5:55: error[E303]: '<' needs quantities, got Body
+  test x { scenario s uses m { entity c: Body  fact c < c } }
+                                                        ^

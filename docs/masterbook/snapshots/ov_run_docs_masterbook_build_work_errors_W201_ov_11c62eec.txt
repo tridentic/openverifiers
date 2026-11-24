@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/W201.ov:2:13: warning[W201]: type 'Surface' is not declared; treated as an opaque entity type
+  predicate f(s: Surface) world open
+              ^^^^^^^^^^
+  hint: declare it with `type Surface`

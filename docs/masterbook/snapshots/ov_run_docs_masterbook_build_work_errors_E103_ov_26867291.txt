@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E103.ov:1:23: error[E103]: unknown unit 'furlong'
+  scenario s { fact p(3 furlong) }
+                        ^^^^^^^
+  hint: see the units table in docs/LANGUAGE.md; write `2 * furlong` to multiply by a variable

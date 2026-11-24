@@ -8,7 +8,7 @@
 
 - keywords lead every statement, so newlines carry no meaning;
 - every quantity has a unit; names are `snake_case`, types `PascalCase`; comments start with `#`;
-- every invariant has a `because:`. {{badge:PLANNED}} This one is _not_ in the grammar: `invariant NAME ":" fbody` has no `because` clause, and no file in the repository uses one {{src:src/openverifiers/lang/grammar.lark:52-58}} {{mp:MP §4.2, §8 Faithfulness, D-020}}. Appendix J records the gap;
+- every invariant has a `because:`. {{badge:PLANNED}} This one is _not_ in the grammar: `invariant NAME ":" fbody` has no `because` clause, and no file in the repository uses one {{src:src/openverifiers/lang/grammar.lark:49-58}} {{mp:MP §4.2, §8 Faithfulness, D-020}}. Appendix J records the gap;
 - a new language feature needs three domains using the same syntax, or it belongs in a package {{src:MASTERPLAN.md:439}}.
 
 == Lexical structure

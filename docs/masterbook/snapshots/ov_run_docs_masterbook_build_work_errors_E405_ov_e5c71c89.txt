@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E405.ov:2:74: error[E405]: an angle can only be compared, by = or !=, with 0, 30, 45, 60, 90, 120, 135, 150 or 180 deg
+  fact type T { property v: Set<Point> invariant a: exists w in cycles(v): angle(w[0], w[1], w[2]) = 37 deg }
+                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  hint: these are the angles whose cosine squared is rational, so the check stays exact

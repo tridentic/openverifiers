@@ -1,0 +1,3 @@
+ov: unknown command 'query'
+usage: ov run|check FILE.ov [FILE.ov ...] [--verbose] [--strict] [--no-reductions]
+       ov bench [DIR] [--suite NAME] [--seeds N] [--out DIR]

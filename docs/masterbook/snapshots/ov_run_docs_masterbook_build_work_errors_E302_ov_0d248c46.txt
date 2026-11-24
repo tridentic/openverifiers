@@ -1,0 +1,3 @@
+docs/masterbook/build/work/errors/E302.ov:5:64: error[E302]: expected Force, got Body
+  test x { scenario s uses m { entity c: Body  fact net_force(c, c) } }
+                                                                 ^

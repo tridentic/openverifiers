@@ -1,0 +1,8 @@
+docs/masterbook/build/work/errors/E403.ov:4:1: error[E403]: lowered rule is unsafe: rule 'p.a': literal 1 reads unbound variable(s) V_x
+  axiom a(x: Number): not q(x) -> r(x)
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  hint: every variable must be bound by a premise before it is used in `not`, a comparison or arithmetic
+docs/masterbook/build/work/errors/E403.ov:4:1: error[E403]: lowered rule is unsafe: rule 'p.a': head variable(s) V_x not bound by the body
+  axiom a(x: Number): not q(x) -> r(x)
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  hint: every variable must be bound by a premise before it is used in `not`, a comparison or arithmetic

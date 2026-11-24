@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E204.ov:5:51: error[E204]: type Body has no field 'colour'
+  test x { scenario s uses m { entity c: Body  fact c.colour = 2 } }
+                                                    ^^^^^^^^
+  hint: fields: accel, mass

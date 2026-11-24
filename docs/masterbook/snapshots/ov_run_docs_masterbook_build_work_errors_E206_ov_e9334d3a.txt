@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E206.ov:2:3: error[E206]: tolerance is a relative half-width between 0 and 1
+    tolerance 2
+    ^^^^^^^^^^^
+  hint: e.g. `tolerance 0.001` for 0.1 %

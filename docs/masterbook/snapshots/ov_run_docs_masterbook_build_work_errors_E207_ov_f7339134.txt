@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E207.ov:2:33: error[E207]: `derived` properties are not supported yet
+  fact type T { property a: Real  derived b: Real = a * 2 }
+                                  ^^^^^^^^^^^^^^^^^^^^^^^
+  hint: write the expression where it is used, or make it a property with an invariant

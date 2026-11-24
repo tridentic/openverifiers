@@ -1,0 +1,10 @@
+docs/masterbook/build/work/errors/W202.ov:5:3: warning[W202]: theorem 't' says `exists` over the same generator as an invariant, so it may be vacuous
+    theorem t: exists v in cycles(vertices): dist(v[0], v[2]) = dist(v[1], v[3])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  hint: it may pick a different ordering than the invariant did; say `all v in ...: <shape of v> -> <property of v>` instead
+check class Q is consistent
+  PROVEN  trust {kernel}
+check class S is consistent
+  PROVEN  trust {kernel}
+check theorem S.t
+  PROVEN  trust {red:translate, z3_unsat}

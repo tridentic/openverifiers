@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E102.ov:1:24: error[E102]: unexpected character '$'
+  scenario s { fact p(a) $ }
+                         ^
+  hint: remove it, or quote the name with "..." if it is text

@@ -1,0 +1,3 @@
+docs/masterbook/build/work/errors/E202.ov:2:27: error[E202]: entity 'a' is declared more than once
+  scenario s { entity a: T  entity a: T }
+                            ^^^^^^^^^^^

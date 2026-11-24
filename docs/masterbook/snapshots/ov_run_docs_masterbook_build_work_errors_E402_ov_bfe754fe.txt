@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E402.ov:4:24: error[E402]: cannot solve this equation for any of its terms
+  axiom a(b: B): q(b) -> b.v ^ 2 = 4
+                         ^^^^^^^^^^^
+  hint: nonlinear equations need the sympy plugin (Milestone 2)

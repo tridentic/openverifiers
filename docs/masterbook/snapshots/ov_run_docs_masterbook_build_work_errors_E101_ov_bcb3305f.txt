@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E101.ov:1:24: error[E101]: unexpected 'b'; expected 'and', 'assume', 'confidence', 'entity', 'expect', 'fact', ...
+  scenario s { fact p(a) b }
+                         ^
+  hint: every statement starts with a keyword (fact, axiom, query, ...)

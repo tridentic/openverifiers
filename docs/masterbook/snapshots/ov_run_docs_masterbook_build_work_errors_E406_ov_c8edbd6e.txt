@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E406.ov:2:1: error[E406]: class 'A' inherits from itself
+  fact type B extends A { }
+  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  hint: remove one `extends` from the cycle

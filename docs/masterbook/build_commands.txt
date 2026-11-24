@@ -1,0 +1,8 @@
+# from the repository root
+python3 -m venv .venv
+.venv/bin/pip install -e ".[dev,docs]"          # docs extra = typst (documentation only)
+# Graphviz `dot` must be on PATH (pdfinfo is optional, for the page count)
+bash reproduce.sh docs/masterbook/build/repro    # only when the code commit changed
+.venv/bin/python scripts/build_masterbook.py     # = make masterbook
+# output: docs/masterbook/build/OpenVerifiers_Masterbook_<HEAD>.pdf
+# after reviewing a changed output: make masterbook-accept

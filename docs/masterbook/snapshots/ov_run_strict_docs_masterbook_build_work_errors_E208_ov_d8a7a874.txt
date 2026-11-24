@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E208.ov:3:13: error[E208]: type 'Surface' is not declared; treated as an opaque entity type (an error under --strict)
+  predicate f(s: Surface) world open
+              ^^^^^^^^^^
+  hint: declare it with `type Surface`

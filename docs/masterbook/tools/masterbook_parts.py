@@ -1190,7 +1190,7 @@ def fig_lower_newton() -> str:
 
 def tbl(header: list[str], rows: list[list[str]], cols: str | None = None) -> str:
     c = cols or "(" + ", ".join(["auto"] * len(header)) + ")"
-    cells = [f"[*{h}*]" for h in header]
+    cells = [f"[#strong({B.ts(h)})]" for h in header]
     for r in rows:
         cells += [f"[{x}]" for x in r]
     return f"#table(columns: {c}, " + ", ".join(cells) + ")"
@@ -1228,7 +1228,8 @@ def gen_modules() -> str:
         t = "TRUSTED" if m in trusted else ""
         unit = ("main" if trusted.get(m) in main else "formula" if trusted.get(m) in units else
                 "unit A" if trusted.get(m) in exact else "")
-        path = "src/openverifiers/" + (m.replace(".", "/") + (".py" if (PKG / (m.replace(".", "/") + ".py")).exists() else "/__init__.py"))
+        path = "src/openverifiers/" + ("__init__.py" if m == "openverifiers" else (
+            m.replace(".", "/") + (".py" if (PKG / (m.replace(".", "/") + ".py")).exists() else "/__init__.py")))
         doc = ast.get_docstring(ast.parse((ROOT / path).read_text())) or ""
         first = doc.strip().splitlines()[0] if doc.strip() else ""
         rows.append([code(path.removeprefix("src/openverifiers/")), tx(str(sizes[m])),
@@ -1353,22 +1354,18 @@ def gen_limitations() -> str:
     return md_to_typst((ROOT / "KNOWN_LIMITATIONS.md").read_text())
 
 
+CLI_RUNS = [("ov --help", 0), ("ov run", 2), ("ov run --help", 2), ("ov exam --help", 0),
+            ("ov audit", 2), ("ov audit --help", 2), ("ov state", 2), ("ov state --help", 1),
+            ("ov bench --help", 2), ("ov gate --help", 0), ("ov query x.ov", 2),
+            ("ov examples/chem/q11.ov", 2)]
+
+
 def gen_cli() -> str:
     out = []
-    for cmd in ("ov --help", "ov run", "ov exam --help", "ov audit", "ov state", "ov bench --help",
-                "ov gate --help", "ov run --help", "ov query x.ov", "ov examples/chem/q11.ov",
-                "ov state --help", "ov audit --help"):
-        r = B.sh(cmd, check=False)
-        o = B.normalise(r.stdout + r.stderr, None)
-        lines = o.splitlines()
-        if len(lines) > 14:
-            o = "\n".join(lines[-14:]) if "Traceback" in o else "\n".join(lines[:40])
-        out.append(f"#runbox({B.ts(cmd)}, {r.returncode}, {B.ts(o.rstrip())}, "
-                   f"{B.ts('last 14 lines of a Python traceback shown' if 'Traceback' in r.stderr else '')})")
-        B.STATS["runs"] += 1
+    for cmd, code_ in CLI_RUNS:
+        mask = ' @@ mask=File "/[^"]*"' if "state --help" in cmd else ""
+        out.append(B.render_run(B.do_run(f"{cmd} @@ exit={code_}{mask}", ARGS)))
     return "\n".join(out)
-
-
 
 
 def lang_doc_codes() -> dict[str, str]:

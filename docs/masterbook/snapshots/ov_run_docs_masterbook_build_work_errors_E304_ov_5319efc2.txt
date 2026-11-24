@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E304.ov:4:22: error[E304]: '0 t' reads as the quantity 0 t (the unit 't'), but 't' is also a property here
+    invariant pos: p > 0 t > 0
+                       ^^^
+  hint: if you meant the number 0 followed by the property t, end the comparison first: put the conditions on separate `invariant` lines, or write (0) t

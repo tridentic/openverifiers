@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E404.ov:3:43: error[E404]: generator 'g' must draw from a closed predicate with one set-valued output
+  generator g(x: Number) yields Number from q(x)
+                                            ^^^^
+  hint: declare e.g. `predicate p(x: T) -> {U} world closed`

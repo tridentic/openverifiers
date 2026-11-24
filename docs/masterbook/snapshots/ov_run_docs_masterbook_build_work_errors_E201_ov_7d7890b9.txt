@@ -1,0 +1,4 @@
+docs/masterbook/build/work/errors/E201.ov:1:19: error[E201]: unknown predicate 'frob'
+  scenario s { fact frob(a) }
+                    ^^^^^^^
+  hint: declare it with `entity`, `predicate` or `function`

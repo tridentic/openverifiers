@@ -1,0 +1,34 @@
+``ov exam``: the exam tier (W3). Runs the drawn exam problems and reports capability.
+
+    ov exam [DIR] [--strict] [--drafts] [--json]
+
+``DIR`` (default ``benchmarks/exams/jee2025``) holds ``list.json``: the drawn
+problems with their official answers. That file is the gold; it was committed
+before any formalization. Each problem has a directory ``DIR/<id>/`` with either
+
+- ``case.ov`` (the formalization) and ``answer.json`` (how its answer is read):
+
+      {"read": "numeric", "query": 2, "unit": "g/cm^3"}
+      {"read": "options", "options": {"A": [1], "B": [2, 3], "C": [4], "D": [5]}}
+      {"read": "choice", "query": 1, "options": {"A": "2", "C": "sqrt(5/2)"}}
+
+  An optional ``"assumptions": [...]`` lists statements the formalization takes
+  as given that are not approved or not proven (for example an UNPROVEN library
+  theorem restated in the case); the report shows them with the answer.
+  Queries are numbered from 1 in file order. ``numeric``: the query's single
+  value (in ``unit``, if given) is compared with the official answer, an exact
+  number or an accepted range ``[lo to hi]``. ``choice``: the query's single
+  value is compared with each option's value (numbers, + - * /, sqrt; the
+  option texts are transcribed from the paper); the answer is the matching option.
+  ``options``: an option is true
+  if all its queries are PROVEN, false if one is REFUTED, else undecided. The
+  answer is the set of true options; it counts only if every option is decided.
+
+- or ``status.json`` when the problem is not formalized:
+  ``{"category": "...", "note": "..."}`` (``CATEGORIES`` below).
+
+Outcomes: ``solved``, ``wrong`` (a definite answer other than the official
+one), ``unknown`` (some needed verdict is UNKNOWN), ``error`` (the file does not
+load), ``not_formalized``. Results that load draft packages are provisional.
+
+Untrusted tooling: it reads verdicts, it never makes one.

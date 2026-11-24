@@ -1,0 +1,3 @@
+docs/masterbook/build/work/errors/E205.ov:5:51: error[E205]: 'net_force' takes 2 argument(s)
+  test x { scenario s uses m { entity c: Body  fact net_force(c) } }
+                                                    ^^^^^^^^^^^^

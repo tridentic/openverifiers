@@ -5,3 +5,5 @@
 03_runtime.typ
 04_okql.typ
 05_prover.typ
+06_trust.typ
+07_cases.typ

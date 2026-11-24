@@ -555,6 +555,7 @@ def figure(name: str, caption: str, kind: str, width: str = "100%", planned: boo
 
 def render_fig(name: str) -> str:
     f = FIGS[name]
+    lab = f" <fig-{name}>" if FIGURES_USED.count(name) <= 1 else ""
     try:
         content = f["fn"]()
     except Exception as e:
@@ -570,9 +571,9 @@ def render_fig(name: str) -> str:
         path = f"/build/fig/{name}.svg"
     else:                                    # Typst content (several images)
         return (f"#figbox({content}, {ts(f['caption'])}, {ts(f['kind'])}, "
-                f"{'true' if f['planned'] else 'false'}, {ts(name)}) <fig-{name}>")
+                f"{'true' if f['planned'] else 'false'}, {ts(name)}){lab}")
     return (f"#fig({ts(path)}, {ts(f['caption'])}, {ts(f['kind'])}, auto, "
-            f"{'true' if f['planned'] else 'false'}, {ts(name)}) <fig-{name}>")
+            f"{'true' if f['planned'] else 'false'}, {ts(name)}){lab}")
 
 
 # The figure, generator and lowering definitions live in a sibling module so this

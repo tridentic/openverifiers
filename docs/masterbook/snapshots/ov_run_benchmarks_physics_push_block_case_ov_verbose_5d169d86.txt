@@ -1,0 +1,11 @@
+case.ov:27 [test push_block]  query FIND ?m WHERE block.mass = ?m
+  PROVEN  m = 5 kg  assumptions {frictionless}  trust {kernel}
+    #0 push_block_s.L23: on(block, floor)  (case.ov:23)
+    #1 push_block_s.L24: pushed(block, 10 N)  (case.ov:24)
+    #2 push_block_s.L25: Body.accel(block, 2 m/s^2)  (case.ov:25)
+    #3 push_block_s.frictionless: frictionless(floor)  (case.ov:26)
+    #4 bench.push_block.smooth: net_force(block, 10 N)  (case.ov:13)
+    #5 physics.mechanics.newton2#mass: Body.mass(block, 5 kg)  (mechanics.ov:20)
+    #6 ov.query.push_block_s.1: ov.query.push_block_s.1(5 kg)  (case.ov:27)
+case.ov:28 [test push_block]  query WHAT IF RETRACT frictionless(floor) THEN FIND ?m WHERE block.mass = ?m
+  UNKNOWN (open_world)

@@ -111,9 +111,14 @@ def proof_dag(trace_path: Path, proof_ids: tuple[int, ...], title: str,
         for p in s["premises"]:
             if p in ids:
                 lines.append(f"  s{p} -> s{i};")
-        for n in s.get("naf", []):
+        for k, n in enumerate(s.get("naf", [])):
             if n.get("step") in ids:
                 lines.append(f'  s{n["step"]} -> s{i} [style=dashed, label="not"];')
+            elif n.get("step") is None:
+                na = atom_text(atom_from_json(n["atom"]))
+                lines.append(f'  n{i}_{k} [label="not {esc(na)}\\nabsent from the complete model", '
+                             f'style="dashed,rounded", fillcolor="white"];')
+                lines.append(f'  n{i}_{k} -> s{i} [style=dashed];')
     lines.append(f'  labelloc="t"; label="{esc(title)}";')
     return G("\n".join(lines))
 
@@ -1692,6 +1697,29 @@ def low_check_rule() -> str:
                 rawov_in_span(f, 1, 40))
 
 
+def low_jee() -> str:
+    return side(JEE + ":12-25", file_lines(JEE, 12, 25), "compiled class (component invariants included)",
+                classdef_text(JEE, "ChargedConductingSphere", props=True))
+
+
+def low_decay() -> str:
+    f = "tests/v1/transcendental.ov"
+    return side(f + ":5-14", file_lines(f, 5, 14), "compiled class Decay", classdef_text(f, "Decay"))
+
+
+def gen_mcp_rawov() -> str:
+    from openverifiers.raw.program import Program
+    from openverifiers.rawtext import dump
+    res = mcp_scenario("push", "main")
+    p = res.lowered[0].program
+    keep = ("agent.workflow.gate_", "gate.", "repo_policy.", "ov.query.gate")
+    sel = Program((), tuple(f for f in p.facts if f.id.startswith(keep)),
+                  tuple(r for r in p.rules if r.id.startswith(keep)), ())
+    t = re.sub(r' span\("[^"]*", (\d+), \d+, (\d+), \d+\)', r" span(L\1-L\2)", B.rel(dump(sel)))
+    return (f"#listing({B.ts('RawOV of the gate scenario for push/main (rules of agent.workflow named gate_*, the policy facts, the request)')}, "
+            f"\"rawov\", {B.ts(t)})")
+
+
 FIGDEFS: dict[str, tuple[Any, str, str, str, bool]] = {
     "layers": (fig_layers, "The ten-layer architecture (MP §3) with the status of each layer as of the stamped commit", "conceptual, statuses from this book's chapters", "100%", False),
     "pipeline": (fig_pipeline, "The pipeline OV -> RawOV -> OVTrace -> checker -> verdicts and OVState, with the module that does each step", "conceptual; module paths real", "88%", False),
@@ -1743,10 +1771,10 @@ GENDEFS = {
     "trace_excerpt": gen_trace_excerpt, "program_json": gen_program_json_excerpt,
     "state_excerpt": gen_state_excerpt, "labels_trace": gen_labels_trace,
     "labels_verdicts": gen_labels_verdicts, "records_excerpt": gen_records_excerpt,
-    "blueprint": gen_blueprint, "sdk": gen_sdk,
+    "blueprint": gen_blueprint, "sdk": gen_sdk, "mcp_rawov": gen_mcp_rawov,
 }
 LOWERDEFS = {
     "class": low_class, "newton": low_newton, "transformation": low_transformation,
     "generator": low_generator, "assume": low_assume, "inherit": low_inherit,
-    "pattern": low_pattern, "units": low_units, "extends": low_extends, "checks": low_check_rule,
+    "pattern": low_pattern, "jee": low_jee, "decay": low_decay, "units": low_units, "extends": low_extends, "checks": low_check_rule,
 }

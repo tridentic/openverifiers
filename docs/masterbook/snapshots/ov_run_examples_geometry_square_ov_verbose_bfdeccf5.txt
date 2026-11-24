@@ -1,0 +1,37 @@
+square.ov:26  query [test fourth_vertex] FIND ?p: Point WHERE Square{ vertices = {(3,1), (1,3), (5,3), ?p} }
+  PROVEN  ?p = (3, 5)  trust {kernel}
+  expect: ok
+    solve [z3] invariants of Square: sat
+    re-check [checker] vertices = {(3, 1), (1, 3), (5, 3), (3, 5)}: every invariant holds
+    block ?p = (3, 5)
+    solve [z3] invariants of Square minus 1 found: unsat
+    re-solve [z3, fresh solver] invariants of Square minus 1 found: unsat
+square.ov:28  query [test fourth_vertex] PROVE UNIQUE ?p
+  PROVEN  ?p = (3, 5)  trust {kernel, z3_unsat}
+  expect: ok
+    solve [z3] invariants of Square: sat
+    re-check [checker] vertices = {(3, 1), (1, 3), (5, 3), (3, 5)}: every invariant holds
+    block ?p = (3, 5)
+    solve [z3] invariants of Square minus 1 found: unsat
+    re-solve [z3, fresh solver] invariants of Square minus 1 found: unsat
+check class Quadrilateral is consistent
+  PROVEN  trust {kernel}
+    symmetry: every constraint is invariant under shifting G2_vertices_x, G5_vertices_x, G8_vertices_x, G11_vertices_x together, so G2_vertices_x = 0
+    symmetry: every constraint is invariant under shifting G3_vertices_y, G6_vertices_y, G9_vertices_y, G12_vertices_y together, so G3_vertices_y = 0
+    solve [small-scope [-4, 4]] invariants of Quadrilateral: sat
+    re-check [checker] vertices = {(0, 0), (0, -1), (0, 2), (0, 1)}: every invariant holds
+check class Square is consistent
+  PROVEN  trust {kernel}
+    symmetry: every constraint is invariant under shifting G2_vertices_x, G5_vertices_x, G8_vertices_x, G11_vertices_x together, so G2_vertices_x = 0
+    symmetry: every constraint is invariant under shifting G3_vertices_y, G6_vertices_y, G9_vertices_y, G12_vertices_y together, so G3_vertices_y = 0
+    solve [small-scope [-4, 4]] invariants of Square: sat
+    re-check [checker] vertices = {(0, 0), (1, 0), (1, 1), (0, 1)}: every invariant holds
+check theorem Square.diagonals_equal
+  PROVEN  trust {red:fix_order, red:no_invariants, red:translate, z3_unsat}
+    symmetry: the counterexample's ordering of vertices is fixed (its elements are interchangeable unknowns)
+    implied by the counterexample's conditions, so left out: Square.shape
+    symmetry: every constraint is invariant under shifting G2_vertices_x, G5_vertices_x, G8_vertices_x, G11_vertices_x together, so G2_vertices_x = 0
+    symmetry: every constraint is invariant under shifting G3_vertices_y, G6_vertices_y, G9_vertices_y, G12_vertices_y together, so G3_vertices_y = 0
+    solve [z3] not Square.diagonals_equal (without the invariants): unsat
+    re-solve [z3, fresh solver] not Square.diagonals_equal (without the invariants): unsat
+2/2 expectations met

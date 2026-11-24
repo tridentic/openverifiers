@@ -1,0 +1,40 @@
+transcendental.ov:33  query FIND ?N WHERE Decay{ N0 = 1000, k = 1/10, t = 5, N = ?N }
+  PROVEN  ?N = 606.5306597 (± 1.8e-56)  trust {kernel}
+    numeric [checker]: each unknown from its definition, enclosed exactly or by a rigorous interval: every invariant holds
+transcendental.ov:34  query FIND ?h WHERE FirstOrder{ k = 1/20, half = ?h }
+  PROVEN  ?h = 13.86294361 (± 1.0e-57)  trust {kernel}
+    numeric [checker]: each unknown from its definition, enclosed exactly or by a rigorous interval: every invariant holds
+transcendental.ov:35  query FIND ?c WHERE Circle2{ r = 1, c = ?c }
+  PROVEN  ?c = 2π  trust {kernel}
+    solve [z3] invariants of Circle2: sat
+    re-check [checker] r = 1, c = 221069929750889/35184372088832: fails Circle2.circ
+    lift the model into Q(pi) [untrusted search]
+    re-check [checker] r = 1, c = 2π: every invariant holds
+    block ?c = 2π
+    solve [z3] invariants of Circle2 minus 1 found: unsat
+    re-solve [z3, fresh solver] invariants of Circle2 minus 1 found: unsat
+check class Decay is consistent
+  UNKNOWN  (plugin_unknown)
+    solve [small-scope [-4, 4]] invariants of Decay: sat
+    re-check [checker] N0 = 1, k = 0, t = 0, N = 1: cannot decide (the intervals overlap: not decided numerically)
+check theorem Decay.rate_law
+  PROVEN  trust {kernel}
+    solve [z3] not Decay.rate_law (without the invariants): unsat
+    re-solve [z3, fresh solver] not Decay.rate_law (without the invariants): unsat
+    certificate [kernel: raw/certificate.py]: exact normal form of multiplier * (lhs - rhs) - ideal part - squares is 0; an identity
+check theorem Decay.positive
+  PROVEN  trust {z3_unsat}
+    solve [z3] not Decay.positive (without the invariants): sat
+    solve [z3] invariants of Decay and not Decay.positive: unsat
+    re-solve [z3, fresh solver] invariants of Decay and not Decay.positive: unsat
+check class FirstOrder is consistent
+  UNKNOWN  (plugin_unknown)
+    side condition (division, multiplied through): G1_k != 0
+    solve [small-scope [-4, 4]] invariants of FirstOrder: sat
+    re-check [checker] k = 1, half = 0: fails FirstOrder.half_life
+check class Circle2 is consistent
+  PROVEN  trust {kernel}
+    solve [z3] invariants of Circle2: sat
+    re-check [checker] r = 1, c = 221069929750889/35184372088832: fails Circle2.circ
+    lift the model into Q(pi) [untrusted search]
+    re-check [checker] r = 1, c = 2π: every invariant holds

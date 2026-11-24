@@ -1,0 +1,12 @@
+check class HomogeneousOde is consistent
+  PROVEN  trust {kernel}
+check theorem HomogeneousOde.solves
+  PROVEN  trust {kernel}
+check class FirstOrderDecay is consistent
+  PROVEN  trust {kernel}
+check theorem FirstOrderDecay.log_slope
+  PROVEN  trust {kernel}
+check class IsothermalWork is consistent
+  PROVEN  trust {kernel}
+check theorem IsothermalWork.pressure
+  PROVEN  trust {kernel}

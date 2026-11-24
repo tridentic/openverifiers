@@ -1,0 +1,8 @@
+q11.ov:11  query FIND ?A, ?C, ?D
+  PROVEN  A = 2-methylbut-1-ene, C = butanone, D = methanal  assumptions {}  trust {kernel}
+q11.ov:12  query FIND ?p WHERE major(add(B, HBr, peroxide)) = ?p
+  PROVEN  p = 1-bromopentane  assumptions {single_major}  trust {kernel}
+q11.ov:13  query PROVE optically_active(add(C, HCN))
+  REFUTED  assumptions {}  proof: 27 steps  trust {kernel}
+q11.ov:14  query WHAT IF RETRACT not tautomerizes(D) THEN FIND ?A
+  UNKNOWN (missing_facts)  A in {2-methylbut-1-ene, 2-methylbut-2-ene}

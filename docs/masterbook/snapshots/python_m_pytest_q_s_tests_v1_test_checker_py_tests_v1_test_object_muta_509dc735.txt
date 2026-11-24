@@ -1,0 +1,8 @@
+nat: killed 38/39 non-equivalent mutants; weakened-but-sound {'dropped_step': 1}; equivalent {}; survivors {}
+newton2_ov: killed 28/28 non-equivalent mutants; weakened-but-sound {}; equivalent {}; survivors {}
+penguin: killed 68/68 non-equivalent mutants; weakened-but-sound {}; equivalent {}; survivors {}
+q11: killed 2653/2653 non-equivalent mutants; weakened-but-sound {}; equivalent {}; survivors {}
+q11_ov: killed 2395/2395 non-equivalent mutants; weakened-but-sound {}; equivalent {}; survivors {}
+reach: killed 138/138 non-equivalent mutants; weakened-but-sound {}; equivalent {}; survivors {}
+........{'rejected / claim False': 146, 'rejected / claim True': 111, 'accepted / claim True': 80, 'rejected / claim None': 7, 'positive-sum mutants': 4, 'accepted / claim None': 1, 'witness mutants': 6}
+22 passed <masked>

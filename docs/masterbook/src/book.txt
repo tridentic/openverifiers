@@ -1,3 +1,4 @@
 # Chapter order for scripts/build_masterbook.py
 00_front.typ
 01_big_picture.typ
+02_language.typ

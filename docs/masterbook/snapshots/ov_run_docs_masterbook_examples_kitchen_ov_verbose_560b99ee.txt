@@ -1,0 +1,7 @@
+kitchen.ov:15  query PROVE cooked(egg)
+  PROVEN  assumptions {}  proof: 3 steps  trust {kernel}
+    #0 more.L10: raw(egg)  (kitchen.ov:10)
+    #2 more.L14: allowed(egg)  (kitchen.ov:14)
+    #3 kitchen.cook: cooked(egg)  (kitchen.ov:6)
+kitchen.ov:16  query PROVE cooked(ham)
+  UNKNOWN (missing_facts)  missing: allowed(ham)

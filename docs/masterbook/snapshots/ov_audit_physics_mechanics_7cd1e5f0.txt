@@ -1,0 +1,33 @@
+package physics.mechanics  (src/openverifiers/packages/physics/mechanics.ov)
+
+axioms: 13  (foundation 2, law 3, axiom 0, conservative definition 8)
+  foundation ordered-field arithmetic  built in
+  foundation polynomial integral and derivative  built in
+  law        newton2  mechanics.ov:20
+  definition ConstantAcceleration.elapsed  mechanics.ov:34  [strict reading: an axiom, not of the form `property = expression`: it constrains existing symbols]
+  definition ConstantAcceleration.velocity  mechanics.ov:35
+  definition ConstantAcceleration.displacement  mechanics.ov:36
+  definition ConstantForce.positive_mass  mechanics.ov:50  [strict reading: an axiom, not of the form `property = expression`: it constrains existing symbols]
+  law        ConstantForce.newton2  mechanics.ov:51
+  definition UniformGravity.g_positive  mechanics.ov:63  [strict reading: an axiom, not of the form `property = expression`: it constrains existing symbols]
+  law        UniformGravity.weight  mechanics.ov:65
+  definition UniformGravity.gravity_only  mechanics.ov:66  [strict reading: an axiom, F is defined more than once]
+  definition BodyPair.same_time  mechanics.ov:81  [strict reading: an axiom, not of the form `property = expression`: it constrains existing symbols]
+  definition BodyPair.isolated  mechanics.ov:82  [strict reading: an axiom, not of the form `property = expression`: it constrains existing symbols]
+
+theorems: 11  (PROVEN 11, UNPROVEN 0, REFUTED 0)
+  PROVEN    ConstantAcceleration.suvat_v  trust {kernel}  mechanics.ov:37
+  PROVEN    ConstantAcceleration.suvat_s  trust {kernel}  mechanics.ov:38
+  PROVEN    ConstantAcceleration.suvat_timeless  trust {kernel}  mechanics.ov:39
+  PROVEN    ConstantAcceleration.suvat_average  trust {kernel}  mechanics.ov:40
+  PROVEN    ConstantAcceleration.suvat_final  trust {kernel}  mechanics.ov:41
+  PROVEN    ConstantForce.work_energy  trust {kernel}  mechanics.ov:53
+  PROVEN    ConstantForce.impulse  trust {kernel}  mechanics.ov:55
+  PROVEN    UniformGravity.free_fall_accel  trust {kernel}  mechanics.ov:67
+  PROVEN    UniformGravity.energy_conservation  trust {kernel}  mechanics.ov:69
+  PROVEN    BodyPair.momentum  trust {kernel}  mechanics.ov:83
+  PROVEN    BodyPair.impulse_balance  trust {kernel}  mechanics.ov:84
+
+axiom ratio: 13 / (13 + 11) = 0.54
+claim ratio: 5 / (5 + 11) = 0.31  (foundations, laws and non-conservative axioms; definitions add no trust)
+strict claim ratio: 0.50  (a class invariant counts as a definition only if it is `p = E` defining one property)

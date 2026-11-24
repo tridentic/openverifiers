@@ -59,7 +59,7 @@ def wrap(s: str, n: int = 38) -> str:
 
 def G(body: str, rankdir: str = "TB", extra: str = "") -> str:
     return ("digraph G {\n  graph [rankdir=%s, fontname=\"Helvetica\", fontsize=10, "
-            "nodesep=0.25, ranksep=0.35, bgcolor=\"white\" %s];\n"
+            "nodesep=0.25, ranksep=0.35, bgcolor=\"white\", size=\"6.5,8.4\" %s];\n"
             "  node [fontname=\"Helvetica\", fontsize=9, shape=box, style=\"rounded,filled\", "
             "fillcolor=\"#f4f4f4\", color=\"#666666\", margin=\"0.08,0.04\"];\n"
             "  edge [fontname=\"Helvetica\", fontsize=8, color=\"#555555\", arrowsize=0.6];\n"
@@ -140,7 +140,7 @@ def fig_layers() -> str:
     for lid, name, st, what in LAYERS:
         border = ' color="#c0392b" penwidth=2' if lid in ("L0", "L1") else ""
         rows.append(f'  {lid} [label="{lid}  {esc(name)}   [{st}]\\n{wrap(what, 90)}", '
-                    f'fillcolor="{col[st]}", width=6.8{border}];')
+                    f'fillcolor="{col[st]}", width=6.0{border}];')
     edges = " -> ".join(lid for lid, *_ in LAYERS)
     return G("\n".join(rows) + f"\n  {edges} [style=invis];\n"
              '  legend [shape=plaintext, style="", label="red border: trusted (TCB)   '
@@ -551,7 +551,7 @@ def railroad(name: str, x: Any) -> str:
     nodes.append(f'  start [label="{name}", shape=plaintext, style="", fontname="Helvetica-Bold"];')
     nodes.append('  end [shape=doublecircle, width=0.08, label="", style=""];')
     build(x, "start", "end")
-    return ("digraph R {\n  graph [rankdir=LR, nodesep=0.12, ranksep=0.18, bgcolor=white];\n"
+    return ("digraph R {\n  graph [rankdir=LR, nodesep=0.12, ranksep=0.18, bgcolor=white, size=\"6.4,4\"];\n"
             '  node [fontname="Helvetica", fontsize=9, height=0.22, margin="0.05,0.02"];\n'
             "  edge [arrowsize=0.4, color=\"#444444\"];\n" + "\n".join(nodes) + "\n"
             + "\n".join(edges) + "\n}\n")
@@ -589,7 +589,7 @@ def rail_group(gid: str) -> str:
         svg = B.dot_to_svg(f"{gid}_{n}", railroad(n, parse_expansion(rules[n])))
         cells.append(f'image("/build/fig/{svg.name}", width: auto, height: auto)')
     return ("block(width: 100%, stack(spacing: 4pt, " +
-            ", ".join(f"box(width: 100%, align(left, scale(x: 70%, y: 70%, reflow: true, {c})))" for c in cells) + "))")
+            ", ".join(f"align(left, {c})" for c in cells) + "))")
 
 
 # ============================================================================ figures: semantics

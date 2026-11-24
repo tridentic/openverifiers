@@ -1,0 +1,4 @@
+checks.ov:10  query FIND ?m WHERE c.mass = ?m
+  PROVEN  m = 5 kg  assumptions {}  trust {kernel}
+checks.ov:18  query PROVE net_force(d, 10 N)
+  INCONSISTENT  conflict: clash.L15, clash.L16, clash.L17  trust {kernel}

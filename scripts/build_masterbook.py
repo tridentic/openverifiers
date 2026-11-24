@@ -573,7 +573,7 @@ def render_fig(name: str) -> str:
     else:                                    # Typst content (several images)
         return (f"#figbox({content}, {ts(f['caption'])}, {ts(f['kind'])}, "
                 f"{'true' if f['planned'] else 'false'}, {ts(name)}) <fig-{name}>")
-    return (f"#fig({ts(path)}, {ts(f['caption'])}, {ts(f['kind'])}, {f['width']}, "
+    return (f"#fig({ts(path)}, {ts(f['caption'])}, {ts(f['kind'])}, auto, "
             f"{'true' if f['planned'] else 'false'}, {ts(name)}) <fig-{name}>")
 
 

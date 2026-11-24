@@ -38,3 +38,9 @@ def test_gate_decides_tool_calls_by_the_policy() -> None:
                                             "needs_human", "unknown"]
     assert got[0]["trust"] == ["kernel"] and got[3]["trust"] == []   # unnamed: no verdict
     assert bad_method["error"]["code"] == -32601 and parse["error"]["code"] == -32700
+
+
+def test_decisions_under_a_draft_policy_are_provisional() -> None:
+    from openverifiers.mcp_gate import decide
+    d = decide(POLICY, "push", "main", drafts=True)
+    assert d["decision"] == "refused" and d["provisional"] == ["repo_policy"]

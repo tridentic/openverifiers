@@ -31,7 +31,13 @@ $py -c "import json; d=json.load(open('$OUT/differential.json')); print({k: d[k]
 
 echo "== unsound mutants: rule path and object path (Condition B)"
 ($py -m pytest -q tests/v1/test_checker.py tests/v1/test_object_mutants.py -s || true) \
-  | grep -E "^\{|passed|failed" | tee "$OUT/mutants.txt"
+  | grep -E "\{'|killed|passed|failed" | tee "$OUT/mutants.txt"   # per-path tallies
+
+echo "== library theorems at {kernel} (MP §8 Trust)"
+$py scripts/kernel_share.py | tee "$OUT/kernel_share.txt"
+
+echo "== timing limits (MP §8 Performance: ov check p95, q11, 10k facts)"
+($py -m pytest -q -m bench || true) | tail -1 | tee "$OUT/timing.txt"
 
 echo "== faithfulness lint"
 ($py -m openverifiers.bench.faithfulness || true) | tail -1 | tee "$OUT/faithfulness.txt"

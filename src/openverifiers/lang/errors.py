@@ -3,14 +3,19 @@
 Codes (docs/LANGUAGE.md lists every one):
 
 * ``E1xx`` syntax: E101 unexpected token, E102 unexpected character,
-  E103 unknown unit, E104 bad number.
+  E103 unknown unit.
 * ``E2xx`` names and modules: E201 unknown name, E202 duplicate declaration,
-  E203 package not found, E204 unknown field, E205 wrong number of arguments,
-  E206 not allowed here, E207 unsupported until a later milestone.
+  E203 package (or OVState file) not found, E204 unknown field, E205 wrong number
+  of arguments, E206 not allowed here, E207 unsupported until a later milestone,
+  E208 an undeclared type under ``--strict`` (W201 otherwise), E209 an imported
+  OVState is refused (tampered, not canonical, or unreadable).
 * ``E3xx`` types and units: E301 dimension mismatch, E302 type mismatch,
-  E303 not a quantity.
-* ``E4xx`` lowering: E401 nothing to solve for, E402 cannot solve,
-  E403 unsafe variable, E404 generator source not finite.
+  E303 not a quantity, E304 a number followed by a name that is both a unit and
+  a property.
+* ``E4xx`` lowering and classes: E401 nothing to solve for, E402 cannot solve,
+  E403 unsafe variable, E404 generator source not finite, E405 a class formula
+  the exact evaluator cannot decide, E406 a class inherits from itself, E407 a
+  query names a lemma.
 * ``W2xx`` warnings: W201 undeclared type used as an opaque entity type,
   W202 a theorem may be vacuous (``exists`` over an invariant's generator).
 """

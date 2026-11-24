@@ -84,8 +84,9 @@ def decide(policy: Path, tool: str, target: str, drafts: bool = False) -> dict[s
         return {"decision": "unknown", "why": "; ".join(d.message for d in e.diagnostics)}
     for a, name in zip(res.answers, ("refused", "needs_human", "permitted"), strict=True):
         if a.verdict == "PROVEN":
+            draft = [pkg] if "drafts" in policy.resolve().parts else []   # an unapproved policy
             return {"decision": name, "trust": sorted(a.trust_base),
-                    "provisional": res.draft_packages}
+                    "provisional": sorted({*res.draft_packages, *draft})}
     return {"decision": "unknown", "why": "the policy decides nothing for this call"}
 
 

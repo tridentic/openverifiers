@@ -15,7 +15,8 @@ python -m openverifiers.runner examples/chem/q11.ov --verbose
 
 The runner prints each query's verdict and, with `--verbose`, the proof steps
 with their source lines. It also checks every `expect` and exits with status 1
-if one fails. (`ov run` arrives in Milestone 3; full OKQL in Milestone 4.)
+if one fails. `ov FILE.ov` is the same as `ov run FILE.ov`; `ov COMMAND --help` prints
+each command's usage, and `openverifiers.sdk` is the library side (docs/SDK.md).
 
 ## A first scenario
 
@@ -366,7 +367,7 @@ fact type Square extends Quadrilateral {
 |---|---|
 | `FIND ?p: Point WHERE Square{vertices = {(3,1), (1,3), (5,3), ?p}} [LIMIT n]` | every solution (default limit 16), each re-checked |
 | `PROVE UNIQUE ?p [WHERE ...]` | PROVEN if blocking the solution leaves no other; REFUTED with two witnesses; without WHERE it reuses the FIND before it |
-| `COUNT ?p WHERE ...` | the exact number of solutions, or UNKNOWN(budget) past 64 |
+| `COUNT ?p WHERE ...` | the exact number of solutions, or UNKNOWN(budget) past 4096 |
 | `CHECK T1{...} IS T` | PROVEN, or REFUTED naming the invariants the instance fails |
 | `COUNTEREXAMPLE T.theorem` | the theorem's verdict: REFUTED with a checked counterexample, PROVEN if its negation is unsat, UNKNOWN otherwise |
 
@@ -567,7 +568,7 @@ exact span.
 | E204 | unknown field |
 | E205 | wrong number of arguments |
 | E206 | construct not allowed here (axioms outside packages, a predicate used as a value, ...) |
-| E207 | not supported yet (`import state`, `tolerance`, `derived`) |
+| E207 | not supported yet (`derived`); `import state` and `tolerance` are supported |
 | E301 | dimension mismatch (`2 kg + 1 m`, `expected Mass, got Length`) |
 | E302 | type mismatch |
 | E303 | arithmetic or ordering on something that is not a quantity |
@@ -580,6 +581,7 @@ exact span.
 | E406 | a class inherits from itself |
 | E407 | a query names a lemma (`COUNTEREXAMPLE C.lemma`); a lemma serves only its own package's proofs, so anything a scenario, a query or another package relies on must be a `theorem` |
 | E208 | an undeclared type under `--strict` (W201 otherwise) |
+| E209 | an imported OVState is refused: tampered (hash mismatch), not canonical (unsorted, non-ground atoms), or unreadable |
 | W201 | warning: an undeclared type is used and treated as an opaque entity type |
 | W202 | warning: a theorem says `exists` over the same generator as an invariant, so it may be vacuous |
 

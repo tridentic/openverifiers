@@ -721,7 +721,7 @@ class _Lowering:
                     for f in load_state(name, path.read_text(), span):
                         self.fact(f.id, f.atom, f.origin, f.span)
                 except (StateError, ValueError) as e:
-                    raise _Fail("E208", f"OVState '{name}': {e}", span) from None
+                    raise _Fail("E209", f"OVState '{name}': {e}", span) from None
         stmts = [self.hide(st) for st in _stmts(env, info.decl)]
         known: set[str] = set()
         binders: list[tuple[list[str], list[Literal], A.FactStmt | A.GenUse]] = []

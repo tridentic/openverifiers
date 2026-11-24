@@ -26,7 +26,7 @@ checker.
 |---|---|
 | `FIND ?p: T WHERE C{...} [LIMIT n]` | every solution (default limit 16), each re-checked by the trusted evaluator |
 | `PROVE UNIQUE ?p [WHERE C{...}]` | PROVEN if, after blocking the solution, the solver finds no other; REFUTED with two witnesses; REFUTED if there is none |
-| `COUNT ?p WHERE C{...}` | PROVEN with the exact number of solutions; UNKNOWN(budget) past 64 |
+| `COUNT ?p WHERE C{...}` | PROVEN with the exact number of solutions; UNKNOWN(budget) past 4096 |
 | `CHECK C1{...} IS C` | PROVEN, or REFUTED naming each invariant the instance fails |
 | `COUNTEREXAMPLE C.theorem` | **the theorem's verdict**: REFUTED with a counterexample the evaluator confirmed; PROVEN if the theorem's negation is unsat; UNKNOWN otherwise (budget, or plugin_unknown for a model with irrational coordinates) |
 

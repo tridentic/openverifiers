@@ -68,7 +68,7 @@ def test_loader_refuses_tampering_and_non_canonical_files(tmp_path: Path) -> Non
     (tmp_path / "use.ov").write_text(USE)
     with pytest.raises(OVError) as e:
         run_file(tmp_path / "use.ov", files={str(tmp_path / "use.ov")})
-    assert "E208" in str(e.value)
+    assert "E209" in str(e.value)               # E208 is --strict's W201
     (tmp_path / "use2.ov").write_text(USE.replace("fam.json", "missing.json"))
     with pytest.raises(OVError):
         run_file(tmp_path / "use2.ov", files={str(tmp_path / "use2.ov")})

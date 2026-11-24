@@ -22,7 +22,7 @@ LIMIT = 1150                                 # D-030: main 1,150 (was 1,090, D-0
 #: order v1.1 and M-CAP item 4), with its own cap, outside the main count.
 UNITS = {"raw/formula.py": 450}
 #: The exact-arithmetic unit (CTO decision D-021, W1): surds, intervals, numeric
-#: checks, polynomial normal form and certificate checking, cap 450.
+#: checks, polynomial normal form and certificate checking (cap 700, D-030).
 EXACT = ["raw/surd.py", "raw/interval.py", "raw/numeric.py", "raw/certificate.py",
          "raw/qpi.py"]
 EXACT_LIMIT = 700

@@ -33,7 +33,7 @@ FILES = [ROOT / "src/openverifiers/packages/physics/mechanics.ov",
          ROOT / "benchmarks/exams/jee2025/jee2025-math-p2q12/case.ov",   # surds (D-030)
          ROOT / "tests/v1/ln_ring.ov",                                  # ln, 1/u (D-030)
          ROOT / "tests/v1/trig_ring.ov",                                # sin, cos (D-033)
-         ROOT / "drafts/packages/physics/rotation.ov"]                  # N043 (D-033)
+         ROOT / "src/openverifiers/packages/physics/rotation.ov"]                  # N043 (D-033)
 
 
 def _records() -> list[tuple[list[dict[str, Any]], Any, int, dict[str, str]]]:

@@ -87,9 +87,9 @@ def test_evaluator_differentiates_trig_bodies_and_decides_points() -> None:
     assert I.decide("=", I.Iv(Fraction(0), Fraction(1)), I.Iv.of(Fraction(1))) is None
 
 
-def test_n043_is_a_kernel_theorem_in_the_draft() -> None:
+def test_n043_is_a_kernel_theorem() -> None:
     from openverifiers.objects.engine import Settings
-    f = Path(__file__).resolve().parents[2] / "drafts/packages/physics/rotation.ov"
+    f = Path(__file__).resolve().parents[2] / "src/openverifiers/packages/physics/rotation.ov"
     res = run_file(f, files={str(f)}, settings=Settings(drafts=True))
     got = {a.title: (a.verdict, tuple(sorted(a.trust_base))) for a in res.classes}
     assert got["theorem TorsionMotion.small_oscillation"] == ("PROVEN", ("kernel",))

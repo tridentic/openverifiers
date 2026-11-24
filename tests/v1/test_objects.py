@@ -106,8 +106,8 @@ def test_symmetry_pruning_never_changes_a_verdict() -> None:
 def test_diamond_includes_shared_invariants_once() -> None:
     env = load(GEOMETRY)
     names = [n for n, _ in env.objects.defs["Square"].invariants]
-    assert names == ["Quadrilateral.four", "Parallelogram.bisect", "Rectangle.right",
-                     "Rhombus.sides"]
+    assert names == ["Quadrilateral.four", "Quadrilateral.proper", "Parallelogram.bisect",
+                     "Rectangle.right", "Rhombus.sides"]      # M078 (packet 4): once each
 
 
 # ---------------------------------------------------------------- honest outcomes

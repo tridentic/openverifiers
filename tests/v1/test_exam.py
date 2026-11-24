@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from openverifiers import runner
 from openverifiers.bench import exam, faithfulness
 from openverifiers.lang import OVError
 from openverifiers.objects.engine import Settings
@@ -81,15 +82,34 @@ def test_lint_accepts_a_factor_and_the_real_cases() -> None:
     assert not [f for f in faithfulness.lint(JEE) if f.error]
 
 
-def test_draft_packages_load_only_when_asked() -> None:
-    case = JEE / "jee2025-phys-p2q3" / "case.ov"
+DRAFT_LIB = ("package probe.draftlib @0.1-draft\nfact type Box {\n  property side: Real\n"
+             "  property area: Real\n  invariant positive: side > 0\n"
+             "  invariant square: area = side * side\n}\n")
+
+
+def _with_a_draft(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Every library is approved since packet 4, so the draft-loading tests use a
+    draft package of their own in a temporary drafts/ folder."""
+    drafts = tmp_path / "drafts" / "packages"
+    (drafts / "probe").mkdir(parents=True)
+    (drafts / "probe" / "draftlib.ov").write_text(DRAFT_LIB)
+    monkeypatch.setattr(runner, "DRAFTS", drafts)
+    case = tmp_path / "case.ov"
+    case.write_text("import probe.draftlib\nscenario s uses probe.draftlib {\n"
+                    "  query FIND ?a WHERE Box{ side = 3, area = ?a }\n}\n")
+    return case
+
+
+def test_draft_packages_load_only_when_asked(tmp_path: Path,
+                                             monkeypatch: pytest.MonkeyPatch) -> None:
+    case = _with_a_draft(tmp_path, monkeypatch)
     with pytest.raises(OVError) as e:
         run_file(case, files={str(case)})
     assert "E203" in str(e.value)
     with pytest.raises(OVError):              # --strict never loads drafts
         run_file(case, files={str(case)}, settings=Settings(strict=True, drafts=True))
     res = run_file(case, files={str(case)}, settings=Settings(drafts=True))
-    assert res.draft_packages == ["physics.rotation"]
+    assert res.draft_packages == ["probe.draftlib"] and res.objects[0].verdict == "PROVEN"
 
 
 def test_unit_types(tmp_path: Path) -> None:
@@ -107,13 +127,22 @@ def test_unit_types(tmp_path: Path) -> None:
     assert "E201" in str(e.value)
 
 
-def test_exam_harness_end_to_end_on_one_problem(tmp_path: Path) -> None:
+def test_exam_harness_end_to_end_on_one_problem(tmp_path: Path,
+                                                monkeypatch: pytest.MonkeyPatch) -> None:
     listing = json.loads((JEE / "list.json").read_text())
     prob = next(p for p in listing["problems"] if p["id"] == "jee2025-phys-p2q3")
-    r = exam.run_problem(JEE, prob, Settings(drafts=True))
-    assert r.outcome == "solved" and r.provisional == ["physics.rotation"]
-    r2 = exam.run_problem(JEE, prob, Settings())
+    r = exam.run_problem(JEE, prob, Settings(strict=True))
+    assert r.outcome == "solved" and r.provisional == [] and r.assumptions   # N043 stated
+    case = _with_a_draft(tmp_path, monkeypatch)
+    root = case.parent / "exam"
+    (root / "p1").mkdir(parents=True)
+    (root / "p1" / "case.ov").write_text(case.read_text())
+    (root / "p1" / "answer.json").write_text('{"read": "numeric", "query": 1}')
+    p1 = {"id": "p1", "subject": "mathematics", "type": "numeric", "official_answer": "9"}
+    r1 = exam.run_problem(root, p1, Settings(drafts=True))
+    r2 = exam.run_problem(root, p1, Settings())
+    assert r1.outcome == "solved" and r1.provisional == ["probe.draftlib"]
     assert r2.outcome == "error" and r2.category == "library"
-    s = exam.summary([r, r2])
+    s = exam.summary([r1, r2])
     assert s["outcomes"] == {"solved": 1, "error": 1} and s["wrong"] == []
-    assert "PROVISIONAL" in exam.render([r])
+    assert "PROVISIONAL" in exam.render([r1]) and "ASSUMES" in exam.render([r])

@@ -1,8 +1,6 @@
-# DRAFT (MP-DOL): AI-drafted library lines, not approved by the founder. Loaded only by
-# `ov run --drafts` / `ov exam --drafts`; results that use it are provisional.
-#
 # physics.rotation: rigid bodies turning about a fixed axis.
-package physics.rotation @0.1-draft
+# Approved by the founder (packets dd2d4fd885a8 and d1c83e7ef19e), on signing the approval commit.
+package physics.rotation @0.1
 
 # Small oscillations about a fixed axis under a restoring torque -kappa theta, with
 # angular frequency omega. This class carries no equation of motion, so object

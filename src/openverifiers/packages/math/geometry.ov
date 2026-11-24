@@ -34,6 +34,10 @@ fact type RightTriangle extends Triangle {
 fact type Quadrilateral {
   property vertices: Set<Point>
   invariant four: count(vertices) = 4
+  # no three vertices collinear (M078, packet 4): every three have a non-zero
+  # (doubled) signed area
+  invariant proper: all v in subsets(vertices, 3): exists w in cycles(v):
+    (w[1].x - w[0].x) * (w[2].y - w[0].y) - (w[2].x - w[0].x) * (w[1].y - w[0].y) != 0
 }
 
 # Diagonals that bisect each other define a parallelogram.

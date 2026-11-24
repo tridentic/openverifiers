@@ -1,6 +1,6 @@
-# OpenVerifiers Masterplan (MP-1.3)
+# OpenVerifiers Masterplan (MP-1.4)
 
-Nov 22, 2026 (amended Nov 23, 2026; MP-1.1: D-029; MP-1.2: D-030, D-031; MP-1.3: D-032) · Founder
+Nov 22, 2026 (amended Nov 23, 2026; MP-1.1: D-029; MP-1.2: D-030, D-031; MP-1.3: D-032; MP-1.4: D-033, D-034, D-031b) · Founder
 
 The single reference for building OpenVerifiers, from the trusted kernel to frontier science, across six major releases. Every report, directive and change refers back to a section of this plan.
 
@@ -306,7 +306,7 @@ Releases ship in order. A release is done only when **every** exit criterion is 
 
 **Exit criteria:**
 
-1. 0 false PROVEN over every gold-first case: JEE 30, JEE Main 2025: 45 problems drawn mechanically (15 per subject), gold from NTA's official final answer keys, A-level 30 if sources arrive, agentic 20, breadth 35, adversarial 50. (D-031: replaces HSC 45; HSC becomes a v1.1 tier, run when papers are supplied.)
+1. 0 false PROVEN over every gold-first case: JEE Advanced 30, agentic 20, breadth 35, adversarial 50 (D-031b: no JEE Main source exists; JEE Main and HSC become v1.1 tiers, so v1 has one official-key exam tier). (Was D-031: JEE Main 2025, 45 problems with NTA's official final keys, in place of HSC 45.)
 2. A capability report with the domain × tier matrix and the failure taxonomy.
 3. 0 unsound mutants accepted, including the object path.
 4. ≥ 60% of library theorems at `{kernel}` trust.
@@ -482,6 +482,9 @@ Newest first. Every future change to this plan adds a row here.
 
 | ID | Date | Decision | Decided by |
 | --- | --- | --- | --- |
+| D-031b | 2026-11-23 | (only if no JEE Main source) "v1 exit criterion 1 counts JEE Advanced 30 + agentic 20 + breadth 35 + adversarial 50. JEE Main and HSC become v1.1 tiers. The exit report must say plainly that v1 has one official-key exam tier." Applied: private/sources/jee_main/ does not exist | Founder (reply to packet 0e233e5b7e29) |
+| D-034 | 2026-11-23 | (CTO) "the CI streak counts push runs on distinct commits plus one nightly scheduled run (add the cron workflow). Manual re-runs of the same commit don't count. Report the streak with run IDs." | Claude (CTO); founder (reply to packet 0e233e5b7e29) |
+| D-033 | 2026-11-23 | (CTO; the founder approves via signature) "sin/cos of a variable in the trusted normal form. Indeterminates S_u and C_u with dS_u = u'·C_u, dC_u = −u'·S_u, and the reduction S_u² + C_u² = 1. At most ~40 trusted lines in unit A. Differential tests for each construct. Shown in 3 domains (SHM/torsion, AC circuits, a trig identity in math). Then prove N043. Inverse trig stays v2." | Claude (CTO); founder (reply to packet 0e233e5b7e29, ratified by this signature) |
 | D-032 | 2026-11-23 | Approval mechanism. "Agents never write approval trailers again: no Meaning-Approved-By, Gold-Change-Approved-By or RETRO_APPROVALS lines from an agent session, ever." "Approvals are commits made and signed by the founder, outside any agent session": a trailer counts only if its commit is signed by a key listed in `.approvers/allowed_signers`, mapped to the role founder; unsigned or wrongly signed approval commits fail the gate. The agent prepares an approval branch (`approval/<packet>`, changes staged, not committed) and `scripts/founder_approve.sh`; the founder runs one signed command. Earlier agent-stamped approvals are ratified by a `Ratifies:` trailer on a signed approval commit. Setup: docs/APPROVALS.md; the agent never creates or holds the key | Founder (2026-11-23 message); ratified in the founder's signed approval commit for packet 2 |
 | D-031 | 2026-11-23 | v1 exit criterion 1 amendment: "Replace \"HSC 45\" with \"JEE Main 2025: 45 problems drawn mechanically (15 per subject), gold from NTA's official final answer keys\". Fetch papers and keys only from official NTA domains (list them in the report). If NTA does not publish both papers and keys, stop and report instead of substituting another source. HSC becomes a v1.1 tier, run when papers are supplied." | Founder (reply to packet dd2d4fd885a8) |
 | D-030 | 2026-11-23 | Trusted-code budget: "New caps: unit A 700, raw/formula.py 450, main 1,150; total 2,300 (hard). The total stays the headline number in every report." New rule, MP §8 Trust: "No trusted check may ever be removed or weakened to fit a cap. If a cap blocks work, report it; caps change only by a masterplan decision." "Restore, first, the OVState loader's sortedness and groundness checks, and their tests (unsorted states refused again)." Then spend, in order: (1) surd-valued uniqueness certificates, Q(√d) multipliers and values; (2) π in integrands; (3) ln in the exp ring (d ln u = u'/u with u > 0 checked). Real algebraic numbers: deferred to v2 (only phys p1q10 needs them) | Founder (reply to packet dd2d4fd885a8); CTO rationale |

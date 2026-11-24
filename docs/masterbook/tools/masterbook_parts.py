@@ -903,9 +903,14 @@ def obj_dag(res_answer: Any, title: str) -> str:
     out = []
     recs = a.records
     used = list(getattr(a, "used_hyps", ()) or ())
+    if not used:                       # the certificate step names them: "hypotheses used: a, b"
+        for st in a.steps:
+            m = re.search(r"hypotheses used: (.*)$", st)
+            if m:
+                used = [h.strip() for h in m.group(1).split(",") if h.strip()]
     for i, s in enumerate(a.steps):
         fill = "#f6c9c4" if ("[checker]" in s or "[kernel" in s) else ("#fbe7c6" if "z3" in s else "#f4f4f4")
-        short = s if len(s) < 160 else s[:157] + "..."
+        short = s if len(s) < 160 else s[:157] + "... (full text in the run output)"
         out.append(f'  s{i} [label="{wrap(short, 58)}", fillcolor="{fill}"];')
         if i:
             out.append(f"  s{i - 1} -> s{i};")

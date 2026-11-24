@@ -1,13 +1,13 @@
 #counter(heading).update(0)
-#set heading(numbering: "A.1")
+#set heading(numbering: (..n) => if n.pos().len() == 1 { "Appendix " + numbering("A", ..n.pos()) } else { numbering("A.1", ..n.pos()) })
 
-= Appendix: the full OV grammar <appA>
+= the full OV grammar <appA>
 
 {{badge:IMPLEMENTED}} The parser's grammar file, verbatim {{src:src/openverifiers/lang/grammar.lark}}. Chapter 2.3 has the EBNF generated from it and the railroad diagrams.
 
 {{listing:src/openverifiers/lang/grammar.lark}}
 
-= Appendix: the OKQL grammar <appB>
+= the OKQL grammar <appB>
 
 *Implemented* (generated from `grammar.lark`):
 
@@ -18,7 +18,7 @@
 
 {{listing:MASTERPLAN.md:186-204}}
 
-= Appendix: CLI reference <appC>
+= CLI reference <appC>
 
 Every help text the `ov` command offers, captured by the build. Some subcommands do not implement `--help` and instead treat it as an argument; the outputs show exactly what happens (Appendix J).
 
@@ -26,7 +26,7 @@ Every help text the `ov` command offers, captured by the build. Some subcommands
 
 The MCP server's usage is its module docstring {{src:src/openverifiers/mcp_gate.py:1-24}}; `reproduce.sh` takes an output folder {{src:reproduce.sh:1-7}}.
 
-= Appendix: file-format schemas <appD>
+= file-format schemas <appD>
 
 *Terms, atoms, literals, spans* (the trusted canonical JSON):
 
@@ -50,13 +50,13 @@ The MCP server's usage is its module docstring {{src:src/openverifiers/mcp_gate.
 
 *Exam answer maps* (`answer.json`) and outcomes are documented in `ov exam --help` (Appendix C).
 
-= Appendix: the error-code catalogue <appE>
+= the error-code catalogue <appE>
 
 Generated from the codes that occur in `src/openverifiers` (excluding `legacy/` and `m1/`) and in `docs/LANGUAGE.md`. Each example file is written by the build into `build/work/errors/` (most are package files, which must not be committed outside `drafts/`) and run with `ov run`; the build fails if the file does not produce its code.
 
 {{gen:errors}}
 
-= Appendix: the module map <appF>
+= the module map <appF>
 
 Every module of `src/openverifiers` except the pre-v1 `legacy/` and `m1/`, with its physical line count and whether `scripts/tcb_size.py` counts it as trusted.
 
@@ -64,7 +64,7 @@ Every module of `src/openverifiers` except the pre-v1 `legacy/` and `m1/`, with 
 {{fig:imports_pkg}}
 {{fig:imports}}
 
-= Appendix: the package catalogue <appG>
+= the package catalogue <appG>
 
 Generated from the package files and from `ov audit --json` on every approved package (run by the build).
 
@@ -80,7 +80,7 @@ Generated from the package files and from `ov audit --json` on every approved pa
 
 {{fig:audit_dag}}
 
-= Appendix: glossary <appH>
+= glossary <appH>
 
 / ATMS: assumption-based truth maintenance: each derived atom carries the set of assumption environments under which it holds (its _label_).
 / assumption: a named hypothesis, `assume n: lit`; it appears in the labels of everything that uses it.
@@ -115,13 +115,13 @@ Generated from the package files and from `ov audit --json` on every approved pa
 / UNPROVEN: the printed name of an UNKNOWN theorem check.
 / witness: for `ln u` or `1/u`, a checked factorisation $u = c h_1 dots.c h_k e^(dots.c)$ showing $u > 0$.
 
-= Appendix: the decision log <appI>
+= the decision log <appI>
 
 From `MASTERPLAN.md` §11 at the code commit, generated; newest first. D-033, D-034 and D-031b are in the founder's packet-3 reply and are added to `MASTERPLAN.md` on `v1` after `bd2ed44` {{report:reports/APPROVAL_RECORD_2026-11-23_packet3.md}}.
 
 {{gen:decisions}}
 
-= Appendix: Findings <appJ>
+= Findings <appJ>
 
 Bugs and inconsistencies the Author noticed while writing. None was fixed (docs only); each is listed for the supervisor and the founder. "Docs drift" means a document disagrees with the code at `bd2ed44`.
 
@@ -153,7 +153,7 @@ Bugs and inconsistencies the Author noticed while writing. None was fixed (docs 
   [J24], [{{src:MASTERPLAN.md:161-172}}], [The masterplan's proof hints (`by rewrite`, `by induction`, `by certificate …`) and its §4.2 example syntax (`over t: Time`, `derived`, entity patterns `Body { mass = 2 kg }`) are not accepted by the grammar. They are planned, but the masterplan presents them without a status.],
 )
 
-= Appendix: how to rebuild the book <appK>
+= how to rebuild the book <appK>
 
 *One command.* From the repository root, in a virtualenv with the dev and docs extras:
 
